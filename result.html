@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — Your Chart</title>
+  <meta name="description" content="View your personalized Zi Wei Dou Shu chart." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <header class="brand">
+      <div class="brand-mark">FuSang Vision</div>
+    </header>
+
+    <!-- ======================================================= -->
+    <!-- View 1: Loading (while we process magic link)           -->
+    <!-- ======================================================= -->
+    <section id="view-loading" class="view view-active">
+      <div class="loading-dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <h1 class="loading-title">Signing You In</h1>
+      <p class="loading-sub">One moment while we verify your link...</p>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- View 2: Success (after auth + data loaded)              -->
+    <!-- ======================================================= -->
+    <section id="view-success" class="view">
+
+      <div class="success-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="36" height="36">
+          <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h1 class="success-title">Welcome Back</h1>
+      <p class="success-sub">
+        You're signed in as <span class="success-highlight" id="user-email-display"></span>
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="ref-card">
+        <div class="ref-label">Your Chart Session</div>
+        <div class="ref-row">
+          <code id="session-id">—</code>
+          <button id="copy-session" type="button" class="copy-btn" aria-label="Copy session ID">
+            <span class="copy-icon">⎘</span>
+          </button>
+        </div>
+        <div class="ref-hint">Your full report visualization is coming soon. Save this ID for reference.</div>
+      </div>
+
+      <!-- Beta-stage placeholder for full chart report -->
+      <div class="ref-card">
+        <div class="ref-label">What's coming</div>
+        <p style="margin: 8px 0; font-size: 14px; line-height: 1.6; color: var(--gray-700);">
+          A full visualization of your twelve palaces, four transformations, and opposite influences is being designed.
+          You'll be notified when it's available.
+        </p>
+      </div>
+
+      <button id="signout-btn" type="button" class="btn-primary" style="margin-top: 24px;">
+        <span class="btn-text">Sign Out</span>
+        <span class="btn-arrow">→</span>
+      </button>
+
+      <p class="footnote contact-line">
+        Need help? <a href="mailto:info@fusang-vision.com">Contact our team →</a>
+      </p>
+
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- View 3: Error (auth failed / no session)                -->
+    <!-- ======================================================= -->
+    <section id="view-error" class="view">
+
+      <div class="error-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="36" height="36">
+          <line x1="12" y1="6" x2="12" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="12" cy="18" r="1.3" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <h1 class="error-title">Link Invalid or Expired</h1>
+      <p id="error-detail" class="error-detail">
+        Your sign-in link may have expired (links are valid for 24 hours) or has already been used.
+      </p>
+
+      <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-flex; justify-content: center; align-items: center;">
+        <span class="btn-text">Request New Chart</span>
+        <span class="btn-arrow">→</span>
+      </a>
+
+      <p class="footnote contact-line">
+        If the problem persists, <a href="mailto:info@fusang-vision.com">contact our team →</a>
+      </p>
+
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>© 2026 FuSang Vision · Ancient wisdom for a modern life</p>
+  </footer>
+
+  <!-- Supabase JS SDK -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+
+    const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,  // Auto-extract session from URL hash
+      },
+    });
+
+    // ============================================================
+    // View switching helpers
+    // ============================================================
+    function showView(id) {
+      document.querySelectorAll('.view').forEach((v) => v.classList.remove('view-active'));
+      const target = document.getElementById(id);
+      if (target) target.classList.add('view-active');
+    }
+
+    function showError(msg) {
+      if (msg) {
+        document.getElementById('error-detail').textContent = msg;
+      }
+      showView('view-error');
+    }
+
+    // ============================================================
+    // Main auth flow
+    // ============================================================
+    async function init() {
+      try {
+        // detectSessionInUrl: true means Supabase will auto-parse the
+        // #access_token=... fragment when the page loads.
+        // We just need to wait briefly and check session.
+
+        // Give Supabase a moment to process the URL fragment
+        await new Promise((r) => setTimeout(r, 500));
+
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('Session error:', error);
+          showError('Could not verify your sign-in. ' + error.message);
+          return;
+        }
+
+        if (!session) {
+          // No session — either no magic link in URL or it expired
+          showError();
+          return;
+        }
+
+        // ---- Signed in successfully ----
+        const userEmail = session.user.email;
+        document.getElementById('user-email-display').textContent = userEmail;
+
+        // Fetch user's most recent completed chart_session_id
+        const { data: jobData, error: jobError } = await supabase
+          .from('chart_generation_jobs')
+          .select('chart_session_id, status')
+          .eq('user_email', userEmail)
+          .eq('status', 'done')
+          .order('completed_at', { ascending: false, nullsFirst: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (jobError) {
+          console.error('Job query error:', jobError);
+        }
+
+        if (jobData?.chart_session_id) {
+          document.getElementById('session-id').textContent = jobData.chart_session_id;
+        } else {
+          document.getElementById('session-id').textContent = 'Chart not yet ready';
+        }
+
+        showView('view-success');
+
+        // ---- Clean up URL (remove auth tokens from address bar) ----
+        if (window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+
+      } catch (err) {
+        console.error('Init error:', err);
+        showError(err.message || 'Something went wrong during sign-in.');
+      }
+    }
+
+    // ============================================================
+    // Sign out button
+    // ============================================================
+    document.getElementById('signout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    // ============================================================
+    // Copy session ID button
+    // ============================================================
+    document.getElementById('copy-session').addEventListener('click', async () => {
+      const sessionId = document.getElementById('session-id').textContent;
+      if (!sessionId || sessionId === '—' || sessionId === 'Chart not yet ready') return;
+
+      try {
+        await navigator.clipboard.writeText(sessionId);
+        const btn = document.getElementById('copy-session');
+        const icon = btn.querySelector('.copy-icon');
+        const orig = icon.textContent;
+        icon.textContent = '✓';
+        setTimeout(() => { icon.textContent = orig; }, 1500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    });
+
+    // ============================================================
+    // Run
+    // ============================================================
+    init();
+  </script>
+</body>
+</html>

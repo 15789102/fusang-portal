@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — Chart in Progress</title>
+  <meta name="description" content="Your Zi Wei Dou Shu chart is being prepared." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <header class="brand">
+      <div class="brand-mark">FuSang Vision</div>
+    </header>
+
+    <section class="view view-active">
+
+      <div class="loading-dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+
+      <h1 class="loading-title">Crafting Your Chart</h1>
+      <p class="loading-sub">
+        Ancient wisdom meets modern computation.<br>
+        Your personalized report is being prepared.
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="ref-card">
+        <div class="ref-label">What happens next</div>
+        <ol class="next-steps">
+          <li><strong>Right now:</strong> Calculating your natal chart and the twelve palaces</li>
+          <li><strong>~2 minutes:</strong> Interpreting palace meanings, four transformations, and opposite influences</li>
+          <li><strong>Within 5 minutes:</strong> An email arrives at <code id="user-email">your inbox</code> with a secure login link</li>
+        </ol>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-label">Reference ID</div>
+        <div class="ref-row">
+          <code id="ref-id">—</code>
+          <button id="copy-ref" type="button" class="copy-btn" aria-label="Copy reference ID">
+            <span class="copy-icon">⎘</span>
+          </button>
+        </div>
+        <div class="ref-hint">Save this ID — useful if our team needs to assist you.</div>
+      </div>
+
+      <p class="footnote contact-line" style="margin-top: 32px;">
+        You may close this window. We'll notify you by email when ready.<br>
+        Need help? <a href="mailto:info@fusang-vision.com">Contact our team →</a>
+      </p>
+
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>© 2026 FuSang Vision · Ancient wisdom for a modern life</p>
+  </footer>
+
+  <script>
+    // Read query params and populate the page
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const jobId = params.get('job_id');
+      const email = params.get('email');
+
+      if (jobId) {
+        document.getElementById('ref-id').textContent = jobId;
+      }
+      if (email) {
+        document.getElementById('user-email').textContent = email;
+      }
+
+      // Copy button
+      document.getElementById('copy-ref').addEventListener('click', async () => {
+        if (!jobId) return;
+        try {
+          await navigator.clipboard.writeText(jobId);
+          const btn = document.getElementById('copy-ref');
+          const icon = btn.querySelector('.copy-icon');
+          const orig = icon.textContent;
+          icon.textContent = '✓';
+          setTimeout(() => { icon.textContent = orig; }, 1500);
+        } catch (err) {
+          console.error('Copy failed:', err);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

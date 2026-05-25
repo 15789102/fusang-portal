@@ -6,7 +6,6 @@
   <title>FuSang Vision — Zi Wei Chart</title>
   <meta name="description" content="Generate your personalized Zi Wei Dou Shu chart with FuSang Vision." />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -17,15 +16,11 @@
 
   <main class="container">
 
-    <!-- === Brand header === -->
     <header class="brand">
       <div class="brand-mark">FuSang Vision</div>
     </header>
 
-    <!-- ===================================================== -->
-    <!-- VIEW 1: Input Form                                    -->
-    <!-- ===================================================== -->
-    <section id="view-input" class="view view-active">
+    <section class="view view-active">
 
       <h1 class="title">Discover Your Inner Gift</h1>
       <p class="subtitle">Generate your personalized Zi Wei Dou Shu chart</p>
@@ -34,13 +29,13 @@
 
       <form id="chart-form" class="form" novalidate>
 
-        <!-- Name -->
+        <!-- Display Name -->
         <div class="field">
-          <label for="user_name">Name</label>
+          <label for="display_name">Name</label>
           <input
             type="text"
-            id="user_name"
-            name="user_name"
+            id="display_name"
+            name="display_name"
             placeholder="Your full name"
             required
             autocomplete="name"
@@ -49,11 +44,11 @@
 
         <!-- Email -->
         <div class="field">
-          <label for="user_email">Email</label>
+          <label for="email">Email</label>
           <input
             type="email"
-            id="user_email"
-            name="user_email"
+            id="email"
+            name="email"
             placeholder="you@example.com"
             required
             autocomplete="email"
@@ -64,13 +59,13 @@
         <div class="field">
           <label>Date of Birth (Solar Calendar)</label>
           <div class="row-three">
-            <select id="s_year" name="s_year" required>
+            <select id="birth_year" name="birth_year" required>
               <option value="">Year</option>
             </select>
-            <select id="s_month" name="s_month" required>
+            <select id="birth_month" name="birth_month" required>
               <option value="">Month</option>
             </select>
-            <select id="s_day" name="s_day" required>
+            <select id="birth_day" name="birth_day" required>
               <option value="">Day</option>
             </select>
           </div>
@@ -78,44 +73,33 @@
 
         <!-- Birth Hour -->
         <div class="field">
-          <label for="hour_num">Birth Hour</label>
-          <select id="hour_num" name="hour_num" required>
+          <label for="birth_hour">Birth Hour</label>
+          <select id="birth_hour" name="birth_hour" required>
             <option value="">Select birth hour</option>
-            <option value="1">子 Zi · 23:00 – 01:00</option>
-            <option value="2">丑 Chou · 01:00 – 03:00</option>
-            <option value="3">寅 Yin · 03:00 – 05:00</option>
-            <option value="4">卯 Mao · 05:00 – 07:00</option>
-            <option value="5">辰 Chen · 07:00 – 09:00</option>
-            <option value="6">巳 Si · 09:00 – 11:00</option>
-            <option value="7">午 Wu · 11:00 – 13:00</option>
-            <option value="8">未 Wei · 13:00 – 15:00</option>
-            <option value="9">申 Shen · 15:00 – 17:00</option>
-            <option value="10">酉 You · 17:00 – 19:00</option>
-            <option value="11">戌 Xu · 19:00 – 21:00</option>
-            <option value="12">亥 Hai · 21:00 – 23:00</option>
-            <option value="13">晚子時 Late Zi · 23:00+</option>
+            <option value="0">子 Zi · 00:00 – 00:59</option>
+            <option value="1">丑 Chou · 01:00 – 02:59</option>
+            <option value="3">寅 Yin · 03:00 – 04:59</option>
+            <option value="5">卯 Mao · 05:00 – 06:59</option>
+            <option value="7">辰 Chen · 07:00 – 08:59</option>
+            <option value="9">巳 Si · 09:00 – 10:59</option>
+            <option value="11">午 Wu · 11:00 – 12:59</option>
+            <option value="13">未 Wei · 13:00 – 14:59</option>
+            <option value="15">申 Shen · 15:00 – 16:59</option>
+            <option value="17">酉 You · 17:00 – 18:59</option>
+            <option value="19">戌 Xu · 19:00 – 20:59</option>
+            <option value="21">亥 Hai · 21:00 – 22:59</option>
+            <option value="23">晚子 Late Zi · 23:00 – 23:59</option>
           </select>
         </div>
 
-        <!-- Gender + Language -->
-        <div class="row-two">
-          <div class="field">
-            <label>Gender</label>
-            <div class="toggle-group" role="radiogroup" aria-label="Gender">
-              <button type="button" class="toggle-btn" data-name="gender" data-value="0">Female</button>
-              <button type="button" class="toggle-btn" data-name="gender" data-value="1">Male</button>
-            </div>
-            <input type="hidden" id="gender" name="gender" required />
+        <!-- Gender -->
+        <div class="field">
+          <label>Gender</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Gender">
+            <button type="button" class="toggle-btn" data-name="gender" data-value="female">Female</button>
+            <button type="button" class="toggle-btn" data-name="gender" data-value="male">Male</button>
           </div>
-
-          <div class="field">
-            <label>Report Language</label>
-            <div class="toggle-group" role="radiogroup" aria-label="Report language">
-              <button type="button" class="toggle-btn" data-name="report_lang" data-value="en">English</button>
-              <button type="button" class="toggle-btn" data-name="report_lang" data-value="zh-TW">中文</button>
-            </div>
-            <input type="hidden" id="report_lang" name="report_lang" required />
-          </div>
+          <input type="hidden" id="gender" name="gender" required />
         </div>
 
         <!-- Newsletter consent -->
@@ -139,128 +123,9 @@
           <span class="btn-arrow">→</span>
         </button>
 
-        <p class="footnote">Your report will be delivered to your inbox within 15 minutes.</p>
+        <p class="footnote">Your report will be delivered to your inbox within 5 minutes.</p>
 
       </form>
-    </section>
-
-    <!-- ===================================================== -->
-    <!-- VIEW 2: Loading                                       -->
-    <!-- ===================================================== -->
-    <section id="view-loading" class="view">
-
-      <div class="loading-dots" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
-
-      <h2 class="loading-title">Crafting Your Chart</h2>
-      <p class="loading-sub">Ancient wisdom meets modern computation.<br>This may take 1–2 minutes.</p>
-
-      <ol class="progress-steps" aria-live="polite">
-        <li class="step" data-step="1">
-          <span class="step-icon"></span>
-          <span class="step-label">Calculating natal chart</span>
-        </li>
-        <li class="step" data-step="2">
-          <span class="step-icon"></span>
-          <span class="step-label">Mapping decade luck cycles</span>
-        </li>
-        <li class="step" data-step="3">
-          <span class="step-icon"></span>
-          <span class="step-label">Compiling annual and monthly charts</span>
-        </li>
-        <li class="step" data-step="4">
-          <span class="step-icon"></span>
-          <span class="step-label">Saving to your profile</span>
-        </li>
-      </ol>
-
-    </section>
-
-    <!-- ===================================================== -->
-    <!-- VIEW 3: Success                                       -->
-    <!-- ===================================================== -->
-    <section id="view-success" class="view">
-
-      <div class="success-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="36" height="36">
-          <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-
-      <h2 class="success-title">Your Chart is Ready</h2>
-      <p class="success-sub">
-        Your personalized Zi Wei Dou Shu report will arrive in your inbox<br>
-        within the next <span class="success-highlight">15 minutes</span>.
-      </p>
-
-      <!-- Reference ID -->
-      <div class="ref-card">
-        <div class="ref-label">Reference ID</div>
-        <div class="ref-row">
-          <code id="ref-id"></code>
-          <button id="copy-ref" type="button" class="copy-btn" aria-label="Copy reference ID">
-            <span class="copy-icon">⎘</span>
-          </button>
-        </div>
-        <div class="ref-hint">Save this ID for reference. You may need it if our team contacts you.</div>
-      </div>
-
-      <!-- Summary -->
-      <div class="summary-grid">
-        <div class="summary-cell">
-          <div class="summary-label">Solar Date</div>
-          <div class="summary-value" id="sum-solar"></div>
-        </div>
-        <div class="summary-cell">
-          <div class="summary-label">Lunar Date</div>
-          <div class="summary-value" id="sum-lunar"></div>
-        </div>
-        <div class="summary-cell">
-          <div class="summary-label">Birth Hour</div>
-          <div class="summary-value" id="sum-hour"></div>
-        </div>
-        <div class="summary-cell">
-          <div class="summary-label">Records Saved</div>
-          <div class="summary-value" id="sum-records"></div>
-        </div>
-      </div>
-
-      <button id="restart-btn" type="button" class="btn-primary">
-        <span class="btn-text">Generate Another Chart</span>
-        <span class="btn-arrow">+</span>
-      </button>
-
-      <p class="footnote contact-line">
-        Need help? <a href="mailto:hello@fusang-vision.com">Contact our team →</a>
-      </p>
-
-    </section>
-
-    <!-- ===================================================== -->
-    <!-- VIEW 4: Error                                         -->
-    <!-- ===================================================== -->
-    <section id="view-error" class="view">
-
-      <div class="error-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="36" height="36">
-          <line x1="12" y1="6" x2="12" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="12" cy="18" r="1.3" fill="currentColor"/>
-        </svg>
-      </div>
-
-      <h2 class="error-title">Something Went Wrong</h2>
-      <p id="error-detail" class="error-detail"></p>
-
-      <button id="retry-btn" type="button" class="btn-primary">
-        <span class="btn-text">Try Again</span>
-        <span class="btn-arrow">↻</span>
-      </button>
-
-      <p class="footnote contact-line">
-        If the problem persists, <a href="mailto:hello@fusang-vision.com">contact our team →</a>
-      </p>
-
     </section>
 
   </main>
