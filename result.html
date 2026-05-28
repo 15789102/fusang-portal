@@ -11,6 +11,204 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* ============================================================
+       F.0.7-a: Hub + Detail view styles (inline, will polish later)
+       ============================================================ */
+
+    /* Hub: 12 palace grid */
+    .palace-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    @media (max-width: 480px) {
+      .palace-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .palace-card {
+      background: var(--teal-bg);
+      border: 1px solid var(--teal-light);
+      border-radius: var(--radius-md);
+      padding: 16px 12px;
+      cursor: pointer;
+      transition: all var(--t);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 100px;
+      justify-content: center;
+    }
+
+    .palace-card:hover {
+      border-color: var(--teal-main);
+      background: var(--teal-pale);
+      transform: translateY(-1px);
+    }
+
+    .palace-card-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--black);
+      font-weight: 500;
+    }
+
+    .palace-card-stars {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.4;
+      min-height: 1.4em;
+    }
+
+    /* Detail view */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--teal-light);
+    }
+
+    .back-btn {
+      background: var(--teal-bg);
+      border: 1px solid var(--teal-light);
+      color: var(--teal-deep);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all var(--t);
+    }
+
+    .back-btn:hover {
+      background: var(--teal-pale);
+      border-color: var(--teal-main);
+    }
+
+    .detail-palace-name {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      color: var(--black);
+      margin: 0;
+      flex: 1;
+    }
+
+    .detail-section {
+      margin-bottom: 32px;
+    }
+
+    .detail-section-label {
+      font-size: 11px;
+      color: var(--teal-deep);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .detail-section-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--gray-900);
+      white-space: pre-wrap;
+    }
+
+    /* Composition (star list) */
+    .composition-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .composition-label {
+      font-size: 11px;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .star-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: var(--teal-pale);
+      border: 1px solid var(--teal-light);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--gray-900);
+    }
+
+    .star-chip-transform {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--teal-main);
+      color: var(--white);
+    }
+
+    .star-chip-transform.化忌 {
+      background: var(--required-red);
+    }
+
+    /* Transform 4 化 blocks */
+    .transform-block {
+      background: var(--teal-bg);
+      border-left: 3px solid var(--teal-main);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .transform-block.化忌 {
+      border-left-color: var(--required-red);
+    }
+
+    .transform-type {
+      font-size: 11px;
+      color: var(--teal-deep);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .transform-block.化忌 .transform-type {
+      color: var(--required-red);
+    }
+
+    .transform-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      color: var(--black);
+      margin: 0 0 8px;
+      font-weight: 500;
+    }
+
+    .transform-content {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--gray-900);
+      white-space: pre-wrap;
+    }
+
+    /* Hub header */
+    .hub-meta {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+  </style>
 </head>
 <body>
 
@@ -21,7 +219,7 @@
     </header>
 
     <!-- ======================================================= -->
-    <!-- View 1: Loading (while we process magic link)           -->
+    <!-- View 1: Loading                                         -->
     <!-- ======================================================= -->
     <section id="view-loading" class="view view-active">
       <div class="loading-dots" aria-hidden="true">
@@ -32,20 +230,26 @@
     </section>
 
     <!-- ======================================================= -->
-    <!-- View 2: Success (after auth + data loaded)              -->
+    <!-- View 2: Hub (12 palaces grid)                           -->
     <!-- ======================================================= -->
-    <section id="view-success" class="view">
+    <section id="view-hub" class="view">
 
-      <div class="success-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="36" height="36">
-          <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <div class="hub-meta">
+        <h1 class="success-title">Your Natal Chart</h1>
+        <p class="success-sub">
+          Signed in as <span class="success-highlight" id="user-email-display"></span>
+        </p>
       </div>
 
-      <h1 class="success-title">Welcome Back</h1>
-      <p class="success-sub">
-        You're signed in as <span class="success-highlight" id="user-email-display"></span>
+      <div class="divider"></div>
+
+      <p style="text-align:center; font-size:13px; color:var(--gray-700); margin: 0 0 8px;">
+        Tap a palace to view its full reading
       </p>
+
+      <div id="palace-grid" class="palace-grid">
+        <!-- 12 cards injected by JS -->
+      </div>
 
       <div class="divider"></div>
 
@@ -57,16 +261,6 @@
             <span class="copy-icon">⎘</span>
           </button>
         </div>
-        <div class="ref-hint">Your full report visualization is coming soon. Save this ID for reference.</div>
-      </div>
-
-      <!-- Beta-stage placeholder for full chart report -->
-      <div class="ref-card">
-        <div class="ref-label">What's coming</div>
-        <p style="margin: 8px 0; font-size: 14px; line-height: 1.6; color: var(--gray-700);">
-          A full visualization of your twelve palaces, four transformations, and opposite influences is being designed.
-          You'll be notified when it's available.
-        </p>
       </div>
 
       <button id="signout-btn" type="button" class="btn-primary" style="margin-top: 24px;">
@@ -81,7 +275,51 @@
     </section>
 
     <!-- ======================================================= -->
-    <!-- View 3: Error (auth failed / no session)                -->
+    <!-- View 3: Palace Detail (single palace full reading)      -->
+    <!-- ======================================================= -->
+    <section id="view-palace-detail" class="view">
+
+      <div class="detail-header">
+        <button id="back-to-hub-btn" class="back-btn" type="button">← All Palaces</button>
+        <h1 id="detail-palace-name" class="detail-palace-name">—</h1>
+      </div>
+
+      <!-- Composition -->
+      <div class="detail-section">
+        <div class="detail-section-label">Composition · 宮位結構</div>
+        <div id="detail-composition"></div>
+      </div>
+
+      <!-- A: palace_analysis -->
+      <div class="detail-section">
+        <div class="detail-section-label">A · 宮位分析</div>
+        <div id="detail-analysis" class="detail-section-content"></div>
+      </div>
+
+      <!-- B: transforms_incoming -->
+      <div class="detail-section">
+        <div class="detail-section-label">B · 化入此宮(他宮飛入)</div>
+        <div id="detail-transforms-in"></div>
+      </div>
+
+      <!-- C: transforms_outgoing -->
+      <div class="detail-section">
+        <div class="detail-section-label">C · 此宮化出(飛向他宮)</div>
+        <div id="detail-transforms-out"></div>
+      </div>
+
+      <!-- D: suggestion -->
+      <div class="detail-section">
+        <div class="detail-section-label">D · 運用建議</div>
+        <div id="detail-suggestion" class="detail-section-content"></div>
+      </div>
+
+      <button class="back-btn" type="button" onclick="document.getElementById('back-to-hub-btn').click()" style="margin-top: 16px;">← Back to all palaces</button>
+
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- View 4: Error                                           -->
     <!-- ======================================================= -->
     <section id="view-error" class="view">
 
@@ -125,17 +363,30 @@
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,  // Auto-extract session from URL hash
+        detectSessionInUrl: true,
       },
     });
 
+    // Palace order (used for sorting)
+    const PALACE_ORDER = [
+      '命宮', '兄弟宮', '夫妻宮', '子女宮',
+      '財帛宮', '疾厄宮', '遷移宮', '交友宮',
+      '官祿宮', '田宅宮', '福德宮', '父母宮'
+    ];
+
+    const TRANSFORM_ORDER = ['化祿', '化權', '化科', '化忌'];
+
+    // Reports cache: palace_name → row
+    let reportsByPalace = {};
+
     // ============================================================
-    // View switching helpers
+    // View switching
     // ============================================================
     function showView(id) {
       document.querySelectorAll('.view').forEach((v) => v.classList.remove('view-active'));
       const target = document.getElementById(id);
       if (target) target.classList.add('view-active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     function showError(msg) {
@@ -146,15 +397,161 @@
     }
 
     // ============================================================
-    // Main auth flow
+    // Render Hub: 12 palace cards
+    // ============================================================
+    function renderHub() {
+      const grid = document.getElementById('palace-grid');
+      grid.innerHTML = '';
+
+      for (const palaceName of PALACE_ORDER) {
+        const row = reportsByPalace[palaceName];
+
+        const card = document.createElement('div');
+        card.className = 'palace-card';
+        card.dataset.palace = palaceName;
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'palace-card-name';
+        nameEl.textContent = palaceName;
+        card.appendChild(nameEl);
+
+        const starsEl = document.createElement('div');
+        starsEl.className = 'palace-card-stars';
+        if (row?.composition?.main_stars?.length) {
+          starsEl.textContent = row.composition.main_stars.map(s => s.star).join(' · ');
+        } else {
+          starsEl.textContent = '(無主星)';
+        }
+        card.appendChild(starsEl);
+
+        card.addEventListener('click', () => openPalaceDetail(palaceName));
+        grid.appendChild(card);
+      }
+    }
+
+    // ============================================================
+    // Render Palace Detail
+    // ============================================================
+    function openPalaceDetail(palaceName) {
+      const row = reportsByPalace[palaceName];
+      if (!row) return;
+
+      document.getElementById('detail-palace-name').textContent = palaceName;
+
+      // ---- Composition ----
+      const compEl = document.getElementById('detail-composition');
+      compEl.innerHTML = '';
+      const comp = row.composition || {};
+
+      if (comp.main_stars?.length) {
+        compEl.appendChild(buildStarRow('主星', comp.main_stars, true));
+      }
+      if (comp.support_stars?.length) {
+        compEl.appendChild(buildStarRow('輔星', comp.support_stars.map(s => ({ star: s })), false));
+      }
+      if (comp.sha_ji_stars?.length) {
+        compEl.appendChild(buildStarRow('煞忌', comp.sha_ji_stars.map(s => ({ star: s })), false));
+      }
+      if (comp.minor_stars?.length) {
+        compEl.appendChild(buildStarRow('雜曜', comp.minor_stars.map(s => ({ star: s })), false));
+      }
+
+      const meta = document.createElement('div');
+      meta.style.cssText = 'font-size:11px;color:var(--gray-700);margin-top:12px;';
+      meta.innerHTML = `天干 <strong>${comp.heavenly_stem || '—'}</strong> · 地支 <strong>${comp.branch || '—'}</strong> · 對宮 <strong>${comp.opposite_palace || '—'}</strong>`;
+      compEl.appendChild(meta);
+
+      // ---- A: palace_analysis ----
+      document.getElementById('detail-analysis').textContent = row.palace_analysis || '(尚無內容)';
+
+      // ---- B: transforms_incoming ----
+      renderTransforms('detail-transforms-in', row.transforms_incoming);
+
+      // ---- C: transforms_outgoing ----
+      renderTransforms('detail-transforms-out', row.transforms_outgoing);
+
+      // ---- D: suggestion ----
+      document.getElementById('detail-suggestion').textContent = row.suggestion || '(尚無內容)';
+
+      showView('view-palace-detail');
+    }
+
+    function buildStarRow(label, stars, withTransform) {
+      const wrap = document.createElement('div');
+
+      const labelEl = document.createElement('div');
+      labelEl.className = 'composition-label';
+      labelEl.textContent = label;
+      wrap.appendChild(labelEl);
+
+      const row = document.createElement('div');
+      row.className = 'composition-row';
+      for (const s of stars) {
+        const chip = document.createElement('span');
+        chip.className = 'star-chip';
+        chip.textContent = s.star;
+        if (withTransform && s.transform) {
+          const tag = document.createElement('span');
+          tag.className = 'star-chip-transform ' + s.transform;
+          tag.textContent = s.transform;
+          chip.appendChild(tag);
+        }
+        row.appendChild(chip);
+      }
+      wrap.appendChild(row);
+      return wrap;
+    }
+
+    function renderTransforms(elId, transforms) {
+      const container = document.getElementById(elId);
+      container.innerHTML = '';
+
+      if (!transforms || typeof transforms !== 'object') {
+        container.textContent = '(尚無內容)';
+        return;
+      }
+
+      let hasAny = false;
+      for (const transformType of TRANSFORM_ORDER) {
+        const t = transforms[transformType];
+        if (!t || (!t.title && !t.content)) continue;
+        hasAny = true;
+
+        const block = document.createElement('div');
+        block.className = 'transform-block ' + transformType;
+
+        const typeEl = document.createElement('div');
+        typeEl.className = 'transform-type';
+        typeEl.textContent = transformType;
+        block.appendChild(typeEl);
+
+        if (t.title) {
+          const titleEl = document.createElement('h4');
+          titleEl.className = 'transform-title';
+          titleEl.textContent = t.title;
+          block.appendChild(titleEl);
+        }
+
+        if (t.content) {
+          const contentEl = document.createElement('div');
+          contentEl.className = 'transform-content';
+          contentEl.textContent = t.content;
+          block.appendChild(contentEl);
+        }
+
+        container.appendChild(block);
+      }
+
+      if (!hasAny) {
+        container.textContent = '(此宮無四化)';
+      }
+    }
+
+    // ============================================================
+    // Main auth + data flow
     // ============================================================
     async function init() {
       try {
-        // detectSessionInUrl: true means Supabase will auto-parse the
-        // #access_token=... fragment when the page loads.
-        // We just need to wait briefly and check session.
-
-        // Give Supabase a moment to process the URL fragment
         await new Promise((r) => setTimeout(r, 500));
 
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -166,16 +563,14 @@
         }
 
         if (!session) {
-          // No session — either no magic link in URL or it expired
           showError();
           return;
         }
 
-        // ---- Signed in successfully ----
         const userEmail = session.user.email;
         document.getElementById('user-email-display').textContent = userEmail;
 
-        // Fetch user's most recent completed chart_session_id
+        // Step 1: get latest done job → chart_session_id
         const { data: jobData, error: jobError } = await supabase
           .from('chart_generation_jobs')
           .select('chart_session_id, status')
@@ -187,17 +582,48 @@
 
         if (jobError) {
           console.error('Job query error:', jobError);
+          showError('Could not retrieve your chart. ' + jobError.message);
+          return;
         }
 
-        if (jobData?.chart_session_id) {
-          document.getElementById('session-id').textContent = jobData.chart_session_id;
-        } else {
-          document.getElementById('session-id').textContent = 'Chart not yet ready';
+        if (!jobData?.chart_session_id) {
+          showError('Your chart is not yet ready. Please check back in a few minutes.');
+          return;
         }
 
-        showView('view-success');
+        const chartSessionId = jobData.chart_session_id;
+        document.getElementById('session-id').textContent = chartSessionId;
 
-        // ---- Clean up URL (remove auth tokens from address bar) ----
+        // Step 2: fetch 12 main_palace_reports rows
+        const { data: reports, error: reportsError } = await supabase
+          .from('main_palace_reports')
+          .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion')
+          .eq('chart_session_id', chartSessionId);
+
+        if (reportsError) {
+          console.error('Reports query error:', reportsError);
+          showError('Could not load palace reports. ' + reportsError.message);
+          return;
+        }
+
+        if (!reports || reports.length === 0) {
+          showError('No palace reports found for your chart.');
+          return;
+        }
+
+        // Index by palace_name
+        reportsByPalace = {};
+        for (const row of reports) {
+          reportsByPalace[row.palace_name] = row;
+        }
+
+        console.log(`Loaded ${reports.length} palace reports`);
+
+        // Step 3: render Hub
+        renderHub();
+        showView('view-hub');
+
+        // Clean URL hash
         if (window.location.hash) {
           window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
@@ -209,7 +635,14 @@
     }
 
     // ============================================================
-    // Sign out button
+    // Back to hub button
+    // ============================================================
+    document.getElementById('back-to-hub-btn').addEventListener('click', () => {
+      showView('view-hub');
+    });
+
+    // ============================================================
+    // Sign out
     // ============================================================
     document.getElementById('signout-btn').addEventListener('click', async () => {
       await supabase.auth.signOut();
@@ -217,11 +650,11 @@
     });
 
     // ============================================================
-    // Copy session ID button
+    // Copy session ID
     // ============================================================
     document.getElementById('copy-session').addEventListener('click', async () => {
       const sessionId = document.getElementById('session-id').textContent;
-      if (!sessionId || sessionId === '—' || sessionId === 'Chart not yet ready') return;
+      if (!sessionId || sessionId === '—') return;
 
       try {
         await navigator.clipboard.writeText(sessionId);
@@ -235,9 +668,7 @@
       }
     });
 
-    // ============================================================
     // Run
-    // ============================================================
     init();
   </script>
 </body>
