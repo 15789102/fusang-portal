@@ -171,6 +171,7 @@ button {
 
 input[type="text"],
 input[type="email"],
+input[type="password"],
 select {
   height: 42px;
   padding: 0 12px;
@@ -186,12 +187,14 @@ select {
 
 input[type="text"]:hover,
 input[type="email"]:hover,
+input[type="password"]:hover,
 select:hover {
   border-color: var(--teal-main);
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
+input[type="password"]:focus,
 select:focus {
   outline: none;
   border-color: var(--teal-main);
