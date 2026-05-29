@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuSang Vision — 帳戶</title>
+
+<!-- 標記當前導航頁(供 components.js header 高亮),須在 module 載入前設定 -->
+<script>window.FS_ACTIVE_PAGE = 'account';</script>
+
+<style>
+  :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
+
+  .acc-wrap { max-width: 720px; margin: 0 auto; padding: 64px 32px 80px; }
+  @media (max-width: 600px) { .acc-wrap { padding: 44px 22px 64px; } }
+
+  /* hero */
+  .acc-hero { margin-bottom: 44px; }
+  .acc-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px;
+  }
+  .acc-title {
+    font-family: var(--font-serif-zh);
+    font-weight: 500; font-size: clamp(28px, 5vw, 40px);
+    color: var(--ink-darkest); letter-spacing: 0.04em;
+  }
+  .acc-title-en {
+    font-family: var(--font-serif-en); font-style: italic;
+    font-size: 16px; color: var(--ink-light); margin-top: 6px; letter-spacing: 0.04em;
+  }
+  .acc-rule { margin-top: 24px; width: 56px; height: 1px; background: var(--gold); opacity: 0.6; }
+
+  /* card */
+  .acc-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 8px 32px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .acc-card::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 36px; height: 36px;
+    border-top: 1px solid var(--gold); border-right: 1px solid var(--gold);
+    opacity: 0.4; border-top-right-radius: 4px;
+  }
+  .acc-card-label {
+    font-family: var(--font-sans); font-size: 10px;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--ink-light);
+    padding: 22px 0 6px;
+  }
+
+  .acc-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--rule-soft-2);
+  }
+  .acc-row:last-child { border-bottom: none; }
+  .acc-row-key {
+    font-family: var(--font-serif-zh); font-size: 14px;
+    color: var(--ink-mid); letter-spacing: 0.05em; flex-shrink: 0;
+  }
+  .acc-row-val {
+    font-family: var(--font-serif-zh); font-size: 15.5px;
+    color: var(--ink-darkest); letter-spacing: 0.04em; text-align: right;
+    word-break: break-all;
+  }
+  .acc-row-val.muted { color: var(--ink-light); font-style: italic; }
+  .acc-row-val code { font-family: 'Courier New', monospace; font-size: 13px; color: var(--ink-dark); }
+
+  /* security */
+  .acc-sec-desc {
+    font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8;
+    color: var(--ink-mid); padding: 20px 0 18px; letter-spacing: 0.02em;
+  }
+  .acc-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-serif-zh); font-size: 15px; letter-spacing: 0.06em;
+    color: var(--bg-card); background: var(--accent-deep);
+    padding: 13px 28px; border-radius: 3px; cursor: pointer;
+    transition: background 0.25s, transform 0.25s; margin-bottom: 24px;
+  }
+  .acc-btn:hover:not(:disabled) { background: #1d4448; transform: translateY(-1px); }
+  .acc-btn:disabled { opacity: 0.55; cursor: default; }
+  .acc-msg {
+    font-family: var(--font-sans); font-size: 13px; line-height: 1.7;
+    letter-spacing: 0.03em; padding: 0 0 24px; display: none;
+  }
+  .acc-msg.show { display: block; }
+  .acc-msg.ok { color: var(--t-lu); }
+  .acc-msg.err { color: var(--t-ji); }
+
+  .acc-loading {
+    text-align: center; padding: 90px 20px;
+    font-family: var(--font-serif-zh); color: var(--ink-light);
+    font-size: 15px; letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="acc-wrap">
+
+    <div id="acc-loading" class="acc-loading">載入中…</div>
+
+    <div id="acc-content" style="display:none;">
+      <div class="acc-hero">
+        <div class="acc-eyebrow">Account · 帳戶</div>
+        <h1 class="acc-title">我的帳戶</h1>
+        <div class="acc-title-en">Your profile &amp; settings</div>
+        <div class="acc-rule"></div>
+      </div>
+
+      <!-- 個人資料 -->
+      <div class="acc-card">
+        <div class="acc-card-label">Profile · 基本資料</div>
+        <div class="acc-row">
+          <span class="acc-row-key">顯示名稱</span>
+          <span class="acc-row-val" id="acc-name">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">電子郵件</span>
+          <span class="acc-row-val" id="acc-email">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">性別</span>
+          <span class="acc-row-val" id="acc-gender">—</span>
+        </div>
+      </div>
+
+      <!-- 出生資料 -->
+      <div class="acc-card">
+        <div class="acc-card-label">Birth Data · 出生資料(國曆)</div>
+        <div class="acc-row">
+          <span class="acc-row-key">出生日期</span>
+          <span class="acc-row-val" id="acc-bdate">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">出生時間</span>
+          <span class="acc-row-val" id="acc-btime">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">出生地</span>
+          <span class="acc-row-val" id="acc-bplace">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">Chart Session</span>
+          <span class="acc-row-val"><code id="acc-session">—</code></span>
+        </div>
+      </div>
+
+      <!-- 安全性 -->
+      <div class="acc-card">
+        <div class="acc-card-label">Security · 安全性</div>
+        <div class="acc-sec-desc">
+          需要更換密碼嗎？點擊下方按鈕，我們會寄一封重設密碼的連結到您的信箱。
+        </div>
+        <span class="acc-btn" id="acc-reset">重設密碼</span>
+        <div class="acc-msg" id="acc-reset-msg"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { supabase, requireAuth } from './components.js';
+
+  const GENDER_MAP = { male: '男', female: '女', '1': '男', '0': '女' };
+
+  (async () => {
+    const session = await requireAuth();
+    if (!session) return;
+
+    const email = session.user.email || '';
+    const userId = session.user.id;
+    document.getElementById('acc-email').textContent = email;
+
+    // ── display_name(撈不到 fallback email 前綴)──
+    let displayName = email.split('@')[0] || '—';
+    try {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('display_name')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profile && profile.display_name) displayName = profile.display_name;
+    } catch (_) {}
+    document.getElementById('acc-name').textContent = displayName;
+
+    // ── 出生資料(user_birth_data,國曆輸入)──
+    try {
+      const { data: birth } = await supabase
+        .from('user_birth_data')
+        .select('birth_year, birth_month, birth_day, birth_hour, birth_minute, gender, birth_city, birth_country')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (birth) {
+        document.getElementById('acc-gender').textContent =
+          GENDER_MAP[String(birth.gender)] || birth.gender || '—';
+        document.getElementById('acc-bdate').textContent =
+          `${birth.birth_year} 年 ${birth.birth_month} 月 ${birth.birth_day} 日`;
+        const hh = String(birth.birth_hour).padStart(2, '0');
+        const mm = String(birth.birth_minute ?? 0).padStart(2, '0');
+        document.getElementById('acc-btime').textContent = `${hh}:${mm}`;
+        const place = [birth.birth_city, birth.birth_country].filter(Boolean).join('，');
+        document.getElementById('acc-bplace').textContent = place || '—';
+      } else {
+        markMuted(['acc-gender', 'acc-bdate', 'acc-btime', 'acc-bplace'], '未提供');
+      }
+    } catch (_) {
+      markMuted(['acc-gender', 'acc-bdate', 'acc-btime', 'acc-bplace'], '未提供');
+    }
+
+    // ── Chart Session(最新 done)──
+    try {
+      const { data: job } = await supabase
+        .from('chart_generation_jobs')
+        .select('chart_session_id')
+        .eq('user_email', email)
+        .eq('status', 'done')
+        .order('completed_at', { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+      document.getElementById('acc-session').textContent =
+        job?.chart_session_id || '尚未生成';
+    } catch (_) {
+      document.getElementById('acc-session').textContent = '尚未生成';
+    }
+
+    // ── 重設密碼 ──
+    document.getElementById('acc-reset').addEventListener('click', () => sendReset(email));
+
+    document.getElementById('acc-loading').style.display = 'none';
+    document.getElementById('acc-content').style.display = 'block';
+  })();
+
+  function markMuted(ids, text) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.classList.add('muted');
+    });
+  }
+
+  async function sendReset(email) {
+    const btn = document.getElementById('acc-reset');
+    const msg = document.getElementById('acc-reset-msg');
+    btn.disabled = true;
+    btn.textContent = '寄送中…';
+    msg.className = 'acc-msg';
+    try {
+      const redirectTo = window.location.origin + window.location.pathname.replace(/account\.html$/, 'set-password.html');
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+      if (error) throw error;
+      msg.textContent = '已寄出重設密碼連結，請至 ' + email + ' 收信。';
+      msg.classList.add('show', 'ok');
+      btn.textContent = '已寄出';
+    } catch (err) {
+      msg.textContent = '寄送失敗：' + (err.message || '請稍後再試。');
+      msg.classList.add('show', 'err');
+      btn.disabled = false;
+      btn.textContent = '重設密碼';
+    }
+  }
+</script>
+
+</body>
+</html>
