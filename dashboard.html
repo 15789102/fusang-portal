@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuSang Vision — 我的儀表板</title>
+<style>
+  /* ── dashboard 專屬樣式（共用 tokens 由 components.js 注入）── */
+  :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
+
+  .dash-wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 64px 32px 80px;
+  }
+
+  /* Welcome hero */
+  .dash-hero {
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .dash-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .dash-title {
+    font-family: var(--font-serif-zh);
+    font-weight: 500;
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.25;
+    color: var(--ink-darkest);
+    letter-spacing: 0.01em;
+  }
+  .dash-title .name { color: var(--accent-soft); }
+  .dash-sub {
+    margin-top: 14px;
+    font-family: var(--font-serif-en);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-light);
+    letter-spacing: 0.02em;
+  }
+  .dash-rule {
+    margin-top: 28px;
+    width: 64px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.6;
+  }
+
+  /* Cards */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 720px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .dash-wrap { padding: 44px 22px 64px; }
+  }
+
+  .dash-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 34px 32px 32px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .dash-card:nth-child(1) { animation-delay: 0.12s; }
+  .dash-card:nth-child(2) { animation-delay: 0.22s; }
+
+  /* 角落金線裝飾 */
+  .dash-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 38px; height: 38px;
+    border-top: 1px solid var(--gold);
+    border-right: 1px solid var(--gold);
+    opacity: 0.4;
+    border-top-right-radius: 4px;
+  }
+
+  .card-kicker {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 12px;
+  }
+  .card-name {
+    font-family: var(--font-serif-zh);
+    font-weight: 500;
+    font-size: 26px;
+    color: var(--ink-darkest);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .card-name-en {
+    font-family: var(--font-serif-en);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-light);
+    margin-bottom: 20px;
+  }
+  .card-desc {
+    font-family: var(--font-serif-zh);
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink-mid);
+    margin-bottom: 28px;
+    min-height: 52px;
+  }
+
+  /* primary CTA */
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif-zh);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--bg-card);
+    background: var(--accent-deep);
+    padding: 13px 26px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .card-cta:hover { background: #1d4448; transform: translateY(-1px); }
+  .card-cta .arrow { transition: transform 0.25s; }
+  .card-cta:hover .arrow { transform: translateX(4px); }
+
+  /* coming soon badge */
+  .card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-soft);
+    padding: 9px 18px;
+    border-radius: 999px;
+    opacity: 0.85;
+  }
+  .card-badge .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* generating / muted state */
+  .dash-card.is-soon { background: var(--bg-soft-2); }
+  .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    color: var(--ink-mid);
+  }
+  .card-status .pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--silver-deep);
+    animation: fsPulse 1.6s ease-in-out infinite;
+  }
+  .card-note {
+    margin-top: 14px;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--ink-light);
+  }
+  .card-refresh {
+    margin-top: 18px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--accent-soft);
+    cursor: pointer;
+    border-bottom: 1px solid var(--accent-pale);
+    padding-bottom: 1px;
+  }
+  .card-refresh:hover { color: var(--accent-deep); }
+
+  /* loading skeleton */
+  .dash-loading {
+    text-align: center;
+    padding: 90px 20px;
+    font-family: var(--font-serif-zh);
+    color: var(--ink-light);
+    font-size: 15px;
+    letter-spacing: 0.08em;
+  }
+
+  @keyframes fsRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fsPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.85); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dash-hero, .dash-card { animation: none; opacity: 1; }
+    .card-status .pulse { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="dash-wrap">
+
+    <!-- loading -->
+    <div id="dash-loading" class="dash-loading">載入中…</div>
+
+    <!-- content (hidden until ready) -->
+    <div id="dash-content" style="display:none;">
+      <div class="dash-hero">
+        <div class="dash-eyebrow">Welcome Back · 歡迎回來</div>
+        <h1 class="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
+        <div class="dash-sub">Your celestial map awaits.</div>
+        <div class="dash-rule"></div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- 本命盤卡 -->
+        <div class="dash-card" id="card-natal">
+          <div class="card-kicker">Natal Chart</div>
+          <div class="card-name">本命盤</div>
+          <div class="card-name-en">Your Innate Blueprint</div>
+          <div class="card-desc">出生那一刻的星盤，描繪您一生的核心人格、能量分布與十二宮位的流動。</div>
+          <div id="card-natal-action"><!-- 動態填入：就緒 / 生成中 --></div>
+        </div>
+
+        <!-- 月報佔位卡 -->
+        <div class="dash-card is-soon">
+          <div class="card-kicker">Monthly Reading</div>
+          <div class="card-name">月運報告</div>
+          <div class="card-name-en">Your Monthly Currents</div>
+          <div class="card-desc">每月隨流月變動的能量焦點，帶您看見當下值得留意的方向與機會。</div>
+          <div class="card-badge"><span class="dot"></span> 即將推出 · Coming Soon</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { supabase, requireAuth } from './components.js';
+
+  (async () => {
+    const session = await requireAuth();
+    if (!session) return; // requireAuth 已導向 login
+
+    const email = session.user.email || '';
+    const userId = session.user.id;
+
+    // ── 取得 display_name（撈不到就 fallback email 前綴）──
+    let displayName = email.split('@')[0] || '朋友';
+    try {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('display_name')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profile && profile.display_name) displayName = profile.display_name;
+    } catch (_) { /* RLS 或無資料時靜默 fallback */ }
+    document.getElementById('dash-name').textContent = displayName;
+
+    // ── 判斷本命盤是否就緒（查 main_palace_reports，RLS 自動篩自己）──
+    let chartReady = false;
+    try {
+      const { data: reports, error } = await supabase
+        .from('main_palace_reports')
+        .select('chart_session_id')
+        .limit(1);
+      if (!error && reports && reports.length > 0) chartReady = true;
+    } catch (_) { chartReady = false; }
+
+    renderNatalCard(chartReady);
+
+    // 顯示內容
+    document.getElementById('dash-loading').style.display = 'none';
+    document.getElementById('dash-content').style.display = 'block';
+  })();
+
+  function renderNatalCard(ready) {
+    const el = document.getElementById('card-natal-action');
+    if (ready) {
+      el.innerHTML = `
+        <span class="card-cta" id="go-chart">
+          進入完整命盤 <span class="arrow">→</span>
+        </span>`;
+      document.getElementById('go-chart').addEventListener('click', () => {
+        window.location.href = 'chart.html';
+      });
+    } else {
+      el.innerHTML = `
+        <div class="card-status"><span class="pulse"></span> 命盤生成中</div>
+        <div class="card-note">
+          您的本命盤正在排算與生成，約需 15–20 分鐘。<br>
+          完成後我們會以電子郵件通知您，您也可以稍後回來重新整理。
+        </div>
+        <div class="card-refresh" id="refresh-status">重新整理狀態</div>`;
+      document.getElementById('refresh-status').addEventListener('click', () => {
+        window.location.reload();
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
