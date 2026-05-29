@@ -91,12 +91,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 12px;
 }
 .fs-header-brand {
-  font-family: var(--font-serif-en);
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--ink-darkest);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.fs-header-brand img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+@media (max-width: 560px) {
+  .fs-header-brand img { height: 30px; }
 }
 .fs-header-nav {
   display: flex;
@@ -151,11 +156,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: var(--bg-soft-2);
 }
 .fs-footer-brand {
-  font-family: var(--font-serif-en);
-  font-size: 15px;
-  letter-spacing: 0.2em;
-  color: var(--ink-darkest);
-  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.fs-footer-brand img {
+  height: 40px;
+  width: auto;
+  display: block;
 }
 .fs-footer-tagline {
   font-family: var(--font-serif-zh);
@@ -219,7 +227,9 @@ function injectHeader(activePage = null) {
 
   el.innerHTML = `
     <header class="fs-header">
-      <div class="fs-header-brand" id="fs-brand">FuSang Vision</div>
+      <div class="fs-header-brand" id="fs-brand">
+        <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
+      </div>
       <nav class="fs-header-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">本命盤</span>
         <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">帳戶</span>
@@ -247,7 +257,9 @@ function injectFooter() {
 
   el.innerHTML = `
     <footer class="fs-footer">
-      <div class="fs-footer-brand">FUSANG VISION</div>
+      <div class="fs-footer-brand">
+        <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
+      </div>
       <div class="fs-footer-tagline">
         不是預知命運,<br>而是穩健有意識地走向嚮往的生活
       </div>
