@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — 登入</title>
+
+  <style>
+    /* ── Local tokens(加古銅金作為點綴)── */
+    .login-page {
+      --gold: #b8945c;
+      --gold-soft: #d4b888;
+      --gold-pale: #f0e6d4;
+    }
+
+    /* ── Layout ── */
+    .login-page {
+      min-height: calc(100vh - 130px);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+      position: relative;
+      background: var(--bg-primary);
+    }
+
+    /* 背景微紋路 */
+    .login-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(184, 148, 92, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(21, 54, 58, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .login-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1100px;
+      width: 100%;
+      gap: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 900px) {
+      .login-container { grid-template-columns: 1fr; max-width: 480px; }
+    }
+
+    /* ───────────────────────────────────── */
+    /* LEFT — 品牌氛圍區                       */
+    /* ───────────────────────────────────── */
+    .login-left {
+      padding: 80px 56px;
+      background: linear-gradient(135deg, #1a3d40 0%, #15363a 50%, #0f2a2d 100%);
+      color: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px 0 0 2px;
+    }
+
+    @media (max-width: 900px) {
+      .login-left { display: none; }
+    }
+
+    /* 左側角落金線裝飾 */
+    .login-left::before,
+    .login-left::after {
+      content: '';
+      position: absolute;
+      width: 48px;
+      height: 48px;
+    }
+    .login-left::before {
+      top: 32px; left: 32px;
+      border-top: 1px solid var(--gold-soft);
+      border-left: 1px solid var(--gold-soft);
+    }
+    .login-left::after {
+      bottom: 32px; right: 32px;
+      border-bottom: 1px solid var(--gold-soft);
+      border-right: 1px solid var(--gold-soft);
+    }
+
+    /* 中央光暈 */
+    .login-left-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(184, 148, 92, 0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-left-top {
+      position: relative;
+      z-index: 1;
+    }
+    .login-left-eyebrow {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--gold-soft);
+      margin-bottom: 16px;
+    }
+    .login-left-brand {
+      font-family: var(--font-serif-en);
+      font-size: 18px;
+      letter-spacing: 0.25em;
+      color: var(--bg-primary);
+      font-weight: 500;
+    }
+
+    .login-left-center {
+      position: relative;
+      z-index: 1;
+      margin: 64px 0;
+    }
+    .login-left-title {
+      font-family: var(--font-serif-zh);
+      font-size: 44px;
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: 0.04em;
+      color: var(--bg-primary);
+      margin-bottom: 24px;
+    }
+    .login-left-title .accent {
+      color: var(--gold-soft);
+      font-weight: 500;
+    }
+    .login-left-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold-soft);
+      margin: 28px 0;
+    }
+    .login-left-sub {
+      font-family: var(--font-serif-zh);
+      font-size: 15px;
+      line-height: 1.95;
+      color: rgba(250, 247, 241, 0.75);
+      letter-spacing: 0.04em;
+      max-width: 360px;
+    }
+
+    .login-left-bottom {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: rgba(250, 247, 241, 0.5);
+    }
+
+    /* ───────────────────────────────────── */
+    /* RIGHT — 登入表單                       */
+    /* ───────────────────────────────────── */
+    .login-right {
+      padding: 80px 56px;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      border-radius: 0 2px 2px 0;
+      border: 1px solid var(--rule);
+      border-left: none;
+      box-shadow: 0 4px 24px rgba(21, 54, 58, 0.06);
+    }
+
+    @media (max-width: 900px) {
+      .login-right {
+        padding: 56px 36px;
+        border-left: 1px solid var(--rule);
+        border-radius: 2px;
+      }
+    }
+
+    /* 右側角落金線 */
+    .login-right::before {
+      content: '';
+      position: absolute;
+      top: 24px; right: 24px;
+      width: 32px; height: 32px;
+      border-top: 1px solid var(--gold-soft);
+      border-right: 1px solid var(--gold-soft);
+    }
+
+    .login-right-eyebrow {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .login-right-title {
+      font-family: var(--font-serif-zh);
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-align: center;
+      color: var(--ink-darkest);
+      margin-bottom: 8px;
+    }
+    .login-right-sub {
+      font-family: var(--font-serif-zh);
+      font-size: 13px;
+      color: var(--ink-mid);
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .login-mini-divider {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 36px;
+      color: var(--gold-soft);
+    }
+    .login-mini-divider::before, .login-mini-divider::after {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--gold-soft);
+    }
+    .login-mini-divider span {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+    }
+
+    /* Messages */
+    .login-error, .login-success {
+      display: none;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      border-radius: 2px;
+      font-size: 13px;
+      font-family: var(--font-serif-zh);
+      line-height: 1.6;
+    }
+    .login-error {
+      background: #fdecea;
+      border: 1px solid #f5c2be;
+      color: #c0392b;
+    }
+    .login-success {
+      background: var(--t-lu-bg);
+      border: 1px solid var(--t-lu);
+      color: var(--t-lu);
+    }
+    .login-error.active, .login-success.active { display: block; }
+
+    /* Form */
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 22px;
+    }
+    .login-field label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 8px;
+    }
+    .login-field input {
+      height: 46px;
+      padding: 0 14px;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: var(--bg-soft-2);
+      font-size: 15px;
+      font-family: var(--font-serif-zh);
+      color: var(--ink-darkest);
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .login-field input:hover { border-color: var(--silver-deep); }
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 3px rgba(184, 148, 92, 0.12);
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 50px;
+      background: var(--ink-darkest);
+      color: var(--bg-primary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(184, 148, 92, 0.2), transparent);
+      transition: left 0.6s;
+    }
+    .login-btn:hover:not(:disabled)::before { left: 100%; }
+    .login-btn:hover:not(:disabled) { background: var(--accent-soft); }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .login-forgot {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 28px;
+    }
+    .login-forgot a {
+      font-family: var(--font-serif-zh);
+      font-size: 12px;
+      color: var(--ink-mid);
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      border-bottom: 1px dashed transparent;
+      transition: all 0.2s;
+    }
+    .login-forgot a:hover {
+      color: var(--gold);
+      border-bottom-color: var(--gold-soft);
+    }
+
+    .login-altcta {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px dashed var(--rule);
+      text-align: center;
+      font-family: var(--font-serif-zh);
+      font-size: 13px;
+      color: var(--ink-mid);
+      line-height: 1.9;
+    }
+    .login-altcta a {
+      color: var(--ink-darkest);
+      font-weight: 500;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 1px;
+      transition: color 0.2s;
+    }
+    .login-altcta a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page login-page">
+
+  <div class="login-container">
+
+    <!-- ════════ LEFT ════════ -->
+    <div class="login-left">
+      <div class="login-left-glow"></div>
+
+      <div class="login-left-top">
+        <div class="login-left-eyebrow">FUSANG VISION</div>
+        <div class="login-left-brand">紫微斗數</div>
+      </div>
+
+      <div class="login-left-center">
+        <h1 class="login-left-title">
+          不是預知命運,<br>
+          而是<span class="accent">穩健有意識地</span><br>
+          走向嚮往的生活。
+        </h1>
+        <div class="login-left-divider"></div>
+        <p class="login-left-sub">
+          您的命盤已備妥。<br>
+          以您專屬的能量地圖,理解此刻所在,看見前行方向。
+        </p>
+      </div>
+
+      <div class="login-left-bottom">
+        — Ancient wisdom for a modern life —
+      </div>
+    </div>
+
+    <!-- ════════ RIGHT ════════ -->
+    <div class="login-right">
+
+      <div class="login-right-eyebrow">Welcome Back</div>
+      <h2 class="login-right-title">登入</h2>
+      <p class="login-right-sub">繼續您的能量探索</p>
+
+      <div class="login-mini-divider"><span>✦</span></div>
+
+      <div id="login-error" class="login-error"></div>
+      <div id="login-success" class="login-success"></div>
+
+      <form id="login-form" novalidate>
+
+        <div class="login-field">
+          <label for="email">電子郵件</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+        </div>
+
+        <div class="login-field">
+          <label for="password">密碼</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required />
+        </div>
+
+        <div class="login-forgot">
+          <a id="forgot-link">忘記密碼?</a>
+        </div>
+
+        <button type="submit" id="login-btn" class="login-btn">
+          <span id="login-btn-text">登入</span>
+        </button>
+
+      </form>
+
+      <div class="login-altcta">
+        還沒有命盤?<br>
+        <a href="index.html">建立您的本命盤</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { supabase, getSession } from './components.js';
+
+  // 已登入直接跳 dashboard
+  (async () => {
+    const session = await getSession();
+    if (session) window.location.href = 'dashboard.html';
+  })();
+
+  const form = document.getElementById('login-form');
+  const btn = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  const errorBox = document.getElementById('login-error');
+  const successBox = document.getElementById('login-success');
+  const forgotLink = document.getElementById('forgot-link');
+
+  function showError(msg) {
+    successBox.classList.remove('active');
+    errorBox.textContent = msg;
+    errorBox.classList.add('active');
+  }
+  function showSuccess(msg) {
+    errorBox.classList.remove('active');
+    successBox.textContent = msg;
+    successBox.classList.add('active');
+  }
+  function clearMessages() {
+    errorBox.classList.remove('active');
+    successBox.classList.remove('active');
+  }
+  function setLoading(loading) {
+    btn.disabled = loading;
+    btnText.textContent = loading ? '登入中...' : '登入';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearMessages();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) { showError('請輸入電子郵件與密碼'); return; }
+
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error('Login error:', error);
+      let msg = '登入失敗,請確認資料正確';
+      if (error.message?.toLowerCase().includes('invalid login credentials')) {
+        msg = '電子郵件或密碼錯誤';
+      } else if (error.message?.toLowerCase().includes('email not confirmed')) {
+        msg = '電子郵件尚未驗證';
+      }
+      showError(msg);
+      setLoading(false);
+      return;
+    }
+
+    if (data?.session) {
+      window.location.href = 'dashboard.html';
+    } else {
+      showError('登入失敗,請稍後再試');
+      setLoading(false);
+    }
+  });
+
+  forgotLink.addEventListener('click', async () => {
+    clearMessages();
+    const email = document.getElementById('email').value.trim();
+
+    if (!email) { showError('請先在上方輸入電子郵件,再點「忘記密碼」'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('電子郵件格式不正確'); return; }
+
+    forgotLink.style.pointerEvents = 'none';
+    forgotLink.textContent = '寄送中...';
+
+    const redirectTo = window.location.origin + window.location.pathname.replace(/login\.html$/, '') + 'set-password.html';
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+    forgotLink.style.pointerEvents = '';
+    forgotLink.textContent = '忘記密碼?';
+
+    if (error) {
+      console.error('Reset password error:', error);
+      showError('寄送失敗,請稍後再試');
+      return;
+    }
+
+    showSuccess('密碼重設連結已寄至您的信箱,請查收(可能在垃圾郵件)。');
+  });
+</script>
+
+<script type="module" src="components.js"></script>
+
+</body>
+</html>
