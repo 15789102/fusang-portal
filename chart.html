@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — 我的本命盤</title>
+  <meta name="description" content="View your personalized Zi Wei Dou Shu chart." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- 標記當前導航頁(供 components.js header 高亮),須在 module 載入前設定 -->
+  <script>window.FS_ACTIVE_PAGE = 'chart';</script>
+
+  <style>
+    /* ── chart 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
+    .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Loading / Error */
+    #view-loading { text-align: center; padding: 80px 32px; }
+    .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
+    .loading-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.2); } }
+    .loading-title { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 400; margin: 0 0 12px; }
+    .loading-sub { font-size: 14px; color: var(--ink-mid); }
+    #view-error { text-align: center; padding: 80px 32px; }
+    .error-title { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 400; margin: 24px 0 12px; }
+    .error-detail { font-size: 14px; color: var(--ink-mid); margin: 0 0 32px; line-height: 1.7; }
+    .btn-primary {
+      display: inline-block; padding: 14px 36px; background: var(--ink-darkest); color: var(--bg-primary);
+      font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.25em;
+      text-transform: uppercase; transition: background 0.2s; border-radius: 2px;
+    }
+    .btn-primary:hover { background: var(--accent-soft); }
+
+    /* HUB */
+    .hub-head { text-align: center; margin-bottom: 48px; }
+    .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
+    .hub-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
+    .hub-sub { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); letter-spacing: 0.05em; }
+    .palace-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0 48px; }
+    @media (max-width: 560px) { .palace-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+    .palace-card {
+      background: var(--bg-card); border: 1px solid var(--rule); padding: 20px 16px; cursor: pointer;
+      transition: all 0.2s; text-align: center; display: flex; flex-direction: column; gap: 8px;
+      min-height: 130px; justify-content: center; border-radius: 2px;
+    }
+    .palace-card:hover { border-color: var(--accent-soft); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(21,54,58,0.06); }
+    .palace-card-index { font-family: var(--font-serif-en); font-style: italic; font-size: 11px; color: var(--ink-light); letter-spacing: 0.15em; }
+    .palace-card-name { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; letter-spacing: 0.05em; }
+    .palace-card-stars { font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-mid); line-height: 1.5; min-height: 1.5em; letter-spacing: 0.03em; }
+    .hub-meta { padding: 24px 28px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-mid); letter-spacing: 0.05em; line-height: 1.7; text-align: center; }
+    .hub-meta code { font-family: 'Courier New', monospace; color: var(--ink-dark); font-size: 11px; }
+
+    /* DETAIL */
+    .detail-back-top { margin-bottom: 32px; }
+    .back-link { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-mid); cursor: pointer; transition: color 0.2s; }
+    .back-link:hover { color: var(--accent-deep); }
+    .palace-head { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: flex-end; }
+    @media (max-width: 560px) { .palace-head { grid-template-columns: 1fr; gap: 16px; } .palace-head-right { text-align: left !important; } }
+    .eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--accent-soft); margin-bottom: 8px; letter-spacing: 0.05em; }
+    .title-zh { font-family: var(--font-serif-zh); font-size: 56px; font-weight: 400; letter-spacing: 0.05em; line-height: 1; }
+    @media (max-width: 560px) { .title-zh { font-size: 44px; } }
+    .palace-head-right { text-align: right; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); line-height: 1.5; }
+    .palace-index { font-family: var(--font-serif-en); font-size: 13px; letter-spacing: 0.2em; color: var(--ink-light); font-style: normal; }
+
+    /* 宮位說明 */
+    .palace-explainer { margin-top: 24px; padding: 20px 24px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; }
+    .palace-explainer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 8px; }
+    .palace-explainer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .palace-explainer-body .domain-keyword { color: var(--ink-darkest); font-weight: 500; }
+
+    .palace-subtitle { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.08em; }
+    .palace-stars-line { margin-top: 12px; font-size: 15px; color: var(--ink-dark); letter-spacing: 0.1em; line-height: 1.7; }
+    .palace-stars-line .sep { color: var(--ink-faint); margin: 0 8px; font-weight: 300; }
+    .palace-stars-line .main-star { font-weight: 500; }
+    .palace-stars-line .transform-tag { display: inline-block; font-family: var(--font-sans); font-size: 10px; padding: 2px 8px; margin-left: 4px; letter-spacing: 0.15em; vertical-align: 2px; border-radius: 2px; border: 1px solid currentColor; }
+    .transform-tag.化祿 { color: var(--t-lu); }
+    .transform-tag.化權 { color: var(--t-quan); }
+    .transform-tag.化科 { color: var(--t-ke); }
+    .transform-tag.化忌 { color: var(--t-ji); }
+
+    /* Composition */
+    .composition { margin-top: 48px; padding: 28px 32px; background: var(--bg-soft-2); border-radius: 2px; position: relative; }
+    .composition::before { content: ''; position: absolute; top: 0; left: 32px; width: 24px; height: 1px; background: var(--silver-deep); }
+    .composition-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--accent-soft); letter-spacing: 0.05em; margin-bottom: 20px; }
+    .composition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; }
+    @media (max-width: 480px) { .composition-grid { grid-template-columns: 1fr; gap: 12px; } }
+    .comp-row { display: flex; flex-direction: column; gap: 4px; }
+    .comp-row-key { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-light); }
+    .comp-row-val { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); letter-spacing: 0.05em; }
+
+    /* Section */
+    .section { margin-top: 80px; }
+    .section-head { display: flex; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+    .section-num { font-family: var(--font-serif-en); font-size: 40px; font-weight: 300; font-style: italic; line-height: 1; color: var(--silver-deep); }
+    .section-titles { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .section-title-zh { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; letter-spacing: 0.08em; }
+    .section-title-en { font-family: var(--font-serif-en); font-size: 13px; font-style: italic; color: var(--ink-light); letter-spacing: 0.1em; }
+    .section-explainer { margin-top: 18px; margin-bottom: 28px; padding: 14px 18px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.7; color: var(--ink-mid); letter-spacing: 0.02em; display: flex; gap: 12px; }
+    .section-explainer-icon { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; color: var(--accent-soft); font-size: 16px; line-height: 1.4; }
+    .section-explainer strong { color: var(--ink-darkest); font-weight: 500; }
+
+    /* A 段 prose */
+    .prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 32px; }
+    .prose p { margin-bottom: 1.6em; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose .lead::first-letter { font-family: var(--font-serif-en); font-size: 5em; line-height: 0.85; float: left; padding: 0.1em 0.15em 0 0; color: var(--accent-deep); font-weight: 400; }
+    .prose .lead { font-size: 17px; }
+    .pull-quote { margin: 48px 0; padding: 32px 36px 32px 48px; border-left: 3px solid var(--accent-soft); background: var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 19px; line-height: 1.8; color: var(--ink-darkest); letter-spacing: 0.04em; position: relative; font-weight: 500; }
+    .pull-quote::before { content: '"'; position: absolute; top: 0; left: 16px; font-family: var(--font-serif-en); font-size: 80px; line-height: 1; color: var(--silver-soft); font-style: italic; }
+
+    /* B/C transform cards */
+    .transform-blocks { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
+    .transform-card { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+    .transform-card-head { padding: 18px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
+    .transform-card.化祿 .transform-card-head { background: var(--t-lu-bg); }
+    .transform-card.化權 .transform-card-head { background: var(--t-quan-bg); }
+    .transform-card.化科 .transform-card-head { background: var(--t-ke-bg); }
+    .transform-card.化忌 .transform-card-head { background: var(--t-ji-bg); }
+    .transform-card-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 16px; font-family: var(--font-serif-zh); font-size: 14px; font-weight: 500; letter-spacing: 0.15em; background: var(--bg-card); cursor: help; }
+    .transform-card.化祿 .transform-card-tag { color: var(--t-lu); border: 1px solid var(--t-lu); }
+    .transform-card.化權 .transform-card-tag { color: var(--t-quan); border: 1px solid var(--t-quan); }
+    .transform-card.化科 .transform-card-tag { color: var(--t-ke); border: 1px solid var(--t-ke); }
+    .transform-card.化忌 .transform-card-tag { color: var(--t-ji); border: 1px solid var(--t-ji); }
+    .info-dot { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid currentColor; font-family: var(--font-serif-en); font-style: italic; font-size: 10px; opacity: 0.7; }
+    .tooltip-wrap { position: relative; display: inline-block; }
+    .tooltip-wrap:hover .tooltip-body, .tooltip-wrap:focus-within .tooltip-body, .tooltip-wrap.open .tooltip-body { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .tooltip-body { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%) translateY(4px); width: 240px; padding: 14px 16px; background: var(--ink-darkest); color: var(--bg-primary); border-radius: 4px; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; letter-spacing: 0.03em; text-align: left; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 100; cursor: default; text-transform: none; font-weight: 400; }
+    .tooltip-body::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--ink-darkest); }
+    .tooltip-title { font-weight: 600; color: #fff; margin-bottom: 4px; font-size: 13px; letter-spacing: 0.05em; }
+    .tooltip-body p { margin: 0; color: var(--bg-soft); }
+    .transform-card-en { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-mid); letter-spacing: 0.08em; }
+    .transform-card-body { padding: 28px 28px 32px; }
+    .transform-card-title { font-family: var(--font-serif-zh); font-size: 21px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.06em; margin-bottom: 24px; line-height: 1.5; }
+    .source-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--rule); align-items: center; }
+    .source-label { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-right: 4px; }
+    .source-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-dark); letter-spacing: 0.05em; }
+    .source-chip .palace-from { color: var(--ink-mid); }
+    .source-chip .palace-to { color: var(--ink-darkest); font-weight: 500; }
+    .source-chip .arrow { color: var(--ink-light); font-size: 11px; }
+    .source-chip .star-tag { color: var(--ink-darkest); font-weight: 500; margin-left: 4px; }
+    .source-chip .mini-transform { font-size: 10px; padding: 1px 5px; border-radius: 6px; margin-left: 2px; }
+    .source-chip .mini-transform.化祿 { color: var(--t-lu); background: var(--t-lu-bg); }
+    .source-chip .mini-transform.化權 { color: var(--t-quan); background: var(--t-quan-bg); }
+    .source-chip .mini-transform.化科 { color: var(--t-ke); background: var(--t-ke-bg); }
+    .source-chip .mini-transform.化忌 { color: var(--t-ji); background: var(--t-ji-bg); }
+    .transform-card-content { font-family: var(--font-serif-zh); font-size: 15.5px; line-height: 1.95; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .transform-card-content p { margin-bottom: 1.4em; }
+    .transform-card-content p:last-child { margin-bottom: 0; }
+    .transform-empty { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); font-style: italic; padding: 24px; text-align: center; background: var(--bg-soft-2); border-radius: 2px; }
+
+    /* D 段 epilogue */
+    .epilogue { margin-top: 32px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; position: relative; }
+    .epilogue::before, .epilogue::after { content: ''; position: absolute; width: 32px; height: 1px; background: var(--silver-deep); }
+    .epilogue::before { top: 0; left: 40px; }
+    .epilogue::after { bottom: 0; right: 40px; }
+    .epilogue-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); margin-bottom: 16px; letter-spacing: 0.05em; text-align: center; }
+    .epilogue-prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2.1; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .epilogue-prose p { margin-bottom: 1.6em; }
+    .epilogue-prose p:last-child { margin-bottom: 0; }
+    .epilogue-prose p.closing { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--ink-darkest); font-size: 17px; letter-spacing: 0.05em; }
+
+    /* Detail nav */
+    .detail-nav { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
+    .nav-link { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-dark); letter-spacing: 0.1em; cursor: pointer; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent-deep); }
+    .nav-link.left { text-align: left; }
+    .nav-link.right { text-align: right; }
+    .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
+    .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
+    .nav-center:hover { color: var(--accent-deep); }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="shell">
+
+    <section id="view-loading" class="view active">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div style="text-align: center;">
+        <h1 class="loading-title">載入您的命盤</h1>
+        <p class="loading-sub">正在為您展開本命十二宮…</p>
+      </div>
+    </section>
+
+    <section id="view-hub" class="view">
+      <div class="hub-head">
+        <div class="hub-eyebrow">Your Natal Chart</div>
+        <h1 class="hub-title">本命十二宮</h1>
+        <p class="hub-sub">點選一宮以閱讀完整內容</p>
+      </div>
+      <div id="palace-grid" class="palace-grid"></div>
+      <div class="hub-meta">
+        <div style="margin-bottom: 8px;">Chart Session</div>
+        <code id="session-id">—</code>
+      </div>
+    </section>
+
+    <section id="view-detail" class="view">
+      <div class="detail-back-top">
+        <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
+      </div>
+      <div class="palace-head">
+        <div class="palace-head-left">
+          <div class="eyebrow" id="detail-eyebrow"></div>
+          <div class="title-zh" id="detail-title-zh"></div>
+        </div>
+        <div class="palace-head-right">
+          <div class="palace-index" id="detail-index"></div>
+          <div style="margin-top: 6px;" id="detail-tagline"></div>
+        </div>
+      </div>
+      <div class="palace-explainer">
+        <div class="palace-explainer-label">About this Palace</div>
+        <div class="palace-explainer-body" id="detail-explainer"></div>
+      </div>
+      <div class="palace-subtitle">本宮主星 · 輔星 · 四化</div>
+      <div class="palace-stars-line" id="detail-stars-line"></div>
+      <div class="composition">
+        <div class="composition-label">Composition · 結構組成</div>
+        <div class="composition-grid" id="detail-composition"></div>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-num">01</div>
+          <div class="section-titles">
+            <div class="section-title-zh">宮位解析</div>
+            <div class="section-title-en">Reading of the Palace</div>
+          </div>
+        </div>
+        <div id="detail-analysis" class="prose"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-num">02</div>
+          <div class="section-titles">
+            <div class="section-title-zh">能量飛入</div>
+            <div class="section-title-en">Inflowing Currents</div>
+          </div>
+        </div>
+        <div class="section-explainer">
+          <div class="section-explainer-icon">↘</div>
+          <div><strong>能量飛入</strong>——其他宮位的星曜,以四化的形式流入本宮。代表您的這個領域,正被人生哪些方面<strong>滋養、推動或牽引</strong>。</div>
+        </div>
+        <div id="detail-transforms-in" class="transform-blocks"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-num">03</div>
+          <div class="section-titles">
+            <div class="section-title-zh">能量飛出</div>
+            <div class="section-title-en">Outflowing Currents</div>
+          </div>
+        </div>
+        <div class="section-explainer">
+          <div class="section-explainer-icon">↗</div>
+          <div><strong>能量飛出</strong>——本宮的能量,以四化的形式飛入其他宮位。代表您的這個領域,正在<strong>影響、貢獻或牽引</strong>哪些人生方面。</div>
+        </div>
+        <div id="detail-transforms-out" class="transform-blocks"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-num">04</div>
+          <div class="section-titles">
+            <div class="section-title-zh">演法建議</div>
+            <div class="section-title-en">How to Play this Role</div>
+          </div>
+        </div>
+        <div id="detail-suggestion-wrap"></div>
+      </section>
+
+      <nav class="detail-nav">
+        <span class="nav-link left" id="nav-prev"></span>
+        <span class="nav-center" id="back-to-hub-bottom">All Twelve Palaces</span>
+        <span class="nav-link right" id="nav-next"></span>
+      </nav>
+    </section>
+
+    <section id="view-error" class="view">
+      <h1 class="error-title">無法載入命盤</h1>
+      <p id="error-detail" class="error-detail">發生了一點問題，請稍後再試。</p>
+      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary">返回儀表板</a></div>
+    </section>
+
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { supabase, requireAuth } from './components.js';
+
+  const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
+  const PALACE_EN = {
+    '命宮':'Palace of Self','兄弟宮':'Palace of Siblings','夫妻宮':'Palace of Spouse','子女宮':'Palace of Children',
+    '財帛宮':'Palace of Wealth','疾厄宮':'Palace of Health','遷移宮':'Palace of Travel','交友宮':'Palace of Friends',
+    '官祿宮':'Palace of Career','田宅宮':'Palace of Home','福德宮':'Palace of Spirit','父母宮':'Palace of Parents',
+  };
+  const PALACE_TAGLINE = {
+    '命宮':'本性與內在<br>your innate nature','兄弟宮':'至親與同輩<br>siblings & peers','夫妻宮':'伴侶與情感<br>partner & love',
+    '子女宮':'創造與後輩<br>creation & legacy','財帛宮':'財富與資源<br>wealth & resources','疾厄宮':'身體與感受<br>body & feeling',
+    '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
+    '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
+  };
+  // 宮位完整說明
+  const PALACE_EXPLAINER = {
+    '命宮':'命宮代表您的<span class="domain-keyword">核心人格、行事風格與根本姿態</span>——您看待自己與世界的最底層方式。這是您一生的「主舞台」,所有其他宮位的能量,最終都會在這裡匯流、被您詮釋、被您演繹。',
+    '兄弟宮':'兄弟宮代表您與<span class="domain-keyword">手足、同輩、母親與密切夥伴</span>的關係,也反映您在團隊、同儕系統中的相處模式與資源往來。',
+    '夫妻宮':'夫妻宮代表您的<span class="domain-keyword">親密關係、伴侶互動與情感模式</span>——您如何愛人、如何被愛,以及您在一對一深度關係中的姿態。',
+    '子女宮':'子女宮代表您的<span class="domain-keyword">子女、後輩、創造力與性</span>——廣義上是您「孕育出來的事物」,包含作品、學生、晚輩與一切親手栽培之物。',
+    '財帛宮':'財帛宮代表您的<span class="domain-keyword">財富、現金流與價值觀</span>——您如何賺取、運用與看待金錢,以及您對「擁有」這件事的態度。',
+    '疾厄宮':'疾厄宮代表您的<span class="domain-keyword">身體、健康與情緒體質</span>——您的先天體質傾向、身心的感受方式,以及壓力在身體上的展現。',
+    '遷移宮':'遷移宮代表您的<span class="domain-keyword">外在世界、際遇與社會形象</span>——您離開熟悉環境後的際遇、在外的機運,以及他人眼中的您。它是命宮的對宮,映照您的另一面。',
+    '交友宮':'交友宮代表您的<span class="domain-keyword">朋友、人脈、下屬與社交網絡</span>——您與廣泛人際的互動方式,以及您從社群中獲得或付出的能量。',
+    '官祿宮':'官祿宮代表您的<span class="domain-keyword">事業、志向與社會成就</span>——您的工作舞台、專業表現,以及您一生想要建立的功業與位置。',
+    '田宅宮':'田宅宮代表您的<span class="domain-keyword">家庭、不動產與安身之所</span>——您的居家環境、家族基地,以及您內心對「歸屬」與「根」的感受。',
+    '福德宮':'福德宮代表您的<span class="domain-keyword">精神世界、興趣與享受</span>——您的內在快樂來源、價值信念,以及您靈魂層面的滿足與安頓。',
+    '父母宮':'父母宮代表您與<span class="domain-keyword">父母、長輩、權威與庇蔭</span>的關係,也反映您的學養根基、與上位者的相處,以及您所承接的家世背景。',
+  };
+
+  const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
+  const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
+  const TRANSFORM_TOOLTIP = {
+    '化祿': { title: '化祿 · Resource (Lu)', body: '喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅,是您天生有福、容易順利展開的領域。' },
+    '化權': { title: '化權 · Anchor (Quan)', body: '權力與掌控。能量賦予您主導感、決策力與影響力,是您天生想要「說了算」、想要為事情負責的領域。' },
+    '化科': { title: '化科 · Stage (Ke)', body: '名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象,是您天生發光、會被欣賞的舞台。' },
+    '化忌': { title: '化忌 · Direction (Ji)', body: '不滿足與執著。能量讓您在這個領域反覆投入、深耕、永不饜足。這不是缺憾,而是您一生關注的「核心命題」與成長方向。' },
+  };
+
+  let reportsByPalace = {};
+  let chartSessionId = null;
+
+  function showView(id) {
+    document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+    const t = document.getElementById(id);
+    if (t) t.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function showError(msg) {
+    if (msg) document.getElementById('error-detail').textContent = msg;
+    showView('view-error');
+  }
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderHub() {
+    const grid = document.getElementById('palace-grid');
+    grid.innerHTML = '';
+    PALACE_ORDER.forEach((palaceName, i) => {
+      const row = reportsByPalace[palaceName];
+      const card = document.createElement('div');
+      card.className = 'palace-card';
+      const idx = document.createElement('div');
+      idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
+      card.appendChild(idx);
+      const nameEl = document.createElement('div');
+      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceName;
+      card.appendChild(nameEl);
+      const starsEl = document.createElement('div');
+      starsEl.className = 'palace-card-stars';
+      starsEl.textContent = row?.composition?.main_stars?.length
+        ? row.composition.main_stars.map(s => s.star).join(' · ')
+        : '(無主星)';
+      card.appendChild(starsEl);
+      card.addEventListener('click', () => openDetail(palaceName));
+      grid.appendChild(card);
+    });
+    document.getElementById('session-id').textContent = chartSessionId || '—';
+  }
+
+  function openDetail(palaceName) {
+    const row = reportsByPalace[palaceName];
+    if (!row) return;
+    const idx = PALACE_ORDER.indexOf(palaceName);
+
+    document.getElementById('detail-eyebrow').textContent = PALACE_EN[palaceName] || '';
+    document.getElementById('detail-title-zh').textContent = palaceName;
+    document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
+    document.getElementById('detail-tagline').innerHTML = PALACE_TAGLINE[palaceName] || '';
+    document.getElementById('detail-explainer').innerHTML = PALACE_EXPLAINER[palaceName] || '';
+
+    renderStarsLine(row.composition);
+    renderComposition(row.composition);
+    renderAnalysis(row.palace_analysis);
+    renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
+    renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
+    renderSuggestion(row.suggestion);
+
+    const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
+    const next = PALACE_ORDER[(idx + 1) % 12];
+    const prevEl = document.getElementById('nav-prev');
+    const nextEl = document.getElementById('nav-next');
+    prevEl.innerHTML = `<span class="arrow">←</span>${prev}`;
+    nextEl.innerHTML = `${next}<span class="arrow">→</span>`;
+    prevEl.onclick = () => openDetail(prev);
+    nextEl.onclick = () => openDetail(next);
+
+    showView('view-detail');
+  }
+
+  function renderStarsLine(comp) {
+    const el = document.getElementById('detail-stars-line');
+    const parts = [];
+    (comp?.main_stars || []).forEach(s => {
+      let html = `<span class="main-star">${escapeHtml(s.star)}</span>`;
+      if (s.transform) html += `<span class="transform-tag ${s.transform}">${s.transform}</span>`;
+      parts.push(html);
+    });
+    (comp?.support_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
+    (comp?.sha_ji_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
+    (comp?.minor_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
+    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : '<span style="color:var(--ink-light);font-style:italic;">(無星)</span>';
+  }
+
+  function renderComposition(comp) {
+    const grid = document.getElementById('detail-composition');
+    const rows = [
+      { key: 'Heavenly Stem · 天干', val: comp?.heavenly_stem || '—' },
+      { key: 'Earthly Branch · 地支', val: comp?.branch || '—' },
+      { key: 'Opposite Palace · 對宮', val: comp?.opposite_palace || '—' },
+      { key: 'Trines · 三方', val: (comp?.trines || []).join(' · ') || '—' },
+    ];
+    grid.innerHTML = rows.map(r => `<div class="comp-row"><div class="comp-row-key">${r.key}</div><div class="comp-row-val">${escapeHtml(r.val)}</div></div>`).join('');
+  }
+
+  // A 段:drop cap + 自動 pull quote
+  function renderAnalysis(text) {
+    const el = document.getElementById('detail-analysis');
+    if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    let html = '';
+    paras.forEach((p, i) => {
+      if (i === 0) html += `<p class="lead">${escapeHtml(p)}</p>`;
+      else html += `<p>${escapeHtml(p)}</p>`;
+      // 在第 2 段後插入 pull quote(抓第 3 段的第一句)
+      if (i === 1 && paras[2]) {
+        const firstSentence = paras[2].split(/[。!?!?]/)[0];
+        if (firstSentence && firstSentence.length > 10) {
+          html += `<div class="pull-quote">${escapeHtml(firstSentence)}。</div>`;
+        }
+      }
+    });
+    el.innerHTML = html;
+  }
+
+  // B/C 段:卡片 + 來源 chip(讀 meta)
+  function renderTransforms(elId, transforms, meta, direction) {
+    const container = document.getElementById(elId);
+    container.innerHTML = '';
+
+    if (!transforms || typeof transforms !== 'object') {
+      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      return;
+    }
+
+    // meta 按 transform 分組
+    const metaByTransform = {};
+    (meta || []).forEach(m => {
+      if (!metaByTransform[m.transform]) metaByTransform[m.transform] = [];
+      metaByTransform[m.transform].push(m);
+    });
+
+    let hasAny = false;
+    for (const tt of TRANSFORM_ORDER) {
+      const t = transforms[tt];
+      if (!t || (!t.title && !t.content)) continue;
+      hasAny = true;
+
+      const tip = TRANSFORM_TOOLTIP[tt];
+      const metaItems = metaByTransform[tt] || [];
+
+      // 來源 chip HTML
+      let chipsHtml = '';
+      if (metaItems.length) {
+        const label = direction === 'in' ? '來源' : '流向';
+        chipsHtml = `<div class="source-row"><span class="source-label">${label}</span>` +
+          metaItems.map(m => `
+            <span class="source-chip">
+              <span class="palace-from">${escapeHtml(m.from_palace)}</span>
+              <span class="arrow">→</span>
+              <span class="palace-to">${escapeHtml(m.to_palace)}</span>
+              <span class="star-tag">${escapeHtml(m.star)}</span>
+              <span class="mini-transform ${tt}">${tt}</span>
+            </span>`).join('') +
+          `</div>`;
+      }
+
+      const contentHtml = (t.content || '').split(/\n\n+/).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
+      container.innerHTML += `
+        <article class="transform-card ${tt}">
+          <div class="transform-card-head">
+            <span class="tooltip-wrap">
+              <span class="transform-card-tag" tabindex="0">${tt}<span class="info-dot">i</span></span>
+              <div class="tooltip-body">
+                <div class="tooltip-title">${tip.title}</div>
+                <p>${tip.body}</p>
+              </div>
+            </span>
+            <span class="transform-card-en">${TRANSFORM_EN[tt]}</span>
+          </div>
+          <div class="transform-card-body">
+            ${t.title ? `<h3 class="transform-card-title">${escapeHtml(t.title)}</h3>` : ''}
+            ${chipsHtml}
+            <div class="transform-card-content">${contentHtml}</div>
+          </div>
+        </article>`;
+    }
+
+    if (!hasAny) {
+      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+    }
+
+    bindTooltips(container);
+  }
+
+  // D 段:epilogue 樣式
+  function renderSuggestion(text) {
+    const wrap = document.getElementById('detail-suggestion-wrap');
+    if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    let inner = '<div class="epilogue-eyebrow">— Epilogue —</div><div class="epilogue-prose">';
+    paras.forEach((p, i) => {
+      const cls = (i === paras.length - 1 && paras.length > 1) ? ' class="closing"' : '';
+      inner += `<p${cls}>${escapeHtml(p)}</p>`;
+    });
+    inner += '</div>';
+    wrap.innerHTML = `<div class="epilogue">${inner}</div>`;
+  }
+
+  function bindTooltips(scope) {
+    scope.querySelectorAll('.tooltip-wrap').forEach(wrap => {
+      wrap.addEventListener('click', (e) => {
+        e.stopPropagation();
+        scope.querySelectorAll('.tooltip-wrap.open').forEach(w => { if (w !== wrap) w.classList.remove('open'); });
+        wrap.classList.toggle('open');
+      });
+    });
+  }
+
+  async function init() {
+    try {
+      const session = await requireAuth();
+      if (!session) return; // requireAuth 已導向 login.html
+
+      const userEmail = session.user.email;
+
+      const { data: jobData, error: jobError } = await supabase
+        .from('chart_generation_jobs')
+        .select('chart_session_id, status')
+        .eq('user_email', userEmail)
+        .eq('status', 'done')
+        .order('completed_at', { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (jobError) { showError('無法取得您的命盤資料：' + jobError.message); return; }
+      if (!jobData?.chart_session_id) { showError('您的命盤尚未完成，請稍候幾分鐘後再回來查看。'); return; }
+
+      chartSessionId = jobData.chart_session_id;
+
+      const { data: reports, error: reportsError } = await supabase
+        .from('main_palace_reports')
+        .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta')
+        .eq('chart_session_id', chartSessionId);
+
+      if (reportsError) { showError('無法載入宮位內容：' + reportsError.message); return; }
+      if (!reports || reports.length === 0) { showError('找不到您命盤的宮位內容。'); return; }
+
+      reportsByPalace = {};
+      for (const row of reports) reportsByPalace[row.palace_name] = row;
+
+      renderHub();
+      showView('view-hub');
+    } catch (err) {
+      showError(err.message || '載入時發生錯誤。');
+    }
+  }
+
+  document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
+  document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
+  });
+
+  init();
+</script>
+
+</body>
+</html>
