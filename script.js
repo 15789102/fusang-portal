@@ -105,6 +105,7 @@ function bindForm() {
     // ---- Collect form data ----
     const payload = {
       email: document.getElementById('email').value.trim(),
+      password: document.getElementById('password').value,
       display_name: document.getElementById('display_name').value.trim(),
       birth_year: parseInt(document.getElementById('birth_year').value, 10),
       birth_month: parseInt(document.getElementById('birth_month').value, 10),
@@ -121,6 +122,13 @@ function bindForm() {
     const error = validatePayload(payload);
     if (error) {
       showError(error);
+      return;
+    }
+
+    // ---- Password confirmation ----
+    const passwordConfirm = document.getElementById('password_confirm').value;
+    if (payload.password !== passwordConfirm) {
+      showError('Passwords do not match.');
       return;
     }
 
@@ -171,6 +179,8 @@ function validatePayload(p) {
   if (!p.display_name) return 'Please enter your name.';
   if (!p.email) return 'Please enter your email.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return 'Please enter a valid email.';
+  if (!p.password) return 'Please create a password.';
+  if (p.password.length < 8) return 'Password must be at least 8 characters.';
   if (!p.birth_year) return 'Please select your birth year.';
   if (!p.birth_month) return 'Please select your birth month.';
   if (!p.birth_day) return 'Please select your birth day.';
