@@ -175,6 +175,84 @@
     .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
+
+    /* ── OVERVIEW 總覽（全 scope 在 #view-overview 下）── */
+    #view-overview .ov-head { margin-bottom: 8px; }
+    #view-overview .ov-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--gold, #b8945c); margin-bottom: 12px; }
+    #view-overview .ov-title { font-family: var(--font-serif-zh); font-size: clamp(28px,5vw,40px); font-weight: 500; letter-spacing: 0.06em; margin: 0; }
+    #view-overview .ov-title-en { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--ink-light); margin-top: 6px; }
+    #view-overview .ov-tohub { margin-top: 20px; }
+    #view-overview .ov-link { font-family: var(--font-serif-zh); font-size: 13px; color: var(--accent-soft); border-bottom: 1px solid var(--accent-pale, #d4dfde); padding-bottom: 1px; cursor: pointer; letter-spacing: 0.04em; }
+    #view-overview .ov-link:hover { color: var(--accent-deep); border-color: var(--gold, #b8945c); }
+    #view-overview .block-head { display: flex; align-items: center; gap: 16px; margin: 52px 0 6px; }
+    #view-overview .block-head .num { font-family: var(--font-serif-en); font-size: 32px; font-style: italic; color: var(--gold-soft, #c9ab7d); }
+    #view-overview .block-head .bz { font-family: var(--font-serif-zh); font-size: 23px; font-weight: 500; letter-spacing: 0.08em; }
+    #view-overview .block-head .be { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); }
+    #view-overview .block-sub { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); margin-bottom: 8px; letter-spacing: 0.03em; }
+    #view-overview .ov-sec { margin-top: 32px; }
+    #view-overview .ov-sec-label { display: flex; align-items: baseline; gap: 12px; padding-bottom: 11px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; }
+    #view-overview .ov-sec-label .bz { font-family: var(--font-serif-zh); font-size: 18px; font-weight: 500; letter-spacing: 0.08em; }
+    #view-overview .ov-sec-label .be { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); }
+    #view-overview .ov-plink { font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--accent-soft); border-bottom: 1px solid var(--accent-pale, #d4dfde); padding-bottom: 1px; cursor: pointer; white-space: nowrap; }
+    #view-overview .ov-plink:hover { color: var(--ink-darkest); border-color: var(--gold, #b8945c); }
+    #view-overview .lead { background: var(--bg-card); border: 1px solid var(--gold-soft, #c9ab7d); border-radius: 6px; padding: 26px 26px 22px; }
+    #view-overview .lead-kw { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; letter-spacing: 0.06em; line-height: 1.5; }
+    #view-overview .lead-kw .d { color: var(--gold-soft, #c9ab7d); margin: 0 7px; }
+    #view-overview .lead-theme { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8; color: var(--ink-mid); }
+    #view-overview .lead-theme b { color: var(--t-ji); font-weight: 500; }
+    #view-overview .lead-foot { margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    #view-overview .lead-stars { font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); }
+    #view-overview .lead-stars b { color: var(--ink-mid); font-weight: 400; }
+    #view-overview .stage-line { background: var(--bg-soft-2); border-left: 3px solid var(--gold, #b8945c); border-radius: 0 4px 4px 0; padding: 16px 20px; margin: 18px 0 6px; font-family: var(--font-serif-zh); font-size: 16px; line-height: 1.85; color: var(--ink-dark); }
+    #view-overview .stage-line b { color: var(--ink-darkest); font-weight: 500; }
+    #view-overview .tri { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+    #view-overview .tri .apex { grid-column: 1/-1; max-width: 60%; margin: 0 auto; }
+    #view-overview .tri .base { grid-column: 1/-1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px){ #view-overview .tri .apex { max-width: 100%; } }
+    #view-overview .rnode { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 5px; padding: 16px 16px 14px; }
+    #view-overview .rnode .r { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold, #b8945c); margin-bottom: 7px; }
+    #view-overview .rnode .k { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 11px; }
+    #view-overview .rnode .m { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
+    #view-overview .rnode .st { font-family: var(--font-serif-zh); font-size: 11.5px; color: var(--ink-light); }
+    #view-overview .birth-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bg-soft-2); }
+    #view-overview .birth-row:last-child { border-bottom: none; }
+    #view-overview .birth-hua { font-family: var(--font-serif-zh); font-size: 15px; font-weight: 500; width: 58px; flex-shrink: 0; padding: 4px 0 4px 11px; border-left: 3px solid var(--rule); }
+    #view-overview .birth-hua.化祿 { color: var(--t-lu); border-color: var(--t-lu); }
+    #view-overview .birth-hua.化權 { color: var(--t-quan); border-color: var(--t-quan); }
+    #view-overview .birth-hua.化科 { color: var(--t-ke); border-color: var(--t-ke); }
+    #view-overview .birth-hua.化忌 { color: var(--t-ji); border-color: var(--t-ji); }
+    #view-overview .birth-arrow { color: var(--ink-faint); }
+    #view-overview .birth-mid { flex: 1; font-family: var(--font-serif-zh); }
+    #view-overview .birth-palace { font-size: 16px; font-weight: 500; }
+    #view-overview .birth-meaning { font-size: 12.5px; color: var(--ink-mid); margin-left: 9px; }
+    #view-overview .ally-kind { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; margin: 16px 0 10px; }
+    #view-overview .ally-kind.self { color: var(--gold, #b8945c); }
+    #view-overview .ally-kind.ext { color: var(--accent-soft); }
+    #view-overview .ally-card { display: flex; gap: 14px; align-items: flex-start; padding: 15px 18px; border-radius: 5px; margin-bottom: 10px; }
+    #view-overview .ally-card.self { background: var(--gold-bg, #f4ecdd); border: 1px solid var(--gold-soft, #c9ab7d); }
+    #view-overview .ally-card.ext { background: var(--bg-card); border: 1px solid var(--rule); }
+    #view-overview .ally-palace { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 500; width: 64px; flex-shrink: 0; }
+    #view-overview .ally-body .st { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-darkest); margin-bottom: 3px; }
+    #view-overview .ally-body .ds { font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; color: var(--ink-mid); }
+    #view-overview .feed-line { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--bg-soft-2); }
+    #view-overview .feed-line:last-child { border-bottom: none; }
+    #view-overview .feed-palace { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 500; width: 70px; flex-shrink: 0; }
+    #view-overview .feed-pills { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+    #view-overview .feed-pill { font-family: var(--font-sans); font-size: 11px; padding: 3px 9px; border-radius: 4px; }
+    #view-overview .feed-pill.lu { color: var(--t-lu); background: var(--t-lu-bg); }
+    #view-overview .feed-pill.quan { color: var(--t-quan); background: var(--t-quan-bg); }
+    #view-overview .feed-pill.ke { color: var(--t-ke); background: var(--t-ke-bg); }
+    #view-overview .feed-pill b { font-weight: 600; }
+    #view-overview .feed-sum { font-family: var(--font-sans); font-size: 12px; color: var(--ink-light); width: 54px; text-align: right; flex-shrink: 0; }
+    #view-overview .feed-sum b { color: var(--ink-darkest); font-size: 15px; font-weight: 600; }
+    #view-overview .fact { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--bg-soft-2); }
+    #view-overview .fact:last-child { border-bottom: none; }
+    #view-overview .fact-key { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-light); width: 96px; flex-shrink: 0; padding-top: 3px; }
+    #view-overview .fact-val { font-family: var(--font-serif-zh); font-size: 17px; letter-spacing: 0.05em; }
+    #view-overview .fact-val small { font-size: 13px; color: var(--ink-mid); }
+    #view-overview .ov-legend { margin-top: 14px; padding: 11px 15px; background: var(--bg-soft-2); border-radius: 3px; font-family: var(--font-sans); font-size: 11px; line-height: 1.9; color: var(--ink-mid); }
+    #view-overview .ov-legend .tg { color: var(--ink-darkest); font-weight: 500; }
+    #view-overview .ov-legend .sp { color: var(--ink-faint); margin: 0 6px; }
   </style>
 </head>
 <body>
@@ -192,7 +270,58 @@
       </div>
     </section>
 
+    <section id="view-overview" class="view">
+      <div class="ov-head">
+        <div class="ov-eyebrow">Overview · 總覽</div>
+        <h1 class="ov-title">你的命盤總覽</h1>
+        <div class="ov-title-en">Who you are · what you hold</div>
+        <div class="ov-tohub"><span class="ov-link" id="ov-to-hub">瀏覽全部十二宮 →</span></div>
+      </div>
+
+      <div class="block-head"><span class="num">I</span><div><div class="bz">劇本角色</div><div class="be">Your Role</div></div></div>
+      <div class="block-sub">你在自己故事裡，是什麼樣的主角。</div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">主角</span><span class="be">The Lead</span></div>
+        <div class="lead" id="ov-lead"></div>
+        <div class="ov-legend" id="ov-lead-legend"></div>
+      </div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">舞台三角</span><span class="be">The Stage · 命三方</span></div>
+        <div class="stage-line" id="ov-stage-line"></div>
+        <div class="tri" id="ov-tri"></div>
+        <div class="ov-legend">句型固定為「以【財】為舞台，由【命】驅動，於【官】展開」，括號內短語取自各宮主星的固定句用詞<span class="sp">|</span>點宮位進該宮完整內容</div>
+      </div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">角色天賦線</span><span class="be">Innate Kit · 生年四化落點</span></div>
+        <div id="ov-birth"></div>
+      </div>
+
+      <div class="block-head"><span class="num">II</span><div><div class="bz">我的資源</div><div class="be">What You Hold</div></div></div>
+      <div class="block-sub">你手上有什麼牌——自帶的、與別人能給的。</div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">貴人</span><span class="be">Allies</span></div>
+        <div id="ov-ally"></div>
+        <div class="ov-legend">依六內六外分欄：貴人星落<span class="tg">內部宮</span>＝自帶特質；落<span class="tg">外部宮</span>＝別人助力<span class="sp">|</span><span class="tg">左輔右弼</span> 整合・左右逢源<span class="sp">|</span><span class="tg">天魁天鉞</span> 提攜・貴氣<span class="sp">|</span><span class="tg">文昌</span> 才學<span class="sp">|</span><span class="tg">文曲</span> 才藝・口才</div>
+      </div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">後盾</span><span class="be">Foundation · 飛入助力</span></div>
+        <div id="ov-feed"></div>
+        <div class="ov-legend"><span class="tg">祿</span> 資源・緣分<span class="sp">|</span><span class="tg">權</span> 主導・掌控<span class="sp">|</span><span class="tg">科</span> 名聲・貴氣<span class="sp">|</span>助力合計＝祿＋權＋科 飛入數（依合計排序）</div>
+      </div>
+
+      <div class="ov-sec">
+        <div class="ov-sec-label"><span class="bz">天生福分 · 安全感</span><span class="be">Innate</span></div>
+        <div id="ov-innate"></div>
+      </div>
+    </section>
+
     <section id="view-hub" class="view">
+      <div class="detail-back-top"><span class="back-link" id="hub-to-overview">← 總覽 Overview</span></div>
       <div class="hub-head">
         <div class="hub-eyebrow">Your Natal Chart</div>
         <h1 class="hub-title">本命十二宮</h1>
@@ -341,8 +470,52 @@
     '化忌': { title: '化忌 · Direction (Ji)', body: '不滿足與執著。能量讓您在這個領域反覆投入、深耕、永不饜足。這不是缺憾,而是您一生關注的「核心命題」與成長方向。' },
   };
 
+  // ── 總覽用固定查表（寫一次、所有盤共用、可編輯，非逐盤生成）──
+  const INNER_PALACES = new Set(['命宮','財帛宮','疾厄宮','遷移宮','官祿宮','福德宮']);
+  const OUTER_PALACES = new Set(['父母宮','兄弟宮','夫妻宮','子女宮','田宅宮','交友宮']);
+  const SAN_FANG = ['命宮','財帛宮','官祿宮'];
+  const SAN_FANG_ROLE = { '命宮':'自我', '財帛宮':'財', '官祿宮':'事業' };
+
+  // 14 主星詞庫：kw=個性關鍵詞, phrase=命三方句用短語
+  const STAR_LEXICON = {
+    '紫微':{kw:['領導','主導','尊貴'],phrase:'領導開拓'},
+    '天機':{kw:['機巧','善謀','多變'],phrase:'謀略應變'},
+    '太陽':{kw:['博愛','熱忱','外放'],phrase:'熱忱付出'},
+    '武曲':{kw:['務實','決斷','重效率'],phrase:'務實果決'},
+    '天同':{kw:['溫和','享受','隨和'],phrase:'隨和享受'},
+    '廉貞':{kw:['公關','變通','重情'],phrase:'公關變通'},
+    '天府':{kw:['穩健','保守','善理財'],phrase:'穩健守成'},
+    '太陰':{kw:['細膩','內斂','重感受'],phrase:'細膩經營'},
+    '貪狼':{kw:['多元慾望','好奇','交際'],phrase:'多元慾望'},
+    '巨門':{kw:['口才','思辨','深究'],phrase:'思辨深究'},
+    '天相':{kw:['協調','重信','穩重'],phrase:'協調穩重'},
+    '天梁':{kw:['庇蔭','原則','長者風'],phrase:'庇蔭擔當'},
+    '七殺':{kw:['衝鋒','獨立','開拓'],phrase:'衝鋒開拓'},
+    '破軍':{kw:['開創','破舊立新','變動'],phrase:'開創'},
+  };
+
+  // 貴人星集合（四貴＋文昌文曲）與星義（self=自帶, ext=外部）
+  const ALLY_STARS = new Set(['左輔','右弼','天魁','天鉞','文昌','文曲']);
+  const ALLY_LEXICON = {
+    '左輔':{self:'整合資源、左右逢源',ext:'平輩貴人並肩相助'},
+    '右弼':{self:'整合資源、左右逢源',ext:'平輩貴人並肩相助'},
+    '天魁':{self:'自帶貴氣與格調',ext:'長輩貴人提攜'},
+    '天鉞':{self:'易被看見、被提攜的氣場',ext:'長輩貴人提攜'},
+    '文昌':{self:'才學與條理',ext:'才學文書型助力'},
+    '文曲':{self:'才藝、口才與感性',ext:'才藝口才型助力'},
+  };
+
+  const SELF_TRANSFORM_NOTE = {
+    '化祿':'天生的順流與福分在「自我」展現。',
+    '化權':'天生的主導性落在「自我」。',
+    '化科':'天生的名聲與優雅落在「自我」。',
+    '化忌':'對「想要更多、想體驗更多」的深耕——自我的核心命題、一生反覆投注的方向。',
+  };
+  const BIRTH_MEANING = { '化祿':'天生福分落點','化權':'天生掌控與課題','化科':'天生名聲落點','化忌':'天生命題・深耕方向' };
+
   let reportsByPalace = {};
   let chartSessionId = null;
+  let shenPalace = null;
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -554,6 +727,127 @@
     });
   }
 
+  // ── 總覽渲染：全部由 reportsByPalace 計算 + 固定查表，無逐盤生成 ──
+  function uniq(arr) { return [...new Set(arr)]; }
+  function palaceMainStars(p) { return reportsByPalace[p]?.composition?.main_stars || []; }
+  function starsLabel(p) {
+    const stars = palaceMainStars(p);
+    if (!stars.length) return '無主星';
+    return stars.map(s => s.star + (s.transform ? `（${s.transform}）` : '')).join('・');
+  }
+  function palacePhrase(p) {
+    const stars = palaceMainStars(p);
+    if (!stars.length) return null;
+    return uniq(stars.map(s => STAR_LEXICON[s.star]?.phrase).filter(Boolean)).join('、');
+  }
+  function bindPalaceLinks(scope) {
+    scope.querySelectorAll('[data-palace]').forEach(el => {
+      el.addEventListener('click', () => openDetail(el.getAttribute('data-palace')));
+    });
+  }
+
+  function renderOverview() {
+    // 1) 主角(命宮)
+    const lifeStars = palaceMainStars('命宮');
+    const kw = uniq(lifeStars.flatMap(s => STAR_LEXICON[s.star]?.kw || []));
+    const kwHtml = kw.length
+      ? kw.map(k => escapeHtml(k)).join('<span class="d">·</span>')
+      : '<span style="color:var(--ink-light);font-style:italic;">命宮為空宮 · 無主星</span>';
+    const lifeT = lifeStars.find(s => s.transform);
+    const themeHtml = lifeT
+      ? `<div class="lead-theme">核心命題（生年${lifeT.transform}坐命）：<b>${escapeHtml(SELF_TRANSFORM_NOTE[lifeT.transform] || '')}</b></div>`
+      : '';
+    document.getElementById('ov-lead').innerHTML = `
+      <div class="lead-kw">${kwHtml}</div>
+      ${themeHtml}
+      <div class="lead-foot">
+        <div class="lead-stars">星曜：<b>命宮 · ${escapeHtml(starsLabel('命宮'))}</b></div>
+        <span class="ov-plink" data-palace="命宮">命宮完整解析 →</span>
+      </div>`;
+    document.getElementById('ov-lead-legend').innerHTML = '個性＝命宮主星於固定詞庫的聚合' +
+      lifeStars.map(s => STAR_LEXICON[s.star]
+        ? `<span class="sp">|</span><span class="tg">${escapeHtml(s.star)}</span> ${escapeHtml(STAR_LEXICON[s.star].kw.join('・'))}` : '').join('');
+
+    // 2) 舞台三角(命三方) + B2 模板句
+    const phr = {}; SAN_FANG.forEach(p => phr[p] = palacePhrase(p));
+    const clauses = [];
+    if (phr['財帛宮']) clauses.push(`以「<b>${escapeHtml(phr['財帛宮'])}</b>」為舞台`);
+    if (phr['命宮'])   clauses.push(`由「<b>${escapeHtml(phr['命宮'])}</b>」驅動`);
+    if (phr['官祿宮']) clauses.push(`於「<b>${escapeHtml(phr['官祿宮'])}</b>」中展開`);
+    document.getElementById('ov-stage-line').innerHTML = clauses.length
+      ? clauses.join('，') + '。'
+      : '<span style="color:var(--ink-light);font-style:italic;">命三方含空宮，敘述從略</span>';
+
+    const node = (p, isApex) => {
+      const stars = palaceMainStars(p);
+      const k = stars.length ? uniq(stars.flatMap(s => STAR_LEXICON[s.star]?.kw || [])).slice(0, 2).join(' · ') : '無主星';
+      return `<div class="rnode${isApex ? ' apex' : ''}">
+        <div class="r">${SAN_FANG_ROLE[p]} · ${p}</div>
+        <div class="k">${escapeHtml(k)}</div>
+        <div class="m"><span class="st">${escapeHtml(starsLabel(p))}</span><span class="ov-plink" data-palace="${p}">${p} →</span></div>
+      </div>`;
+    };
+    document.getElementById('ov-tri').innerHTML =
+      node('命宮', true) + `<div class="base">${node('財帛宮', false)}${node('官祿宮', false)}</div>`;
+
+    // 3) 生年四化落點
+    const birth = {};
+    PALACE_ORDER.forEach(p => palaceMainStars(p).forEach(s => { if (s.transform) birth[s.transform] = { palace: p, star: s.star }; }));
+    document.getElementById('ov-birth').innerHTML = TRANSFORM_ORDER.map(t => {
+      const b = birth[t];
+      if (!b) return '';
+      return `<div class="birth-row">
+        <div class="birth-hua ${t}">${t}</div><span class="birth-arrow">→</span>
+        <div class="birth-mid"><span class="birth-palace">${b.palace}</span><span class="birth-meaning">${BIRTH_MEANING[t]}</span></div>
+        <span class="ov-plink" data-palace="${b.palace}">→</span>
+      </div>`;
+    }).join('');
+
+    // 4) 貴人(依六內六外分欄)
+    const selfArr = [], extArr = [];
+    PALACE_ORDER.forEach(p => {
+      const allies = (reportsByPalace[p]?.composition?.support_stars || []).filter(s => ALLY_STARS.has(s));
+      if (!allies.length) return;
+      (OUTER_PALACES.has(p) ? extArr : selfArr).push({ palace: p, stars: allies });
+    });
+    const allyCard = (item, kind) => {
+      const ds = uniq(item.stars.map(s => ALLY_LEXICON[s]?.[kind]).filter(Boolean)).join('；');
+      return `<div class="ally-card ${kind}">
+        <div class="ally-palace">${item.palace}</div>
+        <div class="ally-body"><div class="st">${item.stars.join(' · ')}</div><div class="ds">${escapeHtml(ds)}</div></div>
+      </div>`;
+    };
+    let allyHtml = '';
+    if (selfArr.length) allyHtml += `<div class="ally-kind self">自帶特質 · 內部宮（你本身具備）</div>` + selfArr.map(i => allyCard(i, 'self')).join('');
+    if (extArr.length)  allyHtml += `<div class="ally-kind ext">外部貴人 · 外部宮（別人會幫你）</div>` + extArr.map(i => allyCard(i, 'ext')).join('');
+    if (!allyHtml) allyHtml = '<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">此盤無貴人星</div>';
+    document.getElementById('ov-ally').innerHTML = allyHtml;
+
+    // 5) 後盾(飛入祿權科，依合計排序)
+    const feed = PALACE_ORDER.map(p => {
+      const meta = reportsByPalace[p]?.transforms_in_meta || [];
+      let lu = 0, quan = 0, ke = 0;
+      meta.forEach(m => { if (m.transform === '化祿') lu++; else if (m.transform === '化權') quan++; else if (m.transform === '化科') ke++; });
+      return { p, lu, quan, ke, sum: lu + quan + ke };
+    }).filter(x => x.sum > 0).sort((a, b) => b.sum - a.sum);
+    document.getElementById('ov-feed').innerHTML = feed.map(f => {
+      let pills = '';
+      if (f.lu) pills += `<span class="feed-pill lu">祿 <b>${f.lu}</b></span>`;
+      if (f.quan) pills += `<span class="feed-pill quan">權 <b>${f.quan}</b></span>`;
+      if (f.ke) pills += `<span class="feed-pill ke">科 <b>${f.ke}</b></span>`;
+      return `<div class="feed-line"><div class="feed-palace">${f.p}</div><div class="feed-pills">${pills}</div><div class="feed-sum">助力 <b>${f.sum}</b></div></div>`;
+    }).join('') || '<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">無飛入助力</div>';
+
+    // 6) 天生福分 / 身宮
+    const luP = birth['化祿'];
+    const rows = [];
+    if (luP) rows.push(`<div class="fact"><div class="fact-key">生年祿</div><div class="fact-val">${luP.palace} <small>（${luP.star}化祿）</small></div></div>`);
+    rows.push(`<div class="fact"><div class="fact-key">身宮</div><div class="fact-val">${shenPalace ? escapeHtml(shenPalace) : '<small style="font-style:italic;color:var(--ink-light);">尚未取得</small>'}</div></div>`);
+    document.getElementById('ov-innate').innerHTML = rows.join('');
+
+    bindPalaceLinks(document.getElementById('view-overview'));
+  }
+
   async function init() {
     try {
       const session = await requireAuth();
@@ -586,8 +880,19 @@
       reportsByPalace = {};
       for (const row of reports) reportsByPalace[row.palace_name] = row;
 
+      // 身宮(在 ziwei_charts；該表需有「讀自己列」RLS，取不到則優雅略過)
+      try {
+        const { data: chartRow } = await supabase
+          .from('ziwei_charts')
+          .select('shen_palace:chart_data->profile->>shen_palace')
+          .eq('chart_session_id', chartSessionId)
+          .maybeSingle();
+        shenPalace = chartRow?.shen_palace || null;
+      } catch (_) { shenPalace = null; }
+
+      renderOverview();
       renderHub();
-      showView('view-hub');
+      showView('view-overview');
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
     }
@@ -595,6 +900,8 @@
 
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
+  document.getElementById('ov-to-hub').addEventListener('click', () => showView('view-hub'));
+  document.getElementById('hub-to-overview').addEventListener('click', () => showView('view-overview'));
   document.addEventListener('click', () => {
     document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
   });
