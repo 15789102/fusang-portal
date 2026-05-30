@@ -595,9 +595,18 @@
       if (s.transform) html += `<span class="transform-tag ${s.transform}">${s.transform}</span>`;
       parts.push(html);
     });
-    (comp?.support_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
-    (comp?.sha_ji_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
-    (comp?.minor_stars || []).forEach(s => parts.push(`<span>${escapeHtml(s)}</span>`));
+    const pushStar = (s) => {
+      // 兼容舊格式(字串)與新格式(物件帶 transform)
+      const name = (typeof s === 'string') ? s : s?.star;
+      const tf = (typeof s === 'object') ? s?.transform : null;
+      if (!name) return;
+      let html = `<span>${escapeHtml(name)}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      parts.push(html);
+    };
+    (comp?.support_stars || []).forEach(pushStar);
+    (comp?.sha_ji_stars || []).forEach(pushStar);
+    (comp?.minor_stars || []).forEach(pushStar);
     el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : '<span style="color:var(--ink-light);font-style:italic;">(無星)</span>';
   }
 
@@ -730,6 +739,17 @@
   // ── 總覽渲染：全部由 reportsByPalace 計算 + 固定查表，無逐盤生成 ──
   function uniq(arr) { return [...new Set(arr)]; }
   function palaceMainStars(p) { return reportsByPalace[p]?.composition?.main_stars || []; }
+  // 某宮「坐宮自化」的所有星(主星+輔星+雜星+煞星皆可能帶生年化,例:文曲化忌)
+  function palaceSeatedTransforms(p) {
+    const c = reportsByPalace[p]?.composition || {};
+    const all = [
+      ...(c.main_stars || []), ...(c.support_stars || []),
+      ...(c.minor_stars || []), ...(c.sha_ji_stars || []),
+    ];
+    // 兼容舊格式(字串無化)
+    return all.filter(s => typeof s === 'object' && s && s.transform)
+              .map(s => ({ star: s.star, transform: s.transform }));
+  }
   function starsLabel(p) {
     const stars = palaceMainStars(p);
     if (!stars.length) return '無主星';
@@ -753,9 +773,11 @@
     const kwHtml = kw.length
       ? kw.map(k => escapeHtml(k)).join('<span class="d">·</span>')
       : '<span style="color:var(--ink-light);font-style:italic;">命宮為空宮 · 無主星</span>';
-    const lifeT = lifeStars.find(s => s.transform);
-    const themeHtml = lifeT
-      ? `<div class="lead-theme">核心命題（生年${lifeT.transform}坐命）：<b>${escapeHtml(SELF_TRANSFORM_NOTE[lifeT.transform] || '')}</b></div>`
+    const lifeSeated = palaceSeatedTransforms('命宮');
+    const themeHtml = lifeSeated.length
+      ? `<div class="lead-theme">核心命題（生年化坐命）：` +
+        lifeSeated.map(s => `<b>${escapeHtml(s.star)}${s.transform}</b>`).join('、') +
+        `——${escapeHtml(SELF_TRANSFORM_NOTE[(lifeSeated.find(s=>s.transform==='化忌')||lifeSeated[0]).transform] || '')}</div>`
       : '';
     document.getElementById('ov-lead').innerHTML = `
       <div class="lead-kw">${kwHtml}</div>
@@ -790,9 +812,9 @@
     document.getElementById('ov-tri').innerHTML =
       node('命宮', true) + `<div class="base">${node('財帛宮', false)}${node('官祿宮', false)}</div>`;
 
-    // 3) 生年四化落點
+    // 3) 生年四化落點(掃所有坐宮自化星:主+輔+雜+煞)
     const birth = {};
-    PALACE_ORDER.forEach(p => palaceMainStars(p).forEach(s => { if (s.transform) birth[s.transform] = { palace: p, star: s.star }; }));
+    PALACE_ORDER.forEach(p => palaceSeatedTransforms(p).forEach(s => { birth[s.transform] = { palace: p, star: s.star }; }));
     document.getElementById('ov-birth').innerHTML = TRANSFORM_ORDER.map(t => {
       const b = birth[t];
       if (!b) return '';
@@ -806,7 +828,9 @@
     // 4) 貴人(依六內六外分欄)
     const selfArr = [], extArr = [];
     PALACE_ORDER.forEach(p => {
-      const allies = (reportsByPalace[p]?.composition?.support_stars || []).filter(s => ALLY_STARS.has(s));
+      const allies = (reportsByPalace[p]?.composition?.support_stars || [])
+        .map(s => (typeof s === 'string') ? s : s?.star)
+        .filter(s => ALLY_STARS.has(s));
       if (!allies.length) return;
       (OUTER_PALACES.has(p) ? extArr : selfArr).push({ palace: p, stars: allies });
     });
