@@ -278,7 +278,7 @@
         <div class="ov-tohub"><span class="ov-link" id="ov-to-hub">瀏覽全部十二宮 →</span></div>
       </div>
 
-      <div class="block-head"><span class="num">I</span><div><div class="bz">Who Are You?</div><div class="be">Your Role</div></div></div>
+      <div class="block-head"><span class="num">I</span><div><div class="bz">劇本角色</div><div class="be">Your Role</div></div></div>
       <div class="block-sub">你在自己故事裡，是什麼樣的主角。</div>
 
       <div class="ov-sec">
@@ -288,7 +288,7 @@
       </div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">生活核心</span><span class="be">The Stage · 命三方</span></div>
+        <div class="ov-sec-label"><span class="bz">舞台三角</span><span class="be">The Stage · 命三方</span></div>
         <div class="stage-line" id="ov-stage-line"></div>
         <div class="tri" id="ov-tri"></div>
         <div class="ov-legend">句型固定為「以【財】為舞台，由【命】驅動，於【官】展開」，括號內短語取自各宮主星的固定句用詞<span class="sp">|</span>點宮位進該宮完整內容</div>
@@ -314,10 +314,6 @@
         <div class="ov-legend"><span class="tg">祿</span> 資源・緣分<span class="sp">|</span><span class="tg">權</span> 主導・掌控<span class="sp">|</span><span class="tg">科</span> 名聲・貴氣<span class="sp">|</span>助力合計＝祿＋權＋科 飛入數（依合計排序）</div>
       </div>
 
-      <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">天生福分 · 安全感</span><span class="be">Innate</span></div>
-        <div id="ov-innate"></div>
-      </div>
     </section>
 
     <section id="view-hub" class="view">
@@ -404,7 +400,7 @@
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">Our Suggestions</div>
+            <div class="section-title-zh">演法建議</div>
             <div class="section-title-en">How to Play this Role</div>
           </div>
         </div>
@@ -515,7 +511,6 @@
 
   let reportsByPalace = {};
   let chartSessionId = null;
-  let shenPalace = null;
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -862,13 +857,6 @@
       return `<div class="feed-line"><div class="feed-palace">${f.p}</div><div class="feed-pills">${pills}</div><div class="feed-sum">助力 <b>${f.sum}</b></div></div>`;
     }).join('') || '<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">無飛入助力</div>';
 
-    // 6) 天生福分 / 身宮
-    const luP = birth['化祿'];
-    const rows = [];
-    if (luP) rows.push(`<div class="fact"><div class="fact-key">生年祿</div><div class="fact-val">${luP.palace} <small>（${luP.star}化祿）</small></div></div>`);
-    rows.push(`<div class="fact"><div class="fact-key">身宮</div><div class="fact-val">${shenPalace ? escapeHtml(shenPalace) : '<small style="font-style:italic;color:var(--ink-light);">尚未取得</small>'}</div></div>`);
-    document.getElementById('ov-innate').innerHTML = rows.join('');
-
     bindPalaceLinks(document.getElementById('view-overview'));
   }
 
@@ -903,16 +891,6 @@
 
       reportsByPalace = {};
       for (const row of reports) reportsByPalace[row.palace_name] = row;
-
-      // 身宮(在 ziwei_charts；該表需有「讀自己列」RLS，取不到則優雅略過)
-      try {
-        const { data: chartRow } = await supabase
-          .from('ziwei_charts')
-          .select('shen_palace:chart_data->profile->>shen_palace')
-          .eq('chart_session_id', chartSessionId)
-          .maybeSingle();
-        shenPalace = chartRow?.shen_palace || null;
-      } catch (_) { shenPalace = null; }
 
       renderOverview();
       renderHub();
