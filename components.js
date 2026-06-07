@@ -220,7 +220,7 @@ function injectCss() {
 }
 
 // ─── Header ──────────────────────────────────────────────────
-// activePage: 'chart' | 'account' | null
+// activePage: 'chart' | 'annual' | 'account' | null
 function injectHeader(activePage = null) {
   const el = document.getElementById('site-header');
   if (!el) return;
@@ -232,6 +232,7 @@ function injectHeader(activePage = null) {
       </div>
       <nav class="fs-header-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">本命盤</span>
+        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">流年</span>
         <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">帳戶</span>
         <span class="fs-nav-signout" id="fs-signout">登出</span>
       </nav>
@@ -243,6 +244,9 @@ function injectHeader(activePage = null) {
   });
   el.querySelector('[data-nav="chart"]').addEventListener('click', () => {
     window.location.href = 'chart.html';
+  });
+  el.querySelector('[data-nav="annual"]').addEventListener('click', () => {
+    window.location.href = 'annual.html';
   });
   el.querySelector('[data-nav="account"]').addEventListener('click', () => {
     window.location.href = 'account.html';
