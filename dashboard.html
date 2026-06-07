@@ -76,6 +76,7 @@
   }
   .dash-card:nth-child(1) { animation-delay: 0.12s; }
   .dash-card:nth-child(2) { animation-delay: 0.22s; }
+  .dash-card:nth-child(3) { animation-delay: 0.32s; }
 
   /* 角落金線裝飾 */
   .dash-card::before {
@@ -247,6 +248,15 @@
           <div id="card-natal-action"><!-- 動態填入：就緒 / 生成中 --></div>
         </div>
 
+        <!-- 流年卡 -->
+        <div class="dash-card" id="card-annual">
+          <div class="card-kicker">Annual Fortune</div>
+          <div class="card-name">流年運勢</div>
+          <div class="card-name-en">This Year's Currents</div>
+          <div class="card-desc">隨流年變動的能量焦點，帶您看見今年值得留意的方向與機會。</div>
+          <div id="card-annual-action"><!-- 動態填入：就緒 / 生成中 --></div>
+        </div>
+
         <!-- 月報佔位卡 -->
         <div class="dash-card is-soon">
           <div class="card-kicker">Monthly Reading</div>
@@ -297,6 +307,19 @@
 
     renderNatalCard(chartReady);
 
+    // ── 判斷流年是否就緒（查 annual_palace_reports，RLS 自動篩自己）──
+    let annualReady = false;
+    try {
+      const { data: ann, error } = await supabase
+        .from('annual_palace_reports')
+        .select('chart_session_id')
+        .eq('chart_layer', 'annual')
+        .limit(1);
+      if (!error && ann && ann.length > 0) annualReady = true;
+    } catch (_) { annualReady = false; }
+
+    renderAnnualCard(annualReady);
+
     // 顯示內容
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
@@ -321,6 +344,30 @@
         </div>
         <div class="card-refresh" id="refresh-status">重新整理狀態</div>`;
       document.getElementById('refresh-status').addEventListener('click', () => {
+        window.location.reload();
+      });
+    }
+  }
+
+  function renderAnnualCard(ready) {
+    const el = document.getElementById('card-annual-action');
+    if (ready) {
+      el.innerHTML = `
+        <span class="card-cta" id="go-annual">
+          進入流年 <span class="arrow">→</span>
+        </span>`;
+      document.getElementById('go-annual').addEventListener('click', () => {
+        window.location.href = 'annual.html';
+      });
+    } else {
+      el.innerHTML = `
+        <div class="card-status"><span class="pulse"></span> 流年生成中</div>
+        <div class="card-note">
+          您的流年運勢正在生成，完成後即可在此查看。<br>
+          您也可以稍後回來重新整理。
+        </div>
+        <div class="card-refresh" id="refresh-annual">重新整理狀態</div>`;
+      document.getElementById('refresh-annual').addEventListener('click', () => {
         window.location.reload();
       });
     }
