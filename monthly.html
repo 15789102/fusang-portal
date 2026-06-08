@@ -311,7 +311,7 @@
       <!-- 能量張力一覽 overview -->
       <div id="overview" class="overview" style="display:none;">
         <div class="overview-eyebrow">Energy Overview · 本月能量一覽</div>
-        <div class="overview-title" id="overview-title">這個月最需要被照顧的領域</div>
+        <div class="overview-title" id="overview-title">本月十二領域的能量分布</div>
         <div class="overview-sub" id="overview-sub"></div>
         <div id="overview-focus" class="overview-focus"></div>
         <div id="overview-highlights" class="overview-highlights" style="display:none;">
@@ -320,7 +320,7 @@
         </div>
         <div id="overview-bars" class="overview-bars"></div>
         <div class="overview-legend">
-          綜合各宮的星曜與四化能量推算。偏右（綠）代表這個月該領域較順、助力多；偏左（紅）代表能量張力較高、特別值得用心對待。這不是吉凶評價，而是提示您把心力放在最需要的地方。
+          每一條的右側（綠）代表這個月該領域的助力與順流，左側（紅）代表能量張力與需要用心之處——兩者並存、不互相抵銷，因為人生本就是好壞交織。長度是相對於您本月其他領域而言，並非絕對的吉凶評分。這不是要評斷好壞，而是幫您看見：這個月，把心力放在哪裡最值得。
         </div>
       </div>
 
@@ -683,13 +683,23 @@
   // 依權重算單宮能量分數（紅鸞不進分數，只進亮點）
   function palaceScore(m) {
     if (!m) return null;
+    return palacePosScore(m) - palaceNegScore(m);
+  }
+  // 正向能量（綠，往右）：貴人 + 化祿 + 0.5化權 + 0.5化科
+  function palacePosScore(m) {
+    if (!m) return 0;
     const n = (k) => Number(m[k]) || 0;
     return SCORE_WEIGHT.auspicious * n('auspicious_count')
          + SCORE_WEIGHT.hua_lu     * n('hua_lu_count')
          + SCORE_WEIGHT.hua_quan   * n('hua_quan_count')
-         + SCORE_WEIGHT.hua_ke     * n('hua_ke_count')
-         + SCORE_WEIGHT.sha_ji     * n('sha_ji_count')
-         + SCORE_WEIGHT.hua_ji     * n('hua_ji_count');
+         + SCORE_WEIGHT.hua_ke     * n('hua_ke_count');
+  }
+  // 張力能量（紅，往左）：煞 + 1.5化忌（取正值表示「量」）
+  function palaceNegScore(m) {
+    if (!m) return 0;
+    const n = (k) => Number(m[k]) || 0;
+    return Math.abs(SCORE_WEIGHT.sha_ji) * n('sha_ji_count')
+         + Math.abs(SCORE_WEIGHT.hua_ji) * n('hua_ji_count');
   }
 
   // 產生單宮的能量標籤（bar 旁）
@@ -786,10 +796,14 @@
     const barsEl = document.getElementById('overview-bars');
     const subEl = document.getElementById('overview-sub');
 
-    // 算每宮分數
+    // 算每宮的正項（綠）與負項（紅），不抵銷
     const scored = PALACE_ORDER
-      .map(p => ({ palace: p, score: palaceScore(metaByPalace[p]) }))
-      .filter(x => x.score !== null);
+      .map(p => {
+        const m = metaByPalace[p];
+        if (!m) return null;
+        return { palace: p, pos: palacePosScore(m), neg: palaceNegScore(m), m };
+      })
+      .filter(Boolean);
 
     if (scored.length === 0) {
       box.style.display = 'none';
@@ -797,12 +811,15 @@
     }
     box.style.display = 'block';
 
-    // 最需要照顧的（分數最低）取最多 2 個，且分數需為負或明顯偏低
-    const ascend = [...scored].sort((a, b) => a.score - b.score);
-    const focus = ascend.filter(x => x.score < 0).slice(0, 2);
+    // 紅、綠各自的全月最大值（各自獨立刻度，避免「紅天生偏多」造成壓迫）
+    const maxPos = Math.max(1, ...scored.map(x => x.pos));
+    const maxNeg = Math.max(1, ...scored.map(x => x.neg));
+
+    // 「最需要被照顧」＝ 張力（負項）最突出的宮，取最多 2 個（且 neg > 0）
+    const focus = [...scored].filter(x => x.neg > 0).sort((a, b) => b.neg - a.neg).slice(0, 2);
 
     subEl.textContent = focus.length
-      ? `這個月，建議把多一點心力放在以下領域：`
+      ? `這個月，以下領域的能量張力相對突出，值得多放一點心：`
       : `這個月十二宮能量相對平穩，沒有特別需要費心的領域。`;
 
     focusEl.innerHTML = focus.map(f => `
@@ -834,8 +851,7 @@
       hlBox.style.display = 'none';
     }
 
-    // 橫條 + 標籤 + tooltip
-    const maxAbs = Math.max(1, ...scored.map(x => Math.abs(x.score)));
+    // 雙向橫條（綠右紅左、不抵銷，各自正規化）＋ 標籤 ＋ tooltip
     barsEl.innerHTML = PALACE_ORDER.map(p => {
       const item = scored.find(x => x.palace === p);
       const m = metaByPalace[p];
@@ -847,11 +863,11 @@
       if (!item) {
         barInner = `<div class="ovb-track"><div class="ovb-mid"></div></div>`;
       } else {
-        const pct = Math.round(Math.abs(item.score) / maxAbs * 50);
-        const fill = item.score >= 0
-          ? `<div class="ovb-fill pos" style="width:${pct}%;"></div>`
-          : `<div class="ovb-fill neg" style="width:${pct}%;"></div>`;
-        barInner = `<div class="ovb-track"><div class="ovb-mid"></div>${fill}</div>`;
+        const posPct = Math.round(item.pos / maxPos * 50); // 右半最多 50%
+        const negPct = Math.round(item.neg / maxNeg * 50); // 左半最多 50%
+        const posFill = item.pos > 0 ? `<div class="ovb-fill pos" style="width:${posPct}%;"></div>` : '';
+        const negFill = item.neg > 0 ? `<div class="ovb-fill neg" style="width:${negPct}%;"></div>` : '';
+        barInner = `<div class="ovb-track"><div class="ovb-mid"></div>${posFill}${negFill}</div>`;
       }
       return `<div class="ovb-row-wrap" data-palace="${p}">
         <div class="overview-bar-row">
@@ -862,18 +878,14 @@
       </div>`;
     }).join('');
 
-    // 綁定：點擊進詳細；hover/觸控顯示 tooltip
+    // 綁定：點擊進詳細；hover 顯示 tooltip
     barsEl.querySelectorAll('.ovb-row-wrap').forEach(row => {
       const p = row.dataset.palace;
       const m = metaByPalace[p];
       const item = scored.find(x => x.palace === p);
-      const score = item ? item.score : 0;
-      const popHtml = m ? palacePopHtml(p, m, score) : null;
+      const popHtml = m ? palacePopHtml(p, m, item ? (item.pos - item.neg) : 0) : null;
 
-      row.addEventListener('click', (e) => {
-        // 手機：第一次點顯示 tooltip，再點進詳細。桌機 hover 已顯示，點擊直接進。
-        openDetail(p);
-      });
+      row.addEventListener('click', () => openDetail(p));
       if (popHtml) {
         row.addEventListener('mouseenter', (e) => showPop(popHtml, e.clientX, e.clientY));
         row.addEventListener('mousemove', (e) => showPop(popHtml, e.clientX, e.clientY));
