@@ -257,13 +257,13 @@
           <div id="card-annual-action"><!-- 動態填入：就緒 / 生成中 --></div>
         </div>
 
-        <!-- 月報佔位卡 -->
-        <div class="dash-card is-soon">
+        <!-- 流月卡 -->
+        <div class="dash-card" id="card-monthly">
           <div class="card-kicker">Monthly Reading</div>
-          <div class="card-name">月運報告</div>
+          <div class="card-name">流月運勢</div>
           <div class="card-name-en">Your Monthly Currents</div>
           <div class="card-desc">每月隨流月變動的能量焦點，帶您看見當下值得留意的方向與機會。</div>
-          <div class="card-badge"><span class="dot"></span> 即將推出 · Coming Soon</div>
+          <div id="card-monthly-action"><!-- 動態填入：就緒 / 生成中 --></div>
         </div>
       </div>
     </div>
@@ -320,6 +320,19 @@
 
     renderAnnualCard(annualReady);
 
+    // ── 判斷流月是否就緒（查 monthly_palace_reports，RLS 自動篩自己）──
+    let monthlyReady = false;
+    try {
+      const { data: mon, error } = await supabase
+        .from('monthly_palace_reports')
+        .select('chart_session_id')
+        .eq('chart_layer', 'monthly')
+        .limit(1);
+      if (!error && mon && mon.length > 0) monthlyReady = true;
+    } catch (_) { monthlyReady = false; }
+
+    renderMonthlyCard(monthlyReady);
+
     // 顯示內容
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
@@ -368,6 +381,29 @@
         </div>
         <div class="card-refresh" id="refresh-annual">重新整理狀態</div>`;
       document.getElementById('refresh-annual').addEventListener('click', () => {
+        window.location.reload();
+      });
+    }
+  }
+  function renderMonthlyCard(ready) {
+    const el = document.getElementById('card-monthly-action');
+    if (ready) {
+      el.innerHTML = `
+        <span class="card-cta" id="go-monthly">
+          進入流月 <span class="arrow">→</span>
+        </span>`;
+      document.getElementById('go-monthly').addEventListener('click', () => {
+        window.location.href = 'monthly.html';
+      });
+    } else {
+      el.innerHTML = `
+        <div class="card-status"><span class="pulse"></span> 流月生成中</div>
+        <div class="card-note">
+          您的流月運勢正在生成，完成後即可在此查看。<br>
+          您也可以稍後回來重新整理。
+        </div>
+        <div class="card-refresh" id="refresh-monthly">重新整理狀態</div>`;
+      document.getElementById('refresh-monthly').addEventListener('click', () => {
         window.location.reload();
       });
     }
