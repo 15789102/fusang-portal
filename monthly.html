@@ -491,6 +491,32 @@
   // 月份標籤（相對於現在）
   const MONTH_REL_LABEL = { '-1': '上月', '0': '本月', '1': '下月', '2': '+2', '3': '+3' };
 
+  // ===================================================================
+  // 國曆 / 農曆 對應轉換（固定位移，不做真農曆換算、不處理閏月）
+  //   資料庫存農曆；給用戶看的一律 +1 個月轉國曆（農曆12月→隔年國曆1月）
+  // ===================================================================
+
+  // 農曆年月 → 國曆顯示用 { year, month, label }
+  function lunarToSolarDisplay(lunarYear, lunarMonth) {
+    lunarYear = Number(lunarYear); lunarMonth = Number(lunarMonth);
+    let y, m;
+    if (lunarMonth === 12) { y = lunarYear + 1; m = 1; }
+    else { y = lunarYear; m = lunarMonth + 1; }
+    return { year: y, month: m, label: `${y} 年 ${m} 月` };
+  }
+  // 顯示用：農曆年月 → "YYYY/MM"（國曆）
+  function lunarToSolarYM(lunarYear, lunarMonth) {
+    const d = lunarToSolarDisplay(lunarYear, lunarMonth);
+    return `${d.year}/${String(d.month).padStart(2, '0')}`;
+  }
+  // 系統當下國曆 → 農曆基準（給 tier 鎖定計算用）：國曆月−1，1月→前一年12月
+  function nowAsLunarBase() {
+    const now = new Date();
+    const sy = now.getFullYear(), sm = now.getMonth() + 1;
+    if (sm === 1) return { year: sy - 1, month: 12 };
+    return { year: sy, month: sm - 1 };
+  }
+
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
@@ -566,9 +592,8 @@
     visibleMonths = computeVisibleMonths(availableMonths);
 
     // 預設選中的月份：優先選「本月」，否則選可見清單第一個
-    const now = new Date();
-    const nowY = now.getFullYear(), nowM = now.getMonth() + 1;
-    let defaultPick = visibleMonths.find(v => v.year === nowY && v.month === nowM)
+    const base = nowAsLunarBase();
+    let defaultPick = visibleMonths.find(v => v.year === base.year && v.month === base.month)
       || visibleMonths.find(v => v.unlocked) || visibleMonths[0];
 
     renderMonthTabs();
@@ -576,11 +601,11 @@
     showView('view-hub');
   }
 
-  // 計算可見月份（含鎖定狀態）：以系統當前年月為「本月」基準
+// 計算可見月份（含鎖定狀態）：以「系統當下的農曆基準」為本月
   function computeVisibleMonths(all) {
-    const now = new Date();
-    const baseIdx = now.getFullYear() * 12 + (now.getMonth() + 1); // 本月的絕對月序
-    const maxAhead = userTier === 'paid' ? 3 : 1; // paid 看未來 3 月，free 看未來 1 月
+    const base = nowAsLunarBase(); // 農曆基準
+    const baseIdx = base.year * 12 + base.month; // 本月的絕對月序（農曆）
+    const maxAhead = userTier === 'paid' ? 3 : 1;
 
     return all
       .map(({ year, month }) => {
@@ -588,11 +613,9 @@
         const rel = idx - baseIdx; // -1=上月, 0=本月, 正數=未來
         return { year, month, rel };
       })
-      // 只保留 上月(-1) 到 未來 maxAhead 的範圍
       .filter(v => v.rel >= -1 && v.rel <= 3)
       .map(v => ({
         ...v,
-        // 在 tier 範圍內 = 解鎖；超出 = 鎖定（顯示但不可點）
         unlocked: v.rel >= -1 && v.rel <= maxAhead,
       }))
       .sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
@@ -605,8 +628,8 @@
       const tab = document.createElement('div');
       tab.className = 'month-tab' + (v.unlocked ? '' : ' locked') + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
       const relLabel = MONTH_REL_LABEL[String(v.rel)] || `${v.month}月`;
-      tab.innerHTML = `
-        <span class="month-tab-ym">${v.year}/${String(v.month).padStart(2, '0')}</span>
+    tab.innerHTML = `
+        <span class="month-tab-ym">${lunarToSolarYM(v.year, v.month)}</span>
         <span class="month-tab-label">${relLabel}</span>
         ${v.unlocked ? '' : '<span class="month-tab-lock">🔒 升級可見</span>'}`;
       if (v.unlocked) {
@@ -639,8 +662,9 @@
     // 載入 metadata（overview 能量張力）。失敗不阻斷主畫面。
     await loadOverviewMeta(year, month);
 
-    document.getElementById('hub-eyebrow').textContent = `Your ${year}/${String(month).padStart(2,'0')} Monthly Chart`;
-    document.getElementById('hub-title').textContent = `${year} 年 ${month} 月 流月十二宮`;
+    const disp = lunarToSolarDisplay(year, month);
+    document.getElementById('hub-eyebrow').textContent = `Your ${disp.year}/${String(disp.month).padStart(2,'0')} Monthly Chart`;
+    document.getElementById('hub-title').textContent = `${disp.label} 流月十二宮`;
     renderMonthTabs();
     renderOverview();
     renderHub();
@@ -925,7 +949,7 @@
     if (!row) return;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
-    const ymLabel = (currentYear && currentMonth) ? `${currentYear}/${String(currentMonth).padStart(2,'0')}` : '';
+    const ymLabel = (currentYear && currentMonth) ? lunarToSolarYM(currentYear, currentMonth) : '';
     document.getElementById('detail-eyebrow').textContent = (PALACE_EN[palaceName] || '') + (ymLabel ? ` · ${ymLabel}` : '');
     document.getElementById('detail-title-zh').textContent = palaceName;
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
