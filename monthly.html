@@ -99,6 +99,35 @@
     .ovb-zero { font-family: var(--font-sans); font-size: 11px; color: var(--ink-light); }
     .overview-legend { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule); font-family: var(--font-sans); font-size: 11px; color: var(--ink-light); letter-spacing: 0.03em; line-height: 1.7; }
 
+    /* 本月亮點 */
+    .overview-highlights { margin: 4px 0 22px; padding: 16px 18px; background: var(--t-lu-bg); border-radius: 2px; }
+    .ovh-title { font-family: var(--font-serif-zh); font-size: 13px; color: var(--t-lu); letter-spacing: 0.06em; margin-bottom: 10px; font-weight: 500; }
+    .ovh-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ovh-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--accent-pale); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-dark); letter-spacing: 0.03em; cursor: pointer; transition: all 0.2s; }
+    .ovh-chip:hover { border-color: var(--t-lu); transform: translateY(-1px); }
+    .ovh-chip .ovh-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.05em; color: var(--t-lu); }
+
+    /* bar 旁能量標籤 */
+    .ovb-row-wrap { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+    .ovb-tags { display: flex; flex-wrap: wrap; gap: 5px; padding-left: 76px; }
+    .ovb-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 2px; line-height: 1.5; }
+    .ovb-tag.sha  { background: var(--t-ji-bg); color: var(--t-ji); }
+    .ovb-tag.ji   { background: var(--t-ji-bg); color: var(--t-ji); font-weight: 600; }
+    .ovb-tag.lu   { background: var(--t-lu-bg); color: var(--t-lu); }
+    .ovb-tag.quan { background: var(--t-quan-bg); color: var(--t-quan); }
+    .ovb-tag.ke   { background: var(--t-ke-bg); color: var(--t-ke); }
+    .ovb-tag.aus  { background: #f3ecdd; color: var(--gold, #b8945c); }
+    .ovb-tag.luan { background: #f0e3e6; color: #a14b63; }
+
+    /* overview tooltip（點擊/hover 浮出宮位細節）*/
+    .ovb-pop { position: fixed; z-index: 200; max-width: 280px; background: var(--ink-darkest); color: var(--bg-primary); padding: 14px 16px; border-radius: 4px; box-shadow: 0 8px 28px rgba(21,54,58,0.28); font-family: var(--font-serif-zh); opacity: 0; pointer-events: none; transition: opacity 0.18s; }
+    .ovb-pop.show { opacity: 1; pointer-events: auto; }
+    .ovb-pop-name { font-size: 15px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .ovb-pop-items { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .ovb-pop-item { font-size: 12.5px; line-height: 1.5; color: var(--silver-pale); }
+    .ovb-pop-item b { color: var(--bg-primary); font-weight: 500; }
+    .ovb-pop-desc { font-size: 12px; line-height: 1.7; color: var(--silver-soft); border-top: 1px solid rgba(255,255,255,0.15); padding-top: 9px; letter-spacing: 0.02em; }
+
     /* HUB */
     .hub-head { text-align: center; margin-bottom: 48px; }
     .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
@@ -285,6 +314,10 @@
         <div class="overview-title" id="overview-title">這個月最需要被照顧的領域</div>
         <div class="overview-sub" id="overview-sub"></div>
         <div id="overview-focus" class="overview-focus"></div>
+        <div id="overview-highlights" class="overview-highlights" style="display:none;">
+          <div class="ovh-title">本月亮點 · Bright Spots</div>
+          <div id="overview-highlights-chips" class="ovh-chips"></div>
+        </div>
         <div id="overview-bars" class="overview-bars"></div>
         <div class="overview-legend">
           綜合各宮的星曜與四化能量推算。偏右（綠）代表這個月該領域較順、助力多；偏左（紅）代表能量張力較高、特別值得用心對待。這不是吉凶評價，而是提示您把心力放在最需要的地方。
@@ -619,7 +652,7 @@
     try {
       const { data, error } = await supabase
         .from(INTERP_TABLE)
-        .select('palace_name, metadata, valid_year_start, valid_month_start')
+        .select('palace_name, metadata, star_list, valid_year_start, valid_month_start')
         .eq('chart_session_id', chartSessionId)
         .eq('chart_layer', 'monthly')
         .eq('language', 'zh-TW')
@@ -633,14 +666,21 @@
         if (typeof m === 'string') {
           try { m = JSON.parse(m); } catch (_) { m = null; }
         }
-        if (m) metaByPalace[row.palace_name] = m;
+        if (!m) return;
+        // star_list 可能是 JSON 字串，parse 成陣列備用（tooltip 用）
+        let sl = row.star_list;
+        if (typeof sl === 'string') {
+          try { sl = JSON.parse(sl); } catch (_) { sl = []; }
+        }
+        m.__star_list = Array.isArray(sl) ? sl : [];
+        metaByPalace[row.palace_name] = m;
       });
     } catch (e) {
       console.warn('[monthly] overview metadata 例外：', e);
     }
   }
 
-  // 依權重算單宮能量分數
+  // 依權重算單宮能量分數（紅鸞不進分數，只進亮點）
   function palaceScore(m) {
     if (!m) return null;
     const n = (k) => Number(m[k]) || 0;
@@ -651,6 +691,94 @@
          + SCORE_WEIGHT.sha_ji     * n('sha_ji_count')
          + SCORE_WEIGHT.hua_ji     * n('hua_ji_count');
   }
+
+  // 產生單宮的能量標籤（bar 旁）
+  function palaceTags(m) {
+    if (!m) return [];
+    const n = (k) => Number(m[k]) || 0;
+    const tags = [];
+    if (n('sha_ji_count') > 0) tags.push({ cls: 'sha',  text: `煞 ×${n('sha_ji_count')}` });
+    if (n('hua_ji_count') > 0) tags.push({ cls: 'ji',   text: `化忌${n('hua_ji_count') > 1 ? ' ×' + n('hua_ji_count') : ''}` });
+    if (n('hua_lu_count') > 0) tags.push({ cls: 'lu',   text: `化祿${n('hua_lu_count') > 1 ? ' ×' + n('hua_lu_count') : ''}` });
+    if (n('hua_quan_count') > 0) tags.push({ cls: 'quan', text: `化權${n('hua_quan_count') > 1 ? ' ×' + n('hua_quan_count') : ''}` });
+    if (n('hua_ke_count') > 0) tags.push({ cls: 'ke',   text: `化科${n('hua_ke_count') > 1 ? ' ×' + n('hua_ke_count') : ''}` });
+    if (n('auspicious_count') > 0) tags.push({ cls: 'aus', text: `貴人 ×${n('auspicious_count')}` });
+    if (m.hong_luan_detected === true) tags.push({ cls: 'luan', text: '紅鸞' });
+    return tags;
+  }
+
+  // 該宮是否有正向亮點（貴人 / 紅鸞 / 化祿權科）
+  function palaceHighlight(palace, m) {
+    if (!m) return null;
+    const n = (k) => Number(m[k]) || 0;
+    const parts = [];
+    if (n('auspicious_count') > 0) {
+      const names = Array.isArray(m.auspicious_list) ? m.auspicious_list.join('、') : '';
+      parts.push({ tag: '貴人', text: names || `貴人 ×${n('auspicious_count')}` });
+    }
+    if (m.hong_luan_detected === true) parts.push({ tag: '紅鸞', text: '人緣與情感的契機' });
+    if (n('hua_lu_count') > 0) parts.push({ tag: '化祿', text: '資源與順流' });
+    if (n('hua_quan_count') > 0) parts.push({ tag: '化權', text: '主導與承擔' });
+    if (n('hua_ke_count') > 0) parts.push({ tag: '化科', text: '被看見的舞台' });
+    return parts.length ? parts : null;
+  }
+
+  // tooltip 內容（重點星 + 一句定性）
+  function palacePopHtml(palace, m, score) {
+    const n = (k) => Number(m[k]) || 0;
+    const items = [];
+    // 重點星：從 star_list 篩煞/貴人/紅鸞，四化以 count 呈現
+    const aus = Array.isArray(m.auspicious_list) ? m.auspicious_list : [];
+    if (aus.length) items.push(`<div class="ovb-pop-item">貴人星：<b>${aus.join('、')}</b></div>`);
+    if (n('sha_ji_count') > 0) items.push(`<div class="ovb-pop-item">煞星：<b>${n('sha_ji_count')} 顆</b></div>`);
+    const huaParts = [];
+    if (n('hua_lu_count') > 0)  huaParts.push('化祿');
+    if (n('hua_quan_count') > 0) huaParts.push('化權');
+    if (n('hua_ke_count') > 0)  huaParts.push('化科');
+    if (n('hua_ji_count') > 0)  huaParts.push('化忌');
+    if (huaParts.length) items.push(`<div class="ovb-pop-item">四化：<b>${huaParts.join('、')}</b></div>`);
+    if (m.hong_luan_detected === true) items.push(`<div class="ovb-pop-item">桃花：<b>紅鸞</b></div>`);
+    if (items.length === 0) items.push(`<div class="ovb-pop-item">這個月此宮星曜平和，無特別強烈的能量訊號。</div>`);
+
+    // 一句定性（不評價吉凶）
+    let desc;
+    if (score < 0) {
+      desc = '這個月這個領域的能量張力較高，適合放慢腳步、多給自己一些餘裕，把心力溫柔地放在這裡。';
+    } else if (score > 0) {
+      desc = '這個月這個領域相對順流、有助力，是可以放心投入、順勢而為的方向。';
+    } else {
+      desc = '這個月這個領域大致平穩，依您的節奏自然推進即可。';
+    }
+    return `
+      <div class="ovb-pop-name">${palace}　${PALACE_EN[palace] || ''}</div>
+      <div class="ovb-pop-items">${items.join('')}</div>
+      <div class="ovb-pop-desc">${desc}</div>`;
+  }
+
+  // 浮層元素（單例）
+  let _ovbPop = null;
+  function getPop() {
+    if (!_ovbPop) {
+      _ovbPop = document.createElement('div');
+      _ovbPop.className = 'ovb-pop';
+      document.body.appendChild(_ovbPop);
+    }
+    return _ovbPop;
+  }
+  function showPop(html, x, y) {
+    const pop = getPop();
+    pop.innerHTML = html;
+    pop.classList.add('show');
+    // 先定位再量測，避免超出視窗右緣
+    pop.style.left = '0px'; pop.style.top = '0px';
+    const rect = pop.getBoundingClientRect();
+    let left = x + 14, top = y + 14;
+    if (left + rect.width > window.innerWidth - 12) left = x - rect.width - 14;
+    if (top + rect.height > window.innerHeight - 12) top = window.innerHeight - rect.height - 12;
+    pop.style.left = Math.max(12, left) + 'px';
+    pop.style.top = Math.max(12, top) + 'px';
+  }
+  function hidePop() { if (_ovbPop) _ovbPop.classList.remove('show'); }
 
   function renderOverview() {
     const box = document.getElementById('overview');
@@ -685,27 +813,72 @@
       chip.addEventListener('click', () => openDetail(chip.dataset.palace));
     });
 
-    // 橫條：以最大絕對值為刻度
+    // 本月亮點：彙整有正向訊號的宮位
+    const hlBox = document.getElementById('overview-highlights');
+    const hlChips = document.getElementById('overview-highlights-chips');
+    const highlights = [];
+    PALACE_ORDER.forEach(p => {
+      const parts = palaceHighlight(p, metaByPalace[p]);
+      if (parts) parts.forEach(part => highlights.push({ palace: p, ...part }));
+    });
+    if (highlights.length) {
+      hlBox.style.display = 'block';
+      hlChips.innerHTML = highlights.map(h => `
+        <span class="ovh-chip" data-palace="${h.palace}">
+          <span class="ovh-tag">${h.tag}</span>${h.palace}・${h.text}
+        </span>`).join('');
+      hlChips.querySelectorAll('.ovh-chip').forEach(chip => {
+        chip.addEventListener('click', () => openDetail(chip.dataset.palace));
+      });
+    } else {
+      hlBox.style.display = 'none';
+    }
+
+    // 橫條 + 標籤 + tooltip
     const maxAbs = Math.max(1, ...scored.map(x => Math.abs(x.score)));
     barsEl.innerHTML = PALACE_ORDER.map(p => {
       const item = scored.find(x => x.palace === p);
+      const m = metaByPalace[p];
+      const tags = palaceTags(m);
+      const tagsHtml = tags.length
+        ? `<div class="ovb-tags">${tags.map(t => `<span class="ovb-tag ${t.cls}">${t.text}</span>`).join('')}</div>`
+        : '';
+      let barInner;
       if (!item) {
-        return `<div class="overview-bar-row" data-palace="${p}">
-          <span class="ovb-name">${p}</span>
-          <div class="ovb-track"><div class="ovb-mid"></div></div>
-        </div>`;
+        barInner = `<div class="ovb-track"><div class="ovb-mid"></div></div>`;
+      } else {
+        const pct = Math.round(Math.abs(item.score) / maxAbs * 50);
+        const fill = item.score >= 0
+          ? `<div class="ovb-fill pos" style="width:${pct}%;"></div>`
+          : `<div class="ovb-fill neg" style="width:${pct}%;"></div>`;
+        barInner = `<div class="ovb-track"><div class="ovb-mid"></div>${fill}</div>`;
       }
-      const pct = Math.round(Math.abs(item.score) / maxAbs * 50); // 半條最多 50%
-      const fill = item.score >= 0
-        ? `<div class="ovb-fill pos" style="width:${pct}%;"></div>`
-        : `<div class="ovb-fill neg" style="width:${pct}%;"></div>`;
-      return `<div class="overview-bar-row" data-palace="${p}">
-        <span class="ovb-name">${p}</span>
-        <div class="ovb-track"><div class="ovb-mid"></div>${fill}</div>
+      return `<div class="ovb-row-wrap" data-palace="${p}">
+        <div class="overview-bar-row">
+          <span class="ovb-name">${p}</span>
+          ${barInner}
+        </div>
+        ${tagsHtml}
       </div>`;
     }).join('');
-    barsEl.querySelectorAll('.overview-bar-row').forEach(row => {
-      row.addEventListener('click', () => openDetail(row.dataset.palace));
+
+    // 綁定：點擊進詳細；hover/觸控顯示 tooltip
+    barsEl.querySelectorAll('.ovb-row-wrap').forEach(row => {
+      const p = row.dataset.palace;
+      const m = metaByPalace[p];
+      const item = scored.find(x => x.palace === p);
+      const score = item ? item.score : 0;
+      const popHtml = m ? palacePopHtml(p, m, score) : null;
+
+      row.addEventListener('click', (e) => {
+        // 手機：第一次點顯示 tooltip，再點進詳細。桌機 hover 已顯示，點擊直接進。
+        openDetail(p);
+      });
+      if (popHtml) {
+        row.addEventListener('mouseenter', (e) => showPop(popHtml, e.clientX, e.clientY));
+        row.addEventListener('mousemove', (e) => showPop(popHtml, e.clientX, e.clientY));
+        row.addEventListener('mouseleave', hidePop);
+      }
     });
   }
 
