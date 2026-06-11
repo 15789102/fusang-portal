@@ -265,6 +265,62 @@
     .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
+
+    /* ============ INTRO（未訂閱介紹 / 生成中）============ */
+    .intro-wrap { max-width: 640px; margin: 0 auto; padding: 24px 0 40px; }
+    .intro-ornament { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 28px; }
+    .intro-ornament .line { height: 1px; width: 48px; background: linear-gradient(90deg, transparent, var(--gold, #b8945c)); }
+    .intro-ornament .line.right { background: linear-gradient(90deg, var(--gold, #b8945c), transparent); }
+    .intro-ornament .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold, #b8945c); opacity: 0.8; }
+    .intro-eyebrow { text-align: center; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.18em; color: var(--accent-soft); margin-bottom: 14px; }
+    .intro-title { text-align: center; font-family: var(--font-serif-zh); font-size: 42px; font-weight: 400; letter-spacing: 0.1em; color: var(--ink-darkest); margin-bottom: 36px; line-height: 1.2; }
+    @media (max-width: 560px) { .intro-title { font-size: 34px; } }
+    .intro-body { font-family: var(--font-serif-zh); font-size: 16.5px; line-height: 2.05; color: var(--ink-dark); letter-spacing: 0.025em; }
+    .intro-body p { margin-bottom: 1.5em; }
+    .intro-body p:last-child { margin-bottom: 0; }
+    .intro-body .lead-first::first-letter { font-family: var(--font-serif-en); font-size: 3.4em; line-height: 0.8; float: left; padding: 0.08em 0.14em 0 0; color: var(--accent-deep); font-weight: 400; }
+
+    /* 訂閱好處卡片（左側銅金飾線，呼應 composition/section 風格）*/
+    .intro-offer { margin: 44px 0 40px; padding: 30px 34px; background: var(--bg-soft-2); border-radius: 2px; position: relative; overflow: hidden; }
+    .intro-offer::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
+    .intro-offer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 16px; }
+    .intro-offer-body { font-family: var(--font-serif-zh); font-size: 15.5px; line-height: 1.95; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .intro-offer-body strong { color: var(--ink-darkest); font-weight: 600; letter-spacing: 0.04em; }
+    .intro-offer-list { margin-top: 18px; display: flex; flex-direction: column; gap: 11px; }
+    .intro-offer-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; color: var(--ink-dark); letter-spacing: 0.02em; line-height: 1.6; }
+    .intro-offer-item .marker { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
+
+    .intro-cta-wrap { text-align: center; margin-top: 40px; }
+    .intro-cta {
+      display: inline-block; padding: 17px 52px; background: var(--ink-darkest); color: var(--bg-primary);
+      font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: 0.28em;
+      text-transform: uppercase; border: none; cursor: pointer; transition: all 0.25s; border-radius: 2px;
+    }
+    .intro-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
+    .intro-cta:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .intro-cta-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.04em; }
+
+    /* 生成中：兩個 pulse 區塊 */
+    .intro-generating { margin-top: 8px; }
+    .intro-gen-head { text-align: center; margin-bottom: 32px; }
+    .intro-gen-head .g-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 400; letter-spacing: 0.06em; color: var(--ink-darkest); margin-bottom: 10px; }
+    .intro-gen-head .g-sub { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); letter-spacing: 0.03em; line-height: 1.7; }
+    .gen-cards { display: flex; flex-direction: column; gap: 16px; }
+    .gen-card { display: flex; align-items: center; gap: 20px; padding: 24px 28px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; position: relative; overflow: hidden; }
+    .gen-card.done { border-color: var(--accent-pale); cursor: pointer; transition: all 0.2s; }
+    .gen-card.done:hover { border-color: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(21,54,58,0.06); }
+    .gen-card-spinner { flex-shrink: 0; display: flex; gap: 5px; }
+    .gen-card-spinner span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
+    .gen-card-spinner span:nth-child(2) { animation-delay: 0.2s; }
+    .gen-card-spinner span:nth-child(3) { animation-delay: 0.4s; }
+    .gen-card-check { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-deep); color: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+    .gen-card-info { flex: 1; }
+    .gen-card-month { font-family: var(--font-serif-zh); font-size: 17px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 3px; }
+    .gen-card-month .rel { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--ink-light); margin-left: 8px; letter-spacing: 0.08em; }
+    .gen-card-status { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.03em; }
+    .gen-card.done .gen-card-status { color: var(--accent-deep); }
+    .gen-card-arrow { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); opacity: 0; transition: opacity 0.2s; }
+    .gen-card.done:hover .gen-card-arrow { opacity: 1; }
   </style>
 </head>
 <body>
@@ -279,6 +335,51 @@
       <div style="text-align: center;">
         <h1 class="loading-title">載入您的流月</h1>
         <p class="loading-sub">正在查找您的流月運勢…</p>
+      </div>
+    </section>
+
+    <!-- 未訂閱介紹 / 生成中 -->
+    <section id="view-intro" class="view">
+      <div class="intro-wrap">
+        <!-- 未訂閱：介紹 + 訂閱 -->
+        <div id="intro-pitch">
+          <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
+          <div class="intro-eyebrow">Monthly Fortune · 流月</div>
+          <h1 class="intro-title">流月運勢</h1>
+
+          <div class="intro-body">
+            <p class="lead-first">流年看的是這一整年的方向，流月則把時間拉近到每一個月。</p>
+            <p>同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。</p>
+            <p>它不替你判斷好壞，而是讓你更清楚自己正站在劇本的哪一頁——知道這個月的重心在哪，就能把力氣花在對的地方，好好地把這段日子過成自己的。</p>
+          </div>
+
+          <div class="intro-offer">
+            <div class="intro-offer-label">What you'll receive · 開始後</div>
+            <div class="intro-offer-body">
+              我們會為你生成 <strong>本月與下個月</strong> 的完整流月，往後每個月，新的流月會自動為你展開。
+            </div>
+            <div class="intro-offer-list">
+              <div class="intro-offer-item"><span class="marker">I</span><span>十二宮的逐宮解讀，看清每個領域這個月的狀態</span></div>
+              <div class="intro-offer-item"><span class="marker">II</span><span>能量的流入與流出，知道哪些方面正在牽動你</span></div>
+              <div class="intro-offer-item"><span class="marker">III</span><span>這個月可以怎麼演的具體建議，把角色演得自在</span></div>
+            </div>
+          </div>
+
+          <div class="intro-cta-wrap">
+            <button id="intro-subscribe-btn" class="intro-cta">開始閱讀我的流月</button>
+            <div class="intro-cta-note">為你生成本月與下個月，約需數分鐘</div>
+          </div>
+        </div>
+
+        <!-- 生成中：兩個 pulse 區塊 -->
+        <div id="intro-generating" class="intro-generating" style="display:none;">
+          <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
+          <div class="intro-gen-head">
+            <div class="g-title">正在為你展開流月</div>
+            <div class="g-sub">我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。</div>
+          </div>
+          <div id="gen-cards" class="gen-cards"></div>
+        </div>
       </div>
     </section>
 
@@ -434,6 +535,12 @@
   const MONTHLY_TABLE = 'monthly_palace_reports';
   // metadata 來源表（能量張力 overview 用）
   const INTERP_TABLE = 'palace_interpretations';
+  // 流月生成狀態表（訂閱判斷 + 生成中輪詢）
+  const MONTHLY_JOBS_TABLE = 'monthly_generation_jobs';
+  // materials flow 觸發 webhook（production）
+  const MONTHLY_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/monthly_v3_trigger';
+  // 生成中輪詢間隔（毫秒）
+  const POLL_INTERVAL_MS = 15000;
 
   // ── 會員等級（訂閱系統尚未建立，先用 placeholder）──
   // 'free'：可看 上月 / 本月 / 下月
@@ -517,6 +624,21 @@
     return { year: sy, month: sm - 1 };
   }
 
+  // 觸發端：國曆當下 →（本月 or 下月）農曆 target，打 webhook 用這個算
+  //   which="current"：國曆月−1（1月→前一年12月）
+  //   which="next"：在 current 基礎上農曆+1（12月→隔年1月）
+  function solarToLunarTarget(solarYear, solarMonth, which = 'current') {
+    solarYear = Number(solarYear); solarMonth = Number(solarMonth);
+    let ly, lm;
+    if (solarMonth === 1) { ly = solarYear - 1; lm = 12; }
+    else { ly = solarYear; lm = solarMonth - 1; }
+    if (which === 'next') {
+      if (lm === 12) { ly += 1; lm = 1; }
+      else { lm += 1; }
+    }
+    return { target_year: ly, target_month: lm };
+  }
+
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
@@ -524,6 +646,8 @@
   let availableMonths = [];       // 該年有資料的月份清單 [{year, month}]
   let visibleMonths = [];         // 經 tier 過濾後可見的月份
   let metaByPalace = {};          // 當月各宮 metadata（overview 用）
+  let userEmail = null;           // 登入用戶 email（訂閱觸發用）
+  let pollTimer = null;           // 生成中輪詢計時器
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -1123,13 +1247,172 @@
     });
   }
 
+  // ===================================================================
+  // 訂閱機制（無訂閱表，以 monthly_generation_jobs 有無 job 判斷訂閱狀態）
+  // ===================================================================
+
+  // 撈本用戶所有 job（依年月新到舊）
+  async function fetchJobs() {
+    const { data, error } = await supabase
+      .from(MONTHLY_JOBS_TABLE)
+      .select('target_year, target_month, materials_status, report_status')
+      .eq('user_email', userEmail)
+      .order('target_year', { ascending: false })
+      .order('target_month', { ascending: false });
+    if (error) {
+      console.warn('[monthly] job 查詢失敗：', error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  // 一筆 job 是否已完成（可閱讀）
+  function jobDone(j) { return j.report_status === 'done'; }
+
+  // 渲染生成中畫面（兩個月卡片），回傳「是否全部完成」
+  function renderGenerating(jobs) {
+    document.getElementById('intro-pitch').style.display = 'none';
+    document.getElementById('intro-generating').style.display = 'block';
+
+    const wrap = document.getElementById('gen-cards');
+    const base = nowAsLunarBase();
+    // 以農曆年月排序（本月在前）
+    const sorted = [...jobs].sort((a, b) =>
+      (a.target_year * 12 + a.target_month) - (b.target_year * 12 + b.target_month));
+
+    wrap.innerHTML = sorted.map(j => {
+      const done = jobDone(j);
+      const rel = (j.target_year * 12 + j.target_month) - (base.year * 12 + base.month);
+      const relLabel = rel === 0 ? '本月' : (rel === 1 ? '下月' : (rel === -1 ? '上月' : ''));
+      const disp = lunarToSolarDisplay(j.target_year, j.target_month); // 農曆→國曆顯示
+      const left = done
+        ? '<div class="gen-card-check">✓</div>'
+        : '<div class="gen-card-spinner"><span></span><span></span><span></span></div>';
+      const statusText = done ? '已完成 · 點擊閱讀' : '正在生成十二宮…';
+      return `<div class="gen-card ${done ? 'done' : ''}" data-year="${j.target_year}" data-month="${j.target_month}" data-done="${done}">
+        ${left}
+        <div class="gen-card-info">
+          <div class="gen-card-month">${disp.label}${relLabel ? `<span class="rel">${relLabel}</span>` : ''}</div>
+          <div class="gen-card-status">${statusText}</div>
+        </div>
+        <div class="gen-card-arrow">→ Read</div>
+      </div>`;
+    }).join('');
+
+    // 已完成的卡片可點擊進入該年閱讀
+    wrap.querySelectorAll('.gen-card.done').forEach(card => {
+      card.addEventListener('click', () => {
+        const y = Number(card.dataset.year);
+        enterReading(y);
+      });
+    });
+
+    return sorted.length > 0 && sorted.every(jobDone);
+  }
+
+  // 進入閱讀流程（指定農曆年）：撈年份清單 → 進 view-years/view-hub
+  async function enterReading(preferLunarYear) {
+    stopPolling();
+    showView('view-loading');
+    document.querySelector('#view-loading .loading-title').textContent = '載入您的流月';
+    document.querySelector('#view-loading .loading-sub').textContent = '正在展開可閱讀的月份…';
+
+    const years = await fetchAvailableYears();
+    renderYears(years);
+    if (preferLunarYear && years.includes(preferLunarYear)) {
+      await loadYear(preferLunarYear);
+    } else {
+      showView('view-years');
+    }
+  }
+
+  // 撈有報告的流月年份（農曆年）
+  async function fetchAvailableYears() {
+    let years = [];
+    try {
+      const { data: rows, error } = await supabase
+        .from(MONTHLY_TABLE)
+        .select('valid_year_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_layer', 'monthly')
+        .eq('language', 'zh-TW');
+      if (error) {
+        console.warn('[monthly] 流月年份查詢失敗：', error.message);
+      } else if (rows) {
+        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y != null))]
+          .sort((a, b) => b - a);
+      }
+    } catch (e) {
+      console.warn('[monthly] 流月年份查詢例外：', e);
+    }
+    return years;
+  }
+
+  // 訂閱：序列觸發本月＋下月 materials webhook
+  async function subscribeMonthly() {
+    const btn = document.getElementById('intro-subscribe-btn');
+    btn.disabled = true;
+    btn.textContent = '正在為你開始…';
+
+    const now = new Date();
+    const sy = now.getFullYear(), sm = now.getMonth() + 1;
+    const targets = [
+      solarToLunarTarget(sy, sm, 'current'),
+      solarToLunarTarget(sy, sm, 'next'),
+    ];
+
+    try {
+      // 序列送出（第一筆完成再送第二筆），避免免費 n8n 並發
+      for (const t of targets) {
+        await fetch(MONTHLY_TRIGGER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_email: userEmail,
+            target_year: t.target_year,
+            target_month: t.target_month,
+          }),
+        });
+      }
+    } catch (e) {
+      // materials flow 跑很久、前端不等它跑完；只要送出即視為觸發成功
+      // 真正狀態靠輪詢 job 表，網路層級錯誤才提示
+      console.warn('[monthly] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+    }
+
+    // 切生成中、開始輪詢
+    const jobs = await fetchJobs();
+    renderGenerating(jobs);
+    startPolling();
+  }
+
+  // 輪詢 job 狀態：全 done → 進閱讀；否則更新卡片
+  function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(async () => {
+      const jobs = await fetchJobs();
+      if (jobs.length === 0) return;
+      const allDone = renderGenerating(jobs);
+      if (allDone) {
+        stopPolling();
+        // 全部完成 → 進入閱讀（預設本月所在農曆年）
+        const base = nowAsLunarBase();
+        await enterReading(base.year);
+      }
+    }, POLL_INTERVAL_MS);
+  }
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
   async function init() {
     try {
       const session = await requireAuth();
       if (!session) return; // requireAuth 已導向 login.html
 
-      const userEmail = session.user.email;
+      userEmail = session.user.email;
 
+      // 1. 取命盤 session（訂閱前提：已有完成的命盤）
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
         .select('chart_session_id, status')
@@ -1144,32 +1427,36 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      // 撈有資料的流月年份（找不到表或沒資料 → 視為空白，不報錯）
-      let years = [];
-      try {
-        const { data: rows, error } = await supabase
-          .from(MONTHLY_TABLE)
-          .select('valid_year_start')
-          .eq('chart_session_id', chartSessionId)
-          .eq('chart_layer', 'monthly')
-          .eq('language', 'zh-TW');
-        if (error) {
-          console.warn('[monthly] 流月查詢失敗（可能表尚未建立）：', error.message);
-        } else if (rows) {
-          years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y !== null && y !== undefined))]
-            .sort((a, b) => b - a);
-        }
-      } catch (e) {
-        console.warn('[monthly] 流月查詢例外：', e);
+      // 2. 查流月訂閱狀態（以 monthly_generation_jobs 有無 job 判斷）
+      const jobs = await fetchJobs();
+
+      if (jobs.length === 0) {
+        // 未訂閱 → 介紹頁
+        document.getElementById('intro-pitch').style.display = 'block';
+        document.getElementById('intro-generating').style.display = 'none';
+        showView('view-intro');
+        return;
       }
 
-      renderYears(years);
-      showView('view-years');
+      // 有 job：分「全完成」與「仍在生成」
+      const allDone = jobs.every(jobDone);
+      if (allDone) {
+        // 全部完成 → 正常閱讀
+        const years = await fetchAvailableYears();
+        renderYears(years);
+        showView('view-years');
+      } else {
+        // 仍有生成中 → 顯示生成中並輪詢
+        showView('view-intro');
+        renderGenerating(jobs);
+        startPolling();
+      }
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
     }
   }
 
+  document.getElementById('intro-subscribe-btn').addEventListener('click', subscribeMonthly);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
