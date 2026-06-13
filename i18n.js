@@ -162,6 +162,8 @@ export const I18N = {
     errNotReady: '您的命盤尚未完成，請稍候幾分鐘後再回來查看。',
     errNoPalace: '找不到您命盤的宮位內容。',
     errLoad: '載入時發生錯誤。',
+    errReportsFail: '無法載入宮位內容：',
+    chipSourceLabel: '來源', chipFlowLabel: '流向',
 
     // 四化標籤短名(transformLabel 用)
     TRANSFORM_NAME: { '化祿': '化祿', '化權': '化權', '化科': '化科', '化忌': '化忌' },
@@ -197,6 +199,8 @@ export const I18N = {
     errNotReady: '您的命盘尚未完成，请稍候几分钟后再回来查看。',
     errNoPalace: '找不到您命盘的宫位内容。',
     errLoad: '载入时发生错误。',
+    errReportsFail: '无法载入宫位内容：',
+    chipSourceLabel: '来源', chipFlowLabel: '流向',
 
     TRANSFORM_NAME: { '化祿': '化禄', '化權': '化权', '化科': '化科', '化忌': '化忌' },
   },
@@ -224,6 +228,8 @@ export const I18N = {
     errNotReady: 'Your chart is not ready yet. Please check back in a few minutes.',
     errNoPalace: 'Could not find the palace content for your chart.',
     errLoad: 'Something went wrong while loading.',
+    errReportsFail: 'Could not load palace content: ',
+    chipSourceLabel: 'From', chipFlowLabel: 'To',
 
     TRANSFORM_NAME: { '化祿': 'Lu', '化權': 'Quan', '化科': 'Ke', '化忌': 'Ji' },
   },
