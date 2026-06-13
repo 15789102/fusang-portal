@@ -427,7 +427,7 @@
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
-  import { initI18n, t as tx, palaceLabel, starLabel, transformLabel } from './i18n.js';
+  import { initI18n, t as tx, td, palaceLabel, starLabel, transformLabel } from './i18n.js';
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
@@ -435,37 +435,12 @@
     '財帛宮':'Palace of Wealth','疾厄宮':'Palace of Health','遷移宮':'Palace of Travel','交友宮':'Palace of Friends',
     '官祿宮':'Palace of Career','田宅宮':'Palace of Home','福德宮':'Palace of Spirit','父母宮':'Palace of Parents',
   };
-  const PALACE_TAGLINE = {
-    '命宮':'本性與內在<br>your innate nature','兄弟宮':'至親與同輩<br>siblings & peers','夫妻宮':'伴侶與情感<br>partner & love',
-    '子女宮':'創造與後輩<br>creation & legacy','財帛宮':'財富與資源<br>wealth & resources','疾厄宮':'身體與感受<br>body & feeling',
-    '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
-    '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
-  };
-  // 宮位完整說明
-  const PALACE_EXPLAINER = {
-    '命宮':'命宮代表您的<span class="domain-keyword">核心人格、行事風格與根本姿態</span>——您看待自己與世界的最底層方式。這是您一生的「主舞台」,所有其他宮位的能量,最終都會在這裡匯流、被您詮釋、被您演繹。',
-    '兄弟宮':'兄弟宮代表您與<span class="domain-keyword">手足、同輩、母親與密切夥伴</span>的關係,也反映您在團隊、同儕系統中的相處模式與資源往來。',
-    '夫妻宮':'夫妻宮代表您的<span class="domain-keyword">親密關係、伴侶互動與情感模式</span>——您如何愛人、如何被愛,以及您在一對一深度關係中的姿態。',
-    '子女宮':'子女宮代表您的<span class="domain-keyword">子女、後輩、創造力與性</span>——廣義上是您「孕育出來的事物」,包含作品、學生、晚輩與一切親手栽培之物。',
-    '財帛宮':'財帛宮代表您的<span class="domain-keyword">財富、現金流與價值觀</span>——您如何賺取、運用與看待金錢,以及您對「擁有」這件事的態度。',
-    '疾厄宮':'疾厄宮代表您的<span class="domain-keyword">身體、健康與情緒體質</span>——您的先天體質傾向、身心的感受方式,以及壓力在身體上的展現。',
-    '遷移宮':'遷移宮代表您的<span class="domain-keyword">外在世界、際遇與社會形象</span>——您離開熟悉環境後的際遇、在外的機運,以及他人眼中的您。它是命宮的對宮,映照您的另一面。',
-    '交友宮':'交友宮代表您的<span class="domain-keyword">朋友、人脈、下屬與社交網絡</span>——您與廣泛人際的互動方式,以及您從社群中獲得或付出的能量。',
-    '官祿宮':'官祿宮代表您的<span class="domain-keyword">事業、志向與社會成就</span>——您的工作舞台、專業表現,以及您一生想要建立的功業與位置。',
-    '田宅宮':'田宅宮代表您的<span class="domain-keyword">家庭、不動產與安身之所</span>——您的居家環境、家族基地,以及您內心對「歸屬」與「根」的感受。',
-    '福德宮':'福德宮代表您的<span class="domain-keyword">精神世界、興趣與享受</span>——您的內在快樂來源、價值信念,以及您靈魂層面的滿足與安頓。',
-    '父母宮':'父母宮代表您與<span class="domain-keyword">父母、長輩、權威與庇蔭</span>的關係,也反映您的學養根基、與上位者的相處,以及您所承接的家世背景。',
-  };
+  // PALACE_TAGLINE / PALACE_EXPLAINER 已移至 i18n.js（td('PALACE_TAGLINE'/'PALACE_EXPLAINER', palaceName)）
 
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
   const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
-  const TRANSFORM_TOOLTIP = {
-    '化祿': { title: '化祿 · Resource (Lu)', body: '喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅,是您天生有福、容易順利展開的領域。' },
-    '化權': { title: '化權 · Anchor (Quan)', body: '權力與掌控。能量賦予您主導感、決策力與影響力,是您天生想要「說了算」、想要為事情負責的領域。' },
-    '化科': { title: '化科 · Stage (Ke)', body: '名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象,是您天生發光、會被欣賞的舞台。' },
-    '化忌': { title: '化忌 · Direction (Ji)', body: '不滿足與執著。能量讓您在這個領域反覆投入、深耕、永不饜足。這不是缺憾,而是您一生關注的「核心命題」與成長方向。' },
-  };
+  // TRANSFORM_TOOLTIP 已移至 i18n.js（td('TRANSFORM_TOOLTIP', tt)）
 
   // ── 總覽用固定查表（寫一次、所有盤共用、可編輯，非逐盤生成）──
   const INNER_PALACES = new Set(['命宮','財帛宮','疾厄宮','遷移宮','官祿宮','福德宮']);
@@ -561,8 +536,8 @@
     document.getElementById('detail-eyebrow').textContent = palaceLabel(palaceName);
     document.getElementById('detail-title-zh').textContent = palaceName;
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
-    document.getElementById('detail-tagline').innerHTML = PALACE_TAGLINE[palaceName] || '';
-    document.getElementById('detail-explainer').innerHTML = PALACE_EXPLAINER[palaceName] || '';
+    document.getElementById('detail-tagline').innerHTML = td('PALACE_TAGLINE', palaceName);
+    document.getElementById('detail-explainer').innerHTML = td('PALACE_EXPLAINER', palaceName);
 
     renderStarsLine(row.composition);
     renderComposition(row.composition);
@@ -660,7 +635,7 @@
       if (!t || (!t.title && !t.content)) continue;
       hasAny = true;
 
-      const tip = TRANSFORM_TOOLTIP[tt];
+      const tip = td('TRANSFORM_TOOLTIP', tt) || {};
       const metaItems = metaByTransform[tt] || [];
 
       // 來源 chip HTML
@@ -687,8 +662,8 @@
             <span class="tooltip-wrap">
               <span class="transform-card-tag" tabindex="0">${escapeHtml(transformLabel(tt))}<span class="info-dot">i</span></span>
               <div class="tooltip-body">
-                <div class="tooltip-title">${tip.title}</div>
-                <p>${tip.body}</p>
+                <div class="tooltip-title">${tip.title || ''}</div>
+                <p>${tip.body || ''}</p>
               </div>
             </span>
             <span class="transform-card-en">${TRANSFORM_EN[tt]}</span>
