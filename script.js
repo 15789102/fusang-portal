@@ -9,6 +9,9 @@ const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
 const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
 
+// ---- Supported languages (must match backend report_glossary / email_templates) ----
+const SUPPORTED_LANGUAGES = ['zh-TW', 'zh-CN', 'en'];
+
 // ---- Hardcoded defaults (hidden from user, Beta-stage simplification) ----
 const DEFAULTS = {
   birth_minute: 0,
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initYearOptions();
   initMonthOptions();
   initDayOptions();
+  bindLangOptions();
   bindToggleGroups();
   bindForm();
 });
@@ -65,6 +69,25 @@ function initDayOptions() {
     opt.textContent = d;
     daySelect.appendChild(opt);
   }
+}
+
+// ============================================================
+// Language selector (single-select button group → hidden input)
+//   Locked at registration; value written to #language.
+// ============================================================
+function bindLangOptions() {
+  const group = document.getElementById('lang-options');
+  const hidden = document.getElementById('language');
+  if (!group || !hidden) return;
+
+  group.addEventListener('click', (e) => {
+    const btn = e.target.closest('.lang-btn');
+    if (!btn) return;
+
+    group.querySelectorAll('.lang-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    hidden.value = btn.dataset.value;
+  });
 }
 
 // ============================================================
@@ -116,6 +139,7 @@ function bindForm() {
       birth_city: DEFAULTS.birth_city,
       birth_timezone: DEFAULTS.birth_timezone,
       gender: document.getElementById('gender').value,
+      language: document.getElementById('language').value,
     };
 
     // ---- Client-side validation ----
@@ -186,6 +210,7 @@ function validatePayload(p) {
   if (!p.birth_day) return 'Please select your birth day.';
   if (isNaN(p.birth_hour)) return 'Please select your birth hour.';
   if (!p.gender) return 'Please select your gender.';
+  if (!SUPPORTED_LANGUAGES.includes(p.language)) return 'Please select a report language.';
 
   // Date sanity check
   const date = new Date(p.birth_year, p.birth_month - 1, p.birth_day);
