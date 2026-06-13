@@ -272,46 +272,46 @@
 
     <section id="view-overview" class="view">
       <div class="ov-head">
-        <div class="ov-eyebrow">Overview · 總覽</div>
-        <h1 class="ov-title">你的命盤總覽</h1>
+        <div class="ov-eyebrow" id="ov-eyebrow">Overview · 總覽</div>
+        <h1 class="ov-title" id="ov-title">你的命盤總覽</h1>
         <div class="ov-title-en">Who you are · what you hold</div>
         <div class="ov-tohub"><span class="ov-link" id="ov-to-hub">瀏覽全部十二宮 →</span></div>
       </div>
 
       <div class="block-head"><span class="num">I</span><div><div class="bz">Who Are You?</div><div class="be">Your Role</div></div></div>
-      <div class="block-sub">你在自己故事裡，是什麼樣的主角。</div>
+      <div class="block-sub" id="block-sub-1">你在自己故事裡，是什麼樣的主角。</div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">主角</span><span class="be">The Lead</span></div>
+        <div class="ov-sec-label"><span class="bz" id="sec-lead-label">主角</span><span class="be">The Lead</span></div>
         <div class="lead" id="ov-lead"></div>
         <div class="ov-legend" id="ov-lead-legend"></div>
       </div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">生活核心</span><span class="be">The Stage · 命三方</span></div>
+        <div class="ov-sec-label"><span class="bz" id="sec-stage-label">生活核心</span><span class="be" id="sec-stage-sub">The Stage · 命三方</span></div>
         <div class="stage-line" id="ov-stage-line"></div>
         <div class="tri" id="ov-tri"></div>
-        <div class="ov-legend">句型固定為「以【財】為舞台，由【命】驅動，於【官】展開」，括號內短語取自各宮主星的固定句用詞<span class="sp">|</span>點宮位進該宮完整內容</div>
+        <div class="ov-legend" id="legend-stage">句型固定為「以【財】為舞台，由【命】驅動，於【官】展開」，括號內短語取自各宮主星的固定句用詞<span class="sp">|</span>點宮位進該宮完整內容</div>
       </div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">角色天賦線</span><span class="be">Innate Kit · 生年四化落點</span></div>
+        <div class="ov-sec-label"><span class="bz" id="sec-gift-label">角色天賦線</span><span class="be" id="sec-gift-sub">Innate Kit · 生年四化落點</span></div>
         <div id="ov-birth"></div>
       </div>
 
-      <div class="block-head"><span class="num">II</span><div><div class="bz">我的資源</div><div class="be">What You Hold</div></div></div>
-      <div class="block-sub">你手上有什麼牌——自帶的、與別人能給的。</div>
+      <div class="block-head"><span class="num">II</span><div><div class="bz" id="block-head-2">我的資源</div><div class="be">What You Hold</div></div></div>
+      <div class="block-sub" id="block-sub-2">你手上有什麼牌——自帶的、與別人能給的。</div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">貴人</span><span class="be">Allies</span></div>
+        <div class="ov-sec-label"><span class="bz" id="sec-ally-label">貴人</span><span class="be">Allies</span></div>
         <div id="ov-ally"></div>
-        <div class="ov-legend">依六內六外分欄：貴人星落<span class="tg">內部宮</span>＝自帶特質；落<span class="tg">外部宮</span>＝別人助力<span class="sp">|</span><span class="tg">左輔右弼</span> 整合・左右逢源<span class="sp">|</span><span class="tg">天魁天鉞</span> 提攜・貴氣<span class="sp">|</span><span class="tg">文昌</span> 才學<span class="sp">|</span><span class="tg">文曲</span> 才藝・口才</div>
+        <div class="ov-legend" id="legend-ally">依六內六外分欄：貴人星落<span class="tg">內部宮</span>＝自帶特質；落<span class="tg">外部宮</span>＝別人助力<span class="sp">|</span><span class="tg">左輔右弼</span> 整合・左右逢源<span class="sp">|</span><span class="tg">天魁天鉞</span> 提攜・貴氣<span class="sp">|</span><span class="tg">文昌</span> 才學<span class="sp">|</span><span class="tg">文曲</span> 才藝・口才</div>
       </div>
 
       <div class="ov-sec">
-        <div class="ov-sec-label"><span class="bz">後盾</span><span class="be">Foundation · 飛入助力</span></div>
+        <div class="ov-sec-label"><span class="bz" id="sec-feed-label">後盾</span><span class="be" id="sec-feed-sub">Foundation · 飛入助力</span></div>
         <div id="ov-feed"></div>
-        <div class="ov-legend"><span class="tg">祿</span> 資源・緣分<span class="sp">|</span><span class="tg">權</span> 主導・掌控<span class="sp">|</span><span class="tg">科</span> 名聲・貴氣<span class="sp">|</span>助力合計＝祿＋權＋科 飛入數（依合計排序）</div>
+        <div class="ov-legend" id="legend-feed"><span class="tg">祿</span> 資源・緣分<span class="sp">|</span><span class="tg">權</span> 主導・掌控<span class="sp">|</span><span class="tg">科</span> 名聲・貴氣<span class="sp">|</span>助力合計＝祿＋權＋科 飛入數（依合計排序）</div>
       </div>
 
     </section>
@@ -427,7 +427,7 @@
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
-  import { initI18n, t as tx, td, palaceLabel, starLabel, transformLabel } from './i18n.js';
+  import { initI18n, t as tx, td, getLang, palaceLabel, starLabel, transformLabel } from './i18n.js';
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
@@ -446,44 +446,15 @@
   const INNER_PALACES = new Set(['命宮','財帛宮','疾厄宮','遷移宮','官祿宮','福德宮']);
   const OUTER_PALACES = new Set(['父母宮','兄弟宮','夫妻宮','子女宮','田宅宮','交友宮']);
   const SAN_FANG = ['命宮','財帛宮','官祿宮'];
-  const SAN_FANG_ROLE = { '命宮':'自我', '財帛宮':'財', '官祿宮':'事業' };
+  // SAN_FANG_ROLE 已移至 i18n.js（td('SAN_FANG_ROLE', p)）
 
-  // 14 主星詞庫：kw=個性關鍵詞, phrase=命三方句用短語
-  const STAR_LEXICON = {
-    '紫微':{kw:['領導','主導','尊貴'],phrase:'領導開拓'},
-    '天機':{kw:['機巧','善謀','多變'],phrase:'謀略應變'},
-    '太陽':{kw:['博愛','熱忱','外放'],phrase:'熱忱付出'},
-    '武曲':{kw:['務實','決斷','重效率'],phrase:'務實果決'},
-    '天同':{kw:['溫和','享受','隨和'],phrase:'隨和享受'},
-    '廉貞':{kw:['公關','變通','重情'],phrase:'公關變通'},
-    '天府':{kw:['穩健','保守','善理財'],phrase:'穩健守成'},
-    '太陰':{kw:['細膩','內斂','重感受'],phrase:'細膩經營'},
-    '貪狼':{kw:['多元慾望','好奇','交際'],phrase:'多元慾望'},
-    '巨門':{kw:['口才','思辨','深究'],phrase:'思辨深究'},
-    '天相':{kw:['協調','重信','穩重'],phrase:'協調穩重'},
-    '天梁':{kw:['庇蔭','原則','長者風'],phrase:'庇蔭擔當'},
-    '七殺':{kw:['衝鋒','獨立','開拓'],phrase:'衝鋒開拓'},
-    '破軍':{kw:['開創','破舊立新','變動'],phrase:'開創'},
-  };
+  // STAR_LEXICON 已移至 i18n.js（td('STAR_LEXICON', star)）
 
   // 貴人星集合（四貴＋文昌文曲）與星義（self=自帶, ext=外部）
   const ALLY_STARS = new Set(['左輔','右弼','天魁','天鉞','文昌','文曲']);
-  const ALLY_LEXICON = {
-    '左輔':{self:'整合資源、左右逢源',ext:'平輩貴人並肩相助'},
-    '右弼':{self:'整合資源、左右逢源',ext:'平輩貴人並肩相助'},
-    '天魁':{self:'自帶貴氣與格調',ext:'長輩貴人提攜'},
-    '天鉞':{self:'易被看見、被提攜的氣場',ext:'長輩貴人提攜'},
-    '文昌':{self:'才學與條理',ext:'才學文書型助力'},
-    '文曲':{self:'才藝、口才與感性',ext:'才藝口才型助力'},
-  };
+  // ALLY_LEXICON 已移至 i18n.js（td('ALLY_LEXICON', star)）
 
-  const SELF_TRANSFORM_NOTE = {
-    '化祿':'天生的順流與福分在「自我」展現。',
-    '化權':'天生的主導性落在「自我」。',
-    '化科':'天生的名聲與優雅落在「自我」。',
-    '化忌':'對「想要更多、想體驗更多」的深耕——自我的核心命題、一生反覆投注的方向。',
-  };
-  const BIRTH_MEANING = { '化祿':'天生福分落點','化權':'天生掌控與課題','化科':'天生名聲落點','化忌':'天生命題・深耕方向' };
+  // SELF_TRANSFORM_NOTE / BIRTH_MEANING 已移至 i18n.js（td(...)）
 
   let reportsByPalace = {};
   let chartSessionId = null;
@@ -522,6 +493,23 @@
     setHtml('sec3-desc', 'sectionOutflowDesc');
     setText('error-title', 'errTitle');
     setText('btn-back-dashboard', 'btnBackDashboard');
+    // overview
+    setText('ov-eyebrow', 'ovEyebrow');
+    setText('ov-title', 'ovTitle');
+    setText('block-sub-1', 'blockSub1');
+    setText('block-head-2', 'blockHead2');
+    setText('block-sub-2', 'blockSub2');
+    setText('sec-lead-label', 'secLeadLabel');
+    setText('sec-stage-label', 'secStageLabel');
+    setText('sec-stage-sub', 'secStageSub');
+    setText('sec-gift-label', 'secGiftLabel');
+    setText('sec-gift-sub', 'secGiftSub');
+    setText('sec-ally-label', 'secAllyLabel');
+    setText('sec-feed-label', 'secFeedLabel');
+    setText('sec-feed-sub', 'secFeedSub');
+    setHtml('legend-stage', 'legendStage');
+    setHtml('legend-ally', 'legendAlly');
+    setHtml('legend-feed', 'legendFeed');
   }
 
   function renderHub() {
@@ -744,13 +732,14 @@
   }
   function starsLabel(p) {
     const stars = palaceMainStars(p);
-    if (!stars.length) return '無主星';
-    return stars.map(s => s.star + (s.transform ? `（${s.transform}）` : '')).join('・');
+    if (!stars.length) return tx('emptyNoMainStar');
+    return stars.map(s => starLabel(s.star) + (s.transform ? `（${transformLabel(s.transform)}）` : '')).join('・');
   }
   function palacePhrase(p) {
     const stars = palaceMainStars(p);
     if (!stars.length) return null;
-    return uniq(stars.map(s => STAR_LEXICON[s.star]?.phrase).filter(Boolean)).join('、');
+    const join = getLang() === 'en' ? ', ' : '、';
+    return uniq(stars.map(s => (td('STAR_LEXICON', s.star) || {}).phrase).filter(Boolean)).join(join);
   }
   function bindPalaceLinks(scope) {
     scope.querySelectorAll('[data-palace]').forEach(el => {
@@ -759,46 +748,50 @@
   }
 
   function renderOverview() {
+    const J = getLang() === 'en' ? ', ' : '、';
+    const semi = getLang() === 'en' ? '; ' : '；';
+
     // 1) 主角(命宮)
     const lifeStars = palaceMainStars('命宮');
-    const kw = uniq(lifeStars.flatMap(s => STAR_LEXICON[s.star]?.kw || []));
+    const kw = uniq(lifeStars.flatMap(s => (td('STAR_LEXICON', s.star) || {}).kw || []));
     const kwHtml = kw.length
       ? kw.map(k => escapeHtml(k)).join('<span class="d">·</span>')
-      : '<span style="color:var(--ink-light);font-style:italic;">命宮為空宮 · 無主星</span>';
+      : `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('ovEmptyLife'))}</span>`;
     const lifeSeated = palaceSeatedTransforms('命宮');
     const themeHtml = lifeSeated.length
-      ? `<div class="lead-theme">核心命題（生年化坐命）：` +
-        lifeSeated.map(s => `<b>${escapeHtml(s.star)}${s.transform}</b>`).join('、') +
-        `——${escapeHtml(SELF_TRANSFORM_NOTE[(lifeSeated.find(s=>s.transform==='化忌')||lifeSeated[0]).transform] || '')}</div>`
+      ? `<div class="lead-theme">${escapeHtml(tx('leadThemePrefix'))}` +
+        lifeSeated.map(s => `<b>${escapeHtml(starLabel(s.star))} ${escapeHtml(transformLabel(s.transform))}</b>`).join(J) +
+        ` — ${escapeHtml(td('SELF_TRANSFORM_NOTE', (lifeSeated.find(s=>s.transform==='化忌')||lifeSeated[0]).transform) || '')}</div>`
       : '';
     document.getElementById('ov-lead').innerHTML = `
       <div class="lead-kw">${kwHtml}</div>
       ${themeHtml}
       <div class="lead-foot">
-        <div class="lead-stars">星曜：<b>命宮 · ${escapeHtml(starsLabel('命宮'))}</b></div>
-        <span class="ov-plink" data-palace="命宮">命宮完整解析 →</span>
+        <div class="lead-stars">${escapeHtml(tx('ovStarsLabel'))}<b>${escapeHtml(palaceLabel('命宮'))} · ${escapeHtml(starsLabel('命宮'))}</b></div>
+        <span class="ov-plink" data-palace="命宮">${escapeHtml(tx('ovLeadFullLink').replace('{p}', palaceLabel('命宮')))}</span>
       </div>`;
-    document.getElementById('ov-lead-legend').innerHTML = '個性＝命宮主星於固定詞庫的聚合' +
-      lifeStars.map(s => STAR_LEXICON[s.star]
-        ? `<span class="sp">|</span><span class="tg">${escapeHtml(s.star)}</span> ${escapeHtml(STAR_LEXICON[s.star].kw.join('・'))}` : '').join('');
+    document.getElementById('ov-lead-legend').innerHTML = escapeHtml(tx('leadLegendPrefix')) +
+      lifeStars.map(s => { const lx = td('STAR_LEXICON', s.star); return lx
+        ? `<span class="sp">|</span><span class="tg">${escapeHtml(starLabel(s.star))}</span> ${escapeHtml(lx.kw.join('・'))}` : ''; }).join('');
 
     // 2) 舞台三角(命三方) + B2 模板句
     const phr = {}; SAN_FANG.forEach(p => phr[p] = palacePhrase(p));
     const clauses = [];
-    if (phr['財帛宮']) clauses.push(`以「<b>${escapeHtml(phr['財帛宮'])}</b>」為舞台`);
-    if (phr['命宮'])   clauses.push(`由「<b>${escapeHtml(phr['命宮'])}</b>」驅動`);
-    if (phr['官祿宮']) clauses.push(`於「<b>${escapeHtml(phr['官祿宮'])}</b>」中展開`);
-    document.getElementById('ov-stage-line').innerHTML = clauses.length
-      ? clauses.join('，') + '。'
-      : '<span style="color:var(--ink-light);font-style:italic;">命三方含空宮，敘述從略</span>';
+    if (phr['財帛宮']) clauses.push(tx('stageWealthClause').replace('{x}', escapeHtml(phr['財帛宮'])));
+    if (phr['命宮'])   clauses.push(tx('stageLifeClause').replace('{x}', escapeHtml(phr['命宮'])));
+    if (phr['官祿宮']) clauses.push(tx('stageCareerClause').replace('{x}', escapeHtml(phr['官祿宮'])));
+    let stageLine = clauses.length ? clauses.join(tx('stageJoin')) + tx('stageEnd') : '';
+    if (stageLine) stageLine = stageLine.charAt(0).toUpperCase() + stageLine.slice(1);
+    document.getElementById('ov-stage-line').innerHTML = stageLine
+      || `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('ovStageEmpty'))}</span>`;
 
     const node = (p, isApex) => {
       const stars = palaceMainStars(p);
-      const k = stars.length ? uniq(stars.flatMap(s => STAR_LEXICON[s.star]?.kw || [])).slice(0, 2).join(' · ') : '無主星';
+      const k = stars.length ? uniq(stars.flatMap(s => (td('STAR_LEXICON', s.star) || {}).kw || [])).slice(0, 2).join(' · ') : tx('emptyNoMainStar');
       return `<div class="rnode${isApex ? ' apex' : ''}">
-        <div class="r">${SAN_FANG_ROLE[p]} · ${p}</div>
+        <div class="r">${escapeHtml(td('SAN_FANG_ROLE', p) || '')} · ${escapeHtml(palaceLabel(p))}</div>
         <div class="k">${escapeHtml(k)}</div>
-        <div class="m"><span class="st">${escapeHtml(starsLabel(p))}</span><span class="ov-plink" data-palace="${p}">${p} →</span></div>
+        <div class="m"><span class="st">${escapeHtml(starsLabel(p))}</span><span class="ov-plink" data-palace="${p}">${escapeHtml(palaceLabel(p))} →</span></div>
       </div>`;
     };
     document.getElementById('ov-tri').innerHTML =
@@ -811,8 +804,8 @@
       const b = birth[t];
       if (!b) return '';
       return `<div class="birth-row">
-        <div class="birth-hua ${t}">${t}</div><span class="birth-arrow">→</span>
-        <div class="birth-mid"><span class="birth-palace">${b.palace}</span><span class="birth-meaning">${BIRTH_MEANING[t]}</span></div>
+        <div class="birth-hua ${t}">${escapeHtml(transformLabel(t))}</div><span class="birth-arrow">→</span>
+        <div class="birth-mid"><span class="birth-palace">${escapeHtml(palaceLabel(b.palace))}</span><span class="birth-meaning">${escapeHtml(td('BIRTH_MEANING', t) || '')}</span></div>
         <span class="ov-plink" data-palace="${b.palace}">→</span>
       </div>`;
     }).join('');
@@ -827,16 +820,16 @@
       (OUTER_PALACES.has(p) ? extArr : selfArr).push({ palace: p, stars: allies });
     });
     const allyCard = (item, kind) => {
-      const ds = uniq(item.stars.map(s => ALLY_LEXICON[s]?.[kind]).filter(Boolean)).join('；');
+      const ds = uniq(item.stars.map(s => (td('ALLY_LEXICON', s) || {})[kind]).filter(Boolean)).join(semi);
       return `<div class="ally-card ${kind}">
-        <div class="ally-palace">${item.palace}</div>
-        <div class="ally-body"><div class="st">${item.stars.join(' · ')}</div><div class="ds">${escapeHtml(ds)}</div></div>
+        <div class="ally-palace">${escapeHtml(palaceLabel(item.palace))}</div>
+        <div class="ally-body"><div class="st">${item.stars.map(s => escapeHtml(starLabel(s))).join(' · ')}</div><div class="ds">${escapeHtml(ds)}</div></div>
       </div>`;
     };
     let allyHtml = '';
-    if (selfArr.length) allyHtml += `<div class="ally-kind self">自帶特質 · 內部宮（你本身具備）</div>` + selfArr.map(i => allyCard(i, 'self')).join('');
-    if (extArr.length)  allyHtml += `<div class="ally-kind ext">外部貴人 · 外部宮（別人會幫你）</div>` + extArr.map(i => allyCard(i, 'ext')).join('');
-    if (!allyHtml) allyHtml = '<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">此盤無貴人星</div>';
+    if (selfArr.length) allyHtml += `<div class="ally-kind self">${escapeHtml(tx('allySelfHeader'))}</div>` + selfArr.map(i => allyCard(i, 'self')).join('');
+    if (extArr.length)  allyHtml += `<div class="ally-kind ext">${escapeHtml(tx('allyExtHeader'))}</div>` + extArr.map(i => allyCard(i, 'ext')).join('');
+    if (!allyHtml) allyHtml = `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('allyEmpty'))}</div>`;
     document.getElementById('ov-ally').innerHTML = allyHtml;
 
     // 5) 後盾(飛入祿權科，依合計排序)
@@ -848,11 +841,11 @@
     }).filter(x => x.sum > 0).sort((a, b) => b.sum - a.sum);
     document.getElementById('ov-feed').innerHTML = feed.map(f => {
       let pills = '';
-      if (f.lu) pills += `<span class="feed-pill lu">祿 <b>${f.lu}</b></span>`;
-      if (f.quan) pills += `<span class="feed-pill quan">權 <b>${f.quan}</b></span>`;
-      if (f.ke) pills += `<span class="feed-pill ke">科 <b>${f.ke}</b></span>`;
-      return `<div class="feed-line"><div class="feed-palace">${f.p}</div><div class="feed-pills">${pills}</div><div class="feed-sum">助力 <b>${f.sum}</b></div></div>`;
-    }).join('') || '<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">無飛入助力</div>';
+      if (f.lu) pills += `<span class="feed-pill lu">${escapeHtml(tx('feedLu'))} <b>${f.lu}</b></span>`;
+      if (f.quan) pills += `<span class="feed-pill quan">${escapeHtml(tx('feedQuan'))} <b>${f.quan}</b></span>`;
+      if (f.ke) pills += `<span class="feed-pill ke">${escapeHtml(tx('feedKe'))} <b>${f.ke}</b></span>`;
+      return `<div class="feed-line"><div class="feed-palace">${escapeHtml(palaceLabel(f.p))}</div><div class="feed-pills">${pills}</div><div class="feed-sum">${escapeHtml(tx('feedSumLabel'))} <b>${f.sum}</b></div></div>`;
+    }).join('') || `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('feedEmpty'))}</div>`;
 
     bindPalaceLinks(document.getElementById('view-overview'));
   }
