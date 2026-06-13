@@ -165,6 +165,18 @@ export const I18N = {
     errReportsFail: '無法載入宮位內容：',
     chipSourceLabel: '來源', chipFlowLabel: '流向',
 
+    // detail / hub / loading / error 靜態標籤(applyStaticI18n 用)
+    loadingTitle: '載入您的命盤',
+    palaceExplainerLabel: '關於這個宮位',
+    compositionLabel: '結構組成',
+    secInflowTitle: '能量飛入',
+    secOutflowTitle: '能量飛出',
+    secSuggestTitle: '我們的建議',
+    sectionInflowDesc: '<strong>能量飛入</strong>——其他宮位的星曜,以四化的形式流入本宮。代表您的這個領域,正被人生哪些方面<strong>滋養、推動或牽引</strong>。',
+    sectionOutflowDesc: '<strong>能量飛出</strong>——本宮的能量,以四化的形式飛入其他宮位。代表您的這個領域,正在<strong>影響、貢獻或牽引</strong>哪些人生方面。',
+    errTitle: '無法載入命盤',
+    btnBackDashboard: '返回儀表板',
+
     // 四化標籤短名(transformLabel 用)
     TRANSFORM_NAME: { '化祿': '化祿', '化權': '化權', '化科': '化科', '化忌': '化忌' },
 
@@ -228,6 +240,17 @@ export const I18N = {
     errReportsFail: '无法载入宫位内容：',
     chipSourceLabel: '来源', chipFlowLabel: '流向',
 
+    loadingTitle: '载入您的命盘',
+    palaceExplainerLabel: '关于这个宫位',
+    compositionLabel: '结构组成',
+    secInflowTitle: '能量飞入',
+    secOutflowTitle: '能量飞出',
+    secSuggestTitle: '我们的建议',
+    sectionInflowDesc: '<strong>能量飞入</strong>——其他宫位的星曜,以四化的形式流入本宫。代表您的这个领域,正被人生哪些方面<strong>滋养、推动或牵引</strong>。',
+    sectionOutflowDesc: '<strong>能量飞出</strong>——本宫的能量,以四化的形式飞入其他宫位。代表您的这个领域,正在<strong>影响、贡献或牵引</strong>哪些人生方面。',
+    errTitle: '无法载入命盘',
+    btnBackDashboard: '返回仪表板',
+
     TRANSFORM_NAME: { '化祿': '化禄', '化權': '化权', '化科': '化科', '化忌': '化忌' },
 
     PALACE_TAGLINE: {
@@ -284,6 +307,17 @@ export const I18N = {
     errLoad: 'Something went wrong while loading.',
     errReportsFail: 'Could not load palace content: ',
     chipSourceLabel: 'From', chipFlowLabel: 'To',
+
+    loadingTitle: 'Loading your chart',
+    palaceExplainerLabel: 'About this Palace',
+    compositionLabel: 'Composition',
+    secInflowTitle: 'Inflowing Currents',
+    secOutflowTitle: 'Outflowing Currents',
+    secSuggestTitle: 'Our Suggestions',
+    sectionInflowDesc: '<strong>Inflowing energy</strong> — stars from other palaces flow into this one through the four transformations, showing which areas of life are <strong>nourishing, driving, or drawing on</strong> this part of you.',
+    sectionOutflowDesc: '<strong>Outflowing energy</strong> — the energy of this palace flows out into others through the four transformations, showing which areas of life this part of you is <strong>shaping, supporting, or drawing toward it</strong>.',
+    errTitle: 'Unable to load your chart',
+    btnBackDashboard: 'Back to dashboard',
 
     TRANSFORM_NAME: { '化祿': 'Lu', '化權': 'Quan', '化科': 'Ke', '化忌': 'Ji' },
 
