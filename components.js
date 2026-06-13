@@ -18,6 +18,7 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { I18N, SUPPORTED_LANGS } from './i18n.js';
 
 // ─── Supabase ────────────────────────────────────────────────
 const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
@@ -28,6 +29,27 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 // 也掛到 window,讓非 module script 也能用
 window.fsSupabase = supabase;
+
+// ─── 元件用語言(同步,讀快取)─────────────────────────────────
+//   header/footer 只需 UI 字串,不需 glossary → 同步讀 localStorage 即可,不阻塞。
+//   快取由各頁 initI18n() 寫入(語言鎖定不變)。首次無快取 → 預設 zh-TW。
+const LANG_CACHE_KEY = 'fs_lang';
+function fsLang() {
+  try {
+    const c = localStorage.getItem(LANG_CACHE_KEY);
+    if (c && SUPPORTED_LANGS.includes(c)) return c;
+  } catch (_) {}
+  return 'zh-TW';
+}
+// 元件 UI 字串(fallback 鏈:當前→en→zh-TW→key)
+function tc(key) {
+  const lang = fsLang();
+  for (const L of [lang, 'en', 'zh-TW']) {
+    const v = I18N[L] && I18N[L][key];
+    if (v !== undefined) return v;
+  }
+  return key;
+}
 
 // ─── Design tokens CSS(注入 head)────────────────────────────
 const SHARED_CSS = `
@@ -231,11 +253,11 @@ function injectHeader(activePage = null) {
         <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
       </div>
       <nav class="fs-header-nav">
-        <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">本命盤</span>
-        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">流年</span>
-        <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly">流月</span>
-        <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">帳戶</span>
-        <span class="fs-nav-signout" id="fs-signout">登出</span>
+        <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">${tc('navChart')}</span>
+        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">${tc('navAnnual')}</span>
+        <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly">${tc('navMonthly')}</span>
+        <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">${tc('navAccount')}</span>
+        <span class="fs-nav-signout" id="fs-signout">${tc('navSignOut')}</span>
       </nav>
     </header>
   `;
@@ -269,14 +291,14 @@ function injectFooter() {
         <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
       </div>
       <div class="fs-footer-tagline">
-        不是預知命運,<br>而是穩健有意識地走向嚮往的生活
+        ${tc('footerTagline')}
       </div>
       <div class="fs-footer-links">
-        <a href="#" class="fs-footer-link">隱私政策</a>
-        <a href="#" class="fs-footer-link">免責聲明</a>
-        <a href="mailto:info@fusang-vision.com" class="fs-footer-link">聯絡我們</a>
+        <a href="#" class="fs-footer-link">${tc('footerPrivacy')}</a>
+        <a href="#" class="fs-footer-link">${tc('footerDisclaimer')}</a>
+        <a href="mailto:info@fusang-vision.com" class="fs-footer-link">${tc('footerContact')}</a>
       </div>
-      <div class="fs-footer-copy">© 2026 FuSang Vision · 紫微斗數</div>
+      <div class="fs-footer-copy">© 2026 FuSang Vision · ${tc('footerCopySuffix')}</div>
     </footer>
   `;
 }
@@ -300,6 +322,7 @@ export async function requireAuth() {
 }
 
 export async function signOut() {
+  try { localStorage.removeItem(LANG_CACHE_KEY); } catch (_) {}
   await supabase.auth.signOut();
   window.location.href = 'login.html';
 }
@@ -307,6 +330,7 @@ export async function signOut() {
 // ─── Init ────────────────────────────────────────────────────
 // 頁面可在 script 裡設 window.FS_ACTIVE_PAGE = 'chart' 來標記當前頁
 function initComponents() {
+  try { document.documentElement.lang = fsLang(); } catch (_) {}
   injectCss();
   injectHeader(window.FS_ACTIVE_PAGE || null);
   injectFooter();
