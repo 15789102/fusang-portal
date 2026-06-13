@@ -1,247 +1,733 @@
-// ============================================================
-// FuSang Vision Portal — Form Logic
-// Submits to Supabase Edge Function submit_birth_data
-// On success → redirect to submitted.html
-// ============================================================
+/* ============================================================
+   FuSang Vision Portal — Styles
+   Color palette: Tiffany teal + white + black
+   ============================================================ */
 
-// ---- Configuration ----
-const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
-const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
+:root {
+  /* Tiffany teal palette */
+  --teal-main: #0ABAB5;
+  --teal-deep: #089693;
+  --teal-light: #B8E6E4;
+  --teal-pale: #E8F7F6;
+  --teal-bg: #FAFEFE;
 
-// ---- Supported languages (must match backend report_glossary / email_templates) ----
-const SUPPORTED_LANGUAGES = ['zh-TW', 'zh-CN', 'en'];
+  /* Neutrals */
+  --white: #ffffff;
+  --black: #1a1a1a;
+  --gray-900: #2a2a2a;
+  --gray-700: #555555;
+  --gray-500: #888888;
+  --gray-300: #cccccc;
+  --gray-100: #f5f5f5;
 
-// ---- Hardcoded defaults (hidden from user, Beta-stage simplification) ----
-const DEFAULTS = {
-  birth_minute: 0,
-  birth_country: 'Taiwan',
-  birth_city: 'Taipei',
-  birth_timezone: 'Asia/Taipei',
-};
+  /* Semantic */
+  --required-red: #c0392b;
+  --error-red: #d63031;
 
-// ============================================================
-// DOM Ready
-// ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  initYearOptions();
-  initMonthOptions();
-  initDayOptions();
-  bindLangOptions();
-  bindToggleGroups();
-  bindForm();
-});
+  /* Layout */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-// ============================================================
-// Year / Month / Day dropdowns
-// ============================================================
-function initYearOptions() {
-  const yearSelect = document.getElementById('birth_year');
-  const currentYear = new Date().getFullYear();
-  // 1920 → currentYear (descending, most users will scroll down)
-  for (let y = currentYear; y >= 1920; y--) {
-    const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
-    yearSelect.appendChild(opt);
+  /* Type */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Transitions */
+  --t: 0.2s ease;
+}
+
+/* ============================================================
+   Reset
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--black);
+  background: var(--gray-100);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+.container {
+  max-width: 540px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.brand {
+  text-align: center;
+  padding: 8px 0 24px;
+}
+
+.brand-mark {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal-main);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Views (only one visible at a time)
+   ============================================================ */
+
+.view {
+  display: none;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  border: 1px solid var(--teal-light);
+  box-shadow: 0 1px 3px rgba(10, 186, 181, 0.04);
+}
+
+.view-active {
+  display: block;
+}
+
+/* ============================================================
+   Headings
+   ============================================================ */
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 8px;
+  color: var(--black);
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-700);
+  margin: 0 0 32px;
+  line-height: 1.6;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--teal-light), transparent);
+  margin: 0 0 28px;
+}
+
+/* ============================================================
+   Form
+   ============================================================ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--teal-deep);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.row-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+/* ============================================================
+   Inputs
+   ============================================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--teal-light);
+  border-radius: var(--radius-md);
+  background: var(--teal-bg);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--black);
+  width: 100%;
+  transition: border-color var(--t), background-color var(--t);
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+select:hover {
+  border-color: var(--teal-main);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--teal-main);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(10, 186, 181, 0.1);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%230ABAB5' stroke-width='1.5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Toggle buttons (gender / language)
+   ============================================================ */
+
+.toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.toggle-btn {
+  height: 42px;
+  border: 1px solid var(--teal-light);
+  background: var(--teal-bg);
+  color: var(--black);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--t);
+}
+
+.toggle-btn:hover {
+  border-color: var(--teal-main);
+}
+
+.toggle-btn[aria-pressed="true"],
+.toggle-btn.active {
+  background: var(--teal-main);
+  border-color: var(--teal-main);
+  color: var(--white);
+}
+
+/* ============================================================
+   Consent checkbox
+   ============================================================ */
+
+.consent-box {
+  background: var(--teal-pale);
+  border: 1px solid var(--teal-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.consent-box input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--teal-main);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.consent-box label {
+  display: block;
+  cursor: pointer;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--black);
+}
+
+.consent-main {
+  display: block;
+  font-size: 13px;
+  color: var(--black);
+  line-height: 1.5;
+}
+
+.consent-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--gray-700);
+  margin-top: 4px;
+}
+
+.required-mark {
+  color: var(--required-red);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Primary button
+   ============================================================ */
+
+.btn-primary {
+  margin-top: 12px;
+  height: 50px;
+  background: var(--teal-main);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.02em;
+  transition: background var(--t), transform var(--t);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--teal-deep);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-arrow {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ============================================================
+   Error message (in form)
+   ============================================================ */
+
+.error-message {
+  display: none;
+  padding: 10px 14px;
+  background: #FDECEA;
+  border: 1px solid #F5C2BE;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--error-red);
+}
+
+.error-message.active {
+  display: block;
+}
+
+/* ============================================================
+   Footnote
+   ============================================================ */
+
+.footnote {
+  text-align: center;
+  font-size: 11px;
+  color: var(--gray-500);
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+
+.contact-line {
+  margin-top: 16px;
+}
+
+.contact-line a {
+  color: var(--teal-main);
+  text-decoration: none;
+}
+
+.contact-line a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Loading view
+   ============================================================ */
+
+#view-loading {
+  text-align: center;
+  padding: 60px 36px;
+}
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0 32px;
+}
+
+.loading-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--teal-main);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
   }
 }
 
-function initMonthOptions() {
-  const monthSelect = document.getElementById('birth_month');
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  for (let m = 1; m <= 12; m++) {
-    const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = `${m} — ${monthNames[m - 1]}`;
-    monthSelect.appendChild(opt);
+.loading-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  margin: 0 0 12px;
+  color: var(--black);
+}
+
+.loading-sub {
+  font-size: 14px;
+  color: var(--gray-700);
+  margin: 0 0 36px;
+  line-height: 1.7;
+}
+
+.progress-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 360px;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--teal-pale);
+  font-size: 13px;
+  color: var(--gray-500);
+  transition: color var(--t);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.step-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gray-300);
+  position: relative;
+  flex-shrink: 0;
+  transition: all var(--t);
+}
+
+.step.done {
+  color: var(--black);
+}
+
+.step.done .step-icon {
+  background: var(--teal-main);
+  border-color: var(--teal-main);
+}
+
+.step.done .step-icon::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid var(--white);
+  border-bottom: 2px solid var(--white);
+  transform: rotate(45deg);
+}
+
+.step.active {
+  color: var(--black);
+  font-weight: 500;
+}
+
+.step.active .step-icon {
+  border-color: var(--teal-main);
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   Success view
+   ============================================================ */
+
+#view-success {
+  text-align: center;
+  padding: 56px 36px;
+}
+
+.success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--teal-pale);
+  color: var(--teal-main);
+  margin-bottom: 24px;
+}
+
+.success-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 12px;
+  color: var(--black);
+  letter-spacing: -0.01em;
+}
+
+.success-sub {
+  font-size: 14px;
+  color: var(--gray-700);
+  margin: 0 0 32px;
+  line-height: 1.7;
+}
+
+.success-highlight {
+  color: var(--teal-main);
+  font-weight: 500;
+}
+
+/* Reference ID card */
+.ref-card {
+  background: var(--teal-pale);
+  border: 1px solid var(--teal-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin: 0 0 24px;
+  text-align: left;
+}
+
+.ref-label {
+  font-size: 11px;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ref-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#ref-id {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--black);
+  word-break: break-all;
+  background: var(--white);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  height: 36px;
+  width: 36px;
+  padding: 0;
+  border: 1px solid var(--teal-light);
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--teal-main);
+  transition: all var(--t);
+}
+
+.copy-btn:hover {
+  background: var(--teal-bg);
+}
+
+.copy-btn.copied {
+  background: var(--teal-main);
+  color: var(--white);
+  border-color: var(--teal-main);
+}
+
+.copy-icon {
+  display: inline-block;
+}
+
+.ref-hint {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+/* Summary grid */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 0 32px;
+  text-align: left;
+}
+
+.summary-cell {
+  background: var(--teal-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: var(--gray-700);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  font-size: 14px;
+  color: var(--black);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Error view
+   ============================================================ */
+
+#view-error {
+  text-align: center;
+  padding: 60px 36px;
+}
+
+.error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FDECEA;
+  color: var(--error-red);
+  margin-bottom: 20px;
+}
+
+.error-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 12px;
+  color: var(--black);
+}
+
+.error-detail {
+  font-size: 14px;
+  color: var(--gray-700);
+  margin: 0 0 32px;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   Page footer
+   ============================================================ */
+
+.page-footer {
+  text-align: center;
+  padding: 32px 16px;
+  font-size: 11px;
+  color: var(--gray-500);
+}
+
+.page-footer p {
+  margin: 0;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 480px) {
+  .container {
+    margin: 16px auto;
   }
-}
 
-function initDayOptions() {
-  const daySelect = document.getElementById('birth_day');
-  for (let d = 1; d <= 31; d++) {
-    const opt = document.createElement('option');
-    opt.value = d;
-    opt.textContent = d;
-    daySelect.appendChild(opt);
-  }
-}
-
-// ============================================================
-// Language selector (single-select button group → hidden input)
-//   Locked at registration; value written to #language.
-// ============================================================
-function bindLangOptions() {
-  const group = document.getElementById('lang-options');
-  const hidden = document.getElementById('language');
-  if (!group || !hidden) return;
-
-  group.addEventListener('click', (e) => {
-    const btn = e.target.closest('.lang-btn');
-    if (!btn) return;
-
-    group.querySelectorAll('.lang-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    hidden.value = btn.dataset.value;
-  });
-}
-
-// ============================================================
-// Toggle group (Gender)
-// ============================================================
-function bindToggleGroups() {
-  document.querySelectorAll('.toggle-group').forEach((group) => {
-    group.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-
-      const name = btn.dataset.name;
-      const value = btn.dataset.value;
-
-      // Update visual state
-      group.querySelectorAll('.toggle-btn').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Update hidden input
-      const hiddenInput = document.getElementById(name);
-      if (hiddenInput) hiddenInput.value = value;
-    });
-  });
-}
-
-// ============================================================
-// Form submission
-// ============================================================
-function bindForm() {
-  const form = document.getElementById('chart-form');
-  const submitBtn = document.getElementById('submit-btn');
-  const errorBox = document.getElementById('error-message');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorBox.textContent = '';
-
-    // ---- Collect form data ----
-    const payload = {
-      email: document.getElementById('email').value.trim(),
-      password: document.getElementById('password').value,
-      display_name: document.getElementById('display_name').value.trim(),
-      birth_year: parseInt(document.getElementById('birth_year').value, 10),
-      birth_month: parseInt(document.getElementById('birth_month').value, 10),
-      birth_day: parseInt(document.getElementById('birth_day').value, 10),
-      birth_hour: parseInt(document.getElementById('birth_hour').value, 10),
-      birth_minute: DEFAULTS.birth_minute,
-      birth_country: DEFAULTS.birth_country,
-      birth_city: DEFAULTS.birth_city,
-      birth_timezone: DEFAULTS.birth_timezone,
-      gender: document.getElementById('gender').value,
-      language: document.getElementById('language').value,
-    };
-
-    // ---- Client-side validation ----
-    const error = validatePayload(payload);
-    if (error) {
-      showError(error);
-      return;
-    }
-
-    // ---- Password confirmation ----
-    const passwordConfirm = document.getElementById('password_confirm').value;
-    if (payload.password !== passwordConfirm) {
-      showError('Passwords do not match.');
-      return;
-    }
-
-    // ---- Consent check ----
-    if (!document.getElementById('newsletter_consent').checked) {
-      showError('Please confirm you agree to receive emails.');
-      return;
-    }
-
-    // ---- Submit ----
-    setSubmitting(submitBtn, true);
-
-    try {
-      const res = await fetch(EF_SUBMIT_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || `Request failed (${res.status})`);
-      }
-
-      // ---- Success → redirect to submitted page ----
-      const params = new URLSearchParams({
-        job_id: data.job_id,
-        email: payload.email,
-      });
-      window.location.href = `submitted.html?${params.toString()}`;
-
-    } catch (err) {
-      console.error('Submit error:', err);
-      showError(err.message || 'Something went wrong. Please try again.');
-      setSubmitting(submitBtn, false);
-    }
-  });
-}
-
-// ============================================================
-// Validation
-// ============================================================
-function validatePayload(p) {
-  if (!p.display_name) return 'Please enter your name.';
-  if (!p.email) return 'Please enter your email.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return 'Please enter a valid email.';
-  if (!p.password) return 'Please create a password.';
-  if (p.password.length < 8) return 'Password must be at least 8 characters.';
-  if (!p.birth_year) return 'Please select your birth year.';
-  if (!p.birth_month) return 'Please select your birth month.';
-  if (!p.birth_day) return 'Please select your birth day.';
-  if (isNaN(p.birth_hour)) return 'Please select your birth hour.';
-  if (!p.gender) return 'Please select your gender.';
-  if (!SUPPORTED_LANGUAGES.includes(p.language)) return 'Please select a report language.';
-
-  // Date sanity check
-  const date = new Date(p.birth_year, p.birth_month - 1, p.birth_day);
-  if (
-    date.getFullYear() !== p.birth_year ||
-    date.getMonth() !== p.birth_month - 1 ||
-    date.getDate() !== p.birth_day
-  ) {
-    return 'Please enter a valid date.';
+  .view {
+    padding: 32px 24px;
   }
 
-  return null;
-}
-
-// ============================================================
-// UI helpers
-// ============================================================
-function setSubmitting(btn, isSubmitting) {
-  if (isSubmitting) {
-    btn.disabled = true;
-    btn.querySelector('.btn-text').textContent = 'Submitting...';
-    btn.querySelector('.btn-arrow').textContent = '...';
-  } else {
-    btn.disabled = false;
-    btn.querySelector('.btn-text').textContent = 'Generate My Chart';
-    btn.querySelector('.btn-arrow').textContent = '→';
+  #view-loading,
+  #view-success,
+  #view-error {
+    padding: 40px 24px;
   }
-}
 
-function showError(msg) {
-  const errorBox = document.getElementById('error-message');
-  errorBox.textContent = msg;
-  errorBox.style.display = 'block';
+  .title {
+    font-size: 26px;
+  }
+
+  .row-two {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
 }
