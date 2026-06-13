@@ -265,8 +265,8 @@
     <section id="view-loading" class="view active">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       <div style="text-align: center;">
-        <h1 class="loading-title">載入您的命盤</h1>
-        <p class="loading-sub">正在為您展開本命十二宮…</p>
+        <h1 class="loading-title" id="loading-title">載入您的命盤</h1>
+        <p class="loading-sub" id="loading-sub">正在為您展開本命十二宮…</p>
       </div>
     </section>
 
@@ -320,8 +320,8 @@
       <div class="detail-back-top"><span class="back-link" id="hub-to-overview">← 總覽 Overview</span></div>
       <div class="hub-head">
         <div class="hub-eyebrow">Your Natal Chart</div>
-        <h1 class="hub-title">本命十二宮</h1>
-        <p class="hub-sub">點選一宮以閱讀完整內容</p>
+        <h1 class="hub-title" id="hub-title">本命十二宮</h1>
+        <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
       <div id="palace-grid" class="palace-grid"></div>
       <div class="hub-meta">
@@ -345,13 +345,13 @@
         </div>
       </div>
       <div class="palace-explainer">
-        <div class="palace-explainer-label">About this Palace</div>
+        <div class="palace-explainer-label" id="palace-explainer-label">About this Palace</div>
         <div class="palace-explainer-body" id="detail-explainer"></div>
       </div>
-      <div class="palace-subtitle">本宮主星 · 輔星 · 四化</div>
+      <div class="palace-subtitle" id="palace-subtitle">本宮主星 · 輔星 · 四化</div>
       <div class="palace-stars-line" id="detail-stars-line"></div>
       <div class="composition">
-        <div class="composition-label">Composition · 結構組成</div>
+        <div class="composition-label" id="composition-label">Composition · 結構組成</div>
         <div class="composition-grid" id="detail-composition"></div>
       </div>
 
@@ -359,7 +359,7 @@
         <div class="section-head">
           <div class="section-num">01</div>
           <div class="section-titles">
-            <div class="section-title-zh">宮位解析</div>
+            <div class="section-title-zh" id="sec1-title">宮位解析</div>
             <div class="section-title-en">Reading of the Palace</div>
           </div>
         </div>
@@ -370,13 +370,13 @@
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛入</div>
+            <div class="section-title-zh" id="sec2-title">能量飛入</div>
             <div class="section-title-en">Inflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↘</div>
-          <div><strong>能量飛入</strong>——其他宮位的星曜,以四化的形式流入本宮。代表您的這個領域,正被人生哪些方面<strong>滋養、推動或牽引</strong>。</div>
+          <div id="sec2-desc"><strong>能量飛入</strong>——其他宮位的星曜,以四化的形式流入本宮。代表您的這個領域,正被人生哪些方面<strong>滋養、推動或牽引</strong>。</div>
         </div>
         <div id="detail-transforms-in" class="transform-blocks"></div>
       </section>
@@ -385,13 +385,13 @@
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛出</div>
+            <div class="section-title-zh" id="sec3-title">能量飛出</div>
             <div class="section-title-en">Outflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↗</div>
-          <div><strong>能量飛出</strong>——本宮的能量,以四化的形式飛入其他宮位。代表您的這個領域,正在<strong>影響、貢獻或牽引</strong>哪些人生方面。</div>
+          <div id="sec3-desc"><strong>能量飛出</strong>——本宮的能量,以四化的形式飛入其他宮位。代表您的這個領域,正在<strong>影響、貢獻或牽引</strong>哪些人生方面。</div>
         </div>
         <div id="detail-transforms-out" class="transform-blocks"></div>
       </section>
@@ -400,7 +400,7 @@
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">Our Suggestions</div>
+            <div class="section-title-zh" id="sec4-title">Our Suggestions</div>
             <div class="section-title-en">How to Play this Role</div>
           </div>
         </div>
@@ -415,9 +415,9 @@
     </section>
 
     <section id="view-error" class="view">
-      <h1 class="error-title">無法載入命盤</h1>
+      <h1 class="error-title" id="error-title">無法載入命盤</h1>
       <p id="error-detail" class="error-detail">發生了一點問題，請稍後再試。</p>
-      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary">返回儀表板</a></div>
+      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary" id="btn-back-dashboard">返回儀表板</a></div>
     </section>
 
   </div>
@@ -501,6 +501,27 @@
   function escapeHtml(str) {
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // 靜態標籤在地化(initI18n 後呼叫一次;這些標籤不隨宮位變動)
+  function applyStaticI18n() {
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
+    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    setText('loading-title', 'loadingTitle');
+    setText('loading-sub', 'loadingSub');
+    setText('hub-title', 'hubTitle');
+    setText('hub-sub', 'hubSub');
+    setText('palace-explainer-label', 'palaceExplainerLabel');
+    setText('palace-subtitle', 'palaceSubtitle');
+    setText('composition-label', 'compositionLabel');
+    setText('sec1-title', 'sectionPalaceAnalysis');
+    setText('sec2-title', 'secInflowTitle');
+    setText('sec3-title', 'secOutflowTitle');
+    setText('sec4-title', 'secSuggestTitle');
+    setHtml('sec2-desc', 'sectionInflowDesc');
+    setHtml('sec3-desc', 'sectionOutflowDesc');
+    setText('error-title', 'errTitle');
+    setText('btn-back-dashboard', 'btnBackDashboard');
   }
 
   function renderHub() {
@@ -842,6 +863,7 @@
       if (!session) return; // requireAuth 已導向 login.html
 
       await initI18n(session); // 解析語言 + 載入 glossary（後續渲染走 tx()/*Label()）
+      applyStaticI18n();
 
       const userEmail = session.user.email;
 
