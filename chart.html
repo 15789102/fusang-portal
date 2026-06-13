@@ -427,6 +427,7 @@
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
+  import { initI18n, t as tx, palaceLabel, starLabel, transformLabel } from './i18n.js';
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
@@ -538,13 +539,13 @@
       idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
       card.appendChild(idx);
       const nameEl = document.createElement('div');
-      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceName;
+      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceLabel(palaceName);
       card.appendChild(nameEl);
       const starsEl = document.createElement('div');
       starsEl.className = 'palace-card-stars';
       starsEl.textContent = row?.composition?.main_stars?.length
-        ? row.composition.main_stars.map(s => s.star).join(' · ')
-        : '(無主星)';
+        ? row.composition.main_stars.map(s => starLabel(s.star)).join(' · ')
+        : tx('emptyNoMainStar');
       card.appendChild(starsEl);
       card.addEventListener('click', () => openDetail(palaceName));
       grid.appendChild(card);
@@ -557,7 +558,7 @@
     if (!row) return;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
-    document.getElementById('detail-eyebrow').textContent = PALACE_EN[palaceName] || '';
+    document.getElementById('detail-eyebrow').textContent = palaceLabel(palaceName);
     document.getElementById('detail-title-zh').textContent = palaceName;
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
     document.getElementById('detail-tagline').innerHTML = PALACE_TAGLINE[palaceName] || '';
@@ -574,8 +575,8 @@
     const next = PALACE_ORDER[(idx + 1) % 12];
     const prevEl = document.getElementById('nav-prev');
     const nextEl = document.getElementById('nav-next');
-    prevEl.innerHTML = `<span class="arrow">←</span>${prev}`;
-    nextEl.innerHTML = `${next}<span class="arrow">→</span>`;
+    prevEl.innerHTML = `<span class="arrow">←</span>${palaceLabel(prev)}`;
+    nextEl.innerHTML = `${palaceLabel(next)}<span class="arrow">→</span>`;
     prevEl.onclick = () => openDetail(prev);
     nextEl.onclick = () => openDetail(next);
 
@@ -586,8 +587,8 @@
     const el = document.getElementById('detail-stars-line');
     const parts = [];
     (comp?.main_stars || []).forEach(s => {
-      let html = `<span class="main-star">${escapeHtml(s.star)}</span>`;
-      if (s.transform) html += `<span class="transform-tag ${s.transform}">${s.transform}</span>`;
+      let html = `<span class="main-star">${escapeHtml(starLabel(s.star))}</span>`;
+      if (s.transform) html += `<span class="transform-tag ${s.transform}">${escapeHtml(transformLabel(s.transform))}</span>`;
       parts.push(html);
     });
     const pushStar = (s) => {
@@ -595,23 +596,23 @@
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
       if (!name) return;
-      let html = `<span>${escapeHtml(name)}</span>`;
-      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      let html = `<span>${escapeHtml(starLabel(name))}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${escapeHtml(transformLabel(tf))}</span>`;
       parts.push(html);
     };
     (comp?.support_stars || []).forEach(pushStar);
     (comp?.sha_ji_stars || []).forEach(pushStar);
     (comp?.minor_stars || []).forEach(pushStar);
-    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : '<span style="color:var(--ink-light);font-style:italic;">(無星)</span>';
+    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : `<span style="color:var(--ink-light);font-style:italic;">${tx('emptyNoStar')}</span>`;
   }
 
   function renderComposition(comp) {
     const grid = document.getElementById('detail-composition');
     const rows = [
-      { key: 'Heavenly Stem · 天干', val: comp?.heavenly_stem || '—' },
-      { key: 'Earthly Branch · 地支', val: comp?.branch || '—' },
-      { key: 'Opposite Palace · 對宮', val: comp?.opposite_palace || '—' },
-      { key: 'Trines · 三方', val: (comp?.trines || []).join(' · ') || '—' },
+      { key: tx('compHeavenlyStem'), val: comp?.heavenly_stem || '—' },
+      { key: tx('compBranch'), val: comp?.branch || '—' },
+      { key: tx('compOpposite'), val: comp?.opposite_palace ? palaceLabel(comp.opposite_palace) : '—' },
+      { key: tx('compTrines'), val: (comp?.trines || []).map(palaceLabel).join(' · ') || '—' },
     ];
     grid.innerHTML = rows.map(r => `<div class="comp-row"><div class="comp-row-key">${r.key}</div><div class="comp-row-val">${escapeHtml(r.val)}</div></div>`).join('');
   }
@@ -642,7 +643,7 @@
     container.innerHTML = '';
 
     if (!transforms || typeof transforms !== 'object') {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = '<div class="transform-empty">' + (direction === 'in' ? tx('energyEmptyIn') : tx('energyEmptyOut')) + '</div>';
       return;
     }
 
@@ -665,15 +666,15 @@
       // 來源 chip HTML
       let chipsHtml = '';
       if (metaItems.length) {
-        const label = direction === 'in' ? '來源' : '流向';
+        const label = direction === 'in' ? tx('chipSourceLabel') : tx('chipFlowLabel');
         chipsHtml = `<div class="source-row"><span class="source-label">${label}</span>` +
           metaItems.map(m => `
             <span class="source-chip">
-              <span class="palace-from">${escapeHtml(m.from_palace)}</span>
+              <span class="palace-from">${escapeHtml(palaceLabel(m.from_palace))}</span>
               <span class="arrow">→</span>
-              <span class="palace-to">${escapeHtml(m.to_palace)}</span>
-              <span class="star-tag">${escapeHtml(m.star)}</span>
-              <span class="mini-transform ${tt}">${tt}</span>
+              <span class="palace-to">${escapeHtml(palaceLabel(m.to_palace))}</span>
+              <span class="star-tag">${escapeHtml(starLabel(m.star))}</span>
+              <span class="mini-transform ${tt}">${escapeHtml(transformLabel(tt))}</span>
             </span>`).join('') +
           `</div>`;
       }
@@ -684,7 +685,7 @@
         <article class="transform-card ${tt}">
           <div class="transform-card-head">
             <span class="tooltip-wrap">
-              <span class="transform-card-tag" tabindex="0">${tt}<span class="info-dot">i</span></span>
+              <span class="transform-card-tag" tabindex="0">${escapeHtml(transformLabel(tt))}<span class="info-dot">i</span></span>
               <div class="tooltip-body">
                 <div class="tooltip-title">${tip.title}</div>
                 <p>${tip.body}</p>
@@ -701,7 +702,7 @@
     }
 
     if (!hasAny) {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = '<div class="transform-empty">' + (direction === 'in' ? tx('energyEmptyIn') : tx('energyEmptyOut')) + '</div>';
     }
 
     bindTooltips(container);
@@ -865,6 +866,8 @@
       const session = await requireAuth();
       if (!session) return; // requireAuth 已導向 login.html
 
+      await initI18n(session); // 解析語言 + 載入 glossary（後續渲染走 tx()/*Label()）
+
       const userEmail = session.user.email;
 
       const { data: jobData, error: jobError } = await supabase
@@ -876,8 +879,8 @@
         .limit(1)
         .maybeSingle();
 
-      if (jobError) { showError('無法取得您的命盤資料：' + jobError.message); return; }
-      if (!jobData?.chart_session_id) { showError('您的命盤尚未完成，請稍候幾分鐘後再回來查看。'); return; }
+      if (jobError) { showError(tx('errJobFail') + jobError.message); return; }
+      if (!jobData?.chart_session_id) { showError(tx('errNotReady')); return; }
 
       chartSessionId = jobData.chart_session_id;
 
@@ -886,8 +889,8 @@
         .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta')
         .eq('chart_session_id', chartSessionId);
 
-      if (reportsError) { showError('無法載入宮位內容：' + reportsError.message); return; }
-      if (!reports || reports.length === 0) { showError('找不到您命盤的宮位內容。'); return; }
+      if (reportsError) { showError(tx('errReportsFail') + reportsError.message); return; }
+      if (!reports || reports.length === 0) { showError(tx('errNoPalace')); return; }
 
       reportsByPalace = {};
       for (const row of reports) reportsByPalace[row.palace_name] = row;
@@ -896,7 +899,7 @@
       renderHub();
       showView('view-overview');
     } catch (err) {
-      showError(err.message || '載入時發生錯誤。');
+      showError(err.message || tx('errLoad'));
     }
   }
 
