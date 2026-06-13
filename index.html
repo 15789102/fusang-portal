@@ -11,6 +11,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- 語言選擇器專用樣式（scoped，不依賴 styles.css；class 名獨特不衝突）。
+       顏色為品牌色寫死，與報告頁/測試頁一致。 -->
+  <style>
+    .lang-field {
+      padding: 18px;
+      background: #f4efe6;
+      border-radius: 4px;
+      border-left: 3px solid #b8945c;
+      margin-bottom: 24px;
+    }
+    .lang-field > label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #15363a;
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+    .lang-field .lang-note {
+      font-size: 12px;
+      color: #5e6f70;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .lang-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .lang-btn {
+      padding: 12px 8px;
+      border: 1px solid #e3dccf;
+      border-radius: 4px;
+      background: #ffffff;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      color: #5e6f70;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .lang-btn:hover { border-color: #3a6b70; }
+    .lang-btn.active {
+      background: #1d4a4f;
+      color: #ffffff;
+      border-color: #1d4a4f;
+    }
+  </style>
 </head>
 <body>
 
@@ -28,6 +77,18 @@
       <div class="divider"></div>
 
       <form id="chart-form" class="form" novalidate>
+
+        <!-- Report Language (locked at registration) -->
+        <div class="lang-field">
+          <label>Report Language</label>
+          <div class="lang-note">Locked after registration. To use a different language, register with another email.</div>
+          <div class="lang-options" id="lang-options" role="radiogroup" aria-label="Report Language">
+            <button type="button" class="lang-btn" data-value="zh-TW">繁體中文</button>
+            <button type="button" class="lang-btn" data-value="zh-CN">简体中文</button>
+            <button type="button" class="lang-btn active" data-value="en">English</button>
+          </div>
+          <input type="hidden" id="language" name="language" value="en" />
+        </div>
 
         <!-- Display Name -->
         <div class="field">
