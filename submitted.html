@@ -8,58 +8,263 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --ink-darkest: #15363a;
+      --accent-deep: #1d4a4f;
+      --accent-soft: #3a6b70;
+      --gold: #b8945c;
+      --bg-primary: #faf7f1;
+      --bg-card: #ffffff;
+      --bg-soft: #f4efe6;
+      --rule: #e3dccf;
+      --ink-dark: #2b3d3f;
+      --ink-mid: #5e6f70;
+      --ink-light: #97a3a3;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-primary);
+      color: var(--ink-dark);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 56px 20px 72px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 520px; margin: 0 auto; }
+
+    .brand-mark {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--ink-darkest);
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .title {
+      font-family: var(--font-serif);
+      font-size: 34px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--ink-darkest);
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: var(--ink-mid);
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .divider { height: 1px; background: var(--rule); margin: 36px 0 34px; }
+
+    /* ── Signature: vertical process timeline ───────────────── */
+    .timeline { list-style: none; }
+    .step {
+      position: relative;
+      padding: 0 0 26px 46px;
+      min-height: 28px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    /* connector */
+    .step::before {
+      content: '';
+      position: absolute;
+      left: 13px;
+      top: 26px;
+      bottom: -2px;
+      width: 2px;
+      background: var(--rule);
+    }
+    .step:last-child::before { display: none; }
+    .step.done::before { background: var(--gold); }
+    /* node */
+    .node {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
+    .step.done .node { background: var(--ink-darkest); color: #fff; }
+    .step.active .node { background: var(--ink-darkest); color: #fff; }
+    .step.upcoming .node {
+      background: var(--bg-card);
+      color: var(--ink-light);
+      border: 1.5px solid var(--rule);
+    }
+    /* active pulse ring */
+    .step.active .node::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      animation: pulse 2.2s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(0.8); opacity: 0.85; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .step.active .node::after { animation: none; opacity: 0.55; transform: scale(1.15); }
+    }
+
+    .step .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 3px;
+    }
+    .step.active .eyebrow { color: var(--gold); }
+    .step .s-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-darkest);
+      margin-bottom: 3px;
+    }
+    .step.upcoming .s-title { color: var(--ink-mid); font-weight: 500; }
+    .step .s-desc { font-size: 13px; color: var(--ink-mid); line-height: 1.55; }
+    .step .s-desc code {
+      font-family: var(--font-sans);
+      color: var(--ink-darkest);
+      font-weight: 500;
+      background: var(--bg-soft);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    /* ── Reference ID card ──────────────────────────────────── */
+    .ref-card {
+      margin-top: 34px;
+      padding: 16px 18px;
+      background: var(--bg-soft);
+      border-left: 3px solid var(--gold);
+      border-radius: 4px;
+    }
+    .ref-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 8px;
+    }
+    .ref-row { display: flex; align-items: center; gap: 10px; }
+    .ref-row code {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--ink-darkest);
+      word-break: break-all;
+      flex: 1;
+    }
+    .copy-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--rule);
+      background: var(--bg-card);
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--ink-mid);
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: var(--accent-soft); color: var(--ink-darkest); }
+    .copy-btn:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+    .ref-hint { font-size: 11px; color: var(--ink-light); margin-top: 8px; }
+
+    .footnote {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--ink-light);
+      line-height: 1.7;
+      margin-top: 32px;
+    }
+    .footnote a { color: var(--accent-soft); text-decoration: none; }
+    .footnote a:hover { text-decoration: underline; }
+
+    .page-footer { text-align: center; margin-top: 48px; }
+    .page-footer p { font-size: 11px; color: var(--ink-light); letter-spacing: 0.02em; }
+
+    @media (max-width: 420px) {
+      .title { font-size: 28px; }
+    }
+  </style>
 </head>
 <body>
 
   <main class="container">
 
-    <header class="brand">
-      <div class="brand-mark">FuSang Vision</div>
-    </header>
+    <div class="brand-mark">FuSang Vision</div>
 
-    <section class="view view-active">
+    <h1 class="title">Crafting your chart</h1>
+    <p class="subtitle">Hang tight — here's what's happening behind the scenes.</p>
 
-      <div class="loading-dots" aria-hidden="true">
-        <span></span><span></span><span></span>
+    <div class="divider"></div>
+
+    <ol class="timeline">
+      <li class="step done">
+        <span class="node" aria-hidden="true">✓</span>
+        <div class="eyebrow">Done · just now</div>
+        <div class="s-title">Submitted</div>
+        <div class="s-desc">Your birth details are in and your session is created.</div>
+      </li>
+
+      <li class="step active">
+        <span class="node" aria-hidden="true">2</span>
+        <div class="eyebrow">In progress</div>
+        <div class="s-title">Analyzing</div>
+        <div class="s-desc">Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.</div>
+      </li>
+
+      <li class="step upcoming">
+        <span class="node" aria-hidden="true">3</span>
+        <div class="eyebrow">About 20 minutes</div>
+        <div class="s-title">Reading complete</div>
+        <div class="s-desc">Your full Zi Wei reading is assembled and saved to your account.</div>
+      </li>
+
+      <li class="step upcoming">
+        <span class="node" aria-hidden="true">4</span>
+        <div class="eyebrow">When ready</div>
+        <div class="s-title">Email on its way</div>
+        <div class="s-desc">We'll let you know at <code id="user-email">your inbox</code> the moment it's ready to view.</div>
+      </li>
+    </ol>
+
+    <div class="ref-card">
+      <div class="ref-label">Reference ID</div>
+      <div class="ref-row">
+        <code id="ref-id">—</code>
+        <button id="copy-ref" type="button" class="copy-btn" aria-label="Copy reference ID">
+          <span class="copy-icon" aria-hidden="true">⎘</span>
+        </button>
       </div>
+      <div class="ref-hint">Save this ID — useful if our team needs to assist you.</div>
+    </div>
 
-      <h1 class="loading-title">Crafting Your Chart</h1>
-      <p class="loading-sub">
-        Ancient wisdom meets modern computation.<br>
-        Your personalized report is being prepared.
-      </p>
-
-      <div class="divider"></div>
-
-      <div class="ref-card">
-        <div class="ref-label">What happens next</div>
-        <ol class="next-steps">
-          <li><strong>Right now:</strong> Calculating your natal chart and the twelve palaces</li>
-          <li><strong>~5 minutes in:</strong> Interpreting palace meanings, four transformations, and opposite influences</li>
-          <li><strong>Within ~20 minutes:</strong> An email arrives at <code id="user-email">your inbox</code> to let you know your chart is ready to view</li>
-        </ol>
-      </div>
-
-      <div class="ref-card">
-        <div class="ref-label">Reference ID</div>
-        <div class="ref-row">
-          <code id="ref-id">—</code>
-          <button id="copy-ref" type="button" class="copy-btn" aria-label="Copy reference ID">
-            <span class="copy-icon">⎘</span>
-          </button>
-        </div>
-        <div class="ref-hint">Save this ID — useful if our team needs to assist you.</div>
-      </div>
-
-      <p class="footnote contact-line" style="margin-top: 32px;">
-        You may close this window. We'll notify you by email when ready.<br>
-        Need help? <a href="mailto:info@fusang-vision.com">Contact our team →</a>
-      </p>
-
-    </section>
+    <p class="footnote">
+      You can safely close this window. We'll email you when your chart is ready.<br>
+      Need help? <a href="mailto:info@fusang-vision.com">Contact our team →</a>
+    </p>
 
   </main>
 
@@ -86,8 +291,7 @@
         if (!jobId) return;
         try {
           await navigator.clipboard.writeText(jobId);
-          const btn = document.getElementById('copy-ref');
-          const icon = btn.querySelector('.copy-icon');
+          const icon = document.querySelector('#copy-ref .copy-icon');
           const orig = icon.textContent;
           icon.textContent = '✓';
           setTimeout(() => { icon.textContent = orig; }, 1500);
