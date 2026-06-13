@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — 測試註冊（多語系）</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --ink-darkest: #15363a;
+      --accent-deep: #1d4a4f;
+      --accent-soft: #3a6b70;
+      --gold: #b8945c;
+      --bg-primary: #faf7f1;
+      --bg-card: #ffffff;
+      --bg-soft: #f4efe6;
+      --rule: #e3dccf;
+      --ink-dark: #2b3d3f;
+      --ink-mid: #5e6f70;
+      --ink-light: #97a3a3;
+      --error: #a8453a;
+      --font-serif-zh: 'Noto Serif TC', serif;
+      --font-serif-en: 'Cormorant Garamond', serif;
+      --font-sans: 'Inter', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-primary); color: var(--ink-dark); font-family: var(--font-sans); line-height: 1.6; padding: 48px 20px 80px; }
+    .container { max-width: 480px; margin: 0 auto; }
+
+    /* 測試橫幅 */
+    .test-banner {
+      background: var(--gold); color: #fff; text-align: center; padding: 10px 16px; border-radius: 4px;
+      font-size: 12px; letter-spacing: 0.05em; margin-bottom: 32px; font-weight: 500;
+    }
+
+    .brand-mark { font-family: var(--font-serif-en); font-size: 22px; font-weight: 600; letter-spacing: 0.06em; color: var(--ink-darkest); text-align: center; margin-bottom: 24px; }
+    .title { font-family: var(--font-serif-zh); font-size: 28px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink-darkest); text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; font-size: 14px; color: var(--ink-mid); margin-bottom: 24px; }
+    .divider { height: 1px; background: var(--rule); margin: 24px 0 28px; }
+
+    .field { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-dark); margin-bottom: 7px; letter-spacing: 0.02em; }
+    input, select {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg-card);
+      font-family: var(--font-sans); font-size: 14px; color: var(--ink-dark); transition: border-color 0.2s;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent-soft); }
+    .row-three { display: grid; grid-template-columns: 1.1fr 1fr 0.8fr; gap: 10px; }
+
+    /* 語言選擇（測試頁重點）*/
+    .lang-field { padding: 18px; background: var(--bg-soft); border-radius: 4px; border-left: 3px solid var(--gold); margin-bottom: 24px; }
+    .lang-field label { font-size: 14px; color: var(--ink-darkest); margin-bottom: 4px; }
+    .lang-field .lang-note { font-size: 12px; color: var(--ink-mid); margin-bottom: 12px; line-height: 1.5; }
+    .lang-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .lang-btn {
+      padding: 12px 8px; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg-card); cursor: pointer;
+      font-family: var(--font-sans); font-size: 13px; color: var(--ink-mid); transition: all 0.2s; text-align: center;
+    }
+    .lang-btn:hover { border-color: var(--accent-soft); }
+    .lang-btn.active { background: var(--accent-deep); color: #fff; border-color: var(--accent-deep); }
+
+    .toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .toggle-btn {
+      padding: 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg-card); cursor: pointer;
+      font-family: var(--font-sans); font-size: 14px; color: var(--ink-mid); transition: all 0.2s;
+    }
+    .toggle-btn:hover { border-color: var(--accent-soft); }
+    .toggle-btn.active { background: var(--accent-deep); color: #fff; border-color: var(--accent-deep); }
+
+    .consent-box { display: flex; gap: 10px; align-items: flex-start; margin: 24px 0; padding: 14px; background: var(--bg-soft); border-radius: 4px; }
+    .consent-box input { width: auto; margin-top: 3px; }
+    .consent-box label { margin: 0; font-weight: 400; font-size: 13px; }
+    .consent-sub { display: block; font-size: 11px; color: var(--ink-light); margin-top: 3px; }
+    .required-mark { color: var(--error); }
+
+    .error-message { display: none; color: var(--error); font-size: 13px; margin: 12px 0; padding: 10px 14px; background: #f9e8e5; border-radius: 4px; }
+
+    .btn-primary {
+      width: 100%; padding: 16px; background: var(--ink-darkest); color: #fff; border: none; border-radius: 4px;
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-deep); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .footnote { text-align: center; font-size: 12px; color: var(--ink-light); margin-top: 16px; line-height: 1.6; }
+
+    /* 結果顯示（測試頁）*/
+    .result-box { display: none; margin-top: 24px; padding: 20px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 4px; font-size: 13px; line-height: 1.8; }
+    .result-box.show { display: block; }
+    .result-box.ok { border-left: 3px solid var(--accent-deep); }
+    .result-box.err { border-left: 3px solid var(--error); }
+    .result-box code { font-family: 'Courier New', monospace; background: var(--bg-soft); padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+    .result-box .r-title { font-weight: 600; color: var(--ink-darkest); margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="test-banner">⚙ 測試頁 · 多語系註冊驗證（會真實建立帳號並生成命盤）</div>
+
+    <div class="brand-mark">FuSang Vision</div>
+    <h1 class="title">建立帳號（測試）</h1>
+    <p class="subtitle">選擇語言將鎖定，之後報告皆以此語言生成</p>
+
+    <div class="divider"></div>
+
+    <form id="chart-form" novalidate>
+
+      <!-- 語言選擇（測試頁重點）-->
+      <div class="lang-field">
+        <label>報告語言 · Report Language</label>
+        <div class="lang-note">註冊後鎖定，不可更換。需要其他語言請用另一個 email 註冊。</div>
+        <div class="lang-options" id="lang-options" role="radiogroup" aria-label="Language">
+          <button type="button" class="lang-btn active" data-value="zh-TW">繁體中文</button>
+          <button type="button" class="lang-btn" data-value="zh-CN">简体中文</button>
+          <button type="button" class="lang-btn" data-value="en">English</button>
+        </div>
+        <input type="hidden" id="language" name="language" value="zh-TW" />
+      </div>
+
+      <div class="field">
+        <label for="display_name">Name</label>
+        <input type="text" id="display_name" name="display_name" placeholder="Your full name" required autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password" />
+      </div>
+
+      <div class="field">
+        <label for="password_confirm">Confirm Password</label>
+        <input type="password" id="password_confirm" name="password_confirm" placeholder="Re-enter your password" required minlength="8" autocomplete="new-password" />
+      </div>
+
+      <div class="field">
+        <label>Date of Birth (Solar Calendar)</label>
+        <div class="row-three">
+          <select id="birth_year" name="birth_year" required><option value="">Year</option></select>
+          <select id="birth_month" name="birth_month" required><option value="">Month</option></select>
+          <select id="birth_day" name="birth_day" required><option value="">Day</option></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="birth_hour">Birth Hour</label>
+        <select id="birth_hour" name="birth_hour" required>
+          <option value="">Select birth hour</option>
+          <option value="0">子 Zi · 00:00 – 00:59</option>
+          <option value="1">丑 Chou · 01:00 – 02:59</option>
+          <option value="3">寅 Yin · 03:00 – 04:59</option>
+          <option value="5">卯 Mao · 05:00 – 06:59</option>
+          <option value="7">辰 Chen · 07:00 – 08:59</option>
+          <option value="9">巳 Si · 09:00 – 10:59</option>
+          <option value="11">午 Wu · 11:00 – 12:59</option>
+          <option value="13">未 Wei · 13:00 – 14:59</option>
+          <option value="15">申 Shen · 15:00 – 16:59</option>
+          <option value="17">酉 You · 17:00 – 18:59</option>
+          <option value="19">戌 Xu · 19:00 – 20:59</option>
+          <option value="21">亥 Hai · 21:00 – 22:59</option>
+          <option value="23">晚子 Late Zi · 23:00 – 23:59</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Gender</label>
+        <div class="toggle-group" role="radiogroup" aria-label="Gender">
+          <button type="button" class="toggle-btn" data-name="gender" data-value="female">Female</button>
+          <button type="button" class="toggle-btn" data-name="gender" data-value="male">Male</button>
+        </div>
+        <input type="hidden" id="gender" name="gender" required />
+      </div>
+
+      <div class="consent-box">
+        <input type="checkbox" id="newsletter_consent" name="newsletter_consent" required />
+        <label for="newsletter_consent">
+          I agree to receive insights and updates from FuSang Vision via email <span class="required-mark">*</span>
+          <span class="consent-sub">Required to receive your personalized report</span>
+        </label>
+      </div>
+
+      <div id="error-message" class="error-message" role="alert" aria-live="polite"></div>
+
+      <button type="submit" id="submit-btn" class="btn-primary">
+        <span class="btn-text">Generate My Chart</span>
+        <span class="btn-arrow">→</span>
+      </button>
+
+      <p class="footnote">測試頁：成功後不跳轉，直接在下方顯示結果（job_id / language）以便驗證。</p>
+    </form>
+
+    <!-- 測試結果顯示 -->
+    <div id="result-box" class="result-box"></div>
+  </main>
+
+  <script>
+    // ============================================================
+    // 測試頁邏輯（複製自 script.js，加 language；成功後不跳轉，顯示結果驗證）
+    // ============================================================
+    const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
+    const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
+
+    const DEFAULTS = {
+      birth_minute: 0,
+      birth_country: 'Taiwan',
+      birth_city: 'Taipei',
+      birth_timezone: 'Asia/Taipei',
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initYearOptions();
+      initMonthOptions();
+      initDayOptions();
+      bindLangOptions();
+      bindToggleGroups();
+      bindForm();
+    });
+
+    function initYearOptions() {
+      const yearSelect = document.getElementById('birth_year');
+      const currentYear = new Date().getFullYear();
+      for (let y = currentYear; y >= 1920; y--) {
+        const opt = document.createElement('option');
+        opt.value = y; opt.textContent = y;
+        yearSelect.appendChild(opt);
+      }
+    }
+    function initMonthOptions() {
+      const monthSelect = document.getElementById('birth_month');
+      const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      for (let m = 1; m <= 12; m++) {
+        const opt = document.createElement('option');
+        opt.value = m; opt.textContent = `${m} — ${names[m-1]}`;
+        monthSelect.appendChild(opt);
+      }
+    }
+    function initDayOptions() {
+      const daySelect = document.getElementById('birth_day');
+      for (let d = 1; d <= 31; d++) {
+        const opt = document.createElement('option');
+        opt.value = d; opt.textContent = d;
+        daySelect.appendChild(opt);
+      }
+    }
+
+    // 語言選擇（單選按鈕組 → 寫進 hidden input）
+    function bindLangOptions() {
+      const group = document.getElementById('lang-options');
+      const hidden = document.getElementById('language');
+      group.addEventListener('click', (e) => {
+        const btn = e.target.closest('.lang-btn');
+        if (!btn) return;
+        group.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        hidden.value = btn.dataset.value;
+      });
+    }
+
+    function bindToggleGroups() {
+      document.querySelectorAll('.toggle-group').forEach((group) => {
+        group.addEventListener('click', (e) => {
+          const btn = e.target.closest('.toggle-btn');
+          if (!btn) return;
+          group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const hidden = document.getElementById(btn.dataset.name);
+          if (hidden) hidden.value = btn.dataset.value;
+        });
+      });
+    }
+
+    function bindForm() {
+      const form = document.getElementById('chart-form');
+      const submitBtn = document.getElementById('submit-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearResult();
+
+        const payload = {
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+          display_name: document.getElementById('display_name').value.trim(),
+          birth_year: parseInt(document.getElementById('birth_year').value, 10),
+          birth_month: parseInt(document.getElementById('birth_month').value, 10),
+          birth_day: parseInt(document.getElementById('birth_day').value, 10),
+          birth_hour: parseInt(document.getElementById('birth_hour').value, 10),
+          birth_minute: DEFAULTS.birth_minute,
+          birth_country: DEFAULTS.birth_country,
+          birth_city: DEFAULTS.birth_city,
+          birth_timezone: DEFAULTS.birth_timezone,
+          gender: document.getElementById('gender').value,
+          language: document.getElementById('language').value, // ← 新增
+        };
+
+        const error = validatePayload(payload);
+        if (error) { showError(error); return; }
+
+        const passwordConfirm = document.getElementById('password_confirm').value;
+        if (payload.password !== passwordConfirm) { showError('Passwords do not match.'); return; }
+
+        if (!document.getElementById('newsletter_consent').checked) {
+          showError('Please confirm you agree to receive emails.'); return;
+        }
+
+        setSubmitting(submitBtn, true);
+
+        try {
+          const res = await fetch(EF_SUBMIT_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+
+          // 成功 → 測試頁不跳轉，直接顯示結果驗證
+          showResult(true, payload, data);
+        } catch (err) {
+          console.error('Submit error:', err);
+          showResult(false, payload, { error: err.message || 'Something went wrong.' });
+        } finally {
+          setSubmitting(submitBtn, false);
+        }
+      });
+    }
+
+    function validatePayload(p) {
+      if (!p.display_name) return 'Please enter your name.';
+      if (!p.email) return 'Please enter your email.';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return 'Please enter a valid email.';
+      if (!p.password) return 'Please create a password.';
+      if (p.password.length < 8) return 'Password must be at least 8 characters.';
+      if (!p.birth_year) return 'Please select your birth year.';
+      if (!p.birth_month) return 'Please select your birth month.';
+      if (!p.birth_day) return 'Please select your birth day.';
+      if (isNaN(p.birth_hour)) return 'Please select your birth hour.';
+      if (!p.gender) return 'Please select your gender.';
+      if (!['zh-TW','zh-CN','en'].includes(p.language)) return 'Please select a language.';
+      const date = new Date(p.birth_year, p.birth_month - 1, p.birth_day);
+      if (date.getFullYear() !== p.birth_year || date.getMonth() !== p.birth_month - 1 || date.getDate() !== p.birth_day) {
+        return 'Please enter a valid date.';
+      }
+      return null;
+    }
+
+    function setSubmitting(btn, on) {
+      if (on) {
+        btn.disabled = true;
+        btn.querySelector('.btn-text').textContent = 'Submitting...';
+        btn.querySelector('.btn-arrow').textContent = '...';
+      } else {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').textContent = 'Generate My Chart';
+        btn.querySelector('.btn-arrow').textContent = '→';
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('error-message');
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+    function clearResult() {
+      document.getElementById('error-message').style.display = 'none';
+      const r = document.getElementById('result-box');
+      r.className = 'result-box';
+      r.innerHTML = '';
+    }
+
+    // 測試結果顯示
+    function showResult(ok, payload, data) {
+      const r = document.getElementById('result-box');
+      if (ok) {
+        r.className = 'result-box show ok';
+        r.innerHTML = `
+          <div class="r-title">✓ 註冊成功</div>
+          送出語言：<code>${payload.language}</code><br>
+          EF 回傳語言：<code>${data.language || '(未回傳)'}</code><br>
+          job_id：<code>${data.job_id}</code><br>
+          existing_user：<code>${String(data.existing_user)}</code><br>
+          <br>
+          驗證 SQL：<br>
+          <code>SELECT email, preferred_language FROM user_profiles WHERE email='${payload.email}';</code><br>
+          <br>
+          命盤生成約需 20 分鐘。${data.existing_user ? '（此為既有帳號，語言不會被覆蓋——符合鎖定設計）' : ''}
+        `;
+      } else {
+        r.className = 'result-box show err';
+        r.innerHTML = `<div class="r-title">✕ 失敗</div><code>${data.error}</code>`;
+      }
+    }
+  </script>
+</body>
+</html>
