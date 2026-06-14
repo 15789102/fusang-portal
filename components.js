@@ -242,7 +242,7 @@ function injectCss() {
 }
 
 // ─── Header ──────────────────────────────────────────────────
-// activePage: 'chart' | 'annual' | 'monthly' | 'account' | null
+// activePage: 'chart' | 'decade' | 'annual' | 'monthly' | 'account' | null
 function injectHeader(activePage = null) {
   const el = document.getElementById('site-header');
   if (!el) return;
@@ -254,6 +254,7 @@ function injectHeader(activePage = null) {
       </div>
       <nav class="fs-header-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">${tc('navChart')}</span>
+        <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade">${tc('navDecade') === 'navDecade' ? '大限' : tc('navDecade')}</span>
         <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">${tc('navAnnual')}</span>
         <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly">${tc('navMonthly')}</span>
         <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">${tc('navAccount')}</span>
@@ -267,6 +268,9 @@ function injectHeader(activePage = null) {
   });
   el.querySelector('[data-nav="chart"]').addEventListener('click', () => {
     window.location.href = 'chart.html';
+  });
+  el.querySelector('[data-nav="decade"]').addEventListener('click', () => {
+    window.location.href = 'decade.html';
   });
   el.querySelector('[data-nav="annual"]').addEventListener('click', () => {
     window.location.href = 'annual.html';
