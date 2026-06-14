@@ -508,7 +508,7 @@
       // 狀態：done（已生成可讀）/ generating（生成中）/ idle（可觸發生成）
       const job = jobsByStart[d.start];
       const done = !!(job && job.report_status === 'done');
-      const generating = !done && (generatingStarts.has(d.start) || (job && job.report_status !== 'done'));
+      const generating = !done && (generatingStarts.has(d.start) || jobActive(job));
 
       const bar = document.createElement('div');
       bar.className = 'decade-bar' + (isCurrent ? ' current' : '') + (actionable ? ' actionable' : ' preview');
@@ -556,7 +556,7 @@
   async function fetchJobs() {
     const { data, error } = await supabase
       .from(DECADE_JOBS_TABLE)
-      .select('target_year_start, materials_status, report_status')
+      .select('target_year_start, materials_status, report_status, updated_at')
       .eq('user_email', userEmail);
     if (error) { console.warn('[decade] job 查詢失敗：', error.message); return []; }
     return data || [];
@@ -567,6 +567,13 @@
     return m;
   }
   function jobDone(j) { return !!(j && j.report_status === 'done'); }
+  // 「真的在生成中」：未完成且最近有進度，避免孤兒 pending job 永久顯示生成中
+  const JOB_STALE_MS = 30 * 60 * 1000; // 超過 30 分鐘無進度 → 視為孤兒，可重新製作
+  function jobActive(j) {
+    if (!j || j.report_status === 'done') return false;
+    const ts = j.updated_at ? new Date(j.updated_at).getTime() : 0;
+    return (Date.now() - ts) < JOB_STALE_MS;
+  }
 
   // 重抓 job 狀態並重畫 bar；autoOpenStart 完成時自動開啟該大限
   async function refreshDecadeBars(autoOpenStart) {
@@ -903,14 +910,13 @@
 
       decadesCache = decades;
 
-      // 疊上 job 狀態（哪些大限已生成 / 生成中）
+      // 疊上 job 狀態（已生成 / 真的在生成中）
       const jobs = await fetchJobs();
-      for (const j of jobs) { if (!jobDone(j)) generatingStarts.add(j.target_year_start); }
       renderDecades(decadesCache, jobsToMap(jobs));
       showView('view-years');
 
-      // 重整續跑：若有大限仍在生成中，繼續輪詢更新 bar 標籤
-      if (jobs.some(j => !jobDone(j))) startPolling(null);
+      // 重整續跑：只有「真的在生成中」(最近有進度) 的 job 才續輪詢；孤兒 pending 視為可重新製作
+      if (jobs.some(jobActive)) startPolling(null);
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
     }
