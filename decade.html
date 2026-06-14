@@ -207,6 +207,39 @@
     .decade-bar-age { font-size: 13px; color: var(--ink-light, #7a8a86); letter-spacing: 0.04em; }
     .decade-bar-right { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-light, #7a8a86); text-align: right; white-space: nowrap; }
     .decade-bar.current .decade-bar-right { color: var(--accent-deep, #b8945c); }
+
+    /* 大限說明 */
+    .decade-intro { display: flex; gap: 12px; margin: 0 0 28px; padding: 16px 20px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
+    .decade-intro-icon { flex-shrink: 0; color: var(--accent-soft); font-size: 14px; line-height: 1.5; }
+    .decade-intro strong { color: var(--ink-darkest); font-weight: 500; }
+
+    /* bar 狀態標示 */
+    .decade-bar-right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
+    .decade-tag { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-light, #7a8a86); }
+    .decade-bar.current .decade-tag { color: var(--accent-deep, #b8945c); }
+    .decade-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; letter-spacing: 0.08em; }
+    .decade-status.done { color: var(--accent-deep, #b8945c); }
+    .decade-status.generating { color: var(--ink-mid, #5a6b67); }
+    .decade-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .decade-dot.done { background: var(--accent-deep, #b8945c); }
+    .decade-dot.generating { background: #c8a96a; animation: pulse 1.4s ease-in-out infinite; }
+    .decade-cta { display: inline-block; padding: 8px 18px; background: var(--ink-darkest, #15363a); color: var(--bg-primary, #faf7f1); font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.12em; border-radius: 2px; transition: background 0.2s; }
+    .decade-bar.idle:hover .decade-cta { background: var(--accent-deep, #b8945c); }
+    /* 已生成的條目左側細邊提示「有內容」 */
+    .decade-bar.done { border-left: 3px solid var(--accent-deep, #b8945c); }
+
+    /* 製作確認視窗 */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(21,54,58,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
+    .modal-box { background: var(--bg-primary, #faf7f1); max-width: 420px; width: 100%; padding: 36px 32px 28px; border-radius: 4px; box-shadow: 0 12px 48px rgba(21,54,58,0.2); }
+    .modal-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest, #15363a); margin-bottom: 16px; letter-spacing: 0.04em; }
+    .modal-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark, #3a4a47); letter-spacing: 0.02em; margin-bottom: 28px; }
+    .modal-body strong { color: var(--accent-deep, #b8945c); }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+    .modal-btn { padding: 11px 22px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.12em; border-radius: 2px; cursor: pointer; border: 1px solid var(--rule, #e5ddd0); transition: all 0.2s; }
+    .modal-btn.cancel { background: transparent; color: var(--ink-mid, #5a6b67); }
+    .modal-btn.cancel:hover { border-color: var(--ink-mid, #5a6b67); }
+    .modal-btn.confirm { background: var(--ink-darkest, #15363a); color: var(--bg-primary, #faf7f1); border-color: var(--ink-darkest, #15363a); }
+    .modal-btn.confirm:hover { background: var(--accent-deep, #b8945c); border-color: var(--accent-deep, #b8945c); }
   </style>
 </head>
 <body>
@@ -230,6 +263,10 @@
         <div class="years-eyebrow">Major Limit · 大限</div>
         <h1 class="years-title">我的大限運勢</h1>
         <p class="years-sub">選擇一個十年大限，閱讀該時期的十二宮運勢</p>
+      </div>
+      <div class="decade-intro">
+        <span class="decade-intro-icon">◇</span>
+        <div><strong>大限</strong>是紫微斗數的十年運勢週期。從特定年齡起，每十年由一個宮位「領運」，那個十年的人生主軸、機運與課題，都會染上該宮位與其星曜的色彩。以下依您的命盤，排出各段十年大限。</div>
       </div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
@@ -344,6 +381,17 @@
       <div style="text-align: center;"><a href="dashboard.html" class="btn-primary">返回儀表板</a></div>
     </section>
 
+  </div>
+</div>
+
+<div id="confirm-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">製作 <span id="confirm-range">—</span> 大限報告</div>
+    <p class="modal-body">系統會為這個十年大限排出十二宮，逐宮生成完整解讀。<br>整個過程約需 <strong>12–15 分鐘</strong>。期間您可以離開本頁，完成後再回來查看；屆時這條大限會顯示「已完成 · 點擊閱讀」。</p>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="confirm-cancel">取消</button>
+      <button class="modal-btn confirm" id="confirm-ok">開始製作</button>
+    </div>
   </div>
 </div>
 
@@ -473,18 +521,21 @@
       age.className = 'decade-bar-age'; age.textContent = `${d.startAge}–${d.endAge} 歲`;
       left.appendChild(yrs); left.appendChild(age);
 
+      // 標示「有內容 / 生成中 / 可製作」
+      bar.className += done ? ' done' : (generating ? ' generating' : (actionable ? ' idle' : ''));
+
       const right = document.createElement('div');
       right.className = 'decade-bar-right';
       const tag = isCurrent ? '目前大限' : (isNext ? '下一個大限' : '未來大限');
-      let action = '';
-      if (actionable) {
-        if (done) action = '已完成 · 點擊閱讀';
-        else if (generating) action = '生成中…';
-        else action = '點擊生成';
+      let statusHtml = `<span class="decade-tag">${tag}</span>`;
+      if (actionable && done) {
+        statusHtml += `<span class="decade-status done"><span class="decade-dot done"></span>已完成 · 點擊閱讀</span>`;
+      } else if (actionable && generating) {
+        statusHtml += `<span class="decade-status generating"><span class="decade-dot generating"></span>生成中…</span>`;
+      } else if (actionable) {
+        statusHtml += `<span class="decade-cta">製作報告 →</span>`;
       }
-      right.innerHTML = action
-        ? `${tag}<br><span style="color:var(--accent-deep,#b8945c);">${action}</span>`
-        : tag;
+      right.innerHTML = statusHtml;
 
       bar.appendChild(left); bar.appendChild(right);
 
@@ -493,7 +544,7 @@
         bar.addEventListener('click', () => loadDecade(d.start));
       } else if (actionable && !generating) {
         bar.style.cursor = 'pointer';
-        bar.addEventListener('click', () => subscribeDecade(d.start));
+        bar.addEventListener('click', () => openConfirm(d.start));   // 先彈確認視窗，避免誤點
       } else {
         bar.style.cursor = 'default';
       }
@@ -558,6 +609,18 @@
   }
   function stopPolling() {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
+  // ── 製作確認視窗（避免誤點，比照 annual / monthly）──
+  let pendingStart = null;
+  function openConfirm(startYear) {
+    pendingStart = startYear;
+    document.getElementById('confirm-range').textContent = `${startYear}–${startYear + 9}`;
+    document.getElementById('confirm-modal').style.display = 'flex';
+  }
+  function closeConfirm() {
+    document.getElementById('confirm-modal').style.display = 'none';
+    pendingStart = null;
   }
 
   async function loadDecade(startYear) {
@@ -856,6 +919,17 @@
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
+
+  // 確認視窗
+  document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+  document.getElementById('confirm-ok').addEventListener('click', () => {
+    const s = pendingStart;
+    closeConfirm();
+    if (s != null) subscribeDecade(s);
+  });
+  document.getElementById('confirm-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'confirm-modal') closeConfirm(); // 點背景關閉
+  });
   document.addEventListener('click', () => {
     document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
   });
