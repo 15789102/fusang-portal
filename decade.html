@@ -194,6 +194,19 @@
     .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
+
+    /* 大限橫條清單 */
+    .decade-list { display: flex; flex-direction: column; gap: 14px; }
+    .decade-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border: 1px solid var(--rule, #e5ddd0); background: var(--paper, #faf7f1); border-radius: 2px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .decade-bar.actionable { cursor: pointer; }
+    .decade-bar.actionable:hover { border-color: var(--accent-deep, #b8945c); }
+    .decade-bar.current { border-color: var(--accent-deep, #b8945c); box-shadow: 0 0 0 1px var(--accent-deep, #b8945c); }
+    .decade-bar.preview { opacity: 0.4; cursor: default; }
+    .decade-bar-left { display: flex; flex-direction: column; gap: 4px; }
+    .decade-bar-years { font-family: var(--font-serif-en, Georgia, serif); font-size: 22px; color: #15363a; letter-spacing: 0.02em; }
+    .decade-bar-age { font-size: 13px; color: var(--ink-light, #7a8a86); letter-spacing: 0.04em; }
+    .decade-bar-right { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-light, #7a8a86); text-align: right; white-space: nowrap; }
+    .decade-bar.current .decade-bar-right { color: var(--accent-deep, #b8945c); }
   </style>
 </head>
 <body>
@@ -341,6 +354,8 @@
 
   // ── 可調整常數：大限報告表名（生成後讀取；若實際表名不同，改這一行即可）──
   const DECADE_TABLE = 'decade_palace_reports';
+  // 「下一個大限」之後，再淡淡顯示幾條未來大限地平線（不可生成）。0 = 只顯示當前+下一個
+  const FUTURE_PREVIEW = 2;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
@@ -399,7 +414,8 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // ── 大限選擇 ──
+  // ── 大限選擇（橫條版）──
+  //   過去隱藏；當前第一條高亮；只有「當前 + 下一個」可生成/閱讀；之後 FUTURE_PREVIEW 條淡淡地平線
   function renderDecades(decades) {
     const grid = document.getElementById('years-grid');
     const empty = document.getElementById('years-empty');
@@ -409,25 +425,47 @@
       empty.style.display = 'block';
       return;
     }
-    grid.style.display = 'grid';
+
+    // decades 已按 valid_year_start 升冪。找當前 index：
+    let currentIndex = decades.findIndex(d => d.isCurrent);
+    if (currentIndex === -1) {
+      const nowY = new Date().getFullYear();
+      currentIndex = (nowY < decades[0].start) ? 0 : decades.length - 1; // 還沒入運→第一個；超過最後→最後一個
+    }
+
+    // 顯示窗：當前 → 當前 + 下一個 + FUTURE_PREVIEW（過去全部不顯示）
+    const lastIndex = Math.min(decades.length - 1, currentIndex + 1 + FUTURE_PREVIEW);
+    const visible = decades.slice(currentIndex, lastIndex + 1);
+
+    grid.style.display = 'flex';
+    grid.style.flexDirection = 'column';
+    grid.style.gap = '14px';
     empty.style.display = 'none';
-    decades.forEach((d) => {
-      const card = document.createElement('div');
-      card.className = 'year-card';
-      if (d.isCurrent) {
-        card.style.borderColor = 'var(--accent-deep, #b8945c)';
-        card.style.boxShadow = '0 0 0 1px var(--accent-deep, #b8945c)';
-      }
-      const num = document.createElement('div');
-      num.className = 'year-card-num';
-      num.style.fontSize = '20px';
-      num.textContent = `${d.start}–${d.end}`;
-      const label = document.createElement('div');
-      label.className = 'year-card-label';
-      label.textContent = `${d.startAge}–${d.endAge} 歲` + (d.isCurrent ? ' · 目前大限' : '');
-      card.appendChild(num); card.appendChild(label);
-      card.addEventListener('click', () => loadDecade(d.start));
-      grid.appendChild(card);
+
+    visible.forEach((d, i) => {
+      const absIdx = currentIndex + i;
+      const isCurrent = absIdx === currentIndex;
+      const isNext = absIdx === currentIndex + 1;
+      const actionable = isCurrent || isNext;   // 只有當前 + 下一個可生成/閱讀
+
+      const bar = document.createElement('div');
+      bar.className = 'decade-bar' + (isCurrent ? ' current' : '') + (actionable ? ' actionable' : ' preview');
+
+      const left = document.createElement('div');
+      left.className = 'decade-bar-left';
+      const yrs = document.createElement('div');
+      yrs.className = 'decade-bar-years'; yrs.textContent = `${d.start}–${d.end}`;
+      const age = document.createElement('div');
+      age.className = 'decade-bar-age'; age.textContent = `${d.startAge}–${d.endAge} 歲`;
+      left.appendChild(yrs); left.appendChild(age);
+
+      const right = document.createElement('div');
+      right.className = 'decade-bar-right';
+      right.textContent = isCurrent ? '目前大限' : (isNext ? '下一個大限' : '未來大限');
+
+      bar.appendChild(left); bar.appendChild(right);
+      if (actionable) bar.addEventListener('click', () => loadDecade(d.start));
+      grid.appendChild(bar);
     });
   }
 
