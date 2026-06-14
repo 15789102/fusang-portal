@@ -211,6 +211,28 @@
       </div>
     </section>
 
+    <!-- 流年生成（無資料時）/ 生成中 -->
+    <section id="view-intro" class="view">
+      <div id="intro-pitch">
+        <div class="years-head">
+          <div class="years-eyebrow">Annual Fortune · 流年</div>
+          <h1 class="years-title">產生您的流年運勢</h1>
+          <p class="years-sub">為您生成今年（<span id="intro-year"></span>）的十二宮流年解讀</p>
+        </div>
+        <div style="text-align:center; margin-top:32px;">
+          <button id="intro-generate-btn" class="btn-primary">開始生成今年流年</button>
+        </div>
+      </div>
+      <div id="intro-generating" style="display:none;">
+        <div class="years-head">
+          <div class="years-eyebrow">Generating · 生成中</div>
+          <h1 class="years-title">正在為您生成流年</h1>
+          <p class="years-sub">生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信</p>
+        </div>
+        <div id="gen-cards" class="years-grid"></div>
+      </div>
+    </section>
+
     <!-- 年份選擇 -->
     <section id="view-years" class="view">
       <div class="years-head">
@@ -341,6 +363,12 @@
 
   // ── 可調整常數：流年報告表名（若實際表名不同，改這一行即可）──
   const ANNUAL_TABLE = 'annual_palace_reports';
+  // 流年生成狀態表（訂閱判斷 + 生成中輪詢）
+  const ANNUAL_JOBS_TABLE = 'annual_generation_jobs';
+  // materials flow 觸發 webhook（production）— 換成你 annual materials flow 的 Webhook Production URL
+  const ANNUAL_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/annual-v2';
+  // 生成中輪詢間隔（毫秒）
+  const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
@@ -383,6 +411,8 @@
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
+  let userEmail = null;           // 登入用戶 email（觸發/輪詢用）
+  let pollTimer = null;           // 生成中輪詢計時器
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -654,12 +684,112 @@
     });
   }
 
+  // ===================================================================
+  // 流年生成機制（單一年；重整後 init 重查 job、有 pending 自動續輪詢，不需 localStorage）
+  // ===================================================================
+
+  // 目前流年目標年（國曆年近似；農曆年界線細修為未來事）
+  function currentAnnualTargetYear() { return new Date().getFullYear(); }
+
+  // 撈有報告的流年年份（找不到表或沒資料 → 視為空白，不報錯）
+  async function fetchYears() {
+    let years = [];
+    try {
+      const { data: rows, error } = await supabase
+        .from(ANNUAL_TABLE)
+        .select('valid_year_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_layer', 'annual')
+        .eq('language', 'zh-TW');
+      if (error) {
+        console.warn('[annual] 流年查詢失敗（可能表尚未建立）：', error.message);
+      } else if (rows) {
+        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y !== null && y !== undefined))]
+          .sort((a, b) => b - a);
+      }
+    } catch (e) {
+      console.warn('[annual] 流年查詢例外：', e);
+    }
+    return years;
+  }
+
+  // 撈本用戶的流年 job
+  async function fetchJobs() {
+    const { data, error } = await supabase
+      .from(ANNUAL_JOBS_TABLE)
+      .select('target_year, materials_status, report_status')
+      .eq('user_email', userEmail)
+      .order('target_year', { ascending: false });
+    if (error) { console.warn('[annual] job 查詢失敗：', error.message); return []; }
+    return data || [];
+  }
+  function jobDone(j) { return j.report_status === 'done'; }
+
+  // 渲染生成中畫面，回傳「是否全部完成」
+  function renderGenerating(jobs) {
+    document.getElementById('intro-pitch').style.display = 'none';
+    document.getElementById('intro-generating').style.display = 'block';
+    const wrap = document.getElementById('gen-cards');
+    // job 列還沒建出來時，至少先顯示目標年生成中
+    const list = jobs.length ? jobs : [{ target_year: currentAnnualTargetYear(), report_status: 'pending' }];
+    const sorted = [...list].sort((a, b) => b.target_year - a.target_year);
+    wrap.innerHTML = sorted.map(j => {
+      const done = jobDone(j);
+      return `<div class="year-card" data-year="${j.target_year}" data-done="${done}" style="cursor:${done ? 'pointer' : 'default'};">
+        <div class="year-card-num">${j.target_year}</div>
+        <div class="year-card-label">${done ? '已完成 · 點擊閱讀' : '生成中…'}</div>
+      </div>`;
+    }).join('');
+    wrap.querySelectorAll('.year-card[data-done="true"]').forEach(card => {
+      card.addEventListener('click', () => loadYear(Number(card.dataset.year)));
+    });
+    return sorted.length > 0 && sorted.every(jobDone);
+  }
+
+  // 產生今年流年：觸發 materials flow（送出即視為觸發，狀態以 job 表為準）
+  async function subscribeAnnual() {
+    const btn = document.getElementById('intro-generate-btn');
+    btn.disabled = true;
+    btn.textContent = '正在為您開始…';
+    const targetYear = currentAnnualTargetYear();
+    try {
+      await fetch(ANNUAL_TRIGGER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email: userEmail, target_year: targetYear }),
+      });
+    } catch (e) {
+      console.warn('[annual] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+    }
+    const jobs = await fetchJobs();
+    renderGenerating(jobs);
+    startPolling();
+  }
+
+  function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(async () => {
+      const jobs = await fetchJobs();
+      if (jobs.length === 0) return;            // job 尚未建出，繼續等
+      const allDone = renderGenerating(jobs);
+      if (allDone) {
+        stopPolling();
+        const years = await fetchYears();
+        renderYears(years);
+        showView('view-years');
+      }
+    }, POLL_INTERVAL_MS);
+  }
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
   async function init() {
     try {
       const session = await requireAuth();
       if (!session) return; // requireAuth 已導向 login.html
 
-      const userEmail = session.user.email;
+      userEmail = session.user.email;
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
@@ -675,32 +805,36 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      // 撈有資料的流年年份（找不到表或沒資料 → 視為空白，不報錯）
-      let years = [];
-      try {
-        const { data: rows, error } = await supabase
-          .from(ANNUAL_TABLE)
-          .select('valid_year_start')
-          .eq('chart_session_id', chartSessionId)
-          .eq('chart_layer', 'annual')
-          .eq('language', 'zh-TW');
-        if (error) {
-          console.warn('[annual] 流年查詢失敗（可能表尚未建立）：', error.message);
-        } else if (rows) {
-          years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y !== null && y !== undefined))]
-            .sort((a, b) => b - a);
-        }
-      } catch (e) {
-        console.warn('[annual] 流年查詢例外：', e);
+      // 查流年生成狀態
+      const jobs = await fetchJobs();
+      const generating = jobs.some(j => !jobDone(j));
+      if (generating) {
+        // 仍在生成 → 顯示生成中並輪詢（重整續跑靠這條）
+        showView('view-intro');
+        renderGenerating(jobs);
+        startPolling();
+        return;
       }
 
-      renderYears(years);
-      showView('view-years');
+      // 撈有報告的流年年份
+      const years = await fetchYears();
+      if (years.length > 0) {
+        // 已有報告 → 正常閱讀
+        renderYears(years);
+        showView('view-years');
+      } else {
+        // 無報告、無生成中 → 介紹頁（產生今年流年）
+        document.getElementById('intro-year').textContent = currentAnnualTargetYear();
+        document.getElementById('intro-pitch').style.display = 'block';
+        document.getElementById('intro-generating').style.display = 'none';
+        showView('view-intro');
+      }
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
     }
   }
 
+  document.getElementById('intro-generate-btn').addEventListener('click', subscribeAnnual);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
