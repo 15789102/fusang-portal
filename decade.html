@@ -354,6 +354,10 @@
 
   // ── 可調整常數：大限報告表名（生成後讀取；若實際表名不同，改這一行即可）──
   const DECADE_TABLE = 'decade_palace_reports';
+  const DECADE_JOBS_TABLE = 'decade_generation_jobs';
+  // 大限 materials flow 觸發 webhook（production；Active 後的正式 URL）
+  const DECADE_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/decade-v2';
+  const POLL_INTERVAL_MS = 5000;
   // 「下一個大限」之後，再淡淡顯示幾條未來大限地平線（不可生成）。0 = 只顯示當前+下一個
   const FUTURE_PREVIEW = 2;
 
@@ -398,6 +402,10 @@
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
+  let userEmail = null;
+  let pollTimer = null;
+  let decadesCache = [];                 // ziwei_charts 算出的大限區間
+  const generatingStarts = new Set();    // 剛觸發 / 生成中的大限起年
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -416,7 +424,8 @@
 
   // ── 大限選擇（橫條版）──
   //   過去隱藏；當前第一條高亮；只有「當前 + 下一個」可生成/閱讀；之後 FUTURE_PREVIEW 條淡淡地平線
-  function renderDecades(decades) {
+  function renderDecades(decades, jobsByStart) {
+    jobsByStart = jobsByStart || {};
     const grid = document.getElementById('years-grid');
     const empty = document.getElementById('years-empty');
     grid.innerHTML = '';
@@ -448,6 +457,11 @@
       const isNext = absIdx === currentIndex + 1;
       const actionable = isCurrent || isNext;   // 只有當前 + 下一個可生成/閱讀
 
+      // 狀態：done（已生成可讀）/ generating（生成中）/ idle（可觸發生成）
+      const job = jobsByStart[d.start];
+      const done = !!(job && job.report_status === 'done');
+      const generating = !done && (generatingStarts.has(d.start) || (job && job.report_status !== 'done'));
+
       const bar = document.createElement('div');
       bar.className = 'decade-bar' + (isCurrent ? ' current' : '') + (actionable ? ' actionable' : ' preview');
 
@@ -461,12 +475,89 @@
 
       const right = document.createElement('div');
       right.className = 'decade-bar-right';
-      right.textContent = isCurrent ? '目前大限' : (isNext ? '下一個大限' : '未來大限');
+      const tag = isCurrent ? '目前大限' : (isNext ? '下一個大限' : '未來大限');
+      let action = '';
+      if (actionable) {
+        if (done) action = '已完成 · 點擊閱讀';
+        else if (generating) action = '生成中…';
+        else action = '點擊生成';
+      }
+      right.innerHTML = action
+        ? `${tag}<br><span style="color:var(--accent-deep,#b8945c);">${action}</span>`
+        : tag;
 
       bar.appendChild(left); bar.appendChild(right);
-      if (actionable) bar.addEventListener('click', () => loadDecade(d.start));
+
+      if (actionable && done) {
+        bar.style.cursor = 'pointer';
+        bar.addEventListener('click', () => loadDecade(d.start));
+      } else if (actionable && !generating) {
+        bar.style.cursor = 'pointer';
+        bar.addEventListener('click', () => subscribeDecade(d.start));
+      } else {
+        bar.style.cursor = 'default';
+      }
       grid.appendChild(bar);
     });
+  }
+
+  // ── 大限生成機制（觸發 materials webhook → 輪詢 decade_generation_jobs → done 自動開啟）──
+  async function fetchJobs() {
+    const { data, error } = await supabase
+      .from(DECADE_JOBS_TABLE)
+      .select('target_year_start, materials_status, report_status')
+      .eq('user_email', userEmail);
+    if (error) { console.warn('[decade] job 查詢失敗：', error.message); return []; }
+    return data || [];
+  }
+  function jobsToMap(jobs) {
+    const m = {};
+    (jobs || []).forEach(j => { m[j.target_year_start] = j; });
+    return m;
+  }
+  function jobDone(j) { return !!(j && j.report_status === 'done'); }
+
+  // 重抓 job 狀態並重畫 bar；autoOpenStart 完成時自動開啟該大限
+  async function refreshDecadeBars(autoOpenStart) {
+    const byStart = jobsToMap(await fetchJobs());
+    for (const s of [...generatingStarts]) {
+      if (jobDone(byStart[s])) generatingStarts.delete(s);
+    }
+    renderDecades(decadesCache, byStart);
+    if (autoOpenStart != null && jobDone(byStart[autoOpenStart])) {
+      stopPolling();
+      loadDecade(autoOpenStart);
+      return true;
+    }
+    return false;
+  }
+
+  // 點「生成」：觸發 materials flow（送出即視為觸發，狀態以 job 表為準）
+  async function subscribeDecade(startYear) {
+    generatingStarts.add(startYear);
+    renderDecades(decadesCache, jobsToMap(await fetchJobs())); // 立即顯示「生成中…」
+    try {
+      await fetch(DECADE_TRIGGER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_email: userEmail,
+          target_year_start: startYear,
+          chart_session_id: chartSessionId,
+        }),
+      });
+    } catch (e) {
+      console.warn('[decade] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+    }
+    startPolling(startYear);
+  }
+
+  function startPolling(autoOpenStart) {
+    stopPolling();
+    pollTimer = setInterval(() => { refreshDecadeBars(autoOpenStart); }, POLL_INTERVAL_MS);
+  }
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   }
 
   async function loadDecade(startYear) {
@@ -478,11 +569,10 @@
 
     const { data: reports, error } = await supabase
       .from(DECADE_TABLE)
-      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start')
+      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, decade_year_start')
       .eq('chart_session_id', chartSessionId)
-      .eq('chart_layer', 'decade')
       .eq('language', 'zh-TW')
-      .eq('valid_year_start', startYear);
+      .eq('decade_year_start', startYear);
 
     if (error) { showError(`無法載入 ${startYear}–${endYear} 大限內容：` + error.message); return; }
     if (!reports || reports.length === 0) { showError(`找不到 ${startYear}–${endYear} 的大限宮位內容（可能尚未生成）。`); return; }
@@ -705,7 +795,7 @@
       const session = await requireAuth();
       if (!session) return; // requireAuth 已導向 login.html
 
-      const userEmail = session.user.email;
+      userEmail = session.user.email;
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
@@ -748,8 +838,16 @@
         console.warn('[decade] 大限查詢例外：', e);
       }
 
-      renderDecades(decades);
+      decadesCache = decades;
+
+      // 疊上 job 狀態（哪些大限已生成 / 生成中）
+      const jobs = await fetchJobs();
+      for (const j of jobs) { if (!jobDone(j)) generatingStarts.add(j.target_year_start); }
+      renderDecades(decadesCache, jobsToMap(jobs));
       showView('view-years');
+
+      // 重整續跑：若有大限仍在生成中，繼續輪詢更新 bar 標籤
+      if (jobs.some(j => !jobDone(j))) startPolling(null);
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
     }
