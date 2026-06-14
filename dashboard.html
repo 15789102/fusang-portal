@@ -77,6 +77,7 @@
   .dash-card:nth-child(1) { animation-delay: 0.12s; }
   .dash-card:nth-child(2) { animation-delay: 0.22s; }
   .dash-card:nth-child(3) { animation-delay: 0.32s; }
+  .dash-card:nth-child(4) { animation-delay: 0.42s; }
 
   /* 角落金線裝飾 */
   .dash-card::before {
@@ -248,6 +249,15 @@
           <div id="card-natal-action"><!-- 動態填入：就緒 / 生成中 --></div>
         </div>
 
+        <!-- 大限卡 -->
+        <div class="dash-card" id="card-decade">
+          <div class="card-kicker">Major Limit</div>
+          <div class="card-name">大限運勢</div>
+          <div class="card-name-en">Your Ten-Year Cycles</div>
+          <div class="card-desc">人生以十年為一個大限週期，逐段展開該時期十二宮的主軸、機運與課題。</div>
+          <div id="card-decade-action"><!-- 動態填入：就緒 / 命盤生成中 --></div>
+        </div>
+
         <!-- 流年卡 -->
         <div class="dash-card" id="card-annual">
           <div class="card-kicker">Annual Fortune</div>
@@ -306,6 +316,7 @@
     } catch (_) { chartReady = false; }
 
     renderNatalCard(chartReady);
+    renderDecadeCard(chartReady);
 
     // ── 判斷流年是否就緒（查 annual_palace_reports，RLS 自動篩自己）──
     let annualReady = false;
@@ -362,8 +373,31 @@
     }
   }
 
-  function renderAnnualCard(ready) {
-    const el = document.getElementById('card-annual-action');
+  function renderDecadeCard(ready) {
+    const el = document.getElementById('card-decade-action');
+    if (ready) {
+      el.innerHTML = `
+        <span class="card-cta" id="go-decade">
+          進入大限 <span class="arrow">→</span>
+        </span>`;
+      document.getElementById('go-decade').addEventListener('click', () => {
+        window.location.href = 'decade.html';
+      });
+    } else {
+      el.innerHTML = `
+        <div class="card-status"><span class="pulse"></span> 命盤生成中</div>
+        <div class="card-note">
+          您的本命盤完成後，即可在此展開各十年大限。<br>
+          您也可以稍後回來重新整理。
+        </div>
+        <div class="card-refresh" id="refresh-decade">重新整理狀態</div>`;
+      document.getElementById('refresh-decade').addEventListener('click', () => {
+        window.location.reload();
+      });
+    }
+  }
+
+  function renderAnnualCard(ready) {    const el = document.getElementById('card-annual-action');
     if (ready) {
       el.innerHTML = `
         <span class="card-cta" id="go-annual">
