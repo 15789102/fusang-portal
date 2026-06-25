@@ -16,7 +16,7 @@
 
   /* Welcome hero */
   .dash-hero {
-    margin-bottom: 56px;
+    margin-bottom: 48px;
     opacity: 0;
     animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
   }
@@ -53,10 +53,16 @@
     opacity: 0.6;
   }
 
-  /* Cards */
+  /* ── 兩欄版面：左 2 / 右 1 ── */
   .dash-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .dash-left {
+    display: flex;
+    flex-direction: column;
     gap: 24px;
   }
   @media (max-width: 720px) {
@@ -69,15 +75,11 @@
     background: var(--bg-card);
     border: 1px solid var(--rule);
     border-radius: 4px;
-    padding: 34px 32px 32px;
+    padding: 30px 30px 28px;
     overflow: hidden;
     opacity: 0;
     animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
   }
-  .dash-card:nth-child(1) { animation-delay: 0.12s; }
-  .dash-card:nth-child(2) { animation-delay: 0.22s; }
-  .dash-card:nth-child(3) { animation-delay: 0.32s; }
-  .dash-card:nth-child(4) { animation-delay: 0.42s; }
 
   /* 角落金線裝飾 */
   .dash-card::before {
@@ -98,32 +100,45 @@
     text-transform: uppercase;
     color: var(--ink-light);
     margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+  /* 「現在」標記：流年 / 流月 */
+  .card-now {
+    margin-left: 10px;
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    color: var(--accent-deep);
+    border: 1px solid var(--accent-pale);
+    padding: 2px 9px;
+    border-radius: 999px;
   }
   .card-name {
     font-family: var(--font-serif-zh);
     font-weight: 500;
-    font-size: 26px;
+    font-size: 25px;
     color: var(--ink-darkest);
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+    margin-bottom: 5px;
   }
   .card-name-en {
     font-family: var(--font-serif-en);
     font-style: italic;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--ink-light);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .card-desc {
     font-family: var(--font-serif-zh);
     font-size: 14.5px;
     line-height: 1.85;
     color: var(--ink-mid);
-    margin-bottom: 28px;
-    min-height: 52px;
+    margin-bottom: 26px;
+    min-height: 50px;
   }
 
-  /* primary CTA */
+  /* primary CTA（查閱更多 / 進入）*/
   .card-cta {
     display: inline-flex;
     align-items: center;
@@ -133,7 +148,7 @@
     letter-spacing: 0.06em;
     color: var(--bg-card);
     background: var(--accent-deep);
-    padding: 13px 26px;
+    padding: 12px 24px;
     border-radius: 3px;
     cursor: pointer;
     transition: background 0.25s, transform 0.25s;
@@ -141,26 +156,6 @@
   .card-cta:hover { background: #1d4448; transform: translateY(-1px); }
   .card-cta .arrow { transition: transform 0.25s; }
   .card-cta:hover .arrow { transform: translateX(4px); }
-
-  /* coming soon badge */
-  .card-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid var(--gold-soft);
-    padding: 9px 18px;
-    border-radius: 999px;
-    opacity: 0.85;
-  }
-  .card-badge .dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--gold);
-  }
 
   /* generating / muted state */
   .dash-card.is-soon { background: var(--bg-soft-2); }
@@ -186,6 +181,7 @@
   }
   .card-refresh {
     margin-top: 18px;
+    display: inline-block;
     font-family: var(--font-sans);
     font-size: 12px;
     letter-spacing: 0.05em;
@@ -195,6 +191,80 @@
     padding-bottom: 1px;
   }
   .card-refresh:hover { color: var(--accent-deep); }
+
+  /* ── 第一層付費牆：本命/大限/流年 一次解鎖四化 ── */
+  .dash-unlock {
+    position: relative;
+    background: var(--bg-soft-2);
+    border: 1px solid var(--gold-soft);
+    border-radius: 4px;
+    padding: 24px 28px;
+    opacity: 0;
+    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .u-title {
+    font-family: var(--font-serif-zh);
+    font-size: 17px;
+    color: var(--ink-darkest);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .u-icon { color: var(--gold); font-size: 16px; }
+  .u-note {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--ink-light);
+    margin-bottom: 18px;
+  }
+  .u-btn, .sub-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--accent-deep);
+    background: var(--bg-card);
+    border: 1px solid var(--gold-soft);
+    border-radius: 3px;
+    padding: 11px 22px;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .u-btn:hover, .sub-btn:hover { background: var(--accent-pale); transform: translateY(-1px); }
+  .u-btn[disabled], .sub-btn[disabled] { opacity: 0.92; }
+
+  /* ── 流月卡（右欄，撐滿高度）── */
+  .dash-card--monthly {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .dash-card--monthly .card-desc { flex: 1; }
+
+  /* 第二層付費牆：流月訂閱 */
+  .monthly-sub {
+    margin-top: 20px;
+    background: var(--bg-soft-2);
+    border: 1px solid var(--gold-soft);
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .monthly-sub .ms-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--ink-light);
+    margin-bottom: 12px;
+  }
+  .monthly-sub .ms-line .lock { color: var(--gold); font-size: 14px; }
+  .monthly-sub .sub-btn { width: 100%; justify-content: center; }
 
   /* loading skeleton */
   .dash-loading {
@@ -215,7 +285,7 @@
     50%      { opacity: 1;   transform: scale(1.1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .dash-hero, .dash-card { animation: none; opacity: 1; }
+    .dash-hero, .dash-card, .dash-unlock { animation: none; opacity: 1; }
     .card-status .pulse { animation: none; }
   }
 </style>
@@ -240,41 +310,53 @@
       </div>
 
       <div class="dash-grid">
-        <!-- 本命盤卡 -->
-        <div class="dash-card" id="card-natal">
-          <div class="card-kicker">Natal Chart</div>
-          <div class="card-name">本命盤</div>
-          <div class="card-name-en">Your Innate Blueprint</div>
-          <div class="card-desc">出生那一刻的星盤，描繪您一生的核心人格、能量分布與十二宮位的流動。</div>
-          <div id="card-natal-action"><!-- 動態填入：就緒 / 生成中 --></div>
+
+        <!-- ── 左欄：本命 / 大限 / 流年 ── -->
+        <div class="dash-left">
+
+          <!-- 本命卡 -->
+          <div class="dash-card" id="card-natal" style="animation-delay:0.10s;">
+            <div class="card-kicker">本命 · Natal</div>
+            <div class="card-name">你是誰</div>
+            <div class="card-name-en">Your Innate Blueprint</div>
+            <div class="card-desc" id="desc-natal">與生俱來的角色設定 — 你的性格、天賦，與這輩子要練的功課。</div>
+            <div id="card-natal-action"><!-- 動態填入 --></div>
+          </div>
+
+          <!-- 大限卡 -->
+          <div class="dash-card" id="card-decade" style="animation-delay:0.18s;">
+            <div class="card-kicker">大限 · Major Limit</div>
+            <div class="card-name">你正在哪一幕</div>
+            <div class="card-name-en">Your Ten-Year Cycle</div>
+            <div class="card-desc" id="desc-decade">人生十年一章，這是你目前的章節，以及它的整體基調。</div>
+            <div id="card-decade-action"><!-- 動態填入 --></div>
+          </div>
+
+          <!-- 流年卡 -->
+          <div class="dash-card" id="card-annual" style="animation-delay:0.26s;">
+            <div class="card-kicker">流年 · Annual<span class="card-now">現在</span></div>
+            <div class="card-name">今年的主軸</div>
+            <div class="card-name-en">This Year's Currents</div>
+            <div class="card-desc" id="desc-annual">這一年劇本的重心落在哪裡 — 什麼值得你把心力放上去。</div>
+            <div id="card-annual-action"><!-- 動態填入 --></div>
+          </div>
+
+          <!-- 第一層付費牆：一次解鎖四化（未購買才出現）-->
+          <div id="unlock-transforms"></div>
+
         </div>
 
-        <!-- 大限卡 -->
-        <div class="dash-card" id="card-decade">
-          <div class="card-kicker">Major Limit</div>
-          <div class="card-name">大限運勢</div>
-          <div class="card-name-en">Your Ten-Year Cycles</div>
-          <div class="card-desc">人生以十年為一個大限週期，逐段展開該時期十二宮的主軸、機運與課題。</div>
-          <div id="card-decade-action"><!-- 動態填入：就緒 / 命盤生成中 --></div>
-        </div>
-
-        <!-- 流年卡 -->
-        <div class="dash-card" id="card-annual">
-          <div class="card-kicker">Annual Fortune</div>
-          <div class="card-name">流年運勢</div>
-          <div class="card-name-en">This Year's Currents</div>
-          <div class="card-desc">隨流年變動的能量焦點，帶您看見今年值得留意的方向與機會。</div>
-          <div id="card-annual-action"><!-- 動態填入：就緒 / 生成中 --></div>
-        </div>
-
-        <!-- 流月卡 -->
-        <div class="dash-card" id="card-monthly">
-          <div class="card-kicker">Monthly Reading</div>
-          <div class="card-name">流月運勢</div>
+        <!-- ── 右欄：流月（撐滿高度）── -->
+        <div class="dash-card dash-card--monthly" id="card-monthly" style="animation-delay:0.34s;">
+          <div class="card-kicker">流月 · Monthly<span class="card-now">現在</span></div>
+          <div class="card-name">這個月的提示</div>
           <div class="card-name-en">Your Monthly Currents</div>
-          <div class="card-desc">每月隨流月變動的能量焦點，帶您看見當下值得留意的方向與機會。</div>
-          <div id="card-monthly-action"><!-- 動態填入：就緒 / 生成中 --></div>
+          <div class="card-desc" id="desc-monthly">鏡頭拉到最近，這個月特別值得留意或把握的事。</div>
+          <div id="card-monthly-action"><!-- 動態填入 --></div>
+          <!-- 第二層付費牆：流月訂閱（未訂閱才出現）-->
+          <div id="sub-monthly"></div>
         </div>
+
       </div>
     </div>
 
@@ -286,6 +368,84 @@
 <script type="module">
   import { supabase, requireAuth } from './components.js';
 
+  /* ════════════════════════════════════════════════════════════
+     CONFIG — 上線前需依實際 schema 確認的設定，全部集中在這裡
+     ════════════════════════════════════════════════════════════ */
+  const CONFIG = {
+    /* ── 金流旗標（Stripe 上線前先寫死；屆時改由 webhook / user_profiles 帶入）── */
+    hasTransformAccess: false,   // 第一層：本命/大限/流年 四化是否已購買
+    monthlySubscribed:  false,   // 第二層：流月訂閱是否已開通
+
+    /* ── 命宮摘要來源（請確認這三個值；填不對會自動退回靜態副文，不會壞頁）── */
+    excerpt: {
+      enabled:    true,
+      palaceCol:  'palace_name',    // 宮位識別欄位
+      lifePalace: '命宮',           // 命宮在 palaceCol 中的值
+      textCol:    'interpretation', // 報告內文欄位（拿來節錄）
+      maxChars:   44,               // 摘要字數上限
+    },
+
+    /* ── 「最新一期」排序欄（請確認；留 null 則取任一筆，不影響就緒判斷）── */
+    latestOrder: {
+      decade:  null,   // e.g. 'decade_index' 或 'start_year'
+      annual:  null,   // e.g. 'year'
+      monthly: null,   // e.g. 排序用的 年+月 複合欄位
+    },
+  };
+
+  /* 各層對應的表 / chart_layer 過濾值 */
+  const LAYER = {
+    natal:   { table: 'main_palace_reports',    filter: null,      page: 'chart.html'   },
+    decade:  { table: 'decade_palace_reports',  filter: null,      page: 'decade.html'  },
+    annual:  { table: 'annual_palace_reports',  filter: 'annual',  page: 'annual.html'  },
+    monthly: { table: 'monthly_palace_reports', filter: 'monthly', page: 'monthly.html' },
+  };
+
+  /* ── 撈某一層：回傳 { ready, excerpt } ──
+     ready：該層是否有任何報告（沿用原本存在性判斷，可信）
+     excerpt：命宮摘要（best-effort，失敗回 null → 卡片用靜態副文）         */
+  async function fetchLayer(key) {
+    const cfg = LAYER[key];
+
+    // 1) 取得資料（就緒判斷 + 摘要來源）
+    let rows = null;
+    try {
+      let q = supabase.from(cfg.table).select('*');
+      if (cfg.filter) q = q.eq('chart_layer', cfg.filter);
+      const { data, error } = await q.limit(60);
+      if (!error && data && data.length) rows = data;
+    } catch (_) { rows = null; }
+
+    if (!rows) return { ready: false, excerpt: null };
+
+    // 2) 若有設定排序欄，best-effort 再撈「最新一期」覆蓋（失敗就沿用上面結果）
+    const orderCol = CONFIG.latestOrder[key];
+    if (orderCol) {
+      try {
+        let q2 = supabase.from(cfg.table).select('*');
+        if (cfg.filter) q2 = q2.eq('chart_layer', cfg.filter);
+        const { data: d2, error: e2 } = await q2.order(orderCol, { ascending: false }).limit(20);
+        if (!e2 && d2 && d2.length) rows = d2;
+      } catch (_) { /* 沿用 */ }
+    }
+
+    return { ready: true, excerpt: pickExcerpt(rows) };
+  }
+
+  /* 從一批 palace rows 中挑命宮、節錄前幾字 */
+  function pickExcerpt(rows) {
+    const c = CONFIG.excerpt;
+    if (!c.enabled) return null;
+    const row = rows.find(r => String(r[c.palaceCol]) === c.lifePalace);
+    if (!row) return null;
+    const raw = row[c.textCol];
+    if (!raw || typeof raw !== 'string') return null;
+    const t = raw.trim().replace(/\s+/g, '');
+    if (!t) return null;
+    return t.length > c.maxChars ? t.slice(0, c.maxChars) + '……' : t;
+  }
+
+  /* ── 主流程 ── */
   (async () => {
     const session = await requireAuth();
     if (!session) return; // requireAuth 已導向 login
@@ -293,7 +453,7 @@
     const email = session.user.email || '';
     const userId = session.user.id;
 
-    // ── 取得 display_name（撈不到就 fallback email 前綴）──
+    // display_name（撈不到就 fallback email 前綴）
     let displayName = email.split('@')[0] || '朋友';
     try {
       const { data: profile } = await supabase
@@ -302,145 +462,75 @@
         .eq('id', userId)
         .maybeSingle();
       if (profile && profile.display_name) displayName = profile.display_name;
-    } catch (_) { /* RLS 或無資料時靜默 fallback */ }
+    } catch (_) { /* 靜默 fallback */ }
     document.getElementById('dash-name').textContent = displayName;
 
-    // ── 判斷本命盤是否就緒（查 main_palace_reports，RLS 自動篩自己）──
-    let chartReady = false;
-    try {
-      const { data: reports, error } = await supabase
-        .from('main_palace_reports')
-        .select('chart_session_id')
-        .limit(1);
-      if (!error && reports && reports.length > 0) chartReady = true;
-    } catch (_) { chartReady = false; }
+    // 並行撈四層
+    const [natal, decade, annual, monthly] = await Promise.all([
+      fetchLayer('natal'),
+      fetchLayer('decade'),
+      fetchLayer('annual'),
+      fetchLayer('monthly'),
+    ]);
 
-    renderNatalCard(chartReady);
-    renderDecadeCard(chartReady);
+    renderCard('natal',   natal,   '您的本命盤正在排算與生成，約需 15–20 分鐘。完成後我們會以電子郵件通知您，您也可以稍後回來重新整理。');
+    renderCard('decade',  decade,  '您的本命盤完成後，即可在此展開各十年大限。您也可以稍後回來重新整理。');
+    renderCard('annual',  annual,  '您的流年運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。');
+    renderCard('monthly', monthly, '您的流月運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。');
 
-    // ── 判斷流年是否就緒（查 annual_palace_reports，RLS 自動篩自己）──
-    let annualReady = false;
-    try {
-      const { data: ann, error } = await supabase
-        .from('annual_palace_reports')
-        .select('chart_session_id')
-        .eq('chart_layer', 'annual')
-        .limit(1);
-      if (!error && ann && ann.length > 0) annualReady = true;
-    } catch (_) { annualReady = false; }
+    renderTransformUnlock();   // 第一層付費牆
+    renderMonthlySub();        // 第二層付費牆
 
-    renderAnnualCard(annualReady);
-
-    // ── 判斷流月是否就緒（查 monthly_palace_reports，RLS 自動篩自己）──
-    let monthlyReady = false;
-    try {
-      const { data: mon, error } = await supabase
-        .from('monthly_palace_reports')
-        .select('chart_session_id')
-        .eq('chart_layer', 'monthly')
-        .limit(1);
-      if (!error && mon && mon.length > 0) monthlyReady = true;
-    } catch (_) { monthlyReady = false; }
-
-    renderMonthlyCard(monthlyReady);
-
-    // 顯示內容
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
   })();
 
-  function renderNatalCard(ready) {
-    const el = document.getElementById('card-natal-action');
-    if (ready) {
-      el.innerHTML = `
-        <span class="card-cta" id="go-chart">
-          進入完整命盤 <span class="arrow">→</span>
-        </span>`;
-      document.getElementById('go-chart').addEventListener('click', () => {
-        window.location.href = 'chart.html';
+  /* 渲染單一卡片的摘要 + 動作區 */
+  function renderCard(key, state, generatingNote) {
+    // 有摘要 → 覆蓋靜態副文
+    if (state.excerpt) {
+      const d = document.getElementById('desc-' + key);
+      if (d) d.textContent = state.excerpt;
+    }
+
+    const el = document.getElementById('card-' + key + '-action');
+    if (state.ready) {
+      el.innerHTML =
+        '<span class="card-cta" data-go="' + LAYER[key].page + '">查閱更多 <span class="arrow">→</span></span>';
+      el.querySelector('[data-go]').addEventListener('click', (e) => {
+        window.location.href = e.currentTarget.getAttribute('data-go');
       });
     } else {
-      el.innerHTML = `
-        <div class="card-status"><span class="pulse"></span> 命盤生成中</div>
-        <div class="card-note">
-          您的本命盤正在排算與生成，約需 15–20 分鐘。<br>
-          完成後我們會以電子郵件通知您，您也可以稍後回來重新整理。
-        </div>
-        <div class="card-refresh" id="refresh-status">重新整理狀態</div>`;
-      document.getElementById('refresh-status').addEventListener('click', () => {
-        window.location.reload();
-      });
+      document.getElementById('card-' + key).classList.add('is-soon');
+      el.innerHTML =
+        '<div class="card-status"><span class="pulse"></span> 內容生成中</div>' +
+        '<div class="card-note">' + generatingNote + '</div>' +
+        '<span class="card-refresh" data-refresh>重新整理狀態</span>';
+      el.querySelector('[data-refresh]').addEventListener('click', () => window.location.reload());
     }
   }
 
-  function renderDecadeCard(ready) {
-    const el = document.getElementById('card-decade-action');
-    if (ready) {
-      el.innerHTML = `
-        <span class="card-cta" id="go-decade">
-          進入大限 <span class="arrow">→</span>
-        </span>`;
-      document.getElementById('go-decade').addEventListener('click', () => {
-        window.location.href = 'decade.html';
-      });
-    } else {
-      el.innerHTML = `
-        <div class="card-status"><span class="pulse"></span> 命盤生成中</div>
-        <div class="card-note">
-          您的本命盤完成後，即可在此展開各十年大限。<br>
-          您也可以稍後回來重新整理。
-        </div>
-        <div class="card-refresh" id="refresh-decade">重新整理狀態</div>`;
-      document.getElementById('refresh-decade').addEventListener('click', () => {
-        window.location.reload();
-      });
-    }
+  /* 第一層付費牆：本命/大限/流年 一次解鎖四化（按鈕暫為 placeholder）*/
+  function renderTransformUnlock() {
+    if (CONFIG.hasTransformAccess) return; // 已購買 → 不顯示
+    const host = document.getElementById('unlock-transforms');
+    host.innerHTML =
+      '<div class="dash-unlock" style="animation-delay:0.32s;">' +
+        '<div class="u-title"><span class="u-icon">✦</span> 解鎖四化飛星</div>' +
+        '<div class="u-note">一次購買，本命・大限・流年的四化飛星全部開啟。</div>' +
+        '<button class="u-btn" data-todo="stripe-one-time" title="付費機制即將開放" disabled>一次解鎖</button>' +
+      '</div>';
   }
 
-  function renderAnnualCard(ready) {    const el = document.getElementById('card-annual-action');
-    if (ready) {
-      el.innerHTML = `
-        <span class="card-cta" id="go-annual">
-          進入流年 <span class="arrow">→</span>
-        </span>`;
-      document.getElementById('go-annual').addEventListener('click', () => {
-        window.location.href = 'annual.html';
-      });
-    } else {
-      el.innerHTML = `
-        <div class="card-status"><span class="pulse"></span> 流年生成中</div>
-        <div class="card-note">
-          您的流年運勢正在生成，完成後即可在此查看。<br>
-          您也可以稍後回來重新整理。
-        </div>
-        <div class="card-refresh" id="refresh-annual">重新整理狀態</div>`;
-      document.getElementById('refresh-annual').addEventListener('click', () => {
-        window.location.reload();
-      });
-    }
-  }
-  function renderMonthlyCard(ready) {
-    const el = document.getElementById('card-monthly-action');
-    if (ready) {
-      el.innerHTML = `
-        <span class="card-cta" id="go-monthly">
-          進入流月 <span class="arrow">→</span>
-        </span>`;
-      document.getElementById('go-monthly').addEventListener('click', () => {
-        window.location.href = 'monthly.html';
-      });
-    } else {
-      el.innerHTML = `
-        <div class="card-status"><span class="pulse"></span> 流月生成中</div>
-        <div class="card-note">
-          您的流月運勢正在生成，完成後即可在此查看。<br>
-          您也可以稍後回來重新整理。
-        </div>
-        <div class="card-refresh" id="refresh-monthly">重新整理狀態</div>`;
-      document.getElementById('refresh-monthly').addEventListener('click', () => {
-        window.location.reload();
-      });
-    }
+  /* 第二層付費牆：流月訂閱（按鈕暫為 placeholder）*/
+  function renderMonthlySub() {
+    if (CONFIG.monthlySubscribed) return; // 已訂閱 → 不顯示
+    const host = document.getElementById('sub-monthly');
+    host.innerHTML =
+      '<div class="monthly-sub">' +
+        '<div class="ms-line"><span class="lock">⟳</span> 流月四化需另外訂閱</div>' +
+        '<button class="sub-btn" data-todo="stripe-subscription" title="付費機制即將開放" disabled>升級訂閱</button>' +
+      '</div>';
   }
 </script>
 
