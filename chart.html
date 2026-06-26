@@ -253,20 +253,6 @@
     #view-overview .ov-legend { margin-top: 14px; padding: 11px 15px; background: var(--bg-soft-2); border-radius: 3px; font-family: var(--font-sans); font-size: 11px; line-height: 1.9; color: var(--ink-mid); }
     #view-overview .ov-legend .tg { color: var(--ink-darkest); font-weight: 500; }
     #view-overview .ov-legend .sp { color: var(--ink-faint); margin: 0 6px; }
-
-    /* ── Block II 四大生活面向 ── */
-    #view-overview .ov-domains { margin-top: 24px; }
-    #view-overview .ov-domain { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 24px; margin-bottom: 14px; }
-    #view-overview .dom-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-    #view-overview .dom-label { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 500; letter-spacing: 0.06em; }
-    #view-overview .dom-en { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); }
-    #view-overview .dom-head .ov-plink { margin-left: auto; }
-    #view-overview .dom-cover { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.03em; margin: 7px 0 14px; }
-    #view-overview .dom-prose { font-family: var(--font-serif-zh); font-size: 15px; line-height: 1.95; color: var(--ink-dark); letter-spacing: 0.02em; }
-    #view-overview .dom-merge { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--bg-soft-2); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    #view-overview .dom-merge-label { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-light); }
-    #view-overview .dom-chip { font-family: var(--font-serif-zh); font-size: 13px; padding: 4px 12px; background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 4px; color: var(--ink-dark); cursor: pointer; letter-spacing: 0.04em; }
-    #view-overview .dom-chip:hover { border-color: var(--gold, #b8945c); color: var(--ink-darkest); }
   </style>
 </head>
 <body>
@@ -313,11 +299,7 @@
         <div id="ov-birth"></div>
       </div>
 
-      <div class="block-head"><span class="num">II</span><div><div class="bz" id="block-head-domains">你的四個人生面向</div><div class="be">Four Areas of Life</div></div></div>
-      <div class="block-sub" id="block-sub-domains">你在事業、金錢、感情與人際裡，天生的樣子。</div>
-      <div class="ov-domains" id="ov-domains"></div>
-
-      <div class="block-head"><span class="num">III</span><div><div class="bz" id="block-head-2">我的資源</div><div class="be">What You Hold</div></div></div>
+      <div class="block-head"><span class="num">II</span><div><div class="bz" id="block-head-2">我的資源</div><div class="be">What You Hold</div></div></div>
       <div class="block-sub" id="block-sub-2">你手上有什麼牌——自帶的、與別人能給的。</div>
 
       <div class="ov-sec">
@@ -419,7 +401,7 @@
           <div class="section-num">04</div>
           <div class="section-titles">
             <div class="section-title-zh" id="sec4-title">Our Suggestions</div>
-            <div class="section-title-en">How to Work With It</div>
+            <div class="section-title-en">How to Play this Role</div>
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
@@ -465,15 +447,6 @@
   const OUTER_PALACES = new Set(['父母宮','兄弟宮','夫妻宮','子女宮','田宅宮','交友宮']);
   const SAN_FANG = ['命宮','財帛宮','官祿宮'];
   // SAN_FANG_ROLE 已移至 i18n.js（td('SAN_FANG_ROLE', p)）
-
-  // ── 四大生活面向：main = 散文主體宮, merge = 補充宮(以 chip 連結) ──
-  // 改 mapping 只動這個常數,不動邏輯。文案在 i18n.js DOMAIN_META。
-  const LIFE_DOMAINS = [
-    { key: 'career', main: '官祿宮', merge: ['命宮'] },
-    { key: 'wealth', main: '財帛宮', merge: ['田宅宮'] },
-    { key: 'love',   main: '夫妻宮', merge: ['子女宮'] },
-    { key: 'social', main: '交友宮', merge: [] },
-  ];
 
   // STAR_LEXICON 已移至 i18n.js（td('STAR_LEXICON', star)）
 
@@ -524,8 +497,6 @@
     setText('ov-eyebrow', 'ovEyebrow');
     setText('ov-title', 'ovTitle');
     setText('block-sub-1', 'blockSub1');
-    setText('block-head-domains', 'domainsBlockHead');
-    setText('block-sub-domains', 'domainsBlockSub');
     setText('block-head-2', 'blockHead2');
     setText('block-sub-2', 'blockSub2');
     setText('sec-lead-label', 'secLeadLabel');
@@ -776,42 +747,6 @@
     });
   }
 
-  // 取宮位散文首段（front-end 串接，不另生成內容）
-  function firstPara(text) {
-    if (!text) return '';
-    const p = String(text).split(/\n\n+/).map(s => s.trim()).filter(Boolean);
-    return p[0] || '';
-  }
-
-  // 四大生活面向：主體宮散文首段 + 補充宮 chip
-  function renderDomains() {
-    const host = document.getElementById('ov-domains');
-    if (!host) return;
-    host.innerHTML = LIFE_DOMAINS.map(d => {
-      const meta = td('DOMAIN_META', d.key) || {};
-      const row = reportsByPalace[d.main];
-      const first = firstPara(row && row.palace_analysis);
-      const proseHtml = first
-        ? `<div class="dom-prose">${escapeHtml(first)}</div>`
-        : `<div class="dom-prose" style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('domainEmpty'))}</div>`;
-      const chips = (d.merge || []).filter(p => reportsByPalace[p])
-        .map(p => `<span class="dom-chip" data-palace="${p}">${escapeHtml(palaceLabel(p))}</span>`).join('');
-      const mergeHtml = chips
-        ? `<div class="dom-merge"><span class="dom-merge-label">${escapeHtml(tx('domainAlsoSee'))}</span>${chips}</div>`
-        : '';
-      return `<div class="ov-domain">
-        <div class="dom-head">
-          <span class="dom-label">${escapeHtml(meta.label || '')}</span>
-          <span class="dom-en">${escapeHtml(meta.en || '')}</span>
-          <span class="ov-plink" data-palace="${d.main}">${escapeHtml(tx('ovLeadFullLink').replace('{p}', palaceLabel(d.main)))}</span>
-        </div>
-        ${meta.cover ? `<div class="dom-cover">${escapeHtml(meta.cover)}</div>` : ''}
-        ${proseHtml}
-        ${mergeHtml}
-      </div>`;
-    }).join('');
-  }
-
   function renderOverview() {
     const J = getLang() === 'en' ? ', ' : '、';
     const semi = getLang() === 'en' ? '; ' : '；';
@@ -911,9 +846,6 @@
       if (f.ke) pills += `<span class="feed-pill ke">${escapeHtml(tx('feedKe'))} <b>${f.ke}</b></span>`;
       return `<div class="feed-line"><div class="feed-palace">${escapeHtml(palaceLabel(f.p))}</div><div class="feed-pills">${pills}</div><div class="feed-sum">${escapeHtml(tx('feedSumLabel'))} <b>${f.sum}</b></div></div>`;
     }).join('') || `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('feedEmpty'))}</div>`;
-
-    // II. 四大生活面向
-    renderDomains();
 
     bindPalaceLinks(document.getElementById('view-overview'));
   }
