@@ -189,7 +189,7 @@ export const I18N = {
 
     // 宮位完整說明(detail-explainer;含 domain-keyword span)
     PALACE_EXPLAINER: {
-      '命宮': '命宮代表您的<span class="domain-keyword">核心人格、行事風格與根本姿態</span>——您看待自己與世界的最底層方式。這是您一生的「主舞台」,所有其他宮位的能量,最終都會在這裡匯流、被您詮釋、被您演繹。',
+      '命宮': '命宮代表您的<span class="domain-keyword">核心人格、行事風格與根本姿態</span>——您看待自己與世界的最底層方式。這是您一生的核心,所有其他宮位的能量,最終都會在這裡匯流,由您詮釋、由您活出來。',
       '兄弟宮': '兄弟宮代表您與<span class="domain-keyword">手足、同輩、母親與密切夥伴</span>的關係,也反映您在團隊、同儕系統中的相處模式與資源往來。',
       '夫妻宮': '夫妻宮代表您的<span class="domain-keyword">親密關係、伴侶互動與情感模式</span>——您如何愛人、如何被愛,以及您在一對一深度關係中的姿態。',
       '子女宮': '子女宮代表您的<span class="domain-keyword">子女、後輩、創造力與性</span>——廣義上是您「孕育出來的事物」,包含作品、學生、晚輩與一切親手栽培之物。',
@@ -251,6 +251,19 @@ export const I18N = {
     blockSub1: '你在自己故事裡，是什麼樣的主角。',
     blockHead2: '我的資源',
     blockSub2: '你手上有什麼牌——自帶的、與別人能給的。',
+
+    // ── 四大生活面向(Block II)──
+    domainsBlockHead: '你的四個人生面向',
+    domainsBlockSub: '你在事業、金錢、感情與人際裡，天生的樣子。',
+    domainAlsoSee: '也參見',
+    domainEmpty: '此宮為空宮，暫無內容。',
+    DOMAIN_META: {
+      career: { label: '事業', en: 'Career', cover: '你天生的做事方式與動力來源。' },
+      wealth: { label: '金錢', en: 'Wealth', cover: '你與金錢的關係、理財本能與盲點。' },
+      love:   { label: '感情', en: 'Love',   cover: '你在關係裡自然的樣子、容易被什麼吸引。' },
+      social: { label: '人際', en: 'Connections', cover: '你的人際本能、容易與什麼樣的人共振。' },
+    },
+
     secLeadLabel: '主角',
     secStageLabel: '生活核心', secStageSub: 'The Stage · 命三方',
     secGiftLabel: '角色天賦線', secGiftSub: 'Innate Kit · 生年四化落點',
@@ -323,7 +336,7 @@ export const I18N = {
     },
 
     PALACE_EXPLAINER: {
-      '命宮': '命宫代表您的<span class="domain-keyword">核心人格、行事风格与根本姿态</span>——您看待自己与世界的最底层方式。这是您一生的「主舞台」,所有其他宫位的能量,最终都会在这里汇流、被您诠释、被您演绎。',
+      '命宮': '命宫代表您的<span class="domain-keyword">核心人格、行事风格与根本姿态</span>——您看待自己与世界的最底层方式。这是您一生的核心,所有其他宫位的能量,最终都会在这里汇流,由您诠释、由您活出来。',
       '兄弟宮': '兄弟宫代表您与<span class="domain-keyword">手足、同辈、母亲与密切伙伴</span>的关系,也反映您在团队、同侪系统中的相处模式与资源往来。',
       '夫妻宮': '夫妻宫代表您的<span class="domain-keyword">亲密关系、伴侣互动与情感模式</span>——您如何爱人、如何被爱,以及您在一对一深度关系中的姿态。',
       '子女宮': '子女宫代表您的<span class="domain-keyword">子女、后辈、创造力与性</span>——广义上是您「孕育出来的事物」,包含作品、学生、晚辈与一切亲手栽培之物。',
@@ -382,6 +395,19 @@ export const I18N = {
     blockSub1: '你在自己故事里，是什么样的主角。',
     blockHead2: '我的资源',
     blockSub2: '你手上有什么牌——自带的、与别人能给的。',
+
+    // ── 四大生活面向(Block II)──
+    domainsBlockHead: '你的四个人生面向',
+    domainsBlockSub: '你在事业、金钱、感情与人际里，天生的样子。',
+    domainAlsoSee: '也参见',
+    domainEmpty: '此宫为空宫，暂无内容。',
+    DOMAIN_META: {
+      career: { label: '事业', en: 'Career', cover: '你天生的做事方式与动力来源。' },
+      wealth: { label: '金钱', en: 'Wealth', cover: '你与金钱的关系、理财本能与盲点。' },
+      love:   { label: '感情', en: 'Love',   cover: '你在关系里自然的样子、容易被什么吸引。' },
+      social: { label: '人际', en: 'Connections', cover: '你的人际本能、容易与什么样的人共振。' },
+    },
+
     secLeadLabel: '主角',
     secStageLabel: '生活核心', secStageSub: 'The Stage · 命三方',
     secGiftLabel: '角色天赋线', secGiftSub: 'Innate Kit · 生年四化落点',
@@ -453,7 +479,7 @@ export const I18N = {
     },
 
     PALACE_EXPLAINER: {
-      '命宮': 'This palace represents your <span class="domain-keyword">core personality, way of acting, and fundamental stance</span> — the deepest way you see yourself and the world. It is the main stage of your life, where the energy of every other palace ultimately converges, to be interpreted and performed by you.',
+      '命宮': 'This palace represents your <span class="domain-keyword">core personality, way of acting, and fundamental stance</span> — the deepest way you see yourself and the world. It is the core of your life, where the energy of every other palace ultimately converges, to be interpreted and lived out by you.',
       '兄弟宮': 'This palace represents your relationships with <span class="domain-keyword">siblings, peers, your mother, and close companions</span>, and reflects how you relate and share resources within teams and peer groups.',
       '夫妻宮': 'This palace represents your <span class="domain-keyword">intimate relationships, partner dynamics, and emotional patterns</span> — how you love and are loved, and how you carry yourself in close one-to-one bonds.',
       '子女宮': 'This palace represents your <span class="domain-keyword">children, juniors, creativity, and sexuality</span> — broadly, all that you bring into being: your work, students, those you mentor, and everything you nurture by hand.',
@@ -512,6 +538,19 @@ export const I18N = {
     blockSub1: 'What kind of lead are you, in your own story?',
     blockHead2: 'What You Hold',
     blockSub2: 'What cards you hold — your own, and what others can offer.',
+
+    // ── Four areas of life (Block II) ──
+    domainsBlockHead: 'Your Four Areas of Life',
+    domainsBlockSub: 'How you naturally are in work, money, love, and connection.',
+    domainAlsoSee: 'See also',
+    domainEmpty: 'This palace is empty; no reading yet.',
+    DOMAIN_META: {
+      career: { label: 'Career', en: 'Career', cover: 'Your innate way of working and what drives you.' },
+      wealth: { label: 'Money', en: 'Wealth', cover: 'Your relationship with money — instincts and blind spots.' },
+      love:   { label: 'Love', en: 'Love', cover: 'How you naturally are in relationships, and what draws you.' },
+      social: { label: 'Connections', en: 'Connections', cover: 'Your social instincts and the people you resonate with.' },
+    },
+
     secLeadLabel: 'The Lead',
     secStageLabel: 'Life Core', secStageSub: 'The Stage',
     secGiftLabel: 'Innate Gifts', secGiftSub: 'Innate Kit',
