@@ -10,16 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- 標記當前導航頁(供 components.js header 高亮)，須在 module 載入前設定 -->
   <script>window.FS_ACTIVE_PAGE = 'decade';</script>
 
   <style>
-    /* ── annual 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* Loading / Error */
     #view-loading { text-align: center; padding: 80px 32px; }
     .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
     .loading-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
@@ -38,7 +35,6 @@
     }
     .btn-primary:hover { background: var(--accent-soft); }
 
-    /* YEARS 年份選擇 */
     .years-head { text-align: center; margin-bottom: 48px; }
     .years-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .years-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -57,7 +53,6 @@
     .years-empty-title { font-family: var(--font-serif-zh); font-size: 20px; font-weight: 400; color: var(--ink-dark); margin-bottom: 12px; letter-spacing: 0.05em; }
     .years-empty-body { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); line-height: 1.8; letter-spacing: 0.02em; }
 
-    /* HUB */
     .hub-head { text-align: center; margin-bottom: 48px; }
     .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .hub-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -76,7 +71,6 @@
     .hub-meta { padding: 24px 28px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-mid); letter-spacing: 0.05em; line-height: 1.7; text-align: center; }
     .hub-meta code { font-family: 'Courier New', monospace; color: var(--ink-dark); font-size: 11px; }
 
-    /* DETAIL */
     .detail-back-top { margin-bottom: 32px; }
     .back-link { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-mid); cursor: pointer; transition: color 0.2s; }
     .back-link:hover { color: var(--accent-deep); }
@@ -88,7 +82,6 @@
     .palace-head-right { text-align: right; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); line-height: 1.5; }
     .palace-index { font-family: var(--font-serif-en); font-size: 13px; letter-spacing: 0.2em; color: var(--ink-light); font-style: normal; }
 
-    /* 宮位說明 */
     .palace-explainer { margin-top: 24px; padding: 20px 24px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; }
     .palace-explainer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 8px; }
     .palace-explainer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark); letter-spacing: 0.02em; }
@@ -104,7 +97,6 @@
     .transform-tag.化科 { color: var(--t-ke); }
     .transform-tag.化忌 { color: var(--t-ji); }
 
-    /* Composition */
     .composition { margin-top: 48px; padding: 28px 32px; background: var(--bg-soft-2); border-radius: 2px; position: relative; }
     .composition::before { content: ''; position: absolute; top: 0; left: 32px; width: 24px; height: 1px; background: var(--silver-deep); }
     .composition-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--accent-soft); letter-spacing: 0.05em; margin-bottom: 20px; }
@@ -114,7 +106,6 @@
     .comp-row-key { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-light); }
     .comp-row-val { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); letter-spacing: 0.05em; }
 
-    /* Section */
     .section { margin-top: 80px; }
     .section-head { display: flex; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
     .section-num { font-family: var(--font-serif-en); font-size: 40px; font-weight: 300; font-style: italic; line-height: 1; color: var(--silver-deep); }
@@ -125,7 +116,6 @@
     .section-explainer-icon { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; color: var(--accent-soft); font-size: 16px; line-height: 1.4; }
     .section-explainer strong { color: var(--ink-darkest); font-weight: 500; }
 
-    /* A 段 prose */
     .prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 32px; }
     .prose p { margin-bottom: 1.6em; }
     .prose p:last-child { margin-bottom: 0; }
@@ -134,7 +124,6 @@
     .pull-quote { margin: 48px 0; padding: 32px 36px 32px 48px; border-left: 3px solid var(--accent-soft); background: var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 19px; line-height: 1.8; color: var(--ink-darkest); letter-spacing: 0.04em; position: relative; font-weight: 500; }
     .pull-quote::before { content: '"'; position: absolute; top: 0; left: 16px; font-family: var(--font-serif-en); font-size: 80px; line-height: 1; color: var(--silver-soft); font-style: italic; }
 
-    /* B/C transform cards */
     .transform-blocks { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
     .transform-card { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
     .transform-card-head { padding: 18px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
@@ -174,7 +163,19 @@
     .transform-card-content p:last-child { margin-bottom: 0; }
     .transform-empty { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); font-style: italic; padding: 24px; text-align: center; background: var(--bg-soft-2); border-radius: 2px; }
 
-    /* D 段 epilogue */
+    /* 付費牆 */
+    .paywall { margin-top: 32px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border: 1px solid var(--gold-soft, #c9ab7d); border-radius: 3px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden; }
+    .paywall-lock { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 20px; background: var(--bg-card); border: 1px solid var(--gold-soft, #c9ab7d); display: flex; align-items: center; justify-content: center; color: var(--gold, #b8945c); font-size: 24px; }
+    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-soft); margin-bottom: 10px; }
+    .paywall-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 24px; }
+    .paywall-list { display: flex; flex-direction: column; gap: 13px; max-width: 360px; margin: 0 auto 30px; text-align: left; }
+    .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.6; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
+    .paywall-item b { font-weight: 600; color: var(--ink-darkest); }
+    .paywall-cta { display: inline-block; padding: 14px 40px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 2px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--ink-darkest); }
+    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.16); }
+    .paywall-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.02em; }
+
     .epilogue { margin-top: 32px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; position: relative; }
     .epilogue::before, .epilogue::after { content: ''; position: absolute; width: 32px; height: 1px; background: var(--silver-deep); }
     .epilogue::before { top: 0; left: 40px; }
@@ -185,7 +186,6 @@
     .epilogue-prose p:last-child { margin-bottom: 0; }
     .epilogue-prose p.closing { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--ink-darkest); font-size: 17px; letter-spacing: 0.05em; }
 
-    /* Detail nav */
     .detail-nav { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
     .nav-link { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-dark); letter-spacing: 0.1em; cursor: pointer; transition: color 0.2s; }
     .nav-link:hover { color: var(--accent-deep); }
@@ -195,7 +195,6 @@
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
 
-    /* 大限橫條清單 */
     .decade-list { display: flex; flex-direction: column; gap: 14px; }
     .decade-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border: 1px solid var(--rule, #e5ddd0); background: var(--paper, #faf7f1); border-radius: 2px; transition: border-color 0.2s, box-shadow 0.2s; }
     .decade-bar.actionable { cursor: pointer; }
@@ -208,12 +207,10 @@
     .decade-bar-right { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-light, #7a8a86); text-align: right; white-space: nowrap; }
     .decade-bar.current .decade-bar-right { color: var(--accent-deep, #b8945c); }
 
-    /* 大限說明 */
     .decade-intro { display: flex; gap: 12px; margin: 0 0 28px; padding: 16px 20px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
     .decade-intro-icon { flex-shrink: 0; color: var(--accent-soft); font-size: 14px; line-height: 1.5; }
     .decade-intro strong { color: var(--ink-darkest); font-weight: 500; }
 
-    /* bar 狀態標示 */
     .decade-bar-right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
     .decade-tag { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-light, #7a8a86); }
     .decade-bar.current .decade-tag { color: var(--accent-deep, #b8945c); }
@@ -225,10 +222,8 @@
     .decade-dot.generating { background: #c8a96a; animation: pulse 1.4s ease-in-out infinite; }
     .decade-cta { display: inline-block; padding: 8px 18px; background: var(--ink-darkest, #15363a); color: var(--bg-primary, #faf7f1); font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.12em; border-radius: 2px; transition: background 0.2s; }
     .decade-bar.idle:hover .decade-cta { background: var(--accent-deep, #b8945c); }
-    /* 已生成的條目左側細邊提示「有內容」 */
     .decade-bar.done { border-left: 3px solid var(--accent-deep, #b8945c); }
 
-    /* 製作確認視窗 */
     .modal-overlay { position: fixed; inset: 0; background: rgba(21,54,58,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
     .modal-box { background: var(--bg-primary, #faf7f1); max-width: 420px; width: 100%; padding: 36px 32px 28px; border-radius: 4px; box-shadow: 0 12px 48px rgba(21,54,58,0.2); }
     .modal-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest, #15363a); margin-bottom: 16px; letter-spacing: 0.04em; }
@@ -257,7 +252,6 @@
       </div>
     </section>
 
-    <!-- 大限選擇 -->
     <section id="view-years" class="view">
       <div class="years-head">
         <div class="years-eyebrow">Major Limit · 大限</div>
@@ -275,7 +269,6 @@
       </div>
     </section>
 
-    <!-- 十二宮 Hub -->
     <section id="view-hub" class="view">
       <div class="detail-back-top"><span class="back-link" id="hub-to-years">← 選擇年份 Choose a year</span></div>
       <div class="hub-head">
@@ -290,7 +283,6 @@
       </div>
     </section>
 
-    <!-- 單宮詳情 -->
     <section id="view-detail" class="view">
       <div class="detail-back-top">
         <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
@@ -327,7 +319,9 @@
         <div id="detail-analysis" class="prose"></div>
       </section>
 
-      <section class="section">
+      <div id="detail-locked-wrap"></div>
+
+      <section class="section" id="sec-02">
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
@@ -342,7 +336,7 @@
         <div id="detail-transforms-in" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-03">
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
@@ -357,12 +351,12 @@
         <div id="detail-transforms-out" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-04">
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">演法建議</div>
-            <div class="section-title-en">How to Play this Role</div>
+            <div class="section-title-zh">我們的建議</div>
+            <div class="section-title-en">Our Suggestions</div>
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
@@ -400,13 +394,12 @@
 <script type="module">
   import { supabase, requireAuth } from './components.js';
 
-  // ── 可調整常數：大限報告表名（生成後讀取；若實際表名不同，改這一行即可）──
+  const PRICING_PAGE = 'pricing.html';
+
   const DECADE_TABLE = 'decade_palace_reports_gated';
   const DECADE_JOBS_TABLE = 'decade_generation_jobs';
-  // 大限 materials flow 觸發 webhook（production；Active 後的正式 URL）
   const DECADE_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/decade-v2';
   const POLL_INTERVAL_MS = 5000;
-  // 「下一個大限」之後，再淡淡顯示幾條未來大限地平線（不可生成）。0 = 只顯示當前+下一個
   const FUTURE_PREVIEW = 2;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
@@ -421,7 +414,6 @@
     '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
     '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
   };
-  // 宮位完整說明（沿用本命；大限語意可日後再調整文案）
   const PALACE_EXPLAINER = {
     '命宮':'大限命宮代表您<span class="domain-keyword">這個大限整體的基調、心境與行動姿態</span>——這一年您看待自己與處境的主軸，所有其他宮位的大限能量，都會在這裡匯流。',
     '兄弟宮':'大限兄弟宮反映這個大限您與<span class="domain-keyword">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。',
@@ -452,8 +444,9 @@
   let currentYear = null;
   let userEmail = null;
   let pollTimer = null;
-  let decadesCache = [];                 // ziwei_charts 算出的大限區間
-  const generatingStarts = new Set();    // 剛觸發 / 生成中的大限起年
+  let decadesCache = [];
+  let isUnlocked = false;   // sihua_unlocked
+  const generatingStarts = new Set();
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -469,9 +462,8 @@
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function goPricing() { window.location.href = PRICING_PAGE; }
 
-  // ── 大限選擇（橫條版）──
-  //   過去隱藏；當前第一條高亮；只有「當前 + 下一個」可生成/閱讀；之後 FUTURE_PREVIEW 條淡淡地平線
   function renderDecades(decades, jobsByStart) {
     jobsByStart = jobsByStart || {};
     const grid = document.getElementById('years-grid');
@@ -483,14 +475,12 @@
       return;
     }
 
-    // decades 已按 valid_year_start 升冪。找當前 index：
     let currentIndex = decades.findIndex(d => d.isCurrent);
     if (currentIndex === -1) {
       const nowY = new Date().getFullYear();
-      currentIndex = (nowY < decades[0].start) ? 0 : decades.length - 1; // 還沒入運→第一個；超過最後→最後一個
+      currentIndex = (nowY < decades[0].start) ? 0 : decades.length - 1;
     }
 
-    // 顯示窗：當前 → 當前 + 下一個 + FUTURE_PREVIEW（過去全部不顯示）
     const lastIndex = Math.min(decades.length - 1, currentIndex + 1 + FUTURE_PREVIEW);
     const visible = decades.slice(currentIndex, lastIndex + 1);
 
@@ -503,9 +493,8 @@
       const absIdx = currentIndex + i;
       const isCurrent = absIdx === currentIndex;
       const isNext = absIdx === currentIndex + 1;
-      const actionable = isCurrent || isNext;   // 只有當前 + 下一個可生成/閱讀
+      const actionable = isCurrent || isNext;
 
-      // 狀態：done（已生成可讀）/ generating（生成中）/ idle（可觸發生成）
       const job = jobsByStart[d.start];
       const done = !!(job && job.report_status === 'done');
       const generating = !done && (generatingStarts.has(d.start) || jobActive(job));
@@ -521,7 +510,6 @@
       age.className = 'decade-bar-age'; age.textContent = `${d.startAge}–${d.endAge} 歲`;
       left.appendChild(yrs); left.appendChild(age);
 
-      // 標示「有內容 / 生成中 / 可製作」
       bar.className += done ? ' done' : (generating ? ' generating' : (actionable ? ' idle' : ''));
 
       const right = document.createElement('div');
@@ -544,7 +532,7 @@
         bar.addEventListener('click', () => loadDecade(d.start));
       } else if (actionable && !generating) {
         bar.style.cursor = 'pointer';
-        bar.addEventListener('click', () => openConfirm(d.start));   // 先彈確認視窗，避免誤點
+        bar.addEventListener('click', () => openConfirm(d.start));
       } else {
         bar.style.cursor = 'default';
       }
@@ -552,7 +540,6 @@
     });
   }
 
-  // ── 大限生成機制（觸發 materials webhook → 輪詢 decade_generation_jobs → done 自動開啟）──
   async function fetchJobs() {
     const { data, error } = await supabase
       .from(DECADE_JOBS_TABLE)
@@ -567,15 +554,13 @@
     return m;
   }
   function jobDone(j) { return !!(j && j.report_status === 'done'); }
-  // 「真的在生成中」：未完成且最近有進度，避免孤兒 pending job 永久顯示生成中
-  const JOB_STALE_MS = 30 * 60 * 1000; // 超過 30 分鐘無進度 → 視為孤兒，可重新製作
+  const JOB_STALE_MS = 30 * 60 * 1000;
   function jobActive(j) {
     if (!j || j.report_status === 'done') return false;
     const ts = j.updated_at ? new Date(j.updated_at).getTime() : 0;
     return (Date.now() - ts) < JOB_STALE_MS;
   }
 
-  // 重抓 job 狀態並重畫 bar；autoOpenStart 完成時自動開啟該大限
   async function refreshDecadeBars(autoOpenStart) {
     const byStart = jobsToMap(await fetchJobs());
     for (const s of [...generatingStarts]) {
@@ -590,10 +575,9 @@
     return false;
   }
 
-  // 點「生成」：觸發 materials flow（送出即視為觸發，狀態以 job 表為準）
   async function subscribeDecade(startYear) {
     generatingStarts.add(startYear);
-    renderDecades(decadesCache, jobsToMap(await fetchJobs())); // 立即顯示「生成中…」
+    renderDecades(decadesCache, jobsToMap(await fetchJobs()));
     try {
       await fetch(DECADE_TRIGGER_URL, {
         method: 'POST',
@@ -618,7 +602,6 @@
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   }
 
-  // ── 製作確認視窗（避免誤點，比照 annual / monthly）──
   let pendingStart = null;
   function openConfirm(startYear) {
     pendingStart = startYear;
@@ -682,6 +665,22 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  function paywallHtml() {
+    return `
+      <div class="paywall">
+        <div class="paywall-lock" aria-hidden="true">&#128274;</div>
+        <div class="paywall-eyebrow">Unlock Full Reading</div>
+        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-list">
+          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span><b>專屬行動建議</b></span></div>
+        </div>
+        <span class="paywall-cta" id="paywall-cta">查看方案</span>
+        <div class="paywall-note">已購買？回此頁重新整理即可顯示</div>
+      </div>`;
+  }
+
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
@@ -697,9 +696,28 @@
     renderStarsLine(row.composition);
     renderComposition(row.composition);
     renderAnalysis(row.palace_analysis);
-    renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
-    renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
-    renderSuggestion(row.suggestion);
+
+    const lockedWrap = document.getElementById('detail-locked-wrap');
+    const sec02 = document.getElementById('sec-02');
+    const sec03 = document.getElementById('sec-03');
+    const sec04 = document.getElementById('sec-04');
+
+    if (isUnlocked) {
+      lockedWrap.innerHTML = '';
+      sec02.style.display = '';
+      sec03.style.display = '';
+      sec04.style.display = '';
+      renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
+      renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
+      renderSuggestion(row.suggestion);
+    } else {
+      sec02.style.display = 'none';
+      sec03.style.display = 'none';
+      sec04.style.display = 'none';
+      lockedWrap.innerHTML = paywallHtml();
+      const cta = document.getElementById('paywall-cta');
+      if (cta) cta.addEventListener('click', goPricing);
+    }
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -748,7 +766,6 @@
     grid.innerHTML = rows.map(r => `<div class="comp-row"><div class="comp-row-key">${r.key}</div><div class="comp-row-val">${escapeHtml(r.val)}</div></div>`).join('');
   }
 
-  // A 段：drop cap + 自動 pull quote
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
     if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -767,7 +784,6 @@
     el.innerHTML = html;
   }
 
-  // B/C 段：卡片 + 來源 chip（讀 meta）
   function renderTransforms(elId, transforms, meta, direction) {
     const container = document.getElementById(elId);
     container.innerHTML = '';
@@ -836,7 +852,6 @@
     bindTooltips(container);
   }
 
-  // D 段：epilogue 樣式
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
     if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -863,9 +878,18 @@
   async function init() {
     try {
       const session = await requireAuth();
-      if (!session) return; // requireAuth 已導向 login.html
+      if (!session) return;
 
       userEmail = session.user.email;
+
+      try {
+        const { data: prof } = await supabase
+          .from('user_profiles')
+          .select('sihua_unlocked')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        isUnlocked = !!(prof && prof.sihua_unlocked === true);
+      } catch (_) { isUnlocked = false; }
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
@@ -881,7 +905,6 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      // 讀大限區間（直接讀 ziwei_charts，不需報告生成就有）
       let decades = [];
       try {
         const { data: rows, error } = await supabase
@@ -891,7 +914,7 @@
           .eq('chart_type', 'decade')
           .order('valid_year_start', { ascending: true });
         if (error) {
-          console.warn('[decade] 大限查詢失敗（檢查 ziwei_charts 是否有 authenticated SELECT 權限 / chart_type 值）：', error.message);
+          console.warn('[decade] 大限查詢失敗：', error.message);
         } else if (rows) {
           const nowY = new Date().getFullYear();
           decades = rows
@@ -910,12 +933,10 @@
 
       decadesCache = decades;
 
-      // 疊上 job 狀態（已生成 / 真的在生成中）
       const jobs = await fetchJobs();
       renderDecades(decadesCache, jobsToMap(jobs));
       showView('view-years');
 
-      // 重整續跑：只有「真的在生成中」(最近有進度) 的 job 才續輪詢；孤兒 pending 視為可重新製作
       if (jobs.some(jobActive)) startPolling(null);
     } catch (err) {
       showError(err.message || '載入時發生錯誤。');
@@ -926,7 +947,6 @@
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
 
-  // 確認視窗
   document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
   document.getElementById('confirm-ok').addEventListener('click', () => {
     const s = pendingStart;
@@ -934,7 +954,7 @@
     if (s != null) subscribeDecade(s);
   });
   document.getElementById('confirm-modal').addEventListener('click', (e) => {
-    if (e.target.id === 'confirm-modal') closeConfirm(); // 點背景關閉
+    if (e.target.id === 'confirm-modal') closeConfirm();
   });
   document.addEventListener('click', () => {
     document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
