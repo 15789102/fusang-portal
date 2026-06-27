@@ -13,6 +13,7 @@
 //   - Footer(標語 + 連結 + 版權)
 //   - Supabase client(window.fsSupabase)
 //   - requireAuth() / getSession() / signOut()
+//   - startCheckout(productType)  ← 購買/訂閱
 //
 // 改 header/footer/樣式 → 只改這個檔案,全站生效
 // ============================================================
@@ -329,6 +330,46 @@ export async function signOut() {
   try { localStorage.removeItem(LANG_CACHE_KEY); } catch (_) {}
   await supabase.auth.signOut();
   window.location.href = 'login.html';
+}
+
+// ─── Checkout（購買/訂閱）────────────────────────────────────
+// 呼叫 create-checkout EF（自動帶登入 JWT）→ 取得 Stripe checkout url → 跳轉。
+// productType: 'sihua' | 'monthly_sub' | 'annual_pack' | 'ticket'
+// 回傳：
+//   成功 → 會直接跳轉 Stripe（呼叫端不會走到 return 之後）
+//   被擋 / 失敗 → return { ok:false, code, expires_at? }，由呼叫端顯示文案
+//     code 可能值：already_subscribed_monthly / active_annual_pack（含 expires_at）
+//                  not_authenticated / no_url / unknown
+export async function startCheckout(productType) {
+  const session = await getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return { ok: false, code: 'not_authenticated' };
+  }
+
+  const { data, error } = await supabase.functions.invoke('create-checkout', {
+    body: { product_type: productType },
+  });
+
+  // functions.invoke 在 non-2xx（含 409）時，把原始回應放進 error.context（Response 物件）
+  if (error) {
+    let code = 'unknown';
+    const extra = {};
+    try {
+      const body = await error.context?.json();
+      if (body?.error) code = body.error;
+      if (body?.expires_at) extra.expires_at = body.expires_at;
+    } catch (_) {}
+    console.warn('[checkout] 失敗：', code, error);
+    return { ok: false, code, ...extra };
+  }
+
+  if (data?.url) {
+    window.location.href = data.url;   // 跳轉 Stripe checkout
+    return { ok: true };
+  }
+
+  return { ok: false, code: 'no_url' };
 }
 
 // ─── Init ────────────────────────────────────────────────────
