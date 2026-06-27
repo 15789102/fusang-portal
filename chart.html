@@ -875,7 +875,7 @@
       chartSessionId = jobData.chart_session_id;
 
       const { data: reports, error: reportsError } = await supabase
-        .from('main_palace_reports')
+        .from('main_palace_reports_gated')
         .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta')
         .eq('chart_session_id', chartSessionId);
 
