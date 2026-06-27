@@ -381,6 +381,30 @@
     /* panel 被掛進 hub 時，移除上方多餘間距 */
     .ctx-hub-mount .ctx-panel { margin-top: 8px; margin-bottom: 0; }
 
+    /* slot 內主題說明（選宮後顯示，複用 PALACE_EXPLAINER） */
+    .ctx-slot-explainer { display: none; margin: 0 0 12px; padding: 10px 12px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; color: var(--ink-mid); letter-spacing: 0.02em; }
+    .ctx-slot-explainer.show { display: block; }
+    .ctx-slot-explainer .domain-keyword { color: var(--ink-darkest); font-weight: 500; }
+
+    /* ctx 排程說明小字 */
+    .ctx-desc-note { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.6; }
+
+    /* edit 解鎖按鈕 */
+    .ctx-btn.edit { background: transparent; color: var(--accent-deep); border-color: var(--accent-soft); }
+    .ctx-btn.edit:hover { background: var(--accent-soft); color: var(--bg-primary); }
+
+    /* hub palace-card 追蹤標記 */
+    .palace-card { position: relative; }
+    .palace-card.has-personal { border-color: var(--accent-pale); }
+    .palace-card-track { position: absolute; top: 8px; right: 8px; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 2px; background: var(--t-lu-bg); color: var(--gold, #b8945c); }
+
+    /* detail 追蹤議題解析區塊 */
+    #detail-personal-section .section-num { color: var(--gold, #b8945c); }
+    #detail-personal-section .section-explainer-icon { color: var(--gold, #b8945c); }
+    .personal-prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2.05; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 8px; padding: 28px 32px; background: linear-gradient(180deg, var(--t-lu-bg) 0%, var(--bg-soft) 100%); border-radius: 2px; border-left: 2px solid var(--gold, #b8945c); }
+    .personal-prose p { margin-bottom: 1.5em; }
+    .personal-prose p:last-child { margin-bottom: 0; }
+
 
   </style>
 </head>
@@ -433,6 +457,7 @@
               <div class="ctx-desc">
                 選擇你最在意的領域，描述你目前的處境。<br>
                 我們會在該宮位的「本月建議」中，把你的情況納入考量。
+                <span class="ctx-desc-note">您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>
               </div>
             </div>
             <div id="ctx-slots" class="ctx-slots"><!-- JS 動態填入 slot --></div>
@@ -594,6 +619,21 @@
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
+      </section>
+
+      <section class="section" id="detail-personal-section" style="display:none;">
+        <div class="section-head">
+          <div class="section-num">✦</div>
+          <div class="section-titles">
+            <div class="section-title-zh">追蹤議題解析</div>
+            <div class="section-title-en">Your Tracked Focus</div>
+          </div>
+        </div>
+        <div class="section-explainer">
+          <div class="section-explainer-icon">✦</div>
+          <div><strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。</div>
+        </div>
+        <div id="detail-personal" class="personal-prose"></div>
       </section>
 
       <nav class="detail-nav">
@@ -857,7 +897,7 @@
 
     const { data: reports, error } = await supabase
       .from(MONTHLY_TABLE)
-      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start, valid_month_start')
+      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, suggestion_personal, transforms_in_meta, transforms_out_meta, valid_year_start, valid_month_start')
       .eq('chart_session_id', chartSessionId)
       .eq('chart_layer', 'monthly')
       .eq('language', 'zh-TW')
@@ -1148,6 +1188,14 @@
         ? row.composition.main_stars.map(s => (typeof s === 'string') ? s : s?.star).join(' · ')
         : '(無主星)';
       card.appendChild(starsEl);
+      // 有個人追蹤議題 → 標記
+      if (row && row.suggestion_personal) {
+        card.classList.add('has-personal');
+        const mk = document.createElement('div');
+        mk.className = 'palace-card-track';
+        mk.textContent = '✦ 追蹤';
+        card.appendChild(mk);
+      }
       if (row) card.addEventListener('click', () => openDetail(palaceName));
       else card.style.opacity = '0.45';
       grid.appendChild(card);
@@ -1174,6 +1222,7 @@
     renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
     renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
     renderSuggestion(row.suggestion);
+    renderPersonalSuggestion(row.suggestion_personal);
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -1322,6 +1371,27 @@
     });
     inner += '</div>';
     wrap.innerHTML = `<div class="epilogue">${inner}</div>`;
+  }
+
+  // 追蹤議題解析（suggestion_personal）：有才顯示
+  function renderPersonalSuggestion(text) {
+    const sec = document.getElementById('detail-personal-section');
+    const el = document.getElementById('detail-personal');
+    if (!sec || !el) return;
+    if (!text) {
+      sec.style.display = 'none';
+      el.innerHTML = '';
+      return;
+    }
+    sec.style.display = 'block';
+    let paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    if (paras.length <= 1) {
+      // E 偶爾只給單換行 → 退而用單換行切段，避免擠成一塊
+      paras = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
+    }
+    el.innerHTML = paras.length
+      ? paras.map(p => `<p>${escapeHtml(p)}</p>`).join('')
+      : `<p>${escapeHtml(text)}</p>`;
   }
 
   function bindTooltips(scope) {
@@ -1624,6 +1694,8 @@
   let ctxSlotCount = 1;               // 依訂閱決定（false=1, true=3）
   let ctxData = {};                   // { slot_no: {palace_name, context_text} }
   let ctxMountedIn = 'intro';         // panel 目前掛在 'intro' 還是 'hub'
+  let ctxEditing = new Set();         // 哪些 slot 正在編輯（解鎖態）
+  const CTX_DISCLAIMER = '提醒您：流月的個人化建議是依命盤能量提供的觀點與方向，並非醫療、法律或投資的專業意見。若涉及健康、法律或財務的重要決定，仍建議諮詢專業人士。\n\n按「確定」儲存並納入分析。';
 
   // 讀訂閱狀態 → 決定 slot 數
   async function ctxLoadTier() {
@@ -1660,7 +1732,7 @@
     return used;
   }
 
-  // 渲染所有 slot
+ // 渲染所有 slot（有存檔資料的 slot 預設鎖定為唯讀，點「編輯」解鎖）
   function ctxRenderSlots() {
     const wrap = document.getElementById('ctx-slots');
     const upsell = document.getElementById('ctx-upsell');
@@ -1670,6 +1742,8 @@
     for (let n = 1; n <= ctxSlotCount; n++) {
       const cur = ctxData[n] || { palace_name: '', context_text: '' };
       const used = ctxUsedPalaces(n);
+      const isSaved = !!ctxData[n];
+      const locked = isSaved && !ctxEditing.has(n);   // 已存且未在編輯 → 唯讀
 
       const slot = document.createElement('div');
       slot.className = 'ctx-slot';
@@ -1684,19 +1758,24 @@
         }))
         .join('');
 
+      // 已選宮位 → 顯示該宮主題說明（複用 PALACE_EXPLAINER）
+      const explainerHtml = cur.palace_name ? (PALACE_EXPLAINER[cur.palace_name] || '') : '';
+
       slot.innerHTML = `
         <div class="ctx-slot-top">
           <span class="ctx-slot-no">Slot ${n}</span>
-          <select class="ctx-select" data-slot="${n}">${options}</select>
+          <select class="ctx-select" data-slot="${n}"${locked ? ' disabled' : ''}>${options}</select>
         </div>
-        <textarea class="ctx-textarea" data-slot="${n}" maxlength="${CTX_MAX_LEN}"
+        <div class="ctx-slot-explainer${explainerHtml ? ' show' : ''}" data-slot="${n}">${explainerHtml}</div>
+        <textarea class="ctx-textarea" data-slot="${n}" maxlength="${CTX_MAX_LEN}"${locked ? ' disabled' : ''}
           placeholder="描述你目前在這個領域的處境，例如：我正在轉換跑道，想了解這個月適合主動出擊還是先沉澱。">${escapeHtml(cur.context_text || '')}</textarea>
         <div class="ctx-slot-actions">
           <span class="ctx-counter" data-slot="${n}">${(cur.context_text || '').length} / ${CTX_MAX_LEN}</span>
           <div class="ctx-btns">
-            <span class="ctx-slot-saved" data-slot="${n}">已儲存</span>
-            <button class="ctx-btn clear" data-slot="${n}">清除</button>
-            <button class="ctx-btn save" data-slot="${n}">儲存</button>
+            <span class="ctx-slot-saved${locked ? ' show' : ''}" data-slot="${n}">✓ 已儲存</span>
+            ${locked
+              ? `<button class="ctx-btn edit" data-slot="${n}">編輯</button><button class="ctx-btn clear" data-slot="${n}">清除</button>`
+              : `<button class="ctx-btn clear" data-slot="${n}">清除</button><button class="ctx-btn save" data-slot="${n}">儲存</button>`}
           </div>
         </div>`;
       wrap.appendChild(slot);
@@ -1724,9 +1803,26 @@
       });
     });
 
+    // 選宮位 → 即時更新下方主題說明
+    wrap.querySelectorAll('.ctx-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const n = sel.dataset.slot;
+        const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${n}"]`);
+        if (exp) {
+          const html = sel.value ? (PALACE_EXPLAINER[sel.value] || '') : '';
+          exp.innerHTML = html;
+          exp.classList.toggle('show', !!html);
+        }
+      });
+    });
+
     // 儲存
     wrap.querySelectorAll('.ctx-btn.save').forEach(btn => {
       btn.addEventListener('click', () => ctxSave(Number(btn.dataset.slot)));
+    });
+    // 編輯（解鎖唯讀態）
+    wrap.querySelectorAll('.ctx-btn.edit').forEach(btn => {
+      btn.addEventListener('click', () => { ctxEditing.add(Number(btn.dataset.slot)); ctxRenderSlots(); });
     });
     // 清除
     wrap.querySelectorAll('.ctx-btn.clear').forEach(btn => {
@@ -1734,7 +1830,7 @@
     });
   }
 
-  // 儲存某 slot（upsert）
+  // 儲存某 slot（upsert）；存前跳免責確認，存後鎖定為唯讀
   async function ctxSave(slotNo) {
     const wrap = document.getElementById('ctx-slots');
     const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
@@ -1745,8 +1841,11 @@
     if (!palace) { alert('請先選擇一個宮位。'); return; }
     if (!text) { alert('請描述你的處境，或按「清除」移除此設定。'); return; }
 
+    // 免責提醒（確認才寫入）
+    if (!confirm(CTX_DISCLAIMER)) return;
+
     const btn = wrap.querySelector(`.ctx-btn.save[data-slot="${slotNo}"]`);
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
 
     const payload = {
       user_email: userEmail,
@@ -1760,7 +1859,7 @@
       .from(CTX_TABLE)
       .upsert(payload, { onConflict: 'user_email,slot_no' });
 
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
 
     if (error) {
       // 可能撞 unique(user_email, palace_name)：同一宮已被別的 slot 用
@@ -1769,9 +1868,8 @@
     }
 
     ctxData[slotNo] = { palace_name: palace, context_text: text };
-    const saved = wrap.querySelector(`.ctx-slot-saved[data-slot="${slotNo}"]`);
-    if (saved) { saved.classList.add('show'); setTimeout(() => saved.classList.remove('show'), 1800); }
-    ctxRenderSlots(); // 重畫，更新其他 slot 的 disable 狀態
+    ctxEditing.delete(slotNo);   // 存檔後鎖定
+    ctxRenderSlots();            // 重畫成唯讀態 + 更新其他 slot disable
   }
 
   // 清除某 slot（刪列）
@@ -1782,8 +1880,11 @@
       const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
       const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
       if (sel) sel.value = ''; if (ta) ta.value = '';
+      const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${slotNo}"]`);
+      if (exp) { exp.innerHTML = ''; exp.classList.remove('show'); }
       return;
     }
+    if (!confirm('確定要清除這個主題嗎？此動作無法復原。')) return;
     const { error } = await supabase
       .from(CTX_TABLE)
       .delete()
@@ -1791,9 +1892,10 @@
       .eq('slot_no', slotNo);
     if (error) { alert('清除失敗：' + error.message); return; }
     delete ctxData[slotNo];
+    ctxEditing.delete(slotNo);
     ctxRenderSlots();
   }
-
+  
   // 初始化 panel（讀 tier + 資料 + 渲染）；intro 與 hub 共用，呼叫一次即可
   async function ctxInit() {
     await ctxLoadTier();
