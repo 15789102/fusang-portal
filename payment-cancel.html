@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — 付款已取消</title>
+  <meta name="description" content="Payment canceled." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    .shell { max-width: 640px; margin: 0 auto; padding: 96px 32px; text-align: center; }
+
+    .pay-ornament { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 36px; }
+    .pay-ornament .line { height: 1px; width: 48px; background: linear-gradient(90deg, transparent, var(--silver-deep, #7d9596)); }
+    .pay-ornament .line.right { background: linear-gradient(90deg, var(--silver-deep, #7d9596), transparent); }
+    .pay-ornament .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--silver-deep, #7d9596); opacity: 0.8; }
+
+    .pay-mark {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 32px;
+      background: var(--bg-soft, #f0ece3); color: var(--ink-light, #8fa2a4); display: flex; align-items: center;
+      justify-content: center; font-size: 34px; line-height: 1; border: 1px solid var(--rule, #e0dbcf);
+    }
+
+    .pay-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; letter-spacing: 0.16em; color: var(--ink-light); margin-bottom: 14px; }
+    .pay-title { font-family: var(--font-serif-zh); font-size: 38px; font-weight: 400; letter-spacing: 0.08em; color: var(--ink-darkest); margin-bottom: 28px; line-height: 1.25; }
+    @media (max-width: 560px) { .pay-title { font-size: 30px; } }
+
+    .pay-body { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; }
+
+    .pay-actions { margin-top: 44px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .pay-btn {
+      display: inline-block; padding: 15px 40px; font-family: var(--font-sans); font-size: 12px;
+      font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; border-radius: 2px;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .pay-btn.primary { background: var(--ink-darkest); color: var(--bg-primary); }
+    .pay-btn.primary:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
+    .pay-btn.ghost { background: transparent; color: var(--ink-mid); border: 1px solid var(--rule); }
+    .pay-btn.ghost:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="shell">
+    <div class="pay-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
+
+    <div class="pay-mark">—</div>
+
+    <div class="pay-eyebrow">Payment Canceled</div>
+    <h1 class="pay-title">付款已取消</h1>
+
+    <p class="pay-body">這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。</p>
+
+    <div class="pay-actions">
+      <a href="dashboard.html" class="pay-btn primary">返回儀表板</a>
+      <a href="chart.html" class="pay-btn ghost">前往我的命盤</a>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module" src="./components.js"></script>
+
+</body>
+</html>

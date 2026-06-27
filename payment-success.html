@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuSang Vision — 付款完成</title>
+  <meta name="description" content="Payment successful." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    .shell { max-width: 640px; margin: 0 auto; padding: 96px 32px; text-align: center; }
+
+    .pay-ornament { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 36px; }
+    .pay-ornament .line { height: 1px; width: 48px; background: linear-gradient(90deg, transparent, var(--gold, #b8945c)); }
+    .pay-ornament .line.right { background: linear-gradient(90deg, var(--gold, #b8945c), transparent); }
+    .pay-ornament .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold, #b8945c); opacity: 0.8; }
+
+    .pay-check {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 32px;
+      background: var(--t-lu, #3d7c5e); color: #fff; display: flex; align-items: center;
+      justify-content: center; font-size: 34px; line-height: 1;
+    }
+
+    .pay-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; letter-spacing: 0.16em; color: var(--accent-soft); margin-bottom: 14px; }
+    .pay-title { font-family: var(--font-serif-zh); font-size: 38px; font-weight: 400; letter-spacing: 0.08em; color: var(--ink-darkest); margin-bottom: 28px; line-height: 1.25; }
+    @media (max-width: 560px) { .pay-title { font-size: 30px; } }
+
+    .pay-body { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-bottom: 12px; }
+
+    .pay-note {
+      margin: 32px auto 0; max-width: 460px; padding: 16px 20px; background: var(--bg-soft-2);
+      border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0;
+      font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.75; color: var(--ink-mid);
+      letter-spacing: 0.02em; text-align: left;
+    }
+    .pay-note strong { color: var(--ink-darkest); font-weight: 500; }
+
+    .pay-actions { margin-top: 44px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .pay-btn {
+      display: inline-block; padding: 15px 40px; font-family: var(--font-sans); font-size: 12px;
+      font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; border-radius: 2px;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .pay-btn.primary { background: var(--ink-darkest); color: var(--bg-primary); }
+    .pay-btn.primary:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
+    .pay-btn.ghost { background: transparent; color: var(--ink-mid); border: 1px solid var(--rule); }
+    .pay-btn.ghost:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
+
+    .pay-session { margin-top: 40px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.05em; }
+    .pay-session code { font-family: 'Courier New', monospace; }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="shell">
+    <div class="pay-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
+
+    <div class="pay-check">✓</div>
+
+    <div class="pay-eyebrow">Payment Successful</div>
+    <h1 class="pay-title">付款完成，謝謝您</h1>
+
+    <p class="pay-body">您的購買已經完成，內容正在為您開啟。</p>
+
+    <div class="pay-note">
+      <strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。
+    </div>
+
+    <div class="pay-actions">
+      <a href="chart.html" class="pay-btn primary">前往我的命盤</a>
+      <a href="dashboard.html" class="pay-btn ghost">返回儀表板</a>
+    </div>
+
+    <div class="pay-session" id="pay-session" style="display:none;">
+      Reference · <code id="pay-session-id"></code>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module" src="./components.js"></script>
+<script>
+  // 顯示 Stripe checkout session id(僅供對帳參考,不查驗;A 版純靜態落地)
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const sid = params.get('session_id');
+    if (sid) {
+      const wrap = document.getElementById('pay-session');
+      const code = document.getElementById('pay-session-id');
+      if (code) code.textContent = sid;
+      if (wrap) wrap.style.display = 'block';
+    }
+  })();
+</script>
+
+</body>
+</html>
