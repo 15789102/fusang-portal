@@ -10,16 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- 標記當前導航頁(供 components.js header 高亮)，須在 module 載入前設定 -->
   <script>window.FS_ACTIVE_PAGE = 'annual';</script>
 
   <style>
-    /* ── annual 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* Loading / Error */
     #view-loading { text-align: center; padding: 80px 32px; }
     .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
     .loading-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
@@ -38,7 +35,6 @@
     }
     .btn-primary:hover { background: var(--accent-soft); }
 
-    /* YEARS 年份選擇 */
     .years-head { text-align: center; margin-bottom: 48px; }
     .years-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .years-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -57,7 +53,6 @@
     .years-empty-title { font-family: var(--font-serif-zh); font-size: 20px; font-weight: 400; color: var(--ink-dark); margin-bottom: 12px; letter-spacing: 0.05em; }
     .years-empty-body { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); line-height: 1.8; letter-spacing: 0.02em; }
 
-    /* HUB */
     .hub-head { text-align: center; margin-bottom: 48px; }
     .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .hub-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -76,7 +71,6 @@
     .hub-meta { padding: 24px 28px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-mid); letter-spacing: 0.05em; line-height: 1.7; text-align: center; }
     .hub-meta code { font-family: 'Courier New', monospace; color: var(--ink-dark); font-size: 11px; }
 
-    /* DETAIL */
     .detail-back-top { margin-bottom: 32px; }
     .back-link { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-mid); cursor: pointer; transition: color 0.2s; }
     .back-link:hover { color: var(--accent-deep); }
@@ -88,7 +82,6 @@
     .palace-head-right { text-align: right; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); line-height: 1.5; }
     .palace-index { font-family: var(--font-serif-en); font-size: 13px; letter-spacing: 0.2em; color: var(--ink-light); font-style: normal; }
 
-    /* 宮位說明 */
     .palace-explainer { margin-top: 24px; padding: 20px 24px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; }
     .palace-explainer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 8px; }
     .palace-explainer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark); letter-spacing: 0.02em; }
@@ -104,7 +97,6 @@
     .transform-tag.化科 { color: var(--t-ke); }
     .transform-tag.化忌 { color: var(--t-ji); }
 
-    /* Composition */
     .composition { margin-top: 48px; padding: 28px 32px; background: var(--bg-soft-2); border-radius: 2px; position: relative; }
     .composition::before { content: ''; position: absolute; top: 0; left: 32px; width: 24px; height: 1px; background: var(--silver-deep); }
     .composition-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--accent-soft); letter-spacing: 0.05em; margin-bottom: 20px; }
@@ -114,7 +106,6 @@
     .comp-row-key { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-light); }
     .comp-row-val { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); letter-spacing: 0.05em; }
 
-    /* Section */
     .section { margin-top: 80px; }
     .section-head { display: flex; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
     .section-num { font-family: var(--font-serif-en); font-size: 40px; font-weight: 300; font-style: italic; line-height: 1; color: var(--silver-deep); }
@@ -125,7 +116,6 @@
     .section-explainer-icon { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; color: var(--accent-soft); font-size: 16px; line-height: 1.4; }
     .section-explainer strong { color: var(--ink-darkest); font-weight: 500; }
 
-    /* A 段 prose */
     .prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 32px; }
     .prose p { margin-bottom: 1.6em; }
     .prose p:last-child { margin-bottom: 0; }
@@ -134,7 +124,6 @@
     .pull-quote { margin: 48px 0; padding: 32px 36px 32px 48px; border-left: 3px solid var(--accent-soft); background: var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 19px; line-height: 1.8; color: var(--ink-darkest); letter-spacing: 0.04em; position: relative; font-weight: 500; }
     .pull-quote::before { content: '"'; position: absolute; top: 0; left: 16px; font-family: var(--font-serif-en); font-size: 80px; line-height: 1; color: var(--silver-soft); font-style: italic; }
 
-    /* B/C transform cards */
     .transform-blocks { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
     .transform-card { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
     .transform-card-head { padding: 18px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
@@ -174,7 +163,19 @@
     .transform-card-content p:last-child { margin-bottom: 0; }
     .transform-empty { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); font-style: italic; padding: 24px; text-align: center; background: var(--bg-soft-2); border-radius: 2px; }
 
-    /* D 段 epilogue */
+    /* 付費牆 */
+    .paywall { margin-top: 32px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border: 1px solid var(--gold-soft, #c9ab7d); border-radius: 3px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden; }
+    .paywall-lock { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 20px; background: var(--bg-card); border: 1px solid var(--gold-soft, #c9ab7d); display: flex; align-items: center; justify-content: center; color: var(--gold, #b8945c); font-size: 24px; }
+    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-soft); margin-bottom: 10px; }
+    .paywall-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 24px; }
+    .paywall-list { display: flex; flex-direction: column; gap: 13px; max-width: 360px; margin: 0 auto 30px; text-align: left; }
+    .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.6; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
+    .paywall-item b { font-weight: 600; color: var(--ink-darkest); }
+    .paywall-cta { display: inline-block; padding: 14px 40px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 2px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--ink-darkest); }
+    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.16); }
+    .paywall-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.02em; }
+
     .epilogue { margin-top: 32px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; position: relative; }
     .epilogue::before, .epilogue::after { content: ''; position: absolute; width: 32px; height: 1px; background: var(--silver-deep); }
     .epilogue::before { top: 0; left: 40px; }
@@ -185,7 +186,6 @@
     .epilogue-prose p:last-child { margin-bottom: 0; }
     .epilogue-prose p.closing { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--ink-darkest); font-size: 17px; letter-spacing: 0.05em; }
 
-    /* Detail nav */
     .detail-nav { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
     .nav-link { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-dark); letter-spacing: 0.1em; cursor: pointer; transition: color 0.2s; }
     .nav-link:hover { color: var(--accent-deep); }
@@ -211,7 +211,6 @@
       </div>
     </section>
 
-    <!-- 流年生成（無資料時）/ 生成中 -->
     <section id="view-intro" class="view">
       <div id="intro-pitch">
         <div class="years-head">
@@ -233,7 +232,6 @@
       </div>
     </section>
 
-    <!-- 年份選擇 -->
     <section id="view-years" class="view">
       <div class="years-head">
         <div class="years-eyebrow">Annual Fortune · 流年</div>
@@ -247,7 +245,6 @@
       </div>
     </section>
 
-    <!-- 十二宮 Hub -->
     <section id="view-hub" class="view">
       <div class="detail-back-top"><span class="back-link" id="hub-to-years">← 選擇年份 Choose a year</span></div>
       <div class="hub-head">
@@ -262,7 +259,6 @@
       </div>
     </section>
 
-    <!-- 單宮詳情 -->
     <section id="view-detail" class="view">
       <div class="detail-back-top">
         <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
@@ -299,7 +295,9 @@
         <div id="detail-analysis" class="prose"></div>
       </section>
 
-      <section class="section">
+      <div id="detail-locked-wrap"></div>
+
+      <section class="section" id="sec-02">
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
@@ -314,7 +312,7 @@
         <div id="detail-transforms-in" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-03">
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
@@ -329,12 +327,12 @@
         <div id="detail-transforms-out" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-04">
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">演法建議</div>
-            <div class="section-title-en">How to Play this Role</div>
+            <div class="section-title-zh">我們的建議</div>
+            <div class="section-title-en">Our Suggestions</div>
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
@@ -361,13 +359,11 @@
 <script type="module">
   import { supabase, requireAuth } from './components.js';
 
-  // ── 可調整常數：流年報告表名（若實際表名不同，改這一行即可）──
+  const PRICING_PAGE = 'pricing.html';
+
   const ANNUAL_TABLE = 'annual_palace_reports_gated';
-  // 流年生成狀態表（訂閱判斷 + 生成中輪詢）
   const ANNUAL_JOBS_TABLE = 'annual_generation_jobs';
-  // materials flow 觸發 webhook（production）— 換成你 annual materials flow 的 Webhook Production URL
   const ANNUAL_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/annual-v2';
-  // 生成中輪詢間隔（毫秒）
   const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
@@ -382,7 +378,6 @@
     '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
     '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
   };
-  // 宮位完整說明（沿用本命；流年語意可日後再調整文案）
   const PALACE_EXPLAINER = {
     '命宮':'流年命宮代表您<span class="domain-keyword">本年整體的基調、心境與行動姿態</span>——這一年您看待自己與處境的主軸，所有其他宮位的流年能量，都會在這裡匯流。',
     '兄弟宮':'流年兄弟宮反映本年您與<span class="domain-keyword">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。',
@@ -411,8 +406,9 @@
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
-  let userEmail = null;           // 登入用戶 email（觸發/輪詢用）
-  let pollTimer = null;           // 生成中輪詢計時器
+  let userEmail = null;
+  let pollTimer = null;
+  let isUnlocked = false;   // sihua_unlocked
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -428,8 +424,8 @@
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function goPricing() { window.location.href = PRICING_PAGE; }
 
-  // ── 年份選擇 ──
   function renderYears(years) {
     const grid = document.getElementById('years-grid');
     const empty = document.getElementById('years-empty');
@@ -506,6 +502,22 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  function paywallHtml() {
+    return `
+      <div class="paywall">
+        <div class="paywall-lock" aria-hidden="true">&#128274;</div>
+        <div class="paywall-eyebrow">Unlock Full Reading</div>
+        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-list">
+          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span><b>專屬行動建議</b></span></div>
+        </div>
+        <span class="paywall-cta" id="paywall-cta">查看方案</span>
+        <div class="paywall-note">已購買？回此頁重新整理即可顯示</div>
+      </div>`;
+  }
+
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
@@ -521,9 +533,28 @@
     renderStarsLine(row.composition);
     renderComposition(row.composition);
     renderAnalysis(row.palace_analysis);
-    renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
-    renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
-    renderSuggestion(row.suggestion);
+
+    const lockedWrap = document.getElementById('detail-locked-wrap');
+    const sec02 = document.getElementById('sec-02');
+    const sec03 = document.getElementById('sec-03');
+    const sec04 = document.getElementById('sec-04');
+
+    if (isUnlocked) {
+      lockedWrap.innerHTML = '';
+      sec02.style.display = '';
+      sec03.style.display = '';
+      sec04.style.display = '';
+      renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
+      renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
+      renderSuggestion(row.suggestion);
+    } else {
+      sec02.style.display = 'none';
+      sec03.style.display = 'none';
+      sec04.style.display = 'none';
+      lockedWrap.innerHTML = paywallHtml();
+      const cta = document.getElementById('paywall-cta');
+      if (cta) cta.addEventListener('click', goPricing);
+    }
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -572,7 +603,6 @@
     grid.innerHTML = rows.map(r => `<div class="comp-row"><div class="comp-row-key">${r.key}</div><div class="comp-row-val">${escapeHtml(r.val)}</div></div>`).join('');
   }
 
-  // A 段：drop cap + 自動 pull quote
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
     if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -591,7 +621,6 @@
     el.innerHTML = html;
   }
 
-  // B/C 段：卡片 + 來源 chip（讀 meta）
   function renderTransforms(elId, transforms, meta, direction) {
     const container = document.getElementById(elId);
     container.innerHTML = '';
@@ -660,7 +689,6 @@
     bindTooltips(container);
   }
 
-  // D 段：epilogue 樣式
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
     if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -684,14 +712,8 @@
     });
   }
 
-  // ===================================================================
-  // 流年生成機制（單一年；重整後 init 重查 job、有 pending 自動續輪詢，不需 localStorage）
-  // ===================================================================
-
-  // 目前流年目標年（國曆年近似；農曆年界線細修為未來事）
   function currentAnnualTargetYear() { return new Date().getFullYear(); }
 
-  // 撈有報告的流年年份（找不到表或沒資料 → 視為空白，不報錯）
   async function fetchYears() {
     let years = [];
     try {
@@ -713,7 +735,6 @@
     return years;
   }
 
-  // 撈本用戶的流年 job
   async function fetchJobs() {
     const { data, error } = await supabase
       .from(ANNUAL_JOBS_TABLE)
@@ -725,12 +746,10 @@
   }
   function jobDone(j) { return j.report_status === 'done'; }
 
-  // 渲染生成中畫面，回傳「是否全部完成」
   function renderGenerating(jobs) {
     document.getElementById('intro-pitch').style.display = 'none';
     document.getElementById('intro-generating').style.display = 'block';
     const wrap = document.getElementById('gen-cards');
-    // job 列還沒建出來時，至少先顯示目標年生成中
     const list = jobs.length ? jobs : [{ target_year: currentAnnualTargetYear(), report_status: 'pending' }];
     const sorted = [...list].sort((a, b) => b.target_year - a.target_year);
     wrap.innerHTML = sorted.map(j => {
@@ -746,7 +765,6 @@
     return sorted.length > 0 && sorted.every(jobDone);
   }
 
-  // 產生今年流年：觸發 materials flow（送出即視為觸發，狀態以 job 表為準）
   async function subscribeAnnual() {
     const btn = document.getElementById('intro-generate-btn');
     btn.disabled = true;
@@ -770,7 +788,7 @@
     stopPolling();
     pollTimer = setInterval(async () => {
       const jobs = await fetchJobs();
-      if (jobs.length === 0) return;            // job 尚未建出，繼續等
+      if (jobs.length === 0) return;
       const allDone = renderGenerating(jobs);
       if (allDone) {
         stopPolling();
@@ -787,9 +805,18 @@
   async function init() {
     try {
       const session = await requireAuth();
-      if (!session) return; // requireAuth 已導向 login.html
+      if (!session) return;
 
       userEmail = session.user.email;
+
+      try {
+        const { data: prof } = await supabase
+          .from('user_profiles')
+          .select('sihua_unlocked')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        isUnlocked = !!(prof && prof.sihua_unlocked === true);
+      } catch (_) { isUnlocked = false; }
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
@@ -805,25 +832,20 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      // 查流年生成狀態
       const jobs = await fetchJobs();
       const generating = jobs.some(j => !jobDone(j));
       if (generating) {
-        // 仍在生成 → 顯示生成中並輪詢（重整續跑靠這條）
         showView('view-intro');
         renderGenerating(jobs);
         startPolling();
         return;
       }
 
-      // 撈有報告的流年年份
       const years = await fetchYears();
       if (years.length > 0) {
-        // 已有報告 → 正常閱讀
         renderYears(years);
         showView('view-years');
       } else {
-        // 無報告、無生成中 → 介紹頁（產生今年流年）
         document.getElementById('intro-year').textContent = currentAnnualTargetYear();
         document.getElementById('intro-pitch').style.display = 'block';
         document.getElementById('intro-generating').style.display = 'none';
