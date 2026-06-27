@@ -192,7 +192,7 @@
   }
   .card-refresh:hover { color: var(--accent-deep); }
 
-  /* ── 第一層付費牆：本命/大限/流年 一次解鎖四化 ── */
+  /* ── 第一層付費牆：本命/大限/流年 一次解鎖 ── */
   .dash-unlock {
     position: relative;
     background: var(--bg-soft-2);
@@ -319,16 +319,16 @@
             <div class="card-kicker">本命 · Natal</div>
             <div class="card-name">你是誰</div>
             <div class="card-name-en">Your Innate Blueprint</div>
-            <div class="card-desc" id="desc-natal">與生俱來的角色設定 — 你的性格、天賦，與這輩子要練的功課。</div>
+            <div class="card-desc" id="desc-natal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
             <div id="card-natal-action"><!-- 動態填入 --></div>
           </div>
 
           <!-- 大限卡 -->
           <div class="dash-card" id="card-decade" style="animation-delay:0.18s;">
             <div class="card-kicker">大限 · Major Limit</div>
-            <div class="card-name">你正在哪一幕</div>
+            <div class="card-name">你正在哪一段</div>
             <div class="card-name-en">Your Ten-Year Cycle</div>
-            <div class="card-desc" id="desc-decade">人生十年一章，這是你目前的章節，以及它的整體基調。</div>
+            <div class="card-desc" id="desc-decade">人生十年一段，這是你目前的階段，以及它的整體基調。</div>
             <div id="card-decade-action"><!-- 動態填入 --></div>
           </div>
 
@@ -337,11 +337,11 @@
             <div class="card-kicker">流年 · Annual<span class="card-now">現在</span></div>
             <div class="card-name">今年的主軸</div>
             <div class="card-name-en">This Year's Currents</div>
-            <div class="card-desc" id="desc-annual">這一年劇本的重心落在哪裡 — 什麼值得你把心力放上去。</div>
+            <div class="card-desc" id="desc-annual">這一年的重心落在哪裡 — 什麼值得你把心力放上去。</div>
             <div id="card-annual-action"><!-- 動態填入 --></div>
           </div>
 
-          <!-- 第一層付費牆：一次解鎖四化（未購買才出現）-->
+          <!-- 第一層付費牆：一次解鎖完整解讀（未購買才出現）-->
           <div id="unlock-transforms"></div>
 
         </div>
@@ -372,9 +372,10 @@
      CONFIG — 上線前需依實際 schema 確認的設定，全部集中在這裡
      ════════════════════════════════════════════════════════════ */
   const CONFIG = {
-    /* ── 金流旗標（Stripe 上線前先寫死；屆時改由 webhook / user_profiles 帶入）── */
-    hasTransformAccess: false,   // 第一層：本命/大限/流年 四化是否已購買
-    monthlySubscribed:  false,   // 第二層：流月訂閱是否已開通
+    /* ── 金流旗標 ──
+       現由 user_profiles 真實欄位帶入（見主流程；以下為讀取失敗時的保險預設）── */
+    hasTransformAccess: false,   // 第一層：本命/大限/流年（sihua_unlocked）
+    monthlySubscribed:  false,   // 第二層：流月（monthly_subscribed）
 
     /* ── 命宮摘要來源（請確認這三個值；填不對會自動退回靜態副文，不會壞頁）── */
     excerpt: {
@@ -391,6 +392,9 @@
       annual:  null,   // e.g. 'year'
       monthly: null,   // e.g. 排序用的 年+月 複合欄位
     },
+
+    /* ── 付費頁 ── */
+    pricingPage: 'pricing.html',
   };
 
   /* 各層對應的表 / chart_layer 過濾值 */
@@ -453,16 +457,20 @@
     const email = session.user.email || '';
     const userId = session.user.id;
 
-    // display_name（撈不到就 fallback email 前綴）
+    // display_name + 付費狀態（一次撈齊；撈不到就用 CONFIG 預設）
     let displayName = email.split('@')[0] || '朋友';
     try {
       const { data: profile } = await supabase
         .from('user_profiles')
-        .select('display_name')
+        .select('display_name, sihua_unlocked, monthly_subscribed')
         .eq('id', userId)
         .maybeSingle();
-      if (profile && profile.display_name) displayName = profile.display_name;
-    } catch (_) { /* 靜默 fallback */ }
+      if (profile) {
+        if (profile.display_name) displayName = profile.display_name;
+        CONFIG.hasTransformAccess = profile.sihua_unlocked === true;
+        CONFIG.monthlySubscribed  = profile.monthly_subscribed === true;
+      }
+    } catch (_) { /* 靜默 fallback，沿用 CONFIG 預設 */ }
     document.getElementById('dash-name').textContent = displayName;
 
     // 並行撈四層
@@ -510,27 +518,31 @@
     }
   }
 
-  /* 第一層付費牆：本命/大限/流年 一次解鎖四化（按鈕暫為 placeholder）*/
+  /* 第一層付費牆：本命/大限/流年 一次解鎖完整解讀 → 導去 pricing */
   function renderTransformUnlock() {
     if (CONFIG.hasTransformAccess) return; // 已購買 → 不顯示
     const host = document.getElementById('unlock-transforms');
     host.innerHTML =
       '<div class="dash-unlock" style="animation-delay:0.32s;">' +
-        '<div class="u-title"><span class="u-icon">✦</span> 解鎖四化飛星</div>' +
-        '<div class="u-note">一次購買，本命・大限・流年的四化飛星全部開啟。</div>' +
-        '<button class="u-btn" data-todo="stripe-one-time" title="付費機制即將開放" disabled>一次解鎖</button>' +
+        '<div class="u-title"><span class="u-icon">✦</span> 解鎖完整命盤解讀</div>' +
+        '<div class="u-note">一次解鎖，看懂本命・大限・流年中，能量如何流動、該往哪使力。</div>' +
+        '<button class="u-btn" id="btn-unlock-transforms">查看方案</button>' +
       '</div>';
+    document.getElementById('btn-unlock-transforms')
+      .addEventListener('click', () => { window.location.href = CONFIG.pricingPage; });
   }
 
-  /* 第二層付費牆：流月訂閱（按鈕暫為 placeholder）*/
+  /* 第二層付費牆：流月導航 → 導去 pricing */
   function renderMonthlySub() {
     if (CONFIG.monthlySubscribed) return; // 已訂閱 → 不顯示
     const host = document.getElementById('sub-monthly');
     host.innerHTML =
       '<div class="monthly-sub">' +
-        '<div class="ms-line"><span class="lock">⟳</span> 流月四化需另外訂閱</div>' +
-        '<button class="sub-btn" data-todo="stripe-subscription" title="付費機制即將開放" disabled>升級訂閱</button>' +
+        '<div class="ms-line"><span class="lock">⟳</span> 每月運勢導航需訂閱解鎖</div>' +
+        '<button class="sub-btn" id="btn-sub-monthly">查看方案</button>' +
       '</div>';
+    document.getElementById('btn-sub-monthly')
+      .addEventListener('click', () => { window.location.href = CONFIG.pricingPage; });
   }
 </script>
 
