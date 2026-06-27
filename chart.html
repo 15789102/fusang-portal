@@ -10,16 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- 標記當前導航頁(供 components.js header 高亮),須在 module 載入前設定 -->
   <script>window.FS_ACTIVE_PAGE = 'chart';</script>
 
   <style>
-    /* ── chart 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* Loading / Error */
     #view-loading { text-align: center; padding: 80px 32px; }
     .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
     .loading-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
@@ -38,7 +35,6 @@
     }
     .btn-primary:hover { background: var(--accent-soft); }
 
-    /* HUB */
     .hub-head { text-align: center; margin-bottom: 48px; }
     .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .hub-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -57,7 +53,6 @@
     .hub-meta { padding: 24px 28px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-mid); letter-spacing: 0.05em; line-height: 1.7; text-align: center; }
     .hub-meta code { font-family: 'Courier New', monospace; color: var(--ink-dark); font-size: 11px; }
 
-    /* DETAIL */
     .detail-back-top { margin-bottom: 32px; }
     .back-link { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-mid); cursor: pointer; transition: color 0.2s; }
     .back-link:hover { color: var(--accent-deep); }
@@ -69,7 +64,6 @@
     .palace-head-right { text-align: right; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); line-height: 1.5; }
     .palace-index { font-family: var(--font-serif-en); font-size: 13px; letter-spacing: 0.2em; color: var(--ink-light); font-style: normal; }
 
-    /* 宮位說明 */
     .palace-explainer { margin-top: 24px; padding: 20px 24px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; }
     .palace-explainer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 8px; }
     .palace-explainer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark); letter-spacing: 0.02em; }
@@ -85,7 +79,6 @@
     .transform-tag.化科 { color: var(--t-ke); }
     .transform-tag.化忌 { color: var(--t-ji); }
 
-    /* Composition */
     .composition { margin-top: 48px; padding: 28px 32px; background: var(--bg-soft-2); border-radius: 2px; position: relative; }
     .composition::before { content: ''; position: absolute; top: 0; left: 32px; width: 24px; height: 1px; background: var(--silver-deep); }
     .composition-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--accent-soft); letter-spacing: 0.05em; margin-bottom: 20px; }
@@ -95,7 +88,6 @@
     .comp-row-key { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-light); }
     .comp-row-val { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); letter-spacing: 0.05em; }
 
-    /* Section */
     .section { margin-top: 80px; }
     .section-head { display: flex; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
     .section-num { font-family: var(--font-serif-en); font-size: 40px; font-weight: 300; font-style: italic; line-height: 1; color: var(--silver-deep); }
@@ -106,7 +98,6 @@
     .section-explainer-icon { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; color: var(--accent-soft); font-size: 16px; line-height: 1.4; }
     .section-explainer strong { color: var(--ink-darkest); font-weight: 500; }
 
-    /* A 段 prose */
     .prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 32px; }
     .prose p { margin-bottom: 1.6em; }
     .prose p:last-child { margin-bottom: 0; }
@@ -115,7 +106,6 @@
     .pull-quote { margin: 48px 0; padding: 32px 36px 32px 48px; border-left: 3px solid var(--accent-soft); background: var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 19px; line-height: 1.8; color: var(--ink-darkest); letter-spacing: 0.04em; position: relative; font-weight: 500; }
     .pull-quote::before { content: '"'; position: absolute; top: 0; left: 16px; font-family: var(--font-serif-en); font-size: 80px; line-height: 1; color: var(--silver-soft); font-style: italic; }
 
-    /* B/C transform cards */
     .transform-blocks { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
     .transform-card { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
     .transform-card-head { padding: 18px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
@@ -155,7 +145,24 @@
     .transform-card-content p:last-child { margin-bottom: 0; }
     .transform-empty { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); font-style: italic; padding: 24px; text-align: center; background: var(--bg-soft-2); border-radius: 2px; }
 
-    /* D 段 epilogue */
+    /* ── 付費牆（未解鎖時取代 02/03/04）── */
+    .paywall { margin-top: 32px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border: 1px solid var(--gold-soft, #c9ab7d); border-radius: 3px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden; }
+    .paywall-lock { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 20px; background: var(--bg-card); border: 1px solid var(--gold-soft, #c9ab7d); display: flex; align-items: center; justify-content: center; color: var(--gold, #b8945c); font-size: 24px; }
+    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-soft); margin-bottom: 10px; }
+    .paywall-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 24px; }
+    .paywall-list { display: flex; flex-direction: column; gap: 13px; max-width: 360px; margin: 0 auto 30px; text-align: left; }
+    .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.6; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
+    .paywall-item b { font-weight: 600; color: var(--ink-darkest); }
+    .paywall-cta { display: inline-block; padding: 14px 40px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 2px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--ink-darkest); }
+    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.16); }
+    .paywall-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.02em; }
+
+    /* 總覽後盾未解鎖小提示 */
+    .ov-locked-hint { font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.7; color: var(--ink-mid); letter-spacing: 0.02em; padding: 14px 16px; background: var(--bg-soft-2); border-left: 2px solid var(--gold-soft, #c9ab7d); border-radius: 0 2px 2px 0; }
+    .ov-locked-hint .ov-locked-link { color: var(--accent-deep); border-bottom: 1px solid var(--accent-pale, #d4dfde); padding-bottom: 1px; cursor: pointer; }
+    .ov-locked-hint .ov-locked-link:hover { border-color: var(--gold, #b8945c); }
+
     .epilogue { margin-top: 32px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; position: relative; }
     .epilogue::before, .epilogue::after { content: ''; position: absolute; width: 32px; height: 1px; background: var(--silver-deep); }
     .epilogue::before { top: 0; left: 40px; }
@@ -166,7 +173,6 @@
     .epilogue-prose p:last-child { margin-bottom: 0; }
     .epilogue-prose p.closing { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--ink-darkest); font-size: 17px; letter-spacing: 0.05em; }
 
-    /* Detail nav */
     .detail-nav { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
     .nav-link { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-dark); letter-spacing: 0.1em; cursor: pointer; transition: color 0.2s; }
     .nav-link:hover { color: var(--accent-deep); }
@@ -176,7 +182,6 @@
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
 
-    /* ── OVERVIEW 總覽（全 scope 在 #view-overview 下）── */
     #view-overview .ov-head { margin-bottom: 8px; }
     #view-overview .ov-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--gold, #b8945c); margin-bottom: 12px; }
     #view-overview .ov-title { font-family: var(--font-serif-zh); font-size: clamp(28px,5vw,40px); font-weight: 500; letter-spacing: 0.06em; margin: 0; }
@@ -366,7 +371,9 @@
         <div id="detail-analysis" class="prose"></div>
       </section>
 
-      <section class="section">
+      <div id="detail-locked-wrap"></div>
+
+      <section class="section" id="sec-02">
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
@@ -381,7 +388,7 @@
         <div id="detail-transforms-in" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-03">
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
@@ -396,7 +403,7 @@
         <div id="detail-transforms-out" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-04">
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
@@ -429,35 +436,28 @@
   import { supabase, requireAuth } from './components.js';
   import { initI18n, t as tx, td, getLang, palaceLabel, starLabel, transformLabel } from './i18n.js';
 
+  const PRICING_PAGE = 'pricing.html';
+
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const PALACE_EN = {
     '命宮':'Palace of Self','兄弟宮':'Palace of Siblings','夫妻宮':'Palace of Spouse','子女宮':'Palace of Children',
     '財帛宮':'Palace of Wealth','疾厄宮':'Palace of Health','遷移宮':'Palace of Travel','交友宮':'Palace of Friends',
     '官祿宮':'Palace of Career','田宅宮':'Palace of Home','福德宮':'Palace of Spirit','父母宮':'Palace of Parents',
   };
-  // PALACE_TAGLINE / PALACE_EXPLAINER 已移至 i18n.js（td('PALACE_TAGLINE'/'PALACE_EXPLAINER', palaceName)）
 
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
   const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
-  // TRANSFORM_TOOLTIP 已移至 i18n.js（td('TRANSFORM_TOOLTIP', tt)）
 
-  // ── 總覽用固定查表（寫一次、所有盤共用、可編輯，非逐盤生成）──
   const INNER_PALACES = new Set(['命宮','財帛宮','疾厄宮','遷移宮','官祿宮','福德宮']);
   const OUTER_PALACES = new Set(['父母宮','兄弟宮','夫妻宮','子女宮','田宅宮','交友宮']);
   const SAN_FANG = ['命宮','財帛宮','官祿宮'];
-  // SAN_FANG_ROLE 已移至 i18n.js（td('SAN_FANG_ROLE', p)）
 
-  // STAR_LEXICON 已移至 i18n.js（td('STAR_LEXICON', star)）
-
-  // 貴人星集合（四貴＋文昌文曲）與星義（self=自帶, ext=外部）
   const ALLY_STARS = new Set(['左輔','右弼','天魁','天鉞','文昌','文曲']);
-  // ALLY_LEXICON 已移至 i18n.js（td('ALLY_LEXICON', star)）
-
-  // SELF_TRANSFORM_NOTE / BIRTH_MEANING 已移至 i18n.js（td(...)）
 
   let reportsByPalace = {};
   let chartSessionId = null;
+  let isUnlocked = false;   // sihua_unlocked：四化付費內容是否解鎖
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -473,8 +473,8 @@
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function goPricing() { window.location.href = PRICING_PAGE; }
 
-  // 靜態標籤在地化(initI18n 後呼叫一次;這些標籤不隨宮位變動)
   function applyStaticI18n() {
     const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
     const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
@@ -493,7 +493,6 @@
     setHtml('sec3-desc', 'sectionOutflowDesc');
     setText('error-title', 'errTitle');
     setText('btn-back-dashboard', 'btnBackDashboard');
-    // overview
     setText('ov-eyebrow', 'ovEyebrow');
     setText('ov-title', 'ovTitle');
     setText('block-sub-1', 'blockSub1');
@@ -537,6 +536,23 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  // 付費牆 HTML（未解鎖時取代 02/03/04）
+  function paywallHtml() {
+    return `
+      <div class="paywall">
+        <div class="paywall-lock" aria-hidden="true">&#128274;</div>
+        <div class="paywall-eyebrow">Unlock Full Reading</div>
+        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-list">
+          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span><b>專屬行動建議</b></span></div>
+        </div>
+        <span class="paywall-cta" id="paywall-cta">查看方案</span>
+        <div class="paywall-note">已購買？回此頁重新整理即可顯示</div>
+      </div>`;
+  }
+
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
@@ -551,9 +567,30 @@
     renderStarsLine(row.composition);
     renderComposition(row.composition);
     renderAnalysis(row.palace_analysis);
-    renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
-    renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
-    renderSuggestion(row.suggestion);
+
+    const lockedWrap = document.getElementById('detail-locked-wrap');
+    const sec02 = document.getElementById('sec-02');
+    const sec03 = document.getElementById('sec-03');
+    const sec04 = document.getElementById('sec-04');
+
+    if (isUnlocked) {
+      // 已解鎖：隱藏牆、顯示 02/03/04，照原邏輯渲染
+      lockedWrap.innerHTML = '';
+      sec02.style.display = '';
+      sec03.style.display = '';
+      sec04.style.display = '';
+      renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
+      renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
+      renderSuggestion(row.suggestion);
+    } else {
+      // 未解鎖：藏 02/03/04，插付費牆（無論本宮是否真有四化）
+      sec02.style.display = 'none';
+      sec03.style.display = 'none';
+      sec04.style.display = 'none';
+      lockedWrap.innerHTML = paywallHtml();
+      const cta = document.getElementById('paywall-cta');
+      if (cta) cta.addEventListener('click', goPricing);
+    }
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -576,7 +613,6 @@
       parts.push(html);
     });
     const pushStar = (s) => {
-      // 兼容舊格式(字串)與新格式(物件帶 transform)
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
       if (!name) return;
@@ -601,7 +637,6 @@
     grid.innerHTML = rows.map(r => `<div class="comp-row"><div class="comp-row-key">${r.key}</div><div class="comp-row-val">${escapeHtml(r.val)}</div></div>`).join('');
   }
 
-  // A 段:drop cap + 自動 pull quote
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
     if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -610,7 +645,6 @@
     paras.forEach((p, i) => {
       if (i === 0) html += `<p class="lead">${escapeHtml(p)}</p>`;
       else html += `<p>${escapeHtml(p)}</p>`;
-      // 在第 2 段後插入 pull quote(抓第 3 段的第一句)
       if (i === 1 && paras[2]) {
         const firstSentence = paras[2].split(/[。!?!?]/)[0];
         if (firstSentence && firstSentence.length > 10) {
@@ -621,7 +655,6 @@
     el.innerHTML = html;
   }
 
-  // B/C 段:卡片 + 來源 chip(讀 meta)
   function renderTransforms(elId, transforms, meta, direction) {
     const container = document.getElementById(elId);
     container.innerHTML = '';
@@ -631,7 +664,6 @@
       return;
     }
 
-    // meta 按 transform 分組
     const metaByTransform = {};
     (meta || []).forEach(m => {
       if (!metaByTransform[m.transform]) metaByTransform[m.transform] = [];
@@ -647,7 +679,6 @@
       const tip = td('TRANSFORM_TOOLTIP', tt) || {};
       const metaItems = metaByTransform[tt] || [];
 
-      // 來源 chip HTML
       let chipsHtml = '';
       if (metaItems.length) {
         const label = direction === 'in' ? tx('chipSourceLabel') : tx('chipFlowLabel');
@@ -692,7 +723,6 @@
     bindTooltips(container);
   }
 
-  // D 段:epilogue 樣式
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
     if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
@@ -716,17 +746,14 @@
     });
   }
 
-  // ── 總覽渲染：全部由 reportsByPalace 計算 + 固定查表，無逐盤生成 ──
   function uniq(arr) { return [...new Set(arr)]; }
   function palaceMainStars(p) { return reportsByPalace[p]?.composition?.main_stars || []; }
-  // 某宮「坐宮自化」的所有星(主星+輔星+雜星+煞星皆可能帶生年化,例:文曲化忌)
   function palaceSeatedTransforms(p) {
     const c = reportsByPalace[p]?.composition || {};
     const all = [
       ...(c.main_stars || []), ...(c.support_stars || []),
       ...(c.minor_stars || []), ...(c.sha_ji_stars || []),
     ];
-    // 兼容舊格式(字串無化)
     return all.filter(s => typeof s === 'object' && s && s.transform)
               .map(s => ({ star: s.star, transform: s.transform }));
   }
@@ -751,7 +778,6 @@
     const J = getLang() === 'en' ? ', ' : '、';
     const semi = getLang() === 'en' ? '; ' : '；';
 
-    // 1) 主角(命宮)
     const lifeStars = palaceMainStars('命宮');
     const kw = uniq(lifeStars.flatMap(s => (td('STAR_LEXICON', s.star) || {}).kw || []));
     const kwHtml = kw.length
@@ -774,7 +800,6 @@
       lifeStars.map(s => { const lx = td('STAR_LEXICON', s.star); return lx
         ? `<span class="sp">|</span><span class="tg">${escapeHtml(starLabel(s.star))}</span> ${escapeHtml(lx.kw.join('・'))}` : ''; }).join('');
 
-    // 2) 舞台三角(命三方) + B2 模板句
     const phr = {}; SAN_FANG.forEach(p => phr[p] = palacePhrase(p));
     const clauses = [];
     if (phr['財帛宮']) clauses.push(tx('stageWealthClause').replace('{x}', escapeHtml(phr['財帛宮'])));
@@ -797,7 +822,6 @@
     document.getElementById('ov-tri').innerHTML =
       node('命宮', true) + `<div class="base">${node('財帛宮', false)}${node('官祿宮', false)}</div>`;
 
-    // 3) 生年四化落點(掃所有坐宮自化星:主+輔+雜+煞)
     const birth = {};
     PALACE_ORDER.forEach(p => palaceSeatedTransforms(p).forEach(s => { birth[s.transform] = { palace: p, star: s.star }; }));
     document.getElementById('ov-birth').innerHTML = TRANSFORM_ORDER.map(t => {
@@ -810,7 +834,6 @@
       </div>`;
     }).join('');
 
-    // 4) 貴人(依六內六外分欄)
     const selfArr = [], extArr = [];
     PALACE_ORDER.forEach(p => {
       const allies = (reportsByPalace[p]?.composition?.support_stars || [])
@@ -832,20 +855,28 @@
     if (!allyHtml) allyHtml = `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('allyEmpty'))}</div>`;
     document.getElementById('ov-ally').innerHTML = allyHtml;
 
-    // 5) 後盾(飛入祿權科，依合計排序)
-    const feed = PALACE_ORDER.map(p => {
-      const meta = reportsByPalace[p]?.transforms_in_meta || [];
-      let lu = 0, quan = 0, ke = 0;
-      meta.forEach(m => { if (m.transform === '化祿') lu++; else if (m.transform === '化權') quan++; else if (m.transform === '化科') ke++; });
-      return { p, lu, quan, ke, sum: lu + quan + ke };
-    }).filter(x => x.sum > 0).sort((a, b) => b.sum - a.sum);
-    document.getElementById('ov-feed').innerHTML = feed.map(f => {
-      let pills = '';
-      if (f.lu) pills += `<span class="feed-pill lu">${escapeHtml(tx('feedLu'))} <b>${f.lu}</b></span>`;
-      if (f.quan) pills += `<span class="feed-pill quan">${escapeHtml(tx('feedQuan'))} <b>${f.quan}</b></span>`;
-      if (f.ke) pills += `<span class="feed-pill ke">${escapeHtml(tx('feedKe'))} <b>${f.ke}</b></span>`;
-      return `<div class="feed-line"><div class="feed-palace">${escapeHtml(palaceLabel(f.p))}</div><div class="feed-pills">${pills}</div><div class="feed-sum">${escapeHtml(tx('feedSumLabel'))} <b>${f.sum}</b></div></div>`;
-    }).join('') || `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('feedEmpty'))}</div>`;
+    // 後盾（飛入祿權科）— 讀付費欄 transforms_in_meta
+    // 未解鎖時該欄為 null，改顯示小提示導向 pricing
+    if (!isUnlocked) {
+      document.getElementById('ov-feed').innerHTML =
+        `<div class="ov-locked-hint">這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。<span class="ov-locked-link" id="ov-feed-unlock">查看方案 →</span></div>`;
+      const lk = document.getElementById('ov-feed-unlock');
+      if (lk) lk.addEventListener('click', goPricing);
+    } else {
+      const feed = PALACE_ORDER.map(p => {
+        const meta = reportsByPalace[p]?.transforms_in_meta || [];
+        let lu = 0, quan = 0, ke = 0;
+        meta.forEach(m => { if (m.transform === '化祿') lu++; else if (m.transform === '化權') quan++; else if (m.transform === '化科') ke++; });
+        return { p, lu, quan, ke, sum: lu + quan + ke };
+      }).filter(x => x.sum > 0).sort((a, b) => b.sum - a.sum);
+      document.getElementById('ov-feed').innerHTML = feed.map(f => {
+        let pills = '';
+        if (f.lu) pills += `<span class="feed-pill lu">${escapeHtml(tx('feedLu'))} <b>${f.lu}</b></span>`;
+        if (f.quan) pills += `<span class="feed-pill quan">${escapeHtml(tx('feedQuan'))} <b>${f.quan}</b></span>`;
+        if (f.ke) pills += `<span class="feed-pill ke">${escapeHtml(tx('feedKe'))} <b>${f.ke}</b></span>`;
+        return `<div class="feed-line"><div class="feed-palace">${escapeHtml(palaceLabel(f.p))}</div><div class="feed-pills">${pills}</div><div class="feed-sum">${escapeHtml(tx('feedSumLabel'))} <b>${f.sum}</b></div></div>`;
+      }).join('') || `<div style="font-family:var(--font-serif-zh);color:var(--ink-light);font-style:italic;padding:8px 0;">${escapeHtml(tx('feedEmpty'))}</div>`;
+    }
 
     bindPalaceLinks(document.getElementById('view-overview'));
   }
@@ -853,12 +884,22 @@
   async function init() {
     try {
       const session = await requireAuth();
-      if (!session) return; // requireAuth 已導向 login.html
+      if (!session) return;
 
-      await initI18n(session); // 解析語言 + 載入 glossary（後續渲染走 tx()/*Label()）
+      await initI18n(session);
       applyStaticI18n();
 
       const userEmail = session.user.email;
+
+      // 付費狀態：讀 sihua_unlocked（撈不到視為未解鎖）
+      try {
+        const { data: prof } = await supabase
+          .from('user_profiles')
+          .select('sihua_unlocked')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        isUnlocked = !!(prof && prof.sihua_unlocked === true);
+      } catch (_) { isUnlocked = false; }
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
