@@ -505,7 +505,26 @@
         cancelMsg.textContent = '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。';
         return;
       }
-      if (!confirm('確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n你隨時可以回到流月頁面重新開通。')) return;
+
+      // 判斷是否為「買斷且未到期」者 → 給專屬提示（不退費、權限保留、可重開）
+      const expiresAt = p.monthly_access_expires_at ? new Date(p.monthly_access_expires_at) : null;
+      const isPrepaidActive = expiresAt && expiresAt.getTime() > Date.now();
+
+      let confirmMsg;
+      if (isPrepaidActive) {
+        const y = expiresAt.getFullYear();
+        const m = String(expiresAt.getMonth() + 1).padStart(2, '0');
+        const d = String(expiresAt.getDate()).padStart(2, '0');
+        confirmMsg =
+          '你的流月權限為買斷方案，有效至 ' + y + '/' + m + '/' + d + '。\n\n' +
+          '取消寄送不會退費，你的權限仍然保留——隨時可回到流月頁面重新開通、繼續收取報告，直到期限為止。\n\n' +
+          '確定要暫停月報寄送嗎？';
+      } else {
+        confirmMsg =
+          '確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n' +
+          '你隨時可以回到流月頁面重新開通。';
+      }
+      if (!confirm(confirmMsg)) return;
 
       cancelLink.style.pointerEvents = 'none';
       const { error } = await supabase
