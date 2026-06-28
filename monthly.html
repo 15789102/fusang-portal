@@ -422,10 +422,11 @@
     .sec-lock { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 22px 24px; background: var(--bg-soft-2); border: 1px dashed var(--gold-soft, #c9ab7d); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); letter-spacing: 0.04em; }
     .sec-lock-icon { font-size: 16px; color: var(--gold, #b8945c); }
 
-    /* ── 收報日選擇（開通流程必填）── */
-    .report-day-panel { margin: 32px 0 8px; padding: 26px 30px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; position: relative; overflow: hidden; }
-    .report-day-panel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
-    .report-day-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 14px; }
+    /* ── 收報日選擇（開通流程必填，視覺與「選填」個人化 panel 區隔）── */
+    .report-day-panel { margin: 32px 0 8px; padding: 26px 30px 28px; background: var(--bg-card); border: 1.5px solid var(--accent-deep); border-radius: 2px; position: relative; overflow: hidden; box-shadow: 0 2px 12px rgba(21,54,58,0.06); }
+    .report-day-panel::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--accent-deep); }
+    .report-day-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-deep); margin-bottom: 14px; font-weight: 500; }
+    .report-day-label::after { content: ' · 必填'; font-family: var(--font-serif-zh); font-style: normal; font-size: 11px; color: var(--t-ji); letter-spacing: 0.1em; }
     .report-day-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     .report-day-row .rd-pretext { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-dark); letter-spacing: 0.03em; }
     .report-day-select {
@@ -501,7 +502,7 @@
           
           <!-- 收報日選擇（必填，開通時寫入 preferred_report_day）-->
           <div class="report-day-panel">
-            <div class="report-day-label">Delivery Day · 收報日設定（必填）</div>
+            <div class="report-day-label">Delivery Day · 收報日設定</div>
             <div class="report-day-row">
               <span class="rd-pretext">每月</span>
               <select id="report-day-select" class="report-day-select unset">
