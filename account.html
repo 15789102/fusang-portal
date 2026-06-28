@@ -109,6 +109,48 @@
     font-family: var(--font-serif-zh); color: var(--ink-light);
     font-size: 15px; letter-spacing: 0.08em;
   }
+
+  /* ── 月報設定卡 ── */
+  .rd-current { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rd-current-day { font-family: var(--font-serif-zh); font-size: 18px; color: var(--ink-darkest); font-weight: 500; letter-spacing: 0.04em; }
+  .rd-pending-note { font-family: var(--font-serif-zh); font-size: 13px; color: var(--gold); letter-spacing: 0.03em; }
+  .rd-edit-link {
+    font-family: var(--font-serif-zh); font-size: 13px; letter-spacing: 0.06em; color: var(--accent-deep);
+    cursor: pointer; border-bottom: 1px solid var(--accent-soft); transition: color 0.2s;
+  }
+  .rd-edit-link:hover { color: #1d4448; }
+  .rd-edit-box { display: none; margin-top: 14px; }
+  .rd-edit-box.show { display: block; }
+  .rd-edit-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .rd-edit-row .rd-pre { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); letter-spacing: 0.03em; }
+  .rd-select {
+    font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest);
+    padding: 9px 13px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
+    letter-spacing: 0.04em; cursor: pointer; min-width: 90px;
+  }
+  .rd-select:focus { outline: none; border-color: var(--accent-soft); }
+  .rd-save-btn {
+    font-family: var(--font-serif-zh); font-size: 14px; letter-spacing: 0.06em;
+    color: var(--bg-card); background: var(--accent-deep); padding: 9px 20px; border-radius: 3px;
+    cursor: pointer; border: none; transition: background 0.2s;
+  }
+  .rd-save-btn:hover:not(:disabled) { background: #1d4448; }
+  .rd-save-btn:disabled { opacity: 0.5; cursor: default; }
+  .rd-saved-msg { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--t-lu); letter-spacing: 0.03em; display: none; }
+  .rd-saved-msg.show { display: block; }
+  .rd-utc-hint { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-light); line-height: 1.6; letter-spacing: 0.02em; }
+
+  /* 取消月報 */
+  .rd-cancel-row { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule-soft-2); }
+  .rd-cancel-link {
+    font-family: var(--font-serif-zh); font-size: 13px; letter-spacing: 0.05em; color: var(--ink-light);
+    cursor: pointer; transition: color 0.2s;
+  }
+  .rd-cancel-link:hover { color: var(--t-ji); }
+  .rd-cancel-msg { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; letter-spacing: 0.02em; display: none; }
+  .rd-cancel-msg.show { display: block; }
+  .rd-cancel-msg.err { color: var(--t-ji); }
+  .rd-cancel-msg.ok { color: var(--ink-mid); }
 </style>
 </head>
 <body>
@@ -166,7 +208,7 @@
         </div>
       </div>
 
-      <!-- 購買狀況 -->
+<!-- 購買狀況 -->
       <div class="acc-card">
         <div class="acc-card-label">Plan · 購買狀況</div>
         <div class="acc-row">
@@ -178,7 +220,38 @@
           <span class="acc-row-val" id="acc-monthly-status">—</span>
         </div>
       </div>
-      
+
+      <!-- 月報設定(僅已開通收報日者顯示) -->
+      <div class="acc-card" id="acc-report-day-card" style="display:none;">
+        <div class="acc-card-label">Delivery · 月報寄送設定</div>
+        <div class="acc-row" style="border-bottom:none;">
+          <span class="acc-row-key">每月收報日</span>
+          <span class="acc-row-val">
+            <span class="rd-current">
+              <span class="rd-current-day" id="rd-current-day">—</span>
+              <span class="rd-edit-link" id="rd-edit-link">更改</span>
+            </span>
+          </span>
+        </div>
+        <div id="rd-pending-row" class="rd-pending-note" style="display:none; padding:0 0 12px;"></div>
+
+        <div class="rd-edit-box" id="rd-edit-box">
+          <div class="rd-edit-row">
+            <span class="rd-pre">改為每月</span>
+            <select id="rd-select" class="rd-select"></select>
+            <span class="rd-pre">號</span>
+            <button class="rd-save-btn" id="rd-save-btn">儲存</button>
+          </div>
+          <div class="rd-saved-msg" id="rd-saved-msg">已更新，將於下個月生效。</div>
+          <div class="rd-utc-hint">日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。</div>
+        </div>
+
+        <div class="rd-cancel-row">
+          <span class="rd-cancel-link" id="rd-cancel-link">取消月報寄送</span>
+          <div class="rd-cancel-msg" id="rd-cancel-msg"></div>
+        </div>
+      </div>
+
 
       <!-- 訂閱管理(僅付費者顯示) -->
       <div class="acc-card" id="acc-billing-card" style="display:none;">
@@ -274,11 +347,11 @@
       document.getElementById('acc-session').textContent = '尚未生成';
     }
 
-     // ── 購買狀況 + 訂閱管理(一次查齊)──
+    // ── 購買狀況 + 訂閱管理 + 月報設定(一次查齊)──
     try {
       const { data: billing } = await supabase
         .from('user_profiles')
-        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id')
+        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
         .eq('id', userId)
         .maybeSingle();
       renderPlanStatus(billing);
@@ -286,6 +359,8 @@
         document.getElementById('acc-billing-card').style.display = 'block';
         document.getElementById('acc-portal').addEventListener('click', openPortal);
       }
+      // 月報設定卡（僅已開通收報日者顯示）
+      renderReportDayCard(billing, userId);
     } catch (_) {
       renderPlanStatus(null);
     }
@@ -341,6 +416,106 @@
       // subscribed=true 但無 status 無日期的保底
       monthlyEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>已訂閱</span>';
     }
+  }
+
+// ── 月報設定卡：渲染 + 改日期(寫 pending) + 取消(清 preferred_report_day) ──
+  function renderReportDayCard(p, userId) {
+    const card = document.getElementById('acc-report-day-card');
+    // 未開通收報日（preferred_report_day 為 NULL）→ 不顯示此卡
+    if (!p || p.preferred_report_day == null) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const curDay = p.preferred_report_day;
+    const pending = p.preferred_report_day_pending;
+
+    // 顯示目前收報日
+    document.getElementById('rd-current-day').textContent = curDay + ' 號（UTC）';
+
+    // pending 提示
+    const pendRow = document.getElementById('rd-pending-row');
+    if (pending != null) {
+      pendRow.style.display = 'block';
+      pendRow.textContent = '＊下期起將改為每月 ' + pending + ' 號';
+    } else {
+      pendRow.style.display = 'none';
+    }
+
+    // 填充下拉 1–15（預設選目前值）
+    const sel = document.getElementById('rd-select');
+    sel.innerHTML = '';
+    for (let d = 1; d <= 15; d++) {
+      const opt = document.createElement('option');
+      opt.value = String(d);
+      opt.textContent = d;
+      if (d === (pending != null ? pending : curDay)) opt.selected = true;
+      sel.appendChild(opt);
+    }
+
+    // 「更改」展開/收合
+    const editLink = document.getElementById('rd-edit-link');
+    const editBox = document.getElementById('rd-edit-box');
+    editLink.addEventListener('click', () => {
+      editBox.classList.toggle('show');
+    });
+
+    // 儲存 → 寫 preferred_report_day_pending
+    const saveBtn = document.getElementById('rd-save-btn');
+    saveBtn.addEventListener('click', async () => {
+      const newDay = Number(sel.value);
+      if (!newDay || newDay < 1 || newDay > 15) return;
+      saveBtn.disabled = true;
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ preferred_report_day_pending: newDay })
+        .eq('id', userId);
+      saveBtn.disabled = false;
+      const savedMsg = document.getElementById('rd-saved-msg');
+      if (error) {
+        savedMsg.textContent = '儲存失敗：' + error.message;
+        savedMsg.style.color = 'var(--t-ji)';
+        savedMsg.classList.add('show');
+        return;
+      }
+      savedMsg.textContent = '已更新，將於下個月生效。';
+      savedMsg.style.color = 'var(--t-lu)';
+      savedMsg.classList.add('show');
+      // 更新 pending 提示
+      pendRow.style.display = 'block';
+      pendRow.textContent = '＊下期起將改為每月 ' + newDay + ' 號';
+    });
+
+    // 取消月報寄送 → 先檢測付費狀態
+    const cancelLink = document.getElementById('rd-cancel-link');
+    const cancelMsg = document.getElementById('rd-cancel-msg');
+    cancelLink.addEventListener('click', async () => {
+      // gating：有 active/trialing 月訂閱 → 擋，要先去 Portal 取消付費
+      const st = p.subscription_status;
+      if (st === 'active' || st === 'trialing') {
+        cancelMsg.className = 'rd-cancel-msg show err';
+        cancelMsg.textContent = '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。';
+        return;
+      }
+      if (!confirm('確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n你隨時可以回到流月頁面重新開通。')) return;
+
+      cancelLink.style.pointerEvents = 'none';
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ preferred_report_day: null, preferred_report_day_pending: null })
+        .eq('id', userId);
+      if (error) {
+        cancelLink.style.pointerEvents = 'auto';
+        cancelMsg.className = 'rd-cancel-msg show err';
+        cancelMsg.textContent = '取消失敗：' + error.message;
+        return;
+      }
+      cancelMsg.className = 'rd-cancel-msg show ok';
+      cancelMsg.textContent = '已取消月報寄送。你隨時可以回到流月頁面重新開通。';
+      // 隱藏編輯/更改入口
+      document.getElementById('rd-edit-link').style.display = 'none';
+      document.getElementById('rd-edit-box').classList.remove('show');
+      document.getElementById('rd-current-day').textContent = '已取消';
+      pendRow.style.display = 'none';
+    });
   }
 
   async function openPortal() {
