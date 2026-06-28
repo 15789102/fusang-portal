@@ -71,6 +71,17 @@
   .acc-row-val.muted { color: var(--ink-light); font-style: italic; }
   .acc-row-val code { font-family: 'Courier New', monospace; font-size: 13px; color: var(--ink-dark); }
 
+  /* 購買狀況徽章 */
+  .acc-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
+    padding: 4px 12px; border-radius: 100px; white-space: nowrap;
+  }
+  .acc-badge.on { color: var(--t-lu); background: rgba(122,138,57,0.1); }
+  .acc-badge.off { color: var(--ink-light); background: var(--rule-soft-2); }
+  .acc-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  
+
   /* security */
   .acc-sec-desc {
     font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8;
@@ -154,6 +165,20 @@
           <span class="acc-row-val"><code id="acc-session">—</code></span>
         </div>
       </div>
+
+      <!-- 購買狀況 -->
+      <div class="acc-card">
+        <div class="acc-card-label">Plan · 購買狀況</div>
+        <div class="acc-row">
+          <span class="acc-row-key">本命四化解鎖</span>
+          <span class="acc-row-val" id="acc-sihua-status">—</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-row-key">月報訂閱</span>
+          <span class="acc-row-val" id="acc-monthly-status">—</span>
+        </div>
+      </div>
+      
 
       <!-- 訂閱管理(僅付費者顯示) -->
       <div class="acc-card" id="acc-billing-card" style="display:none;">
@@ -249,18 +274,21 @@
       document.getElementById('acc-session').textContent = '尚未生成';
     }
 
-    // ── 訂閱管理(有 stripe_customer_id 才顯示)──
+     // ── 購買狀況 + 訂閱管理(一次查齊)──
     try {
       const { data: billing } = await supabase
         .from('user_profiles')
-        .select('stripe_customer_id')
+        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id')
         .eq('id', userId)
         .maybeSingle();
+      renderPlanStatus(billing);
       if (billing && billing.stripe_customer_id) {
         document.getElementById('acc-billing-card').style.display = 'block';
         document.getElementById('acc-portal').addEventListener('click', openPortal);
       }
-    } catch (_) {}
+    } catch (_) {
+      renderPlanStatus(null);
+    }
 
     // ── 重設密碼 ──
     document.getElementById('acc-reset').addEventListener('click', () => sendReset(email));
@@ -275,6 +303,44 @@
       el.textContent = text;
       el.classList.add('muted');
     });
+  }
+  function fmtDate(ts) {
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}/${m}/${day}`;
+  }
+
+  function renderPlanStatus(p) {
+    const sihuaEl = document.getElementById('acc-sihua-status');
+    const monthlyEl = document.getElementById('acc-monthly-status');
+
+    // 1. 本命四化解鎖
+    if (p && p.sihua_unlocked === true) {
+      sihuaEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>已開通</span>';
+    } else {
+      sihuaEl.innerHTML = '<span class="acc-badge off"><span class="dot"></span>未開通</span>';
+    }
+
+    // 2. 月報訂閱(三來源:年方案買斷 / 月訂閱中 / 未訂閱)
+    const subscribed = !!(p && p.monthly_subscribed === true);
+    const status = p && p.subscription_status;
+    const expires = p && p.monthly_access_expires_at;
+
+    if (!subscribed) {
+      monthlyEl.innerHTML = '<span class="acc-badge off"><span class="dot"></span>尚未訂閱</span>';
+    } else if (status === 'active' || status === 'trialing') {
+      // 月訂閱:滾動續扣,到期日於 Stripe 管理頁查看
+      monthlyEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>訂閱中（每月自動續扣）</span>';
+    } else if (expires) {
+      // 年方案買斷:顯示有效期限
+      monthlyEl.innerHTML =
+        '<span class="acc-badge on"><span class="dot"></span>有效至 ' + fmtDate(expires) + '</span>';
+    } else {
+      // subscribed=true 但無 status 無日期的保底
+      monthlyEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>已訂閱</span>';
+    }
   }
 
   async function openPortal() {
