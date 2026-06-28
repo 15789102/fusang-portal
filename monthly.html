@@ -422,6 +422,23 @@
     .sec-lock { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 22px 24px; background: var(--bg-soft-2); border: 1px dashed var(--gold-soft, #c9ab7d); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); letter-spacing: 0.04em; }
     .sec-lock-icon { font-size: 16px; color: var(--gold, #b8945c); }
 
+    /* ── 收報日選擇（開通流程必填）── */
+    .report-day-panel { margin: 32px 0 8px; padding: 26px 30px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; position: relative; overflow: hidden; }
+    .report-day-panel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
+    .report-day-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 14px; }
+    .report-day-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .report-day-row .rd-pretext { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-dark); letter-spacing: 0.03em; }
+    .report-day-select {
+      font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest);
+      padding: 10px 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
+      letter-spacing: 0.04em; cursor: pointer; transition: border-color 0.2s; min-width: 96px;
+    }
+    .report-day-select:focus { outline: none; border-color: var(--accent-soft); }
+    .report-day-select.unset { color: var(--ink-light); font-style: italic; }
+    .report-day-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
+    .report-day-note .rd-utc { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.6; }
+    .report-day-note strong { color: var(--ink-darkest); font-weight: 600; }
+
   </style>
 </head>
 <body>
@@ -482,8 +499,24 @@
             </div>
           </div>
           
+          <!-- 收報日選擇（必填，開通時寫入 preferred_report_day）-->
+          <div class="report-day-panel">
+            <div class="report-day-label">Delivery Day · 收報日設定（必填）</div>
+            <div class="report-day-row">
+              <span class="rd-pretext">每月</span>
+              <select id="report-day-select" class="report-day-select unset">
+                <option value="">— 選擇日期 —</option>
+              </select>
+              <span class="rd-pretext">號收到下一期流月</span>
+            </div>
+            <div class="report-day-note">
+              開通後立即為你生成<strong>本月與下個月</strong>；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。
+              <span class="rd-utc">日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>
+            </div>
+          </div>
+
           <div class="intro-cta-wrap">
-            <button id="intro-subscribe-btn" class="intro-cta">開始閱讀我的流月</button>
+            <button id="intro-subscribe-btn" class="intro-cta" disabled>開始閱讀我的流月</button>
             <div class="intro-cta-note">為你生成本月與下個月，約需數分鐘</div>
           </div>
         </div>
@@ -806,6 +839,7 @@
   let userEmail = null;           // 登入用戶 email（訂閱觸發用）
   let pollTimer = null;           // 生成中輪詢計時器
   let monthlyPlan = null;         // 訂閱計畫 { targets:[{target_year,target_month}], fired:Number }；依序發 month1→month2、重整續跑
+  let preferredReportDay = null;  // 收報日（enrollment signal；NULL = 未訂閱/已取消）
 
   function showView(id) {
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
@@ -1627,12 +1661,37 @@
     }
   }
 
-  // 訂閱：本月＋下月「依序」生成 —— 先只發 month1，month1 done 後由輪詢補發 month2
+  // 訂閱：先寫入收報日(preferred_report_day)，成功後本月＋下月「依序」生成
   async function subscribeMonthly() {
     const btn = document.getElementById('intro-subscribe-btn');
+    const sel = document.getElementById('report-day-select');
+    const day = sel ? Number(sel.value) : NaN;
+
+    // 收報日必填驗證（1–15）
+    if (!day || day < 1 || day > 15) {
+      alert('請先選擇每月收到流月的日期。');
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = '正在為你開始…';
 
+    // 1. 先寫入 preferred_report_day（enrollment signal）。寫成功才往下，避免「生成了但排程不推進」
+    const { data: { session } } = await supabase.auth.getSession();
+    const { error: dayErr } = await supabase
+      .from('user_profiles')
+      .update({ preferred_report_day: day, preferred_report_day_pending: null })
+      .eq('id', session.user.id);
+
+    if (dayErr) {
+      alert('開通失敗：無法儲存收報日（' + dayErr.message + '），請稍後再試。');
+      btn.disabled = false;
+      btn.textContent = '開始閱讀我的流月';
+      return;
+    }
+    preferredReportDay = day;   // 同步模組狀態
+
+    // 2. 算本月＋下月農曆 target
     const now = new Date();
     const sy = now.getFullYear(), sm = now.getMonth() + 1;
     const targets = [
@@ -1717,13 +1776,14 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      // 1.5 讀付費牆解鎖狀態（gate = monthly_subscribed；與 ctxLoadTier 各自獨立）
+      // 1.5 讀付費牆解鎖狀態 + 收報日開通狀態（gate = monthly_subscribed；enrollment = preferred_report_day）
       try {
         const { data: prof } = await supabase
-          .from('user_profiles').select('monthly_subscribed')
+          .from('user_profiles').select('monthly_subscribed, preferred_report_day')
           .eq('id', session.user.id).maybeSingle();
         isUnlocked = !!(prof && prof.monthly_subscribed === true);
-      } catch (_) { isUnlocked = false; }
+        preferredReportDay = (prof && prof.preferred_report_day != null) ? prof.preferred_report_day : null;
+      } catch (_) { isUnlocked = false; preferredReportDay = null; }
 
       // context 面板初始化（需 userEmail + chartSessionId 已就緒）
       await ctxInit();
@@ -1747,8 +1807,18 @@
         return;
       }
 
+      // ── (C) 三態判斷：enrollment = preferred_report_day ──
+      // preferred_report_day 為 NULL → 全新未訂閱 或 已取消 → 一律顯示開通 CTA（含收報日收集）
+      if (preferredReportDay == null) {
+        document.getElementById('intro-pitch').style.display = 'block';
+        document.getElementById('intro-generating').style.display = 'none';
+        showView('view-intro');
+        return;
+      }
+
+      // preferred_report_day 有值 = 訂閱中
       if (jobs.length === 0) {
-        // 未訂閱 → 介紹頁
+        // 有開通但尚無 job（異常/剛開通未生成）→ 顯示介紹頁等待
         document.getElementById('intro-pitch').style.display = 'block';
         document.getElementById('intro-generating').style.display = 'none';
         showView('view-intro');
@@ -2013,7 +2083,25 @@
   }
   
   
-  
+
+  // 收報日下拉填充 1–15 + 選擇後啟用 CTA（必填 gate）
+  (function initReportDaySelect() {
+    const sel = document.getElementById('report-day-select');
+    const btn = document.getElementById('intro-subscribe-btn');
+    if (!sel || !btn) return;
+    for (let d = 1; d <= 15; d++) {
+      const opt = document.createElement('option');
+      opt.value = String(d);
+      opt.textContent = d + ' 號';
+      sel.appendChild(opt);
+    }
+    sel.addEventListener('change', () => {
+      const ok = sel.value !== '';
+      btn.disabled = !ok;
+      sel.classList.toggle('unset', !ok);
+    });
+  })();
+
   document.getElementById('intro-subscribe-btn').addEventListener('click', subscribeMonthly);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
