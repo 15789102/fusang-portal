@@ -450,10 +450,21 @@
 <script type="module">
   import { supabase, getSession } from './components.js';
 
-  // 已登入直接跳 dashboard
+  // ── 登入後分流：admin → admin-dashboard.html；其餘 → dashboard.html ──
+  // admin_check RPC 失敗時保守導向 dashboard.html（admin 頁本身仍有後端把關）
+  async function routeAfterAuth() {
+    let target = 'dashboard.html';
+    try {
+      const { data: isAdmin, error } = await supabase.rpc('admin_check');
+      if (!error && isAdmin === true) target = 'admin-dashboard.html';
+    } catch (_) {}
+    window.location.href = target;
+  }
+
+  // 已登入直接分流
   (async () => {
     const session = await getSession();
-    if (session) window.location.href = 'dashboard.html';
+    if (session) await routeAfterAuth();
   })();
 
   const form = document.getElementById('login-form');
@@ -509,7 +520,7 @@
     }
 
     if (data?.session) {
-      window.location.href = 'dashboard.html';
+      await routeAfterAuth();
     } else {
       showError('登入失敗,請稍後再試');
       setLoading(false);
