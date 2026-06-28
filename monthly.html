@@ -418,6 +418,9 @@
     .paywall-cta { display: inline-block; padding: 16px 48px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.25s; border-radius: 2px; }
     .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
     .paywall-note { margin-top: 18px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.04em; }
+    /* 各段輕量鎖佔位 */
+    .sec-lock { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 22px 24px; background: var(--bg-soft-2); border: 1px dashed var(--gold-soft, #c9ab7d); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); letter-spacing: 0.04em; }
+    .sec-lock-icon { font-size: 16px; color: var(--gold, #b8945c); }
 
   </style>
 </head>
@@ -594,7 +597,6 @@
       </section>
 
       <!-- 付費牆掛載點（未解鎖時取代 02/03/04）-->
-      <div id="detail-locked-wrap"></div>
 
       <section class="section" id="sec-02">
         <div class="section-head">
@@ -609,6 +611,7 @@
           <div><strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。</div>
         </div>
         <div id="detail-transforms-in" class="transform-blocks"></div>
+        <div id="lock-02" class="seclock" style="display:none;"></div>
       </section>
 
       <section class="section" id="sec-03">
@@ -624,6 +627,7 @@
           <div><strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。</div>
         </div>
         <div id="detail-transforms-out" class="transform-blocks"></div>
+        <div id="lock-03" class="seclock" style="display:none;"></div>
       </section>
 
       <section class="section" id="sec-04">
@@ -635,8 +639,13 @@
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
+        <div id="lock-04" class="seclock" style="display:none;"></div>
       </section>
 
+      <!-- 底部單一 CTA（在追蹤議題之前，維持免費內容在最後）-->
+      <div id="detail-paywall-cta"></div>
+
+    
       <section class="section" id="detail-personal-section" style="display:none;">
         <div class="section-head">
           <div class="section-num">✦</div>
@@ -1225,8 +1234,13 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  // 各段輕量鎖（未解鎖時放在 02/03/04 內容區位置）
+  function secLockHtml() {
+    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> 解鎖後可見</div>`;
+  }
+
   // 付費牆 HTML（未解鎖時取代 02/03/04 三段）
-  function paywallHtml() {
+  function paywallCtaHtml() {
     return `
       <div class="paywall">
         <div class="paywall-lock" aria-hidden="true">&#128274;</div>
@@ -1259,27 +1273,36 @@
     renderComposition(row.composition);
     renderAnalysis(row.palace_analysis);
 
-    // ── 付費牆：未解鎖時隱藏 02/03/04、掛牆；解鎖則照原邏輯 ──
-    const lockedWrap = document.getElementById('detail-locked-wrap');
-    const sec02 = document.getElementById('sec-02');
-    const sec03 = document.getElementById('sec-03');
-    const sec04 = document.getElementById('sec-04');
+    // ── 付費牆（丙方案）：02/03/04 標題+explainer 保留；未解鎖時內容換輕量鎖、底部放單一 CTA ──
+    const ctaHost = document.getElementById('detail-paywall-cta');
+    const locks = ['02','03','04'].map(n => document.getElementById('lock-' + n));
+    const contents = [
+      document.getElementById('detail-transforms-in'),
+      document.getElementById('detail-transforms-out'),
+      document.getElementById('detail-suggestion-wrap'),
+    ];
+
     if (isUnlocked) {
-      lockedWrap.innerHTML = '';
-      sec02.style.display = ''; sec03.style.display = ''; sec04.style.display = '';
+      locks.forEach(l => { if (l) { l.innerHTML = ''; l.style.display = 'none'; } });
+      if (ctaHost) ctaHost.innerHTML = '';
+      contents.forEach(c => { if (c) c.style.display = ''; });
       renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
       renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
       renderSuggestion(row.suggestion);
     } else {
-      sec02.style.display = 'none'; sec03.style.display = 'none'; sec04.style.display = 'none';
-      lockedWrap.innerHTML = paywallHtml();
-      const cta = document.getElementById('paywall-cta');
-      if (cta) cta.addEventListener('click', goPricing);
+      contents.forEach(c => { if (c) { c.innerHTML = ''; c.style.display = 'none'; } });
+      locks.forEach(l => { if (l) { l.innerHTML = secLockHtml(); l.style.display = 'block'; } });
+      if (ctaHost) {
+        ctaHost.innerHTML = paywallCtaHtml();
+        const cta = document.getElementById('paywall-cta');
+        if (cta) cta.addEventListener('click', goPricing);
+      }
     }
 
     // 追蹤議題解析為免費，無論解鎖與否都呼叫：
     renderPersonalSuggestion(row.suggestion_personal);
 
+    
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
     const prevEl = document.getElementById('nav-prev');
