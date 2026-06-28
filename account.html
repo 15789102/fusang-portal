@@ -155,6 +155,16 @@
         </div>
       </div>
 
+      <!-- 訂閱管理(僅付費者顯示) -->
+      <div class="acc-card" id="acc-billing-card" style="display:none;">
+        <div class="acc-card-label">Subscription · 訂閱管理</div>
+        <div class="acc-sec-desc">
+          管理您的訂閱、付款方式與發票紀錄。點擊下方按鈕前往安全的 Stripe 管理頁面。
+        </div>
+        <span class="acc-btn" id="acc-portal">管理訂閱</span>
+        <div class="acc-msg" id="acc-portal-msg"></div>
+      </div>
+
       <!-- 安全性 -->
       <div class="acc-card">
         <div class="acc-card-label">Security · 安全性</div>
@@ -239,6 +249,19 @@
       document.getElementById('acc-session').textContent = '尚未生成';
     }
 
+    // ── 訂閱管理(有 stripe_customer_id 才顯示)──
+    try {
+      const { data: billing } = await supabase
+        .from('user_profiles')
+        .select('stripe_customer_id')
+        .eq('id', userId)
+        .maybeSingle();
+      if (billing && billing.stripe_customer_id) {
+        document.getElementById('acc-billing-card').style.display = 'block';
+        document.getElementById('acc-portal').addEventListener('click', openPortal);
+      }
+    } catch (_) {}
+
     // ── 重設密碼 ──
     document.getElementById('acc-reset').addEventListener('click', () => sendReset(email));
 
@@ -252,6 +275,35 @@
       el.textContent = text;
       el.classList.add('muted');
     });
+  }
+
+  async function openPortal() {
+    const btn = document.getElementById('acc-portal');
+    const msg = document.getElementById('acc-portal-msg');
+    btn.disabled = true;
+    btn.textContent = '前往中…';
+    msg.className = 'acc-msg';
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        'https://vrquktgjawayuioglqfn.supabase.co/functions/v1/create-portal-session',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + session.access_token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || '無法開啟管理頁面');
+      window.location.href = data.url;
+    } catch (err) {
+      msg.textContent = '無法開啟訂閱管理：' + (err.message || '請稍後再試。');
+      msg.classList.add('show', 'err');
+      btn.disabled = false;
+      btn.textContent = '管理訂閱';
+    }
   }
 
   async function sendReset(email) {
