@@ -216,7 +216,7 @@
           <span class="acc-row-val" id="acc-sihua-status">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">月報訂閱</span>
+          <span class="acc-row-key">付費月報訂閱</span>
           <span class="acc-row-val" id="acc-monthly-status">—</span>
         </div>
       </div>
@@ -488,8 +488,18 @@
     const cancelLink = document.getElementById('rd-cancel-link');
     const cancelMsg = document.getElementById('rd-cancel-msg');
     cancelLink.addEventListener('click', async () => {
-      // gating：有 active/trialing 月訂閱 → 擋，要先去 Portal 取消付費
-      const st = p.subscription_status;
+      // gating：取消前即時重查最新付費狀態（避免頁面載入後在 Portal 取消付費、未重整造成的快照過期）
+      let st = p.subscription_status;
+      try {
+        const { data: fresh } = await supabase
+          .from('user_profiles')
+          .select('subscription_status')
+          .eq('id', userId)
+          .maybeSingle();
+        if (fresh) st = fresh.subscription_status;
+      } catch (_) { /* 重查失敗則沿用載入時的快照 */ }
+
+      // 有 active/trialing 月訂閱 → 擋，要先去 Portal 取消付費
       if (st === 'active' || st === 'trialing') {
         cancelMsg.className = 'rd-cancel-msg show err';
         cancelMsg.textContent = '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。';
