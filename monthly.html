@@ -405,6 +405,19 @@
     .personal-prose p { margin-bottom: 1.5em; }
     .personal-prose p:last-child { margin-bottom: 0; }
 
+    /* ============ 付費牆（未解鎖時取代 02/03/04 三段）============ */
+    .paywall { margin-top: 8px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; text-align: center; position: relative; overflow: hidden; }
+    .paywall::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 48px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold, #b8945c), transparent); }
+    .paywall-lock { font-size: 30px; line-height: 1; margin-bottom: 18px; opacity: 0.85; }
+    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 10px; }
+    .paywall-title { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-darkest); margin-bottom: 28px; }
+    .paywall-list { display: flex; flex-direction: column; gap: 14px; max-width: 420px; margin: 0 auto 32px; text-align: left; }
+    .paywall-item { display: flex; align-items: baseline; gap: 14px; font-family: var(--font-serif-zh); font-size: 15px; line-height: 1.7; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--gold, #b8945c); min-width: 24px; }
+    .paywall-item b { color: var(--ink-darkest); font-weight: 600; }
+    .paywall-cta { display: inline-block; padding: 16px 48px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.25s; border-radius: 2px; }
+    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
+    .paywall-note { margin-top: 18px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.04em; }
 
   </style>
 </head>
@@ -580,7 +593,10 @@
         <div id="detail-analysis" class="prose"></div>
       </section>
 
-      <section class="section">
+      <!-- 付費牆掛載點（未解鎖時取代 02/03/04）-->
+      <div id="detail-locked-wrap"></div>
+
+      <section class="section" id="sec-02">
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
@@ -595,7 +611,7 @@
         <div id="detail-transforms-in" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-03">
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
@@ -610,7 +626,7 @@
         <div id="detail-transforms-out" class="transform-blocks"></div>
       </section>
 
-      <section class="section">
+      <section class="section" id="sec-04">
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
@@ -672,6 +688,12 @@
   // 'free'：可看 上月 / 本月 / 下月
   // 'paid'：可看 上月 / 本月 / 未來三月
   const userTier = 'paid';
+
+  // ── 付費牆：四化解鎖狀態（gate = monthly_subscribed）──
+  //   注意：與 ctxLoadTier() 各自獨立讀 monthly_subscribed，互不影響
+  let isUnlocked = false;
+  const PRICING_PAGE = 'pricing.html';
+  function goPricing() { window.location.href = PRICING_PAGE; }
 
   // overview 計分權重（化忌略加重、權科溫和加分）
   const SCORE_WEIGHT = {
@@ -1203,6 +1225,23 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  // 付費牆 HTML（未解鎖時取代 02/03/04 三段）
+  function paywallHtml() {
+    return `
+      <div class="paywall">
+        <div class="paywall-lock" aria-hidden="true">&#128274;</div>
+        <div class="paywall-eyebrow">Unlock Full Reading</div>
+        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-list">
+          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span><b>本月專屬建議</b></span></div>
+        </div>
+        <span class="paywall-cta" id="paywall-cta">查看方案</span>
+        <div class="paywall-note">已訂閱？回此頁重新整理即可顯示</div>
+      </div>`;
+  }
+
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
@@ -1219,9 +1258,26 @@
     renderStarsLine(row.composition);
     renderComposition(row.composition);
     renderAnalysis(row.palace_analysis);
-    renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
-    renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
-    renderSuggestion(row.suggestion);
+
+    // ── 付費牆：未解鎖時隱藏 02/03/04、掛牆；解鎖則照原邏輯 ──
+    const lockedWrap = document.getElementById('detail-locked-wrap');
+    const sec02 = document.getElementById('sec-02');
+    const sec03 = document.getElementById('sec-03');
+    const sec04 = document.getElementById('sec-04');
+    if (isUnlocked) {
+      lockedWrap.innerHTML = '';
+      sec02.style.display = ''; sec03.style.display = ''; sec04.style.display = '';
+      renderTransforms('detail-transforms-in', row.transforms_incoming, row.transforms_in_meta, 'in');
+      renderTransforms('detail-transforms-out', row.transforms_outgoing, row.transforms_out_meta, 'out');
+      renderSuggestion(row.suggestion);
+    } else {
+      sec02.style.display = 'none'; sec03.style.display = 'none'; sec04.style.display = 'none';
+      lockedWrap.innerHTML = paywallHtml();
+      const cta = document.getElementById('paywall-cta');
+      if (cta) cta.addEventListener('click', goPricing);
+    }
+
+    // 追蹤議題解析為免費，無論解鎖與否都呼叫：
     renderPersonalSuggestion(row.suggestion_personal);
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
@@ -1637,6 +1693,15 @@
       if (!jobData?.chart_session_id) { showError('您的命盤尚未完成，請稍候幾分鐘後再回來查看。'); return; }
 
       chartSessionId = jobData.chart_session_id;
+
+      // 1.5 讀付費牆解鎖狀態（gate = monthly_subscribed；與 ctxLoadTier 各自獨立）
+      try {
+        const { data: prof } = await supabase
+          .from('user_profiles').select('monthly_subscribed')
+          .eq('id', session.user.id).maybeSingle();
+        isUnlocked = !!(prof && prof.monthly_subscribed === true);
+      } catch (_) { isUnlocked = false; }
+
       // context 面板初始化（需 userEmail + chartSessionId 已就緒）
       await ctxInit();
       ctxBindHubToggle();
