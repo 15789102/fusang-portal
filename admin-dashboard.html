@@ -4,79 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>扶桑晨曦 · FuSang Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>扶桑晨曦 · 服務運作總覽</title>
 <style>
-  :root{
-    /* design tokens — admin console（獨立，不依賴 components.js 注入）*/
-    --bg:#F6F7F9;
-    --surface:#FFFFFF;
-    --ink:#1B1E27;
-    --muted:#6A7280;
-    --faint:#9AA1AC;
-    --hair:#E7E9ED;
-    --hair-strong:#D9DCE2;
+  /* ── A1 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
 
-    --dawn:#E26D5C;        /* 主強調：扶桑日出珊瑚 */
-    --dawn-soft:#FBEDE9;
-    --gold:#C2872B;        /* 次強調：晨光金（買斷）*/
-    --gold-soft:#FAF1DE;
-
-    --ok:#2E9E6B;   --ok-soft:#E6F4EC;
-    --fail:#D64545; --fail-soft:#FBE9E9;
-    --wait:#B7821C; --wait-soft:#FAF0DC;
-
-    --radius:12px;
-    --radius-sm:8px;
-    --shadow:0 1px 2px rgba(27,30,39,.04), 0 4px 16px rgba(27,30,39,.04);
-  }
-
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:"Inter","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    font-size:14px;line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-    font-feature-settings:"tnum" 1;
-  }
-  a{color:inherit;}
-  button{font-family:inherit;cursor:pointer;}
-
-  /* ---------- top bar ---------- */
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;gap:16px;
-    padding:14px 24px;
-    background:var(--surface);
-    border-bottom:1px solid var(--hair);
-    position:sticky;top:0;z-index:10;
-  }
-  .brand{display:flex;align-items:center;gap:11px;}
-  .mark{flex:0 0 auto;}
-  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
-  .brand-zh{font-weight:600;font-size:15px;letter-spacing:.04em;}
-  .brand-en{font-family:"Fraunces",serif;font-size:12px;color:var(--muted);letter-spacing:.02em;}
-  .topbar-right{display:flex;align-items:center;gap:18px;font-size:13px;}
-  .admin-email{color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .back-link{
-    color:var(--dawn);text-decoration:none;font-weight:500;
-    padding:6px 12px;border-radius:var(--radius-sm);
-    transition:background .15s ease;
-  }
-  .back-link:hover{background:var(--dawn-soft);}
-  .back-link:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
-
-  /* ---------- layout ---------- */
-  .wrap{max-width:1320px;margin:0 auto;padding:28px 24px 64px;}
-
-  .page-head{margin-bottom:22px;}
-  .page-title{font-family:"Fraunces",serif;font-weight:600;font-size:22px;margin:0 0 4px;letter-spacing:.01em;}
-  .page-sub{color:var(--muted);font-size:13px;margin:0;}
-
-  /* ---------- controls ---------- */
+  /* 控制列 */
   .controls{
     display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;
     background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
@@ -115,17 +47,13 @@
   .range-spacer{flex:1 1 auto;}
   .range-label{font-size:12px;color:var(--faint);align-self:flex-end;white-space:nowrap;}
 
-  /* ---------- summary cards ---------- */
-  .cards{
-    display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:26px;
-  }
+  /* 彙總卡 */
+  .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:26px;}
   .card{
     background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
     padding:16px 16px 15px;box-shadow:var(--shadow);position:relative;overflow:hidden;
   }
-  .card.is-primary::before{
-    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--dawn);
-  }
+  .card.is-primary::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--dawn);}
   .card-label{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.03em;margin-bottom:8px;}
   .card-num{
     font-family:"Fraunces",serif;font-weight:600;font-size:30px;line-height:1;
@@ -136,11 +64,10 @@
   .card-num.tone-gold{color:var(--gold);}
   .card-foot{font-size:11px;color:var(--faint);margin-top:6px;}
 
-  /* ---------- table ---------- */
+  /* 表格 */
   .table-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
   .table-title{font-size:14px;font-weight:600;}
   .table-count{font-size:12px;color:var(--muted);}
-
   .table-scroll{
     background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
     box-shadow:var(--shadow);overflow-x:auto;
@@ -161,19 +88,12 @@
   .dim{color:var(--faint);}
 
   /* badges */
-  .badge{
-    display:inline-flex;align-items:center;gap:5px;
-    padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.4;
-  }
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.4;}
   .badge .dot{width:6px;height:6px;border-radius:50%;}
-  .b-ok{background:var(--ok-soft);color:var(--ok);}
-  .b-ok .dot{background:var(--ok);}
-  .b-fail{background:var(--fail-soft);color:var(--fail);}
-  .b-fail .dot{background:var(--fail);}
-  .b-wait{background:var(--wait-soft);color:var(--wait);}
-  .b-wait .dot{background:var(--wait);}
-  .b-none{background:#F0F1F3;color:var(--faint);}
-  .b-none .dot{background:var(--faint);}
+  .b-ok{background:var(--ok-soft);color:var(--ok);} .b-ok .dot{background:var(--ok);}
+  .b-fail{background:var(--fail-soft);color:var(--fail);} .b-fail .dot{background:var(--fail);}
+  .b-wait{background:var(--wait-soft);color:var(--wait);} .b-wait .dot{background:var(--wait);}
+  .b-none{background:#F0F1F3;color:var(--faint);} .b-none .dot{background:var(--faint);}
 
   .tier{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600;}
   .tier-monthly{background:var(--dawn-soft);color:var(--dawn);}
@@ -182,189 +102,119 @@
 
   .check{color:var(--ok);font-weight:700;}
   .cross{color:var(--faint);}
-
   .job-cell{display:flex;align-items:center;gap:8px;}
   .job-layer{font-size:11px;color:var(--muted);min-width:30px;}
   .job-time{font-size:11px;color:var(--faint);}
 
-  /* ---------- states ---------- */
-  .state{
-    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
-    padding:48px 24px;text-align:center;color:var(--muted);box-shadow:var(--shadow);
-  }
-  .state-title{font-weight:600;color:var(--ink);margin-bottom:6px;}
-  .state.error{border-color:var(--fail);background:var(--fail-soft);color:var(--fail);}
-  .state.error .state-title{color:var(--fail);}
-
-  .spinner{
-    width:26px;height:26px;border:3px solid var(--hair-strong);border-top-color:var(--dawn);
-    border-radius:50%;margin:0 auto 14px;animation:spin .7s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  .hidden{display:none !important;}
-
-  @media (prefers-reduced-motion:reduce){
-    .spinner{animation:none;}
-    *{transition:none !important;}
-  }
-
   @media (max-width:1100px){ .cards{grid-template-columns:repeat(3,1fr);} }
-  @media (max-width:680px){
-    .cards{grid-template-columns:repeat(2,1fr);}
-    .wrap{padding:20px 14px 48px;}
-    .topbar{padding:12px 14px;}
-    .admin-email{display:none;}
-  }
+  @media (max-width:680px){ .cards{grid-template-columns:repeat(2,1fr);} }
 </style>
 </head>
 <body>
 
-  <!-- 極簡 admin chrome（不注入消費端 header）-->
-  <header class="topbar">
-    <div class="brand">
-      <svg class="mark" width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-        <!-- 扶桑日出：地平線上半輪日 + 微光 -->
-        <line x1="3" y1="22" x2="27" y2="22" stroke="#1B1E27" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M8 22a7 7 0 0 1 14 0" fill="#E26D5C"/>
-        <line x1="15" y1="6" x2="15" y2="9.5" stroke="#E26D5C" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="6.5" y1="9.5" x2="8.8" y2="11.8" stroke="#E26D5C" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="23.5" y1="9.5" x2="21.2" y2="11.8" stroke="#E26D5C" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <div class="brand-text">
-        <span class="brand-zh">扶桑晨曦</span>
-        <span class="brand-en">FuSang Admin</span>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <span class="admin-email" id="adminEmail"></span>
-      <a class="back-link" href="./index.html">回到主站</a>
-    </div>
-  </header>
-
-  <main class="wrap">
-
-    <!-- 載入中（admin 驗證前的整頁狀態）-->
-    <div id="bootState" class="state">
-      <div class="spinner"></div>
-      <div class="state-title">驗證權限中…</div>
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">服務運作總覽</h1>
+      <p class="fa-page-sub">A1 · 帳號狀態、訂閱分布與報告生成健康度（已排除 admin 帳號）</p>
     </div>
 
-    <!-- 主內容（驗證通過後顯示）-->
-    <div id="dashboard" class="hidden">
-      <div class="page-head">
-        <h1 class="page-title">服務運作總覽</h1>
-        <p class="page-sub">A1 · 帳號狀態、訂閱分布與報告生成健康度（已排除 admin 帳號）</p>
+    <!-- 時間區間控制 -->
+    <section class="controls">
+      <div class="field">
+        <label>快速區間</label>
+        <div class="presets" id="presets">
+          <button class="preset" data-days="7">近 7 天</button>
+          <button class="preset is-active" data-days="30">近 30 天</button>
+          <button class="preset" data-days="90">近 90 天</button>
+          <button class="preset" data-days="all">全部</button>
+        </div>
       </div>
-
-      <!-- 時間區間控制 -->
-      <section class="controls">
-        <div class="field">
-          <label>快速區間</label>
-          <div class="presets" id="presets">
-            <button class="preset" data-days="7">近 7 天</button>
-            <button class="preset is-active" data-days="30">近 30 天</button>
-            <button class="preset" data-days="90">近 90 天</button>
-            <button class="preset" data-days="all">全部</button>
-          </div>
-        </div>
-        <div class="field">
-          <label for="fromDate">起（含）</label>
-          <input type="date" id="fromDate" />
-        </div>
-        <div class="field">
-          <label for="toDate">迄（含）</label>
-          <input type="date" id="toDate" />
-        </div>
-        <button class="btn-apply" id="applyBtn">套用</button>
-        <button class="btn-ghost" id="refreshBtn">重新整理</button>
-        <span class="range-spacer"></span>
-        <span class="range-label" id="rangeLabel"></span>
-      </section>
-
-      <!-- 彙總卡 -->
-      <section class="cards" id="cards">
-        <div class="card is-primary">
-          <div class="card-label">帳號總數</div>
-          <div class="card-num" id="c_total">—</div>
-          <div class="card-foot">不含 admin</div>
-        </div>
-        <div class="card">
-          <div class="card-label">月訂閱</div>
-          <div class="card-num tone-dawn" id="c_monthly">—</div>
-          <div class="card-foot">active / trialing</div>
-        </div>
-        <div class="card">
-          <div class="card-label">買斷</div>
-          <div class="card-num tone-gold" id="c_buyout">—</div>
-          <div class="card-foot">未過期</div>
-        </div>
-        <div class="card">
-          <div class="card-label">免費</div>
-          <div class="card-num" id="c_free">—</div>
-          <div class="card-foot">無有效付費</div>
-        </div>
-        <div class="card">
-          <div class="card-label">四化解鎖</div>
-          <div class="card-num" id="c_sihua">—</div>
-          <div class="card-foot">sihua_unlocked</div>
-        </div>
-        <div class="card">
-          <div class="card-label">失敗 Job</div>
-          <div class="card-num tone-fail" id="c_failed">—</div>
-          <div class="card-foot">區間內</div>
-        </div>
-      </section>
-
-      <!-- 帳號表 -->
-      <div class="table-head">
-        <span class="table-title">帳號明細</span>
-        <span class="table-count" id="tableCount"></span>
+      <div class="field">
+        <label for="fromDate">起（含）</label>
+        <input type="date" id="fromDate" />
       </div>
-
-      <div id="tableState" class="state hidden">
-        <div class="spinner"></div>
-        <div class="state-title">讀取中…</div>
+      <div class="field">
+        <label for="toDate">迄（含）</label>
+        <input type="date" id="toDate" />
       </div>
+      <button class="btn-apply" id="applyBtn">套用</button>
+      <button class="btn-ghost" id="refreshBtn">重新整理</button>
+      <span class="range-spacer"></span>
+      <span class="range-label" id="rangeLabel"></span>
+    </section>
 
-      <div id="emptyState" class="state hidden">
-        <div class="state-title">此區間內沒有帳號</div>
-        <div>調整起迄日期，或選「全部」查看所有帳號。</div>
+    <!-- 彙總卡 -->
+    <section class="cards">
+      <div class="card is-primary">
+        <div class="card-label">帳號總數</div>
+        <div class="card-num" id="c_total">—</div>
+        <div class="card-foot">不含 admin</div>
       </div>
+      <div class="card">
+        <div class="card-label">月訂閱</div>
+        <div class="card-num tone-dawn" id="c_monthly">—</div>
+        <div class="card-foot">active / trialing</div>
+      </div>
+      <div class="card">
+        <div class="card-label">買斷</div>
+        <div class="card-num tone-gold" id="c_buyout">—</div>
+        <div class="card-foot">未過期</div>
+      </div>
+      <div class="card">
+        <div class="card-label">免費</div>
+        <div class="card-num" id="c_free">—</div>
+        <div class="card-foot">無有效付費</div>
+      </div>
+      <div class="card">
+        <div class="card-label">四化解鎖</div>
+        <div class="card-num" id="c_sihua">—</div>
+        <div class="card-foot">sihua_unlocked</div>
+      </div>
+      <div class="card">
+        <div class="card-label">失敗 Job</div>
+        <div class="card-num tone-fail" id="c_failed">—</div>
+        <div class="card-foot">區間內</div>
+      </div>
+    </section>
 
-      <div id="errorState" class="state error hidden">
-        <div class="state-title">讀取失敗</div>
-        <div id="errorMsg"></div>
-      </div>
+    <!-- 帳號表 -->
+    <div class="table-head">
+      <span class="table-title">帳號明細</span>
+      <span class="table-count" id="tableCount"></span>
+    </div>
 
-      <div class="table-scroll" id="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>名稱</th>
-              <th>命盤狀態</th>
-              <th>月報</th>
-              <th>報告日</th>
-              <th>訂閱層</th>
-              <th>到期</th>
-              <th>四化</th>
-              <th>最新 Job</th>
-              <th>註冊</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+    <div id="tableState" class="fa-state fa-hidden">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">讀取中…</div>
+    </div>
+
+    <div id="emptyState" class="fa-state fa-hidden">
+      <div class="fa-state-title">此區間內沒有帳號</div>
+      <div>調整起迄日期，或選「全部」查看所有帳號。</div>
+    </div>
+
+    <div id="errorState" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">讀取失敗</div>
+      <div id="errorMsg"></div>
+    </div>
+
+    <div class="table-scroll" id="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th><th>名稱</th><th>命盤狀態</th><th>月報</th><th>報告日</th>
+            <th>訂閱層</th><th>到期</th><th>四化</th><th>最新 Job</th><th>註冊</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
   </main>
 
   <script type="module">
-    import { supabase, requireAuth } from './components.js';
+    import { supabase, initAdmin } from './admin-common.js';
 
-    /* ---------- 工具 ---------- */
     const $ = (id) => document.getElementById(id);
-    const REDIRECT_NON_ADMIN = './dashboard.html';
 
     const fmtDate = (iso) => {
       if (!iso) return '—';
@@ -378,90 +228,69 @@
       if (isNaN(d)) return '—';
       return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     };
-    const toInputDate = (d) => {
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    };
-    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
-      {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
-    ));
+    const toInputDate = (d) =>
+      `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
     const LAYER_LABEL = { chart:'本命', decade:'大限', annual:'流年', monthly:'流月' };
 
     const chartStatusBadge = (s) => {
       const map = {
-        done:        ['b-ok','完成'],
-        failed:      ['b-fail','失敗'],
-        interpreting:['b-wait','生成中'],
-        pending:     ['b-wait','等待中'],
-        processing:  ['b-wait','處理中'],
-        none:        ['b-none','無'],
+        done:['b-ok','完成'], failed:['b-fail','失敗'], interpreting:['b-wait','生成中'],
+        pending:['b-wait','等待中'], processing:['b-wait','處理中'], none:['b-none','無'],
       };
       const [cls,label] = map[s] || ['b-none', s || '無'];
       return `<span class="badge ${cls}"><span class="dot"></span>${esc(label)}</span>`;
     };
-
     const jobStatusBadge = (s) => {
       const map = { ok:['b-ok','成功'], fail:['b-fail','失敗'], pending:['b-wait','進行中'] };
       const [cls,label] = map[s] || ['b-none','—'];
       return `<span class="badge ${cls}"><span class="dot"></span>${label}</span>`;
     };
-
     const tierBadge = (t) => {
       const map = { monthly:['tier-monthly','月訂閱'], buyout:['tier-buyout','買斷'], free:['tier-free','免費'] };
       const [cls,label] = map[t] || ['tier-free','免費'];
       return `<span class="tier ${cls}">${label}</span>`;
     };
 
-    /* ---------- 區間狀態 ---------- */
     function setRange(days){
       const to = new Date();
       let from;
-      if (days === 'all'){
-        from = new Date('2020-01-01T00:00:00');
-      } else {
-        from = new Date();
-        from.setDate(from.getDate() - Number(days));
-      }
+      if (days === 'all') from = new Date('2020-01-01T00:00:00');
+      else { from = new Date(); from.setDate(from.getDate() - Number(days)); }
       $('fromDate').value = toInputDate(from);
       $('toDate').value = toInputDate(to);
     }
-
     function activePreset(days){
-      document.querySelectorAll('.preset').forEach(b => {
-        b.classList.toggle('is-active', b.dataset.days === String(days));
-      });
+      document.querySelectorAll('.preset').forEach(b =>
+        b.classList.toggle('is-active', b.dataset.days === String(days)));
     }
-
     function readRangeISO(){
-      const fromStr = $('fromDate').value;
-      const toStr = $('toDate').value;
+      const fromStr = $('fromDate').value, toStr = $('toDate').value;
       const from = fromStr ? new Date(fromStr + 'T00:00:00') : new Date('2020-01-01T00:00:00');
       const to   = toStr   ? new Date(toStr   + 'T23:59:59') : new Date();
       return { from: from.toISOString(), to: to.toISOString() };
     }
 
-    /* ---------- 資料載入 ---------- */
     async function loadData(){
-      $('tableState').classList.remove('hidden');
-      $('tableWrap').classList.add('hidden');
-      $('emptyState').classList.add('hidden');
-      $('errorState').classList.add('hidden');
+      $('tableState').classList.remove('fa-hidden');
+      $('tableWrap').classList.add('fa-hidden');
+      $('emptyState').classList.add('fa-hidden');
+      $('errorState').classList.add('fa-hidden');
 
       const { from, to } = readRangeISO();
       $('rangeLabel').textContent = `區間：${fmtDate(from)} – ${fmtDate(to)}`;
 
-      const { data, error } = await supabase.rpc('admin_dashboard_overview', {
-        p_from: from, p_to: to,
-      });
+      const { data, error } = await supabase.rpc('admin_dashboard_overview', { p_from: from, p_to: to });
 
-      $('tableState').classList.add('hidden');
+      $('tableState').classList.add('fa-hidden');
 
       if (error){
         $('errorMsg').textContent = error.message || String(error);
-        $('errorState').classList.remove('hidden');
+        $('errorState').classList.remove('fa-hidden');
         return;
       }
-
       renderSummary(data?.summary || {});
       renderTable(data?.accounts || []);
     }
@@ -480,31 +309,21 @@
       $('tableCount').textContent = `${rows.length} 個帳號`;
 
       if (!rows.length){
-        $('tableWrap').classList.add('hidden');
-        $('emptyState').classList.remove('hidden');
+        $('tableWrap').classList.add('fa-hidden');
+        $('emptyState').classList.remove('fa-hidden');
         tbody.innerHTML = '';
         return;
       }
-      $('emptyState').classList.add('hidden');
-      $('tableWrap').classList.remove('hidden');
+      $('emptyState').classList.add('fa-hidden');
+      $('tableWrap').classList.remove('fa-hidden');
 
       tbody.innerHTML = rows.map(r => {
         const jobLayer = r.latest_job_layer ? (LAYER_LABEL[r.latest_job_layer] || r.latest_job_layer) : '';
         const jobCell = r.latest_job_status
-          ? `<div class="job-cell">
-               <span class="job-layer">${esc(jobLayer)}</span>
-               ${jobStatusBadge(r.latest_job_status)}
-               <span class="job-time">${fmtDateTime(r.latest_job_at)}</span>
-             </div>`
+          ? `<div class="job-cell"><span class="job-layer">${esc(jobLayer)}</span>${jobStatusBadge(r.latest_job_status)}<span class="job-time">${fmtDateTime(r.latest_job_at)}</span></div>`
           : `<span class="dim">無</span>`;
-
-        const monthly = r.monthly_active
-          ? `<span class="check">✓</span>`
-          : `<span class="cross">—</span>`;
-
-        const sihua = r.sihua_unlocked
-          ? `<span class="check">✓</span>`
-          : `<span class="cross">—</span>`;
+        const monthly = r.monthly_active ? `<span class="check">✓</span>` : `<span class="cross">—</span>`;
+        const sihua = r.sihua_unlocked ? `<span class="check">✓</span>` : `<span class="cross">—</span>`;
 
         return `<tr>
           <td class="col-email" title="${esc(r.email)}">${esc(r.email)}</td>
@@ -521,55 +340,25 @@
       }).join('');
     }
 
-    /* ---------- 事件 ---------- */
     function bindEvents(){
       document.querySelectorAll('.preset').forEach(btn => {
         btn.addEventListener('click', () => {
           const days = btn.dataset.days;
-          setRange(days);
-          activePreset(days);
-          loadData();
+          setRange(days); activePreset(days); loadData();
         });
       });
-      $('applyBtn').addEventListener('click', () => {
-        activePreset(null); // 自訂區間 → 取消 preset 高亮
-        loadData();
-      });
+      $('applyBtn').addEventListener('click', () => { activePreset(null); loadData(); });
       $('refreshBtn').addEventListener('click', loadData);
     }
 
-    /* ---------- 啟動：requireAuth → admin_check → 雙重把關 ---------- */
+    /* ── 啟動：admin-common 把關 + 注入導航；通過才載入 ── */
     (async function init(){
-      try {
-        await requireAuth();
-
-        const { data: isAdmin, error } = await supabase.rpc('admin_check');
-        if (error) throw error;
-
-        if (isAdmin !== true){
-          window.location.replace(REDIRECT_NON_ADMIN);
-          return;
-        }
-
-        // 顯示 admin email（盡力而為，失敗不影響）
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user?.email) $('adminEmail').textContent = user.email;
-        } catch(_){}
-
-        $('bootState').classList.add('hidden');
-        $('dashboard').classList.remove('hidden');
-
-        setRange(30);
-        activePreset(30);
-        bindEvents();
-        await loadData();
-
-      } catch (e) {
-        $('bootState').innerHTML =
-          `<div class="state-title">無法載入</div><div>${esc(e.message || String(e))}</div>`;
-        $('bootState').classList.add('error');
-      }
+      const ok = await initAdmin('overview');
+      if (!ok) return;
+      setRange(30);
+      activePreset(30);
+      bindEvents();
+      await loadData();
     })();
   </script>
 </body>
