@@ -31,6 +31,7 @@ const NON_ADMIN_REDIRECT = './dashboard.html';
 const ADMIN_NAV = [
   { key: 'overview', label: '服務總覽', href: 'admin-dashboard.html' },
   { key: 'context',  label: '關心重點', href: 'admin-context.html' },
+  { key: 'accounts', label: '帳號管理', href: 'admin-accounts.html' },
 ];
 
 // ─── 視覺 tokens + 共用樣式 ──────────────────────────────────
