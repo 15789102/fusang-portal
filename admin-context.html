@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 關心重點</title>
+<style>
+  /* ── A3 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+
+  .summary-row{
+    display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;
+  }
+  .sum-pill{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    padding:14px 18px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:10px;
+  }
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:26px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+  .privacy-note{
+    font-size:12.5px;color:var(--muted);background:var(--dawn-soft);
+    border:1px solid #F3D9D3;border-radius:var(--radius-sm);
+    padding:10px 14px;margin-bottom:20px;display:flex;gap:8px;align-items:flex-start;
+  }
+  .privacy-note .lock{flex:0 0 auto;}
+
+  /* 使用者卡片 */
+  .ctx-card{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;
+  }
+  .ctx-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    padding:16px 18px 12px;
+  }
+  .ctx-user{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;}
+  .ctx-email{font-weight:600;font-size:14px;}
+  .ctx-name{color:var(--muted);font-size:13px;}
+  .ctx-admin-tag{
+    font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--gold);
+    background:var(--gold-soft);border-radius:4px;padding:2px 7px;
+  }
+  .ctx-time{font-size:11.5px;color:var(--faint);white-space:nowrap;flex:0 0 auto;}
+
+  .ctx-meta{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    padding:0 18px 14px;
+  }
+  .palace-tag{
+    font-size:12px;font-weight:600;color:var(--ink);
+    background:#F0F1F3;border-radius:6px;padding:3px 10px;
+  }
+  .ctx-slotcount{font-size:12px;color:var(--faint);margin-left:2px;}
+
+  .ctx-actions{
+    display:flex;gap:8px;padding:0 18px 16px;
+  }
+  .ctx-btn{
+    font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);
+    padding:7px 14px;transition:all .15s ease;
+  }
+  .ctx-btn.primary{background:var(--ink);color:#fff;border:1px solid var(--ink);}
+  .ctx-btn.primary:hover{filter:brightness(1.15);}
+  .ctx-btn.ghost{background:var(--surface);color:var(--muted);border:1px solid var(--hair-strong);}
+  .ctx-btn.ghost:hover{border-color:var(--ink);color:var(--ink);}
+  .ctx-btn:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
+
+  /* 展開內容 */
+  .ctx-body{border-top:1px solid var(--hair);padding:6px 18px 10px;background:#FCFCFD;}
+  .slot{padding:12px 0;border-bottom:1px dashed var(--hair);}
+  .slot:last-child{border-bottom:none;}
+  .slot-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .palace-tag.sm{font-size:11px;padding:2px 8px;background:var(--dawn-soft);color:var(--dawn);}
+  .slot-time{font-size:11px;color:var(--faint);}
+  .slot-text{font-size:13.5px;line-height:1.7;color:var(--ink);margin:0;white-space:pre-wrap;word-break:break-word;}
+
+  /* 歷史軌跡 */
+  .ctx-history{border-top:1px solid var(--hair);padding:10px 18px 14px;background:#FAFAFB;}
+  .hist-title{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .hist-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--hair);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-meta{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;min-width:120px;}
+  .hist-action{font-size:11px;font-weight:600;color:var(--muted);}
+  .hist-time{font-size:11px;color:var(--faint);}
+  .hist-text{font-size:13px;line-height:1.6;color:var(--ink);margin:0;white-space:pre-wrap;word-break:break-word;}
+  .hist-loading{font-size:12.5px;color:var(--muted);padding:6px 0;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">關心重點</h1>
+      <p class="fa-page-sub">A3 · 使用者填寫的客製 context（當前生效，會餵入月報）</p>
+    </div>
+
+    <div class="privacy-note">
+      <span class="lock">🔒</span>
+      <span>內容涉及使用者私人議題，預設遮蔽。點「展開內容」才顯示全文；「查看歷史」於點擊時才載入變更軌跡。</span>
+    </div>
+
+    <div class="summary-row" id="summaryRow"></div>
+
+    <div id="loadState" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">讀取中…</div>
+    </div>
+
+    <div id="emptyState" class="fa-state fa-hidden">
+      <div class="fa-state-title">尚無使用者填寫 context</div>
+      <div>當使用者在月報填寫關心議題後，會顯示於此。</div>
+    </div>
+
+    <div id="errorState" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">讀取失敗</div>
+      <div id="errorMsg"></div>
+    </div>
+
+    <div id="cards"></div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmtDateTime = (iso) => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (isNaN(d)) return '—';
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    };
+    const ACTION_LABEL = { save:'儲存', update:'更新', delete:'刪除', insert:'新增' };
+
+    let usersData = [];          // overview 結果
+    const histCache = {};        // index → history 陣列（快取，避免重複請求）
+
+    async function loadOverview(){
+      $('loadState').classList.remove('fa-hidden');
+      $('emptyState').classList.add('fa-hidden');
+      $('errorState').classList.add('fa-hidden');
+      $('cards').innerHTML = '';
+
+      const { data, error } = await supabase.rpc('admin_context_overview');
+      $('loadState').classList.add('fa-hidden');
+
+      if (error){
+        $('errorMsg').textContent = error.message || String(error);
+        $('errorState').classList.remove('fa-hidden');
+        return;
+      }
+
+      const summary = data?.summary || {};
+      $('summaryRow').innerHTML = `
+        <div class="sum-pill"><span class="sum-num">${summary.users_with_context ?? 0}</span><span class="sum-label">位使用者有填寫</span></div>
+        <div class="sum-pill"><span class="sum-num">${summary.total_slots ?? 0}</span><span class="sum-label">則 context</span></div>`;
+
+      usersData = data?.users || [];
+      if (!usersData.length){
+        $('emptyState').classList.remove('fa-hidden');
+        return;
+      }
+      renderCards();
+    }
+
+    function renderCards(){
+      $('cards').innerHTML = usersData.map((u, i) => {
+        const palaces = (u.palaces || []).map(p => `<span class="palace-tag">${esc(p)}</span>`).join('');
+        const adminTag = u.is_admin ? `<span class="ctx-admin-tag">ADMIN</span>` : '';
+        const name = u.display_name ? `<span class="ctx-name">${esc(u.display_name)}</span>` : '';
+
+        const slots = (u.slots || []).map(s => `
+          <div class="slot">
+            <div class="slot-head">
+              <span class="palace-tag sm">${esc(s.palace_name)}</span>
+              <span class="slot-time">${fmtDateTime(s.updated_at)}</span>
+            </div>
+            <p class="slot-text">${esc(s.context_text)}</p>
+          </div>`).join('');
+
+        return `<div class="ctx-card" data-i="${i}">
+          <div class="ctx-head">
+            <div class="ctx-user">
+              <span class="ctx-email">${esc(u.user_email)}</span>
+              ${name}${adminTag}
+            </div>
+            <span class="ctx-time">更新 ${fmtDateTime(u.last_updated)}</span>
+          </div>
+          <div class="ctx-meta">
+            ${palaces}<span class="ctx-slotcount">${u.slot_count ?? 0} 則</span>
+          </div>
+          <div class="ctx-actions">
+            <button class="ctx-btn primary" data-act="toggle" data-i="${i}">展開內容</button>
+            <button class="ctx-btn ghost" data-act="hist" data-i="${i}">查看歷史</button>
+          </div>
+          <div class="ctx-body fa-hidden" id="body-${i}">${slots}</div>
+          <div class="ctx-history fa-hidden" id="hist-${i}"></div>
+        </div>`;
+      }).join('');
+
+      $('cards').querySelectorAll('.ctx-btn').forEach(btn => {
+        btn.addEventListener('click', onAction);
+      });
+    }
+
+    async function onAction(e){
+      const btn = e.currentTarget;
+      const i = btn.dataset.i;
+      const act = btn.dataset.act;
+
+      if (act === 'toggle'){
+        const body = $(`body-${i}`);
+        const open = body.classList.toggle('fa-hidden') === false;
+        btn.textContent = open ? '收合內容' : '展開內容';
+        return;
+      }
+
+      if (act === 'hist'){
+        const box = $(`hist-${i}`);
+        // 已載入 → 切換顯示
+        if (box.dataset.loaded === '1'){
+          const open = box.classList.toggle('fa-hidden') === false;
+          btn.textContent = open ? '收合歷史' : '查看歷史';
+          return;
+        }
+        // 首次 → 延遲載入
+        box.classList.remove('fa-hidden');
+        box.innerHTML = `<div class="hist-loading">載入歷史中…</div>`;
+        btn.textContent = '收合歷史';
+        btn.disabled = true;
+
+        const u = usersData[i];
+        const { data, error } = await supabase.rpc('admin_context_history', {
+          p_user_email: u.user_email,
+          p_session_id: u.chart_session_id,
+        });
+        btn.disabled = false;
+
+        if (error){
+          box.innerHTML = `<div class="hist-loading" style="color:var(--fail)">歷史讀取失敗：${esc(error.message || String(error))}</div>`;
+          return;
+        }
+
+        const items = data || [];
+        histCache[i] = items;
+        box.dataset.loaded = '1';
+
+        if (!items.length){
+          box.innerHTML = `<div class="hist-title">變更軌跡</div><div class="hist-loading">無歷史紀錄。</div>`;
+          return;
+        }
+        box.innerHTML = `<div class="hist-title">變更軌跡（${items.length}）</div>` + items.map(h => `
+          <div class="hist-item">
+            <div class="hist-meta">
+              <span class="hist-action">${esc(h.palace_name)} · ${ACTION_LABEL[h.action] || esc(h.action)}</span>
+              <span class="hist-time">${fmtDateTime(h.created_at)}</span>
+            </div>
+            <p class="hist-text">${esc(h.context_text)}</p>
+          </div>`).join('');
+      }
+    }
+
+    /* ── 啟動 ── */
+    (async function init(){
+      const ok = await initAdmin('context');
+      if (!ok) return;
+      await loadOverview();
+    })();
+  </script>
+</body>
+</html>
