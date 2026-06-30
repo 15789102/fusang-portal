@@ -554,6 +554,7 @@
         'I understand this is a non-refundable digital service and agree to the above.'
       )}</span></label>` +
       `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
+      `<div class="form-gate" id="form-gate"></div>` +
       `<div class="msg" id="form-msg"></div>`;
 
     // 主題選擇
@@ -570,12 +571,27 @@
     const countEl = c.querySelector('#char-count');
     const consentEl = c.querySelector('#consent');
     const btn = c.querySelector('#submit-btn');
+    const gate = c.querySelector('#form-gate');
     const msg = c.querySelector('#form-msg');
 
+    const MIN_CHARS = 10;
     const refresh = () => {
       const len = contentEl.value.trim().length;
       countEl.textContent = String(len);
-      btn.disabled = !(selected && len >= 10 && consentEl.checked);
+      const ready = selected && len >= MIN_CHARS && consentEl.checked;
+      btn.disabled = !ready;
+
+      // 列出尚缺條件（讓灰按鈕說明原因）
+      const missing = [];
+      if (!selected) missing.push(pick('選擇主題', 'choose a topic'));
+      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
+      if (!consentEl.checked) missing.push(pick('勾選同意聲明', 'agree to the terms'));
+
+      if (ready) {
+        gate.textContent = '';
+      } else {
+        gate.textContent = pick('尚需：', 'To submit: ') + missing.join(pick('、', ', '));
+      }
     };
     contentEl.addEventListener('input', refresh);
     consentEl.addEventListener('change', refresh);
