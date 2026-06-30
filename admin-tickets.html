@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 單獨問事</title>
+<style>
+  /* tokens / topbar / 狀態面板由 admin-common.js 提供 */
+
+  /* 篩選列 */
+  .filters{
+    display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;
+  }
+  .filter{
+    border:1px solid var(--hair-strong);background:var(--surface);color:var(--muted);
+    padding:7px 15px;border-radius:999px;font-size:13px;font-weight:500;
+    transition:all .15s ease;
+  }
+  .filter:hover{border-color:var(--dawn);color:var(--dawn);}
+  .filter.is-active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .filter:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
+  .filter .cnt{
+    margin-left:6px;font-size:11px;opacity:.7;font-feature-settings:"tnum" 1;
+  }
+
+  /* ticket 卡 */
+  .tk-list{display:flex;flex-direction:column;gap:12px;}
+  .tk{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .tk.is-action{border-color:var(--dawn);}
+  .tk-head{
+    display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .tk-head:hover{background:#FBFBFC;}
+  .tk-dot{
+    flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:transparent;
+  }
+  .tk.is-action .tk-dot{background:var(--dawn);}
+  .tk-subject{font-weight:600;font-size:14px;flex:0 0 auto;}
+  .tk-email{
+    color:var(--muted);font-size:13px;flex:1 1 auto;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .tk-date{font-size:11.5px;color:var(--faint);flex:0 0 auto;font-feature-settings:"tnum" 1;}
+  .tk-chevron{flex:0 0 auto;color:var(--faint);transition:transform .2s ease;}
+  .tk.is-open .tk-chevron{transform:rotate(90deg);}
+
+  .tk-body{display:none;padding:0 18px 18px;border-top:1px solid var(--hair);}
+  .tk.is-open .tk-body{display:block;}
+
+  .seg{margin-top:16px;}
+  .seg-label{
+    font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:7px;
+  }
+  .seg-text{
+    font-size:14px;line-height:1.8;color:var(--ink);white-space:pre-wrap;word-break:break-word;
+  }
+  .seg-meta{font-size:11.5px;color:var(--faint);margin-top:6px;}
+  .seg-box{
+    background:var(--gold-soft);border:1px solid #ECD9B0;border-radius:var(--radius-sm);
+    padding:13px 15px;
+  }
+  .seg-box.q{background:#F4F5F7;border-color:var(--hair-strong);}
+
+  .meta-row{
+    display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+    margin-top:14px;padding-top:14px;border-top:1px dashed var(--hair-strong);
+    font-size:12px;color:var(--muted);
+  }
+  .meta-row code{font-size:11px;color:var(--faint);background:#F4F5F7;padding:2px 6px;border-radius:4px;}
+
+  /* 回覆框 */
+  .reply{margin-top:18px;}
+  textarea.reply-input{
+    width:100%;min-height:120px;border:1px solid var(--hair-strong);border-radius:var(--radius-sm);
+    padding:12px 14px;font-family:inherit;font-size:14px;line-height:1.75;color:var(--ink);
+    background:var(--surface);resize:vertical;
+  }
+  textarea.reply-input:focus-visible{outline:2px solid var(--dawn);outline-offset:1px;border-color:var(--dawn);}
+  .reply-actions{display:flex;align-items:center;gap:12px;margin-top:10px;}
+  .btn-send{
+    border:none;background:var(--dawn);color:#fff;font-weight:600;font-size:13.5px;
+    padding:10px 20px;border-radius:var(--radius-sm);transition:filter .15s ease;
+  }
+  .btn-send:hover:not(:disabled){filter:brightness(.94);}
+  .btn-send:disabled{opacity:.45;cursor:not-allowed;}
+  .reply-hint{font-size:12px;color:var(--faint);}
+  .reply-msg{font-size:12.5px;display:none;padding:8px 12px;border-radius:6px;margin-top:10px;}
+  .reply-msg.show{display:block;}
+  .reply-msg.err{background:var(--fail-soft);color:var(--fail);}
+  .reply-msg.ok{background:var(--ok-soft);color:var(--ok);}
+
+  /* 狀態膠囊 */
+  .st{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;flex:0 0 auto;}
+  .st .dot{width:6px;height:6px;border-radius:50%;}
+  .st-paid{background:var(--dawn-soft);color:var(--dawn);} .st-paid .dot{background:var(--dawn);}
+  .st-followup{background:var(--wait-soft);color:var(--wait);} .st-followup .dot{background:var(--wait);}
+  .st-answered{background:var(--ok-soft);color:var(--ok);} .st-answered .dot{background:var(--ok);}
+  .st-closed{background:#F0F1F3;color:var(--faint);} .st-closed .dot{background:var(--faint);}
+
+  .note{
+    font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:14px;
+    padding:10px 14px;background:#F4F5F7;border-radius:var(--radius-sm);
+  }
+  .note strong{color:var(--ink);}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">單獨問事</h1>
+      <p class="fa-page-sub">客戶諮詢工單 · 首覆 / 追問 / 結案</p>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter is-active" data-filter="open">待處理<span class="cnt" id="cnt-open"></span></button>
+      <button class="filter" data-filter="closed">已結案<span class="cnt" id="cnt-closed"></span></button>
+      <button class="filter" data-filter="all">全部</button>
+    </div>
+
+    <div id="loadState" class="fa-state fa-hidden">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">讀取中…</div>
+    </div>
+    <div id="emptyState" class="fa-state fa-hidden">
+      <div class="fa-state-title">目前沒有工單</div>
+      <div id="emptyHint">沒有符合條件的諮詢。</div>
+    </div>
+    <div id="errorState" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">讀取失敗</div>
+      <div id="errorMsg"></div>
+    </div>
+
+    <div class="tk-list" id="list"></div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const $ = (id) => document.getElementById(id);
+    const FOLLOWUP_DAYS = 7;
+
+    const SUBJECT_LABEL = {
+      career:'事業與工作', relationship:'感情與關係', wealth:'財運與理財',
+      family:'人際與家庭', self:'自我與方向', other:'其他／綜合',
+    };
+    const STATUS = {
+      paid:     { cls:'st-paid',     label:'待首覆' },
+      answered: { cls:'st-answered', label:'已首覆' },
+      followup: { cls:'st-followup', label:'追問待覆' },
+      closed:   { cls:'st-closed',   label:'已結案' },
+    };
+
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmtDT = (iso) => {
+      if (!iso) return '—';
+      const d = new Date(iso); if (isNaN(d)) return '—';
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    };
+    const fmtD = (iso) => {
+      if (!iso) return '—';
+      const d = new Date(iso); if (isNaN(d)) return '—';
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    };
+    const inFollowupWindow = (t) =>
+      t.status === 'answered' && t.answered_at &&
+      new Date(t.answered_at).getTime() + FOLLOWUP_DAYS*864e5 > Date.now();
+
+    let currentFilter = 'open';
+    let openIds = new Set();   // 保留展開狀態跨重載
+
+    async function load(){
+      $('loadState').classList.remove('fa-hidden');
+      $('emptyState').classList.add('fa-hidden');
+      $('errorState').classList.add('fa-hidden');
+      $('list').innerHTML = '';
+
+      const { data, error } = await supabase.rpc('admin_list_tickets', { p_filter: currentFilter });
+      $('loadState').classList.add('fa-hidden');
+
+      if (error){
+        $('errorMsg').textContent = error.message || String(error);
+        $('errorState').classList.remove('fa-hidden');
+        return;
+      }
+      const rows = data || [];
+      // 待處理計數（不依當前篩選，單獨查一次 open 的數量由 needs_action 推算）
+      const actionCnt = rows.filter(r => r.needs_action).length;
+      if (currentFilter === 'open') $('cnt-open').textContent = actionCnt ? `(${actionCnt})` : '';
+
+      if (!rows.length){
+        $('emptyHint').textContent =
+          currentFilter === 'closed' ? '尚無結案的諮詢。'
+          : currentFilter === 'open' ? '沒有待處理的諮詢。'
+          : '尚無任何已付款諮詢。';
+        $('emptyState').classList.remove('fa-hidden');
+        return;
+      }
+      renderList(rows);
+    }
+
+    function renderList(rows){
+      const list = $('list');
+      list.innerHTML = '';
+      rows.forEach(t => list.appendChild(renderTicket(t)));
+    }
+
+    function renderTicket(t){
+      const wrap = document.createElement('div');
+      wrap.className = 'tk' + (t.needs_action ? ' is-action' : '') + (openIds.has(t.id) ? ' is-open' : '');
+      const st = STATUS[t.status] || { cls:'st-closed', label:t.status };
+
+      wrap.innerHTML = `
+        <div class="tk-head">
+          <span class="tk-dot"></span>
+          <span class="tk-subject">${esc(SUBJECT_LABEL[t.subject] || t.subject)}</span>
+          <span class="tk-email" title="${esc(t.user_email)}">${esc(t.user_email)}</span>
+          <span class="st ${st.cls}"><span class="dot"></span>${st.label}</span>
+          <span class="tk-date">${fmtD(t.created_at)}</span>
+          <svg class="tk-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="tk-body">${renderBody(t)}</div>`;
+
+      const head = wrap.querySelector('.tk-head');
+      head.addEventListener('click', () => {
+        wrap.classList.toggle('is-open');
+        if (wrap.classList.contains('is-open')) openIds.add(t.id); else openIds.delete(t.id);
+      });
+
+      bindReply(wrap, t);
+      return wrap;
+    }
+
+    function renderBody(t){
+      let h = '';
+
+      // 客戶原問題
+      h += `<div class="seg"><div class="seg-label">客戶問題</div>` +
+           `<div class="seg-text">${esc(t.content)}</div>` +
+           `<div class="seg-meta">提交於 ${fmtDT(t.created_at)}</div></div>`;
+
+      // 首覆內容（已覆才有）
+      if (t.answer){
+        h += `<div class="seg"><div class="seg-label">首覆</div>` +
+             `<div class="seg-box"><div class="seg-text">${esc(t.answer)}</div></div>` +
+             `<div class="seg-meta">回覆於 ${fmtDT(t.answered_at)}</div></div>`;
+      }
+
+      // 追問
+      if (t.followup_question){
+        h += `<div class="seg"><div class="seg-label">客戶追問</div>` +
+             `<div class="seg-box q"><div class="seg-text">${esc(t.followup_question)}</div></div>` +
+             `<div class="seg-meta">提交於 ${fmtDT(t.followup_at)}</div></div>`;
+      }
+
+      // 再覆
+      if (t.followup_answer){
+        h += `<div class="seg"><div class="seg-label">再覆（結案）</div>` +
+             `<div class="seg-box"><div class="seg-text">${esc(t.followup_answer)}</div></div>` +
+             `<div class="seg-meta">回覆於 ${fmtDT(t.followup_answered_at)}</div></div>`;
+      }
+
+      // 操作區（依狀態）
+      if (t.status === 'paid'){
+        h += replyForm(t.id, 'first', '撰寫首覆', '送出首覆');
+      } else if (t.status === 'followup'){
+        h += replyForm(t.id, 'second', '撰寫再覆（送出後結案）', '送出再覆並結案');
+      } else if (t.status === 'answered'){
+        const deadline = t.answered_at
+          ? fmtD(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS*864e5).toISOString())
+          : '—';
+        h += inFollowupWindow(t)
+          ? `<div class="note">已首覆。客戶可於 <strong>${deadline}</strong> 前追問一次；逾期自動結案，無需處理。</div>`
+          : `<div class="note">已首覆，追問窗（至 ${deadline}）已過，客戶未追問。此諮詢視為完成。</div>`;
+      } else if (t.status === 'closed'){
+        h += `<div class="note">本諮詢已結案。</div>`;
+      }
+
+      // 技術 meta
+      h += `<div class="meta-row"><span>命盤 <code>${esc(t.chart_session_id || '—')}</code></span>` +
+           `<span>付款 <code>${esc(t.stripe_session_id || '—')}</code></span></div>`;
+
+      return h;
+    }
+
+    function replyForm(id, kind, placeholder, btnLabel){
+      return `<div class="reply" data-reply="${kind}">
+        <div class="seg-label">${esc(placeholder)}</div>
+        <textarea class="reply-input" placeholder="在此撰寫回覆…"></textarea>
+        <div class="reply-actions">
+          <button class="btn-send" disabled>${esc(btnLabel)}</button>
+          <span class="reply-hint">送出後將寄送 Email 通知客戶</span>
+        </div>
+        <div class="reply-msg"></div>
+      </div>`;
+    }
+
+    function bindReply(wrap, t){
+      const box = wrap.querySelector('.reply');
+      if (!box) return;
+      const kind = box.getAttribute('data-reply');
+      const input = box.querySelector('.reply-input');
+      const btn = box.querySelector('.btn-send');
+      const msg = box.querySelector('.reply-msg');
+
+      const refresh = () => { btn.disabled = input.value.trim().length < 1; };
+      input.addEventListener('input', refresh);
+      refresh();
+
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        msg.className = 'reply-msg';
+        const answer = input.value.trim();
+        const rpc = kind === 'first' ? 'admin_answer_ticket' : 'admin_answer_followup';
+
+        const { error } = await supabase.rpc(rpc, { p_ticket_id: t.id, p_answer: answer });
+        if (error){
+          msg.textContent = mapErr(error.message || '');
+          msg.classList.add('show','err');
+          refresh();
+          return;
+        }
+        msg.textContent = '已送出。';
+        msg.classList.add('show','ok');
+        openIds.add(t.id);          // 重載後保持展開
+        setTimeout(load, 600);
+      });
+    }
+
+    function mapErr(m){
+      if (m.includes('not_admin'))      return '權限不足。';
+      if (m.includes('not_answerable')) return '此工單目前無法回覆（狀態已變更），將重新整理。';
+      if (m.includes('ticket_not_found')) return '找不到此工單。';
+      if (m.includes('empty_answer'))   return '請填寫回覆內容。';
+      return '送出失敗，請稍後再試。';
+    }
+
+    function bindFilters(){
+      document.querySelectorAll('.filter').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('.filter').forEach(x => x.classList.remove('is-active'));
+          b.classList.add('is-active');
+          currentFilter = b.dataset.filter;
+          openIds.clear();
+          load();
+        });
+      });
+    }
+
+    (async function init(){
+      const ok = await initAdmin('tickets');
+      if (!ok) return;
+      bindFilters();
+      await load();
+    })();
+  </script>
+</body>
+</html>
