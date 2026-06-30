@@ -33,6 +33,7 @@ const ADMIN_NAV = [
   { key: 'context',  label: '關心重點', href: 'admin-context.html' },
   { key: 'accounts', label: '帳號管理', href: 'admin-accounts.html' },
   { key: 'charts',   label: '命盤篩選', href: 'admin-charts.html' },
+  { key: 'tickets',  label: '單獨問事', href: 'admin-tickets.html' },
 ];
 
 // ─── 視覺 tokens + 共用樣式 ──────────────────────────────────
