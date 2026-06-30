@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 命盤篩選</title>
+<style>
+  /* ── A2 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+
+  .filter-panel{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 20px;margin-bottom:22px;
+  }
+  .filter-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+  .field select, .field input[type="number"]{
+    border:1px solid var(--hair-strong);border-radius:var(--radius-sm);
+    padding:8px 10px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--surface);
+  }
+  .field select:disabled, .field input:disabled{opacity:.45;background:#F4F5F7;}
+  .field select:focus-visible, .field input:focus-visible{outline:2px solid var(--dawn);outline-offset:1px;border-color:var(--dawn);}
+
+  /* 星曜多選 */
+  .stars-block{border-top:1px solid var(--hair);padding-top:16px;margin-top:4px;}
+  .stars-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+  .stars-head .lbl{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+  .mode-toggle{display:flex;gap:4px;align-items:center;}
+  .mode-btn{
+    border:1px solid var(--hair-strong);background:var(--surface);color:var(--muted);
+    font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;transition:all .15s ease;
+  }
+  .mode-btn.is-active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .mode-hint{font-size:11.5px;color:var(--faint);}
+
+  .star-search{
+    width:100%;border:1px solid var(--hair-strong);border-radius:var(--radius-sm);
+    padding:8px 11px;font-size:13px;font-family:inherit;margin-bottom:10px;
+  }
+  .star-search:focus-visible{outline:2px solid var(--dawn);outline-offset:1px;border-color:var(--dawn);}
+
+  .star-group{margin-bottom:12px;}
+  .star-group-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.04em;}
+  .star-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .star-chip{
+    border:1px solid var(--hair-strong);background:var(--surface);color:var(--ink);
+    font-size:12.5px;padding:5px 11px;border-radius:999px;cursor:pointer;transition:all .12s ease;user-select:none;
+  }
+  .star-chip:hover{border-color:var(--dawn);}
+  .star-chip.sel{background:var(--dawn);border-color:var(--dawn);color:#fff;}
+
+  .selected-stars{margin-top:10px;font-size:12px;color:var(--muted);min-height:18px;}
+  .selected-stars b{color:var(--dawn);}
+
+  /* metadata checkboxes */
+  .meta-block{border-top:1px solid var(--hair);padding-top:16px;margin-top:16px;}
+  .meta-head{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+  .meta-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .meta-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--hair-strong);background:var(--surface);color:var(--ink);
+    font-size:12.5px;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all .12s ease;user-select:none;
+  }
+  .meta-chip:hover{border-color:var(--dawn);}
+  .meta-chip.sel{background:var(--dawn-soft);border-color:var(--dawn);color:var(--dawn);font-weight:600;}
+
+  .filter-actions{display:flex;gap:10px;border-top:1px solid var(--hair);padding-top:16px;margin-top:16px;}
+  .btn-run{background:var(--dawn);color:#fff;border:none;font-weight:600;font-size:13px;padding:10px 22px;border-radius:var(--radius-sm);transition:filter .15s ease;}
+  .btn-run:hover:not(:disabled){filter:brightness(.94);}
+  .btn-run:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-reset{background:var(--surface);border:1px solid var(--hair-strong);color:var(--muted);font-weight:500;font-size:13px;padding:10px 16px;border-radius:var(--radius-sm);}
+  .btn-reset:hover{border-color:var(--ink);color:var(--ink);}
+
+  /* 結果彙總 */
+  .result-summary{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .sum-pill{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:13px 18px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:10px;}
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:24px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+  /* 帳號卡（甲 + 展開乙）*/
+  .acc-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;}
+  .acc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;cursor:pointer;}
+  .acc-head:hover{background:#FBFBFC;}
+  .acc-user{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;}
+  .acc-email{font-weight:600;font-size:14px;}
+  .acc-name{color:var(--muted);font-size:13px;}
+  .admin-tag{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--gold);background:var(--gold-soft);border-radius:4px;padding:2px 7px;}
+  .acc-right{display:flex;align-items:center;gap:12px;flex:0 0 auto;}
+  .hit-badge{font-size:12px;font-weight:600;color:var(--dawn);background:var(--dawn-soft);border-radius:999px;padding:3px 11px;}
+  .palace-mini{font-size:11.5px;color:var(--faint);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .caret{color:var(--faint);font-size:12px;transition:transform .15s ease;}
+  .acc-card.open .caret{transform:rotate(90deg);}
+
+  .acc-detail{border-top:1px solid var(--hair);background:#FCFCFD;padding:4px 0;}
+  .det-row{padding:11px 18px;border-bottom:1px dashed var(--hair);}
+  .det-row:last-child{border-bottom:none;}
+  .det-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .layer-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;background:#EEF0F2;color:var(--muted);}
+  .palace-tag{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:6px;background:var(--dawn-soft);color:var(--dawn);}
+  .det-time{font-size:11px;color:var(--faint);}
+  .star-line{font-size:12.5px;color:var(--ink);line-height:1.6;word-break:break-word;}
+  .star-line .hit{color:var(--dawn);font-weight:700;}
+  .meta-line{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:8px;}
+  .meta-pill{background:#F0F1F3;border-radius:5px;padding:1px 7px;}
+  .meta-pill.hot{background:var(--wait-soft);color:var(--wait);font-weight:600;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">命盤篩選</h1>
+      <p class="fa-page-sub">A2 · 依盤面 / 時間 / 宮位 / 星曜 / 四化煞 篩選帳號（純唯讀）</p>
+    </div>
+
+    <!-- 載入星曜清單前的狀態 -->
+    <div id="bootLoad" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">載入篩選選項…</div>
+    </div>
+    <div id="bootErr" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">載入失敗</div>
+      <div id="bootErrMsg"></div>
+    </div>
+
+    <div id="panel" class="fa-hidden">
+      <!-- 篩選面板 -->
+      <div class="filter-panel">
+        <div class="filter-grid">
+          <div class="field">
+            <label for="fLayer">盤面</label>
+            <select id="fLayer">
+              <option value="">全部盤面</option>
+              <option value="natal">本命</option>
+              <option value="decade">大限</option>
+              <option value="annual">流年</option>
+              <option value="monthly">流月</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fYear">年份（流年/流月）</label>
+            <input type="number" id="fYear" placeholder="如 2026" disabled />
+          </div>
+          <div class="field">
+            <label for="fMonth">月份（流月）</label>
+            <input type="number" id="fMonth" min="1" max="12" placeholder="1–12" disabled />
+          </div>
+          <div class="field">
+            <label for="fPalace">宮位</label>
+            <select id="fPalace"><option value="">全部宮位</option></select>
+          </div>
+        </div>
+
+        <!-- 星曜多選 -->
+        <div class="stars-block">
+          <div class="stars-head">
+            <span class="lbl">星曜（多選）</span>
+            <div class="mode-toggle">
+              <button class="mode-btn is-active" id="modeOr" data-mode="or">任一 OR</button>
+              <button class="mode-btn" id="modeAnd" data-mode="and">同宮全含 AND</button>
+              <span class="mode-hint" id="modeHint">含任一選定星即命中</span>
+            </div>
+          </div>
+          <input type="text" class="star-search" id="starSearch" placeholder="搜尋星曜…" />
+          <div id="starGroups"></div>
+          <div class="selected-stars" id="selectedStars"></div>
+        </div>
+
+        <!-- metadata 開關 -->
+        <div class="meta-block">
+          <div class="meta-head">四化 / 煞 / 吉曜（要求該宮 &gt; 0）</div>
+          <div class="meta-chips" id="metaChips">
+            <span class="meta-chip" data-meta="hua_lu_count">化祿</span>
+            <span class="meta-chip" data-meta="hua_quan_count">化權</span>
+            <span class="meta-chip" data-meta="hua_ke_count">化科</span>
+            <span class="meta-chip" data-meta="hua_ji_count">化忌</span>
+            <span class="meta-chip" data-meta="sha_ji_count">煞忌</span>
+            <span class="meta-chip" data-meta="auspicious_count">吉曜</span>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-run" id="runBtn">篩選</button>
+          <button class="btn-reset" id="resetBtn">重設條件</button>
+        </div>
+      </div>
+
+      <!-- 結果 -->
+      <div id="runState" class="fa-state fa-hidden">
+        <div class="fa-spinner"></div>
+        <div class="fa-state-title">篩選中…</div>
+      </div>
+      <div id="errState" class="fa-state is-error fa-hidden">
+        <div class="fa-state-title">篩選失敗</div>
+        <div id="errMsg"></div>
+      </div>
+      <div id="emptyState" class="fa-state fa-hidden">
+        <div class="fa-state-title">沒有符合條件的帳號</div>
+        <div>放寬條件再試一次。</div>
+      </div>
+
+      <div id="resultWrap" class="fa-hidden">
+        <div class="result-summary" id="resultSummary"></div>
+        <div id="accCards"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    const PALACES = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
+    const LAYER_LABEL = { natal:'本命', decade:'大限', annual:'流年', monthly:'流月' };
+    const META_LABEL = {
+      hua_lu_count:'化祿', hua_quan_count:'化權', hua_ke_count:'化科',
+      hua_ji_count:'化忌', sha_ji_count:'煞忌', auspicious_count:'吉曜',
+    };
+
+    let allStars = [];
+    const selectedStars = new Set();
+    const selectedMeta = new Set();
+    let starMode = 'or';
+    let lastResult = [];
+
+    /* ── 星曜分組：基礎星 vs 動態星（帶盤面前綴）── */
+    function groupStars(stars){
+      const dynPrefix = ['大限','流年','流月'];
+      const base = [], dyn = {};
+      stars.forEach(s => {
+        const p = dynPrefix.find(px => s.startsWith(px));
+        if (p){ (dyn[p] ||= []).push(s); }
+        else base.push(s);
+      });
+      return { base, dyn };
+    }
+
+    function renderStarGroups(filter=''){
+      const f = filter.trim();
+      const match = (s) => !f || s.includes(f);
+      const { base, dyn } = groupStars(allStars);
+
+      let html = '';
+      const baseF = base.filter(match);
+      if (baseF.length){
+        html += `<div class="star-group"><div class="star-group-title">基礎星</div><div class="star-chips">` +
+          baseF.map(s => chip(s)).join('') + `</div></div>`;
+      }
+      for (const p of ['大限','流年','流月']){
+        const arr = (dyn[p]||[]).filter(match);
+        if (arr.length){
+          html += `<div class="star-group"><div class="star-group-title">${p}星</div><div class="star-chips">` +
+            arr.map(s => chip(s)).join('') + `</div></div>`;
+        }
+      }
+      $('starGroups').innerHTML = html || `<div style="font-size:12.5px;color:var(--faint)">無相符星曜</div>`;
+      $('starGroups').querySelectorAll('.star-chip').forEach(c =>
+        c.addEventListener('click', () => toggleStar(c.dataset.star)));
+    }
+    function chip(s){
+      const sel = selectedStars.has(s) ? ' sel' : '';
+      return `<span class="star-chip${sel}" data-star="${esc(s)}">${esc(s)}</span>`;
+    }
+    function toggleStar(s){
+      if (selectedStars.has(s)) selectedStars.delete(s); else selectedStars.add(s);
+      renderStarGroups($('starSearch').value);
+      renderSelectedStars();
+    }
+    function renderSelectedStars(){
+      if (!selectedStars.size){ $('selectedStars').innerHTML = ''; return; }
+      $('selectedStars').innerHTML = `已選 <b>${selectedStars.size}</b>：${[...selectedStars].map(esc).join('、')}`;
+    }
+
+    /* ── metadata chips ── */
+    $('metaChips').querySelectorAll('.meta-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        const k = c.dataset.meta;
+        if (selectedMeta.has(k)){ selectedMeta.delete(k); c.classList.remove('sel'); }
+        else { selectedMeta.add(k); c.classList.add('sel'); }
+      });
+    });
+
+    /* ── 盤面 → 時間連動 ── */
+    $('fLayer').addEventListener('change', () => {
+      const v = $('fLayer').value;
+      const yearOn = (v === 'annual' || v === 'monthly');
+      const monthOn = (v === 'monthly');
+      $('fYear').disabled = !yearOn;
+      $('fMonth').disabled = !monthOn;
+      if (!yearOn) $('fYear').value = '';
+      if (!monthOn) $('fMonth').value = '';
+    });
+
+    /* ── 星曜 AND/OR ── */
+    $('modeOr').addEventListener('click', () => setMode('or'));
+    $('modeAnd').addEventListener('click', () => setMode('and'));
+    function setMode(m){
+      starMode = m;
+      $('modeOr').classList.toggle('is-active', m === 'or');
+      $('modeAnd').classList.toggle('is-active', m === 'and');
+      $('modeHint').textContent = m === 'or' ? '含任一選定星即命中' : '同一宮位須同時含全部選定星';
+    }
+
+    $('starSearch').addEventListener('input', () => renderStarGroups($('starSearch').value));
+
+    /* ── 重設 ── */
+    $('resetBtn').addEventListener('click', () => {
+      $('fLayer').value = ''; $('fLayer').dispatchEvent(new Event('change'));
+      $('fPalace').value = '';
+      $('fYear').value = ''; $('fMonth').value = '';
+      selectedStars.clear(); renderStarGroups($('starSearch').value); renderSelectedStars();
+      selectedMeta.clear(); $('metaChips').querySelectorAll('.meta-chip').forEach(c => c.classList.remove('sel'));
+      setMode('or');
+      $('resultWrap').classList.add('fa-hidden');
+      $('emptyState').classList.add('fa-hidden');
+    });
+
+    /* ── 篩選 ── */
+    $('runBtn').addEventListener('click', runFilter);
+    async function runFilter(){
+      $('runState').classList.remove('fa-hidden');
+      $('resultWrap').classList.add('fa-hidden');
+      $('emptyState').classList.add('fa-hidden');
+      $('errState').classList.add('fa-hidden');
+
+      const layer = $('fLayer').value || null;
+      const yearRaw = $('fYear').value, monthRaw = $('fMonth').value;
+      const year = (!$('fYear').disabled && yearRaw !== '') ? Number(yearRaw) : null;
+      const month = (!$('fMonth').disabled && monthRaw !== '') ? Number(monthRaw) : null;
+      const palace = $('fPalace').value || null;
+      const stars = selectedStars.size ? [...selectedStars] : null;
+      const meta = {};
+      selectedMeta.forEach(k => meta[k] = true);
+
+      const { data, error } = await supabase.rpc('admin_chart_filter', {
+        p_layer: layer, p_year: year, p_month: month, p_palace: palace,
+        p_stars: stars, p_stars_mode: starMode, p_meta: meta,
+      });
+
+      $('runState').classList.add('fa-hidden');
+
+      if (error){
+        $('errMsg').textContent = error.message || String(error);
+        $('errState').classList.remove('fa-hidden');
+        return;
+      }
+
+      const summary = data?.summary || {};
+      lastResult = data?.users || [];
+
+      $('resultSummary').innerHTML = `
+        <div class="sum-pill"><span class="sum-num">${summary.matched_users ?? 0}</span><span class="sum-label">符合帳號</span></div>
+        <div class="sum-pill"><span class="sum-num">${summary.matched_rows ?? 0}</span><span class="sum-label">命中宮位列</span></div>`;
+
+      if (!lastResult.length){
+        $('emptyState').classList.remove('fa-hidden');
+        return;
+      }
+      renderResults();
+      $('resultWrap').classList.remove('fa-hidden');
+    }
+
+    function renderResults(){
+      $('accCards').innerHTML = lastResult.map((u, i) => {
+        const adminTag = u.is_admin ? `<span class="admin-tag">ADMIN</span>` : '';
+        const name = u.display_name ? `<span class="acc-name">${esc(u.display_name)}</span>` : '';
+        const palaceMini = (u.hit_palaces || []).join('、');
+
+        const dets = (u.details || []).map(d => {
+          const stars = parseStars(d.star_list);
+          const starHtml = stars.map(s =>
+            selectedStars.has(s) ? `<span class="hit">${esc(s)}</span>` : esc(s)
+          ).join('、');
+          const meta = d.metadata || {};
+          const metaPills = Object.keys(META_LABEL).map(k => {
+            const v = Number(meta[k] ?? 0);
+            if (!v) return '';
+            const hot = selectedMeta.has(k) ? ' hot' : '';
+            return `<span class="meta-pill${hot}">${META_LABEL[k]} ${v}</span>`;
+          }).filter(Boolean).join('');
+          const timeStr = d.year ? `${d.year}${d.month ? '/'+d.month : ''}` : '';
+          return `<div class="det-row">
+            <div class="det-top">
+              <span class="layer-tag">${LAYER_LABEL[d.chart_layer] || esc(d.chart_layer)}</span>
+              <span class="palace-tag">${esc(d.palace_name)}</span>
+              ${timeStr ? `<span class="det-time">${esc(timeStr)}</span>` : ''}
+            </div>
+            <div class="star-line">${starHtml || '<span style="color:var(--faint)">無星曜</span>'}</div>
+            ${metaPills ? `<div class="meta-line">${metaPills}</div>` : ''}
+          </div>`;
+        }).join('');
+
+        return `<div class="acc-card" data-i="${i}">
+          <div class="acc-head" data-toggle="${i}">
+            <div class="acc-user">
+              <span class="acc-email">${esc(u.user_email)}</span>${name}${adminTag}
+            </div>
+            <div class="acc-right">
+              <span class="palace-mini">${esc(palaceMini)}</span>
+              <span class="hit-badge">${u.hit_count} 宮命中</span>
+              <span class="caret">▶</span>
+            </div>
+          </div>
+          <div class="acc-detail fa-hidden" id="det-${i}">${dets}</div>
+        </div>`;
+      }).join('');
+
+      $('accCards').querySelectorAll('.acc-head').forEach(h =>
+        h.addEventListener('click', () => {
+          const i = h.dataset.toggle;
+          const card = h.closest('.acc-card');
+          const det = $(`det-${i}`);
+          const open = det.classList.toggle('fa-hidden') === false;
+          card.classList.toggle('open', open);
+        }));
+    }
+
+    function parseStars(raw){
+      if (!raw) return [];
+      try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; }
+      catch(_){ return []; }
+    }
+
+    /* ── 啟動：載入星曜清單 + 宮位選項 ── */
+    async function loadStars(){
+      // 全庫 distinct 星曜：走 definer RPC 繞 RLS（直接查表只能讀到自己的列）
+      const { data, error } = await supabase.rpc('admin_star_list');
+      if (error) throw error;
+      allStars = (data || []).slice().sort((a,b) => a.localeCompare(b, 'zh-Hant'));
+    }
+
+    (async function init(){
+      const ok = await initAdmin('charts');
+      if (!ok) return;
+
+      // 宮位選項
+      $('fPalace').innerHTML = `<option value="">全部宮位</option>` +
+        PALACES.map(p => `<option value="${p}">${p}</option>`).join('');
+
+      try {
+        await loadStars();
+        $('bootLoad').classList.add('fa-hidden');
+        $('panel').classList.remove('fa-hidden');
+        renderStarGroups();
+      } catch (e) {
+        $('bootLoad').classList.add('fa-hidden');
+        $('bootErrMsg').textContent = e.message || String(e);
+        $('bootErr').classList.remove('fa-hidden');
+      }
+    })();
+  </script>
+</body>
+</html>
