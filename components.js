@@ -13,7 +13,7 @@
 //   - Footer(標語 + 連結 + 版權)
 //   - Supabase client(window.fsSupabase)
 //   - requireAuth() / getSession() / signOut()
-//   - startCheckout(productType)  ← 購買/訂閱
+//   - startCheckout(productType, extra)  ← 購買/訂閱
 //
 // 改 header/footer/樣式 → 只改這個檔案,全站生效
 // ============================================================
@@ -258,6 +258,7 @@ function injectHeader(activePage = null) {
         <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade">${tc('navDecade') === 'navDecade' ? '大限' : tc('navDecade')}</span>
         <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">${tc('navAnnual')}</span>
         <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly">${tc('navMonthly')}</span>
+        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation">${tc('navConsultation') === 'navConsultation' ? '單獨問事' : tc('navConsultation')}</span>
         <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">${tc('navAccount')}</span>
         <span class="fs-nav-signout" id="fs-signout">${tc('navSignOut')}</span>
       </nav>
@@ -278,6 +279,9 @@ function injectHeader(activePage = null) {
   });
   el.querySelector('[data-nav="monthly"]').addEventListener('click', () => {
     window.location.href = 'monthly.html';
+  });
+  el.querySelector('[data-nav="consultation"]').addEventListener('click', () => {
+    window.location.href = 'consultation.html';
   });
   el.querySelector('[data-nav="account"]').addEventListener('click', () => {
     window.location.href = 'account.html';
@@ -335,12 +339,15 @@ export async function signOut() {
 // ─── Checkout（購買/訂閱）────────────────────────────────────
 // 呼叫 create-checkout EF（自動帶登入 JWT）→ 取得 Stripe checkout url → 跳轉。
 // productType: 'sihua' | 'monthly_sub' | 'annual_pack' | 'ticket'
+// extra: 選填，額外帶給 create-checkout 的欄位（如 ticket 的 { ticket_id }）。
+//        product_type/user_id 由後端權威決定，不受 extra 覆蓋。
 // 回傳：
 //   成功 → 會直接跳轉 Stripe（呼叫端不會走到 return 之後）
 //   被擋 / 失敗 → return { ok:false, code, expires_at? }，由呼叫端顯示文案
 //     code 可能值：already_subscribed_monthly / active_annual_pack（含 expires_at）
+//                  missing_ticket_id / ticket_not_found / ticket_not_payable
 //                  not_authenticated / no_url / unknown
-export async function startCheckout(productType) {
+export async function startCheckout(productType, extra = {}) {
   const session = await getSession();
   if (!session) {
     window.location.href = 'login.html';
@@ -348,20 +355,20 @@ export async function startCheckout(productType) {
   }
 
   const { data, error } = await supabase.functions.invoke('create-checkout', {
-    body: { product_type: productType },
+    body: { product_type: productType, ...extra },
   });
 
   // functions.invoke 在 non-2xx（含 409）時，把原始回應放進 error.context（Response 物件）
   if (error) {
     let code = 'unknown';
-    const extra = {};
+    const extraOut = {};
     try {
       const body = await error.context?.json();
       if (body?.error) code = body.error;
-      if (body?.expires_at) extra.expires_at = body.expires_at;
+      if (body?.expires_at) extraOut.expires_at = body.expires_at;
     } catch (_) {}
     console.warn('[checkout] 失敗：', code, error);
-    return { ok: false, code, ...extra };
+    return { ok: false, code, ...extraOut };
   }
 
   if (data?.url) {
