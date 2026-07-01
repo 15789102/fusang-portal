@@ -713,6 +713,16 @@
             p_question: fuInput.value.trim(),
           });
           if (error) throw error;
+
+          // best-effort：通知 admin 有追問待覆（失敗不影響追問已送出）
+          try {
+            await supabase.functions.invoke('notify-ticket', {
+              body: { event: 'followup_submitted', ticket_id: t.id },
+            });
+          } catch (e2) {
+            console.warn('[notify-ticket] 通知寄送失敗（不影響追問）：', e2);
+          }
+
           window.location.reload();
         } catch (e) {
           showMsg(fuMsg, 'err', mapFollowupErr(e?.message || ''));
