@@ -327,6 +327,17 @@
           refresh();
           return;
         }
+
+        // best-effort：寄信通知客戶（失敗不影響已完成的回覆）
+        const notifyEvent = kind === 'first' ? 'answered' : 'closed';
+        try {
+          await supabase.functions.invoke('notify-ticket', {
+            body: { event: notifyEvent, ticket_id: t.id },
+          });
+        } catch (e) {
+          console.warn('[notify-ticket] 通知寄送失敗（不影響回覆）：', e);
+        }
+
         msg.textContent = '已送出。';
         msg.classList.add('show','ok');
         openIds.add(t.id);          // 重載後保持展開
