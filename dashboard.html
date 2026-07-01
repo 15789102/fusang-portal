@@ -237,6 +237,75 @@
   .u-btn:hover, .sub-btn:hover { background: var(--accent-pale); transform: translateY(-1px); }
   .u-btn[disabled], .sub-btn[disabled] { opacity: 0.92; }
 
+  /* ── 單獨問事入口卡（全寬）── */
+  .dash-consult {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 26px 30px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .dash-consult::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 38px; height: 38px;
+    border-top: 1px solid var(--gold);
+    border-right: 1px solid var(--gold);
+    opacity: 0.4;
+    border-top-right-radius: 4px;
+  }
+  .dc-kicker {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .dc-name {
+    font-family: var(--font-serif-zh);
+    font-weight: 500;
+    font-size: 21px;
+    color: var(--ink-darkest);
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+  .dc-desc {
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-mid);
+    max-width: 460px;
+  }
+  .dc-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif-zh);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--bg-card);
+    background: var(--accent-deep);
+    padding: 12px 24px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+    flex: 0 0 auto;
+  }
+  .dc-cta:hover { background: #1d4448; transform: translateY(-1px); }
+  .dc-cta .arrow { transition: transform 0.25s; }
+  .dc-cta:hover .arrow { transform: translateX(4px); }
+
   /* ── 流月卡（右欄，撐滿高度）── */
   .dash-card--monthly {
     display: flex;
@@ -358,6 +427,17 @@
         </div>
 
       </div>
+
+      <!-- ── 單獨問事入口 ── -->
+      <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
+        <div class="dc-textwrap">
+          <div class="dc-kicker">單獨問事 · Personal Consultation</div>
+          <div class="dc-name">有一個真正重要的問題？</div>
+          <div class="dc-desc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
+        </div>
+        <span class="dc-cta" data-go="consultation.html">前往問事 <span class="arrow">→</span></span>
+      </div>
+
     </div>
 
   </div>
@@ -491,6 +571,14 @@
 
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
+
+    // 單獨問事入口
+    const consult = document.getElementById('card-consult');
+    if (consult) {
+      consult.querySelector('[data-go]').addEventListener('click', () => {
+        window.location.href = 'consultation.html';
+      });
+    }
   })();
 
   /* 渲染單一卡片的摘要 + 動作區 */
