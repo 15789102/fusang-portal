@@ -9,19 +9,55 @@
   /* tokens / topbar / 狀態面板由 admin-common.js 提供 */
 
   /* 篩選列 */
-  .filters{
-    display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;
+  .filterbar{ margin-bottom:16px; display:flex; flex-direction:column; gap:10px; }
+  .fbar-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .search-input{
+    flex:1 1 220px; min-width:180px;
+    border:1px solid var(--hair-strong); border-radius:var(--radius-sm);
+    padding:9px 14px; font-family:inherit; font-size:13.5px; color:var(--ink); background:var(--surface);
   }
-  .filter{
-    border:1px solid var(--hair-strong);background:var(--surface);color:var(--muted);
-    padding:7px 15px;border-radius:999px;font-size:13px;font-weight:500;
-    transition:all .15s ease;
+  .search-input:focus-visible{ outline:2px solid var(--dawn); outline-offset:1px; border-color:var(--dawn); }
+  .sel{
+    border:1px solid var(--hair-strong); border-radius:var(--radius-sm);
+    padding:9px 12px; font-family:inherit; font-size:13.5px; color:var(--ink); background:var(--surface); cursor:pointer;
   }
-  .filter:hover{border-color:var(--dawn);color:var(--dawn);}
-  .filter.is-active{background:var(--ink);border-color:var(--ink);color:#fff;}
-  .filter:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
-  .filter .cnt{
-    margin-left:6px;font-size:11px;opacity:.7;font-feature-settings:"tnum" 1;
+  .sel:focus-visible{ outline:2px solid var(--dawn); outline-offset:1px; }
+  .date-sep{ color:var(--faint); }
+  .chip{
+    border:1px solid var(--hair-strong); background:var(--surface); color:var(--muted);
+    padding:6px 13px; border-radius:999px; font-size:12.5px; font-weight:500; transition:all .15s ease; user-select:none;
+  }
+  .chip:hover{ border-color:var(--dawn); color:var(--dawn); }
+  .chip.on{ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .chip:focus-visible{ outline:2px solid var(--dawn); outline-offset:2px; }
+  .more-toggle, .clear-btn{
+    border:1px solid var(--hair-strong); background:var(--surface); color:var(--muted);
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:12.5px; font-weight:500; transition:all .15s ease;
+  }
+  .more-toggle:hover, .clear-btn:hover{ border-color:var(--dawn); color:var(--dawn); }
+  .more-panel{
+    display:flex; flex-wrap:wrap; gap:14px 20px; align-items:flex-end;
+    padding:16px; background:var(--surface); border:1px solid var(--hair); border-radius:var(--radius-sm);
+  }
+  .more-field{ display:flex; flex-direction:column; gap:6px; }
+  .more-field > label{ font-size:11px; color:var(--muted); font-weight:600; letter-spacing:.04em; }
+  .chip-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .consent-check{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--ink); cursor:pointer; }
+  .consent-check input{ width:15px; height:15px; accent-color:var(--dawn); cursor:pointer; }
+
+  /* 統計條 */
+  .stats{
+    display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center;
+    margin-bottom:18px; padding:12px 16px;
+    background:var(--surface); border:1px solid var(--hair); border-radius:var(--radius-sm); box-shadow:var(--shadow);
+  }
+  .stat-total{ font-size:14px; color:var(--ink); }
+  .stat-total strong{ font-size:17px; color:var(--dawn); font-feature-settings:"tnum" 1; }
+  .stat-group{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .stat-glabel{ font-size:10.5px; color:var(--faint); letter-spacing:.1em; text-transform:uppercase; }
+  .stat-chip{
+    font-size:12px; color:var(--muted); background:#F4F5F7; padding:3px 10px; border-radius:999px;
+    font-feature-settings:"tnum" 1;
   }
 
   /* ticket 卡 */
@@ -159,11 +195,76 @@
       <p class="fa-page-sub">客戶諮詢工單 · 首覆 / 追問 / 結案</p>
     </div>
 
-    <div class="filters" id="filters">
-      <button class="filter is-active" data-filter="open">待處理<span class="cnt" id="cnt-open"></span></button>
-      <button class="filter" data-filter="closed">已結案<span class="cnt" id="cnt-closed"></span></button>
-      <button class="filter" data-filter="all">全部</button>
+    <div class="filterbar" id="filterbar">
+      <div class="fbar-row">
+        <input type="text" id="f-email" class="search-input" placeholder="搜尋 Email…" autocomplete="off" />
+        <select id="f-time" class="sel">
+          <option value="all">全部時間</option>
+          <option value="7d">近 7 天</option>
+          <option value="30d">近 30 天</option>
+          <option value="90d">近 90 天</option>
+          <option value="custom">自訂區間…</option>
+        </select>
+      </div>
+      <div class="fbar-row date-row fa-hidden" id="date-row">
+        <input type="date" id="f-from" class="sel" />
+        <span class="date-sep">→</span>
+        <input type="date" id="f-to" class="sel" />
+      </div>
+      <div class="fbar-row" id="status-chips">
+        <span class="chip" data-status="paid" tabindex="0">待首覆</span>
+        <span class="chip" data-status="answered" tabindex="0">已首覆</span>
+        <span class="chip" data-status="followup" tabindex="0">追問待覆</span>
+        <span class="chip" data-status="closed" tabindex="0">已結案</span>
+      </div>
+      <div class="fbar-row">
+        <button class="more-toggle" id="more-toggle" type="button">更多篩選 ▾</button>
+        <button class="clear-btn" id="clear-btn" type="button">清除篩選</button>
+      </div>
+      <div class="more-panel fa-hidden" id="more-panel">
+        <div class="more-field">
+          <label>主題</label>
+          <select id="f-subject" class="sel">
+            <option value="all">全部主題</option>
+            <option value="career">事業與工作</option>
+            <option value="relationship">感情與關係</option>
+            <option value="wealth">財運與理財</option>
+            <option value="family">人際與家庭</option>
+            <option value="self">自我與方向</option>
+            <option value="other">其他／綜合</option>
+          </select>
+        </div>
+        <div class="more-field">
+          <label>建議語言</label>
+          <select id="f-lang" class="sel">
+            <option value="all">全部語言</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="more-field">
+          <label>性別</label>
+          <select id="f-gender" class="sel">
+            <option value="all">全部</option>
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
+        </div>
+        <div class="more-field">
+          <label>回饋</label>
+          <div class="chip-row" id="rating-chips">
+            <span class="chip" data-rating="none" tabindex="0">未回饋</span>
+            <span class="chip" data-rating="helpful" tabindex="0">有幫助</span>
+            <span class="chip" data-rating="somewhat" tabindex="0">還好</span>
+            <span class="chip" data-rating="not_helpful" tabindex="0">沒有幫助</span>
+          </div>
+        </div>
+        <label class="consent-check"><input type="checkbox" id="f-consent" /> 僅顯示同意引用</label>
+      </div>
     </div>
+
+    <div class="stats fa-hidden" id="stats"></div>
 
     <div id="loadState" class="fa-state fa-hidden">
       <div class="fa-spinner"></div>
@@ -218,16 +319,24 @@
       t.status === 'answered' && t.answered_at &&
       new Date(t.answered_at).getTime() + FOLLOWUP_DAYS*864e5 > Date.now();
 
-    let currentFilter = 'open';
+    let allTickets = [];
     let openIds = new Set();   // 保留展開狀態跨重載
+
+    // 篩選狀態
+    const F = {
+      email: '', time: 'all', from: '', to: '',
+      statuses: new Set(), subject: 'all', lang: 'all', gender: 'all',
+      ratings: new Set(), consentOnly: false,
+    };
 
     async function load(){
       $('loadState').classList.remove('fa-hidden');
       $('emptyState').classList.add('fa-hidden');
       $('errorState').classList.add('fa-hidden');
       $('list').innerHTML = '';
+      $('stats').classList.add('fa-hidden');
 
-      const { data, error } = await supabase.rpc('admin_list_tickets', { p_filter: currentFilter });
+      const { data, error } = await supabase.rpc('admin_list_tickets', { p_filter: 'all' });
       $('loadState').classList.add('fa-hidden');
 
       if (error){
@@ -235,20 +344,77 @@
         $('errorState').classList.remove('fa-hidden');
         return;
       }
-      const rows = data || [];
-      // 待處理計數（不依當前篩選，單獨查一次 open 的數量由 needs_action 推算）
-      const actionCnt = rows.filter(r => r.needs_action).length;
-      if (currentFilter === 'open') $('cnt-open').textContent = actionCnt ? `(${actionCnt})` : '';
+      allTickets = data || [];
+      apply();
+    }
 
-      if (!rows.length){
-        $('emptyHint').textContent =
-          currentFilter === 'closed' ? '尚無結案的諮詢。'
-          : currentFilter === 'open' ? '沒有待處理的諮詢。'
-          : '尚無任何已付款諮詢。';
-        $('emptyState').classList.remove('fa-hidden');
-        return;
+    const ratingBucket = (t) => t.rating || 'none';
+
+    function matchTime(t){
+      if (F.time === 'all') return true;
+      const created = new Date(t.created_at).getTime();
+      if (F.time === 'custom'){
+        if (F.from && created < new Date(F.from + 'T00:00:00').getTime()) return false;
+        if (F.to   && created > new Date(F.to   + 'T23:59:59').getTime()) return false;
+        return true;
       }
-      renderList(rows);
+      const days = F.time === '7d' ? 7 : F.time === '30d' ? 30 : 90;
+      return created >= Date.now() - days * 864e5;
+    }
+
+    function apply(){
+      const filtered = allTickets.filter((t) => {
+        if (F.email && !String(t.user_email || '').toLowerCase().includes(F.email.toLowerCase())) return false;
+        if (!matchTime(t)) return false;
+        if (F.statuses.size && !F.statuses.has(t.status)) return false;
+        if (F.subject !== 'all' && t.subject !== F.subject) return false;
+        if (F.lang !== 'all' && t.cust_lang !== F.lang) return false;
+        if (F.gender !== 'all' && t.gender !== F.gender) return false;
+        if (F.ratings.size && !F.ratings.has(ratingBucket(t))) return false;
+        if (F.consentOnly && t.feedback_consent !== true) return false;
+        return true;
+      });
+
+      renderStats(filtered);
+      renderList(filtered);
+
+      if (!filtered.length){
+        $('emptyHint').textContent = allTickets.length ? '沒有符合條件的工單。' : '尚無任何已付款諮詢。';
+        $('emptyState').classList.remove('fa-hidden');
+      } else {
+        $('emptyState').classList.add('fa-hidden');
+      }
+    }
+
+    function renderStats(rows){
+      const s = $('stats');
+      s.classList.remove('fa-hidden');
+
+      const byStatus = { paid:0, answered:0, followup:0, closed:0 };
+      const bySubject = {};
+      const byRating = { helpful:0, somewhat:0, not_helpful:0, none:0 };
+      rows.forEach((t) => {
+        if (byStatus[t.status] !== undefined) byStatus[t.status]++;
+        bySubject[t.subject] = (bySubject[t.subject] || 0) + 1;
+        byRating[ratingBucket(t)]++;
+      });
+
+      const statusChips = ['paid','answered','followup','closed']
+        .filter((k) => byStatus[k])
+        .map((k) => `<span class="stat-chip">${STATUS[k].label} ${byStatus[k]}</span>`).join('');
+      const subjChips = Object.keys(bySubject)
+        .map((k) => `<span class="stat-chip">${SUBJECT_LABEL[k] || k} ${bySubject[k]}</span>`).join('');
+      const rated = byRating.helpful + byRating.somewhat + byRating.not_helpful;
+      const ratingChips = rated
+        ? ['helpful','somewhat','not_helpful'].filter((k) => byRating[k])
+            .map((k) => `<span class="stat-chip">${RATING_LABEL[k]} ${byRating[k]}</span>`).join('')
+        : '';
+
+      s.innerHTML =
+        `<div class="stat-total">符合 <strong>${rows.length}</strong> 筆</div>` +
+        (statusChips ? `<div class="stat-group"><span class="stat-glabel">狀態</span>${statusChips}</div>` : '') +
+        (subjChips ? `<div class="stat-group"><span class="stat-glabel">主題</span>${subjChips}</div>` : '') +
+        (ratingChips ? `<div class="stat-group"><span class="stat-glabel">回饋</span>${ratingChips}</div>` : '');
     }
 
     function renderList(rows){
@@ -456,16 +622,50 @@
       return '送出失敗，請稍後再試。';
     }
 
+    function toggleChip(set, val, chip){
+      if (set.has(val)){ set.delete(val); chip.classList.remove('on'); }
+      else { set.add(val); chip.classList.add('on'); }
+    }
+
     function bindFilters(){
-      document.querySelectorAll('.filter').forEach(b => {
-        b.addEventListener('click', () => {
-          document.querySelectorAll('.filter').forEach(x => x.classList.remove('is-active'));
-          b.classList.add('is-active');
-          currentFilter = b.dataset.filter;
-          openIds.clear();
-          load();
-        });
+      $('f-email').addEventListener('input', (e) => { F.email = e.target.value.trim(); apply(); });
+      $('f-time').addEventListener('change', (e) => {
+        F.time = e.target.value;
+        $('date-row').classList.toggle('fa-hidden', F.time !== 'custom');
+        apply();
       });
+      $('f-from').addEventListener('change', (e) => { F.from = e.target.value; apply(); });
+      $('f-to').addEventListener('change', (e) => { F.to = e.target.value; apply(); });
+      $('f-subject').addEventListener('change', (e) => { F.subject = e.target.value; apply(); });
+      $('f-lang').addEventListener('change', (e) => { F.lang = e.target.value; apply(); });
+      $('f-gender').addEventListener('change', (e) => { F.gender = e.target.value; apply(); });
+      $('f-consent').addEventListener('change', (e) => { F.consentOnly = e.target.checked; apply(); });
+
+      document.querySelectorAll('#status-chips .chip').forEach((c) => {
+        const act = () => { toggleChip(F.statuses, c.dataset.status, c); apply(); };
+        c.addEventListener('click', act);
+        c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
+      });
+      document.querySelectorAll('#rating-chips .chip').forEach((c) => {
+        const act = () => { toggleChip(F.ratings, c.dataset.rating, c); apply(); };
+        c.addEventListener('click', act);
+        c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
+      });
+
+      $('more-toggle').addEventListener('click', () => { $('more-panel').classList.toggle('fa-hidden'); });
+      $('clear-btn').addEventListener('click', clearFilters);
+    }
+
+    function clearFilters(){
+      F.email = ''; F.time = 'all'; F.from = ''; F.to = '';
+      F.statuses.clear(); F.subject = 'all'; F.lang = 'all'; F.gender = 'all';
+      F.ratings.clear(); F.consentOnly = false;
+      $('f-email').value = ''; $('f-time').value = 'all'; $('f-from').value = ''; $('f-to').value = '';
+      $('f-subject').value = 'all'; $('f-lang').value = 'all'; $('f-gender').value = 'all';
+      $('f-consent').checked = false;
+      $('date-row').classList.add('fa-hidden');
+      document.querySelectorAll('.chip.on').forEach((c) => c.classList.remove('on'));
+      apply();
     }
 
     (async function init(){
