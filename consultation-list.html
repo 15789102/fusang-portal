@@ -29,7 +29,7 @@
   import {
     initConsult,
     pick, getMyTickets,
-    subjLabel, STATUS_LABEL, fmtDate, refCode,
+    subjLabel, STATUS_LABEL, fmtDate, refCode, statusText,
     isActive, isPendingDraft, needsFeedback,
     el, esc,
   } from './consultation-common.js';
@@ -77,15 +77,13 @@
     const row = el('div', 'hist-item');
     const active = isActive(t);
     const fb = needsFeedback(t);
-    const statusText = active
-      ? (STATUS_LABEL[t.status] || t.status)
-      : STATUS_LABEL.closed;
+    const st = active ? (STATUS_LABEL[t.status] || t.status) : statusText(t);
 
     row.innerHTML =
       `<div>` +
         `<div class="hist-subj">${subjLabel(t.subject)} ` +
         `<span style="color:var(--ink-faint);font-family:var(--font-sans);font-size:11px;">#${refCode(t.id)}</span></div>` +
-        `<div class="hist-date" style="margin-top:4px;">${fmtDate(t.created_at)} · ${esc(statusText)}` +
+        `<div class="hist-date" style="margin-top:4px;">${fmtDate(t.created_at)} · ${esc(st)}` +
         (fb ? ` · <span style="color:var(--gold);">${pick('可回饋', 'Feedback')}</span>` : '') +
         (active ? ` · <span style="color:var(--accent-soft);">${pick('進行中', 'Active')}</span>` : '') +
         `</div>` +
