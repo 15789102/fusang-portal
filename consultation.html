@@ -370,6 +370,121 @@
   }
   .link-inline:hover { color: var(--accent-deep); }
 
+  /* ── 署名區（回覆末尾）── */
+  .sig {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+  .sig img {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    flex: 0 0 auto;
+  }
+  .sig-name { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); font-weight: 500; }
+  .sig-org { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-light); letter-spacing: 0.04em; }
+
+  /* ── 結案 / 確認 ── */
+  .close-row { margin-top: 18px; }
+  .close-link {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--ink-light);
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+  }
+  .close-link:hover { color: var(--ink-mid); }
+  .confirm-box {
+    margin-top: 14px;
+    background: var(--bg-soft-2);
+    border: 1px solid var(--gold-soft);
+    border-radius: 3px;
+    padding: 16px 18px;
+  }
+  .confirm-text {
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-dark);
+    margin-bottom: 14px;
+  }
+  .confirm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-sm {
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    padding: 9px 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-sm.confirm { color: var(--bg-card); background: var(--accent-deep); }
+  .btn-sm.confirm:hover { background: #1d4448; }
+  .btn-sm.cancel { color: var(--ink-mid); background: var(--bg-card); border: 1px solid var(--rule); }
+  .btn-sm.cancel:hover { border-color: var(--ink-light); }
+
+  /* ── 回饋卡 ── */
+  .fb-q {
+    font-family: var(--font-serif-zh);
+    font-size: 17px;
+    color: var(--ink-darkest);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .fb-opts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .fb-opt {
+    flex: 1 1 0;
+    min-width: 92px;
+    font-family: var(--font-serif-zh);
+    font-size: 15px;
+    color: var(--ink-dark);
+    background: var(--bg-primary);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 14px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .fb-opt:hover { border-color: var(--gold-soft); }
+  .fb-opt.sel { border-color: var(--accent-soft); background: var(--accent-pale); color: var(--ink-darkest); }
+  .fb-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 0 20px;
+    cursor: pointer;
+  }
+  .fb-consent input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent-deep); cursor: pointer; }
+  .fb-consent span { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-mid); }
+  .fb-thanks {
+    font-family: var(--font-serif-zh);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-mid);
+  }
+  .fb-btn-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-serif-zh);
+    font-size: 14px;
+    color: var(--accent-deep);
+    background: var(--bg-card);
+    border: 1px solid var(--gold-soft);
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .fb-btn-inline:hover { background: var(--accent-pale); transform: translateY(-1px); }
+
   @keyframes fsRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fsPulse { 0%,100% { opacity: 0.4; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.1); } }
   @media (prefers-reduced-motion: reduce) {
@@ -412,6 +527,18 @@
 
   const PRICE_LABEL = 'US$68';
   const FOLLOWUP_DAYS = 7;
+  const AVATAR = 'https://fusang-vision.com/cdn/shop/files/ruei-syuan.jpg?v=1756331083&width=1500';
+  const SIGNER = 'RS Chen';
+
+  const RATINGS = [
+    { code: 'helpful',     zh: '有幫助',   en: 'Helpful' },
+    { code: 'somewhat',    zh: '還好',     en: 'Somewhat' },
+    { code: 'not_helpful', zh: '沒有幫助', en: 'Not really' },
+  ];
+  const ratingLabel = (code) => {
+    const r = RATINGS.find((x) => x.code === code);
+    return r ? pick(r.zh, r.en) : code;
+  };
 
   const SUBJECTS = [
     { code: 'career',       zh: '事業與工作', en: 'Career & Work' },
@@ -458,6 +585,8 @@
   const inFollowupWindow = (t) =>
     t.status === 'answered' && t.answered_at &&
     new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
+  // 已結案且尚未回饋 → 可邀請回饋
+  const needsFeedback = (t) => t.status === 'closed' && !t.rating;
 
   /* ── 主流程 ── */
   (async () => {
@@ -503,10 +632,15 @@
       return;
     }
 
-    // 3) 無進行中 → 提交表單（草稿則預填）+ 歷史
+    // 3) 無進行中 → （最新未回饋的結案 → 回饋卡）+ 提交表單（草稿則預填）+ 歷史
+    const fbTarget = tickets.find(needsFeedback);   // tickets 已按 created_at desc
+    if (fbTarget) body.appendChild(cardFeedback(fbTarget));
+
     const draft = tickets.find(isPendingDraft);
     body.appendChild(cardForm(draft));
-    const hist = tickets.filter((t) => !isActive(t) && !isPendingDraft(t));
+
+    const hist = tickets.filter((t) =>
+      !isActive(t) && !isPendingDraft(t) && t !== fbTarget);
     if (hist.length) body.appendChild(cardHistory(hist));
   }
 
@@ -659,7 +793,8 @@
         html += `<div class="qa-divider"></div>` +
           `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div>` +
           `<div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div>` +
-          `<div class="qa-meta">${pick('回覆於', 'Replied')} ${fmtDate(t.answered_at)}</div></div>`;
+          `<div class="qa-meta">${pick('回覆於', 'Replied')} ${fmtDate(t.answered_at)}</div>` +
+          signatureHtml() + `</div>`;
       }
     }
 
@@ -686,7 +821,13 @@
         `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你的追問…', 'Write your follow-up…')}"></textarea>` +
         `<div class="char-count" id="fu-count">0</div>` +
         `<button class="cons-btn ghost" id="fu-btn" disabled>${pick('送出追問', 'Send follow-up')}</button>` +
-        `<div class="msg" id="fu-msg"></div></div>`;
+        `<div class="msg" id="fu-msg"></div>` +
+        // 主動結案入口
+        `<div class="close-row">` +
+          `<span class="close-link" id="close-link">${pick('我沒有其他問題了，結束諮詢', 'No other questions — close this consultation')}</span>` +
+          `<div id="close-host"></div>` +
+        `</div>` +
+        `</div>`;
     }
 
     c.innerHTML = html;
@@ -731,6 +872,55 @@
       });
     }
 
+    // 主動結案互動
+    const closeLink = c.querySelector('#close-link');
+    if (closeLink) {
+      const host = c.querySelector('#close-host');
+      closeLink.addEventListener('click', () => {
+        if (host.querySelector('.confirm-box')) return; // 已展開
+        closeLink.style.display = 'none';
+        const box = el('div', 'confirm-box');
+        box.innerHTML =
+          `<div class="confirm-text">${pick(
+            '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？',
+            'Once closed, you can no longer follow up and this consultation ends. Are you sure?'
+          )}</div>` +
+          `<div class="confirm-actions">` +
+            `<button class="btn-sm confirm" id="close-yes">${pick('確定結案', 'Close it')}</button>` +
+            `<button class="btn-sm cancel" id="close-no">${pick('取消', 'Cancel')}</button>` +
+          `</div>` +
+          `<div class="msg" id="close-msg"></div>`;
+        host.appendChild(box);
+
+        box.querySelector('#close-no').addEventListener('click', () => {
+          box.remove();
+          closeLink.style.display = '';
+        });
+        box.querySelector('#close-yes').addEventListener('click', async () => {
+          const yes = box.querySelector('#close-yes');
+          const cmsg = box.querySelector('#close-msg');
+          yes.disabled = true;
+          cmsg.className = 'msg';
+          try {
+            const { error } = await supabase.rpc('close_ticket', { p_ticket_id: t.id });
+            if (error) throw error;
+            // best-effort：寄結案感謝信
+            try {
+              await supabase.functions.invoke('notify-ticket', {
+                body: { event: 'closed', ticket_id: t.id },
+              });
+            } catch (e2) {
+              console.warn('[notify-ticket] 感謝信寄送失敗（不影響結案）：', e2);
+            }
+            window.location.reload();
+          } catch (e) {
+            showMsg(cmsg, 'err', mapCloseErr(e?.message || ''));
+            yes.disabled = false;
+          }
+        });
+      });
+    }
+
     return c;
   }
 
@@ -749,6 +939,10 @@
       if (t.answer) dh += `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div><div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div></div>`;
       if (t.followup_question) dh += `<div class="qa-block"><div class="qa-label">${pick('你的追問', 'Your follow-up')}</div><div class="qa-text">${esc(t.followup_question)}</div></div>`;
       if (t.followup_answer) dh += `<div class="qa-block"><div class="qa-label">${pick('再次回覆', 'Final reply')}</div><div class="answer-box"><div class="qa-text">${esc(t.followup_answer)}</div></div></div>`;
+      // 署名（有任何回覆才顯示）
+      if (t.answer || t.followup_answer) dh += signatureHtml();
+      // 已回饋則顯示
+      if (t.rating) dh += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', 'Your feedback')}</div><div class="qa-text">${esc(ratingLabel(t.rating))}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div></div>`;
       detail.innerHTML = dh;
       row.addEventListener('click', () => {
         detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
@@ -759,11 +953,82 @@
     return c;
   }
 
+  /* ── 署名區 ── */
+  function signatureHtml() {
+    return `<div class="sig">` +
+      `<img src="${AVATAR}" alt="${esc(SIGNER)}" />` +
+      `<div><div class="sig-name">${esc(SIGNER)}</div><div class="sig-org">FuSang Vision</div></div>` +
+    `</div>`;
+  }
+
+  /* ── 回饋卡（結案後，可選填、限一次）── */
+  function cardFeedback(t) {
+    const c = el('div', 'cons-card');
+    let selected = null;
+
+    const opts = RATINGS.map((r) =>
+      `<button class="fb-opt" data-code="${r.code}">${pick(r.zh, r.en)}</button>`
+    ).join('');
+
+    c.innerHTML =
+      `<div class="card-kicker">${pick('回饋', 'Feedback')}</div>` +
+      `<div class="fb-q">${pick('這次的回覆，對現在的你有幫助嗎？', 'Was this reading helpful to you right now?')}</div>` +
+      `<div class="fb-opts" id="fb-opts">${opts}</div>` +
+      `<textarea class="cons-input" id="fb-text" placeholder="${pick('想補充的話（選填）', 'Anything to add (optional)')}" style="min-height:90px;"></textarea>` +
+      `<label class="fb-consent"><input type="checkbox" id="fb-consent"><span>${pick(
+        '我同意 FuSang Vision 匿名引用這則回饋（選填）',
+        'I allow FuSang Vision to share this feedback anonymously (optional)'
+      )}</span></label>` +
+      `<button class="cons-btn" id="fb-btn" disabled>${pick('送出回饋', 'Send feedback')}</button>` +
+      `<div class="form-gate" id="fb-gate">${pick('請先選擇一個選項', 'Choose an option first')}</div>` +
+      `<div class="msg" id="fb-msg"></div>`;
+
+    const btn = c.querySelector('#fb-btn');
+    const gate = c.querySelector('#fb-gate');
+    const msg = c.querySelector('#fb-msg');
+
+    c.querySelectorAll('.fb-opt').forEach((b) => {
+      b.addEventListener('click', () => {
+        c.querySelectorAll('.fb-opt').forEach((x) => x.classList.remove('sel'));
+        b.classList.add('sel');
+        selected = b.getAttribute('data-code');
+        btn.disabled = false;
+        gate.textContent = '';
+      });
+    });
+
+    btn.addEventListener('click', async () => {
+      if (!selected) return;
+      btn.disabled = true;
+      msg.className = 'msg';
+      try {
+        const { error } = await supabase.rpc('submit_feedback', {
+          p_ticket_id: t.id,
+          p_rating: selected,
+          p_feedback: c.querySelector('#fb-text').value.trim() || null,
+          p_consent: c.querySelector('#fb-consent').checked,
+        });
+        if (error) throw error;
+        // 成功 → 顯示感謝，短暫後重整（回饋卡消失）
+        c.innerHTML =
+          `<div class="card-kicker">${pick('回饋', 'Feedback')}</div>` +
+          `<div class="fb-thanks">${pick('感謝你的回饋。', 'Thank you for your feedback.')}</div>`;
+        setTimeout(() => window.location.reload(), 1600);
+      } catch (e) {
+        showMsg(msg, 'err', mapFeedbackErr(e?.message || ''));
+        btn.disabled = false;
+      }
+    });
+
+    return c;
+  }
+
   /* ── 邊界／不退費聲明 ── */
   function disclaimerHtml() {
     if (isZh) {
       return `<div class="disclaim"><div class="disclaim-h">提交前請確認</div><ul>` +
         `<li>這是由真人解盤的個人化紫微斗數諮詢。提供的背景越完整，回覆越精準。</li>` +
+        `<li>回覆將以你設定的報告語言（繁體中文／简体中文／English）為主，與你的報告內容一致。</li>` +
         `<li><strong>同一時間僅能進行一則諮詢。</strong>須待目前諮詢結案後，才能再提交新的問題。</li>` +
         `<li>付款後 <strong>7 天內</strong>你會收到書面回覆。回覆後可於 <strong>7 天內追問一次</strong>；逾時諮詢即結案。</li>` +
         `<li>本服務僅提供紫微斗數命理解讀，<strong>不</strong>提供醫療、法律、財務或投資意見。</li>` +
@@ -772,6 +1037,7 @@
     }
     return `<div class="disclaim"><div class="disclaim-h">Before you submit</div><ul>` +
       `<li>This is a personal Zi Wei Dou Shu consultation, answered by a human. The more context you give, the more precise the reading.</li>` +
+      `<li>Your reply will be written in your registered report language (繁體中文 / 简体中文 / English), matching your report.</li>` +
       `<li><strong>One open consultation at a time.</strong> You can start a new one only after your current consultation is resolved.</li>` +
       `<li>You'll receive a written reply within <strong>7 days</strong> of payment. After the reply, you may ask <strong>one follow-up within 7 days</strong>; after that the consultation closes.</li>` +
       `<li>This service provides Zi Wei Dou Shu interpretation only. It is <strong>not</strong> medical, legal, financial, or investment advice.</li>` +
@@ -802,6 +1068,19 @@
     if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', 'Consultation not found.');
     if (m.includes('empty_content'))          return pick('請填寫追問內容。', 'Please write your follow-up.');
     return pick('送出追問時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  }
+  function mapCloseErr(m) {
+    if (m.includes('not_closable'))     return pick('目前無法結案。頁面將重新整理。', 'This consultation can\'t be closed right now. Refreshing…') + reloadSoon();
+    if (m.includes('ticket_not_found')) return pick('找不到這則諮詢。', 'Consultation not found.');
+    if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
+    return pick('結案時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  }
+  function mapFeedbackErr(m) {
+    if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', 'You\'ve already given feedback for this consultation.');
+    if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', 'Feedback isn\'t available for this consultation.');
+    if (m.includes('invalid_rating'))    return pick('請選擇一個選項。', 'Please choose an option.');
+    if (m.includes('ticket_not_found'))  return pick('找不到這則諮詢。', 'Consultation not found.');
+    return pick('送出回饋時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
   }
   function reloadSoon() { setTimeout(() => window.location.reload(), 2200); return ''; }
 
