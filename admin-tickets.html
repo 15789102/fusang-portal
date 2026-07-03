@@ -35,6 +35,15 @@
     padding:7px 14px; border-radius:var(--radius-sm); font-size:12.5px; font-weight:500; transition:all .15s ease;
   }
   .more-toggle:hover, .clear-btn:hover{ border-color:var(--dawn); color:var(--dawn); }
+  .autoclose-btn{
+    border:1px solid var(--hair-strong); background:var(--surface); color:var(--muted);
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:12.5px; font-weight:500; transition:all .15s ease; margin-left:auto;
+  }
+  .autoclose-btn:hover:not(:disabled){ border-color:var(--wait); color:var(--wait); }
+  .autoclose-btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .autoclose-msg{ font-size:12px; color:var(--muted); }
+  .autoclose-msg.ok{ color:var(--ok); }
+  .autoclose-msg.err{ color:var(--fail); }
   .more-panel{
     display:flex; flex-wrap:wrap; gap:14px 20px; align-items:flex-end;
     padding:16px; background:var(--surface); border:1px solid var(--hair); border-radius:var(--radius-sm);
@@ -220,6 +229,8 @@
       <div class="fbar-row">
         <button class="more-toggle" id="more-toggle" type="button">更多篩選 ▾</button>
         <button class="clear-btn" id="clear-btn" type="button">清除篩選</button>
+        <button class="autoclose-btn" id="autoclose-btn" type="button">處理逾期結案</button>
+        <span class="autoclose-msg" id="autoclose-msg"></span>
       </div>
       <div class="more-panel fa-hidden" id="more-panel">
         <div class="more-field">
@@ -654,6 +665,44 @@
 
       $('more-toggle').addEventListener('click', () => { $('more-panel').classList.toggle('fa-hidden'); });
       $('clear-btn').addEventListener('click', clearFilters);
+      $('autoclose-btn').addEventListener('click', runAutoClose);
+    }
+
+    async function runAutoClose(){
+      const btn = $('autoclose-btn');
+      const msg = $('autoclose-msg');
+      btn.disabled = true;
+      msg.className = 'autoclose-msg';
+      msg.textContent = '處理中…';
+
+      const { data, error } = await supabase.rpc('auto_close_expired');
+      if (error){
+        msg.className = 'autoclose-msg err';
+        msg.textContent = (error.message || '').includes('not_admin') ? '權限不足。' : '處理失敗，請稍後再試。';
+        btn.disabled = false;
+        return;
+      }
+
+      const count = data?.closed_count || 0;
+      const ids = Array.isArray(data?.ticket_ids) ? data.ticket_ids : [];
+
+      // 對每筆結案的 ticket 補發感謝信（best-effort，無 followup_answer → 純祝福版）
+      let sent = 0;
+      for (const id of ids){
+        try {
+          await supabase.functions.invoke('notify-ticket', { body: { event: 'closed', ticket_id: id } });
+          sent++;
+        } catch (e) {
+          console.warn('[notify-ticket] 逾期結案感謝信寄送失敗：', id, e);
+        }
+      }
+
+      msg.className = 'autoclose-msg ok';
+      msg.textContent = count
+        ? `已結案 ${count} 筆，感謝信已送出 ${sent} 封。`
+        : '沒有逾期待結案的工單。';
+      btn.disabled = false;
+      if (count) setTimeout(load, 800);   // 重載清單反映新狀態
     }
 
     function clearFilters(){
