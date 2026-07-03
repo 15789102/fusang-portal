@@ -155,6 +155,37 @@
   }
   .note strong{color:var(--ink);}
 
+  /* 關閉此單 */
+  .close-block{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--hair-strong); }
+  .close-toggle{
+    border:1px solid var(--hair-strong); background:var(--surface); color:var(--fail);
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:12.5px; font-weight:500; transition:all .15s ease;
+  }
+  .close-toggle:hover{ border-color:var(--fail); background:var(--fail-soft); }
+  .close-form{ margin-top:12px; }
+  .close-actions{ display:flex; gap:10px; margin-top:10px; }
+  .btn-close-confirm{
+    border:none; background:var(--fail); color:#fff; font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:var(--radius-sm); transition:filter .15s ease;
+  }
+  .btn-close-confirm:hover:not(:disabled){ filter:brightness(.94); }
+  .btn-close-confirm:disabled{ opacity:.45; cursor:not-allowed; }
+  .btn-close-cancel{
+    border:1px solid var(--hair-strong); background:var(--surface); color:var(--muted);
+    font-size:13px; padding:9px 16px; border-radius:var(--radius-sm);
+  }
+  .close-msg{ font-size:12.5px; display:none; padding:8px 12px; border-radius:6px; margin-top:10px; }
+  .close-msg.show{ display:block; }
+  .close-msg.err{ background:var(--fail-soft); color:var(--fail); }
+  .close-msg.ok{ background:var(--ok-soft); color:var(--ok); }
+
+  /* admin 關閉顯示 */
+  .cancel-shown{
+    margin-top:14px; padding:14px 16px;
+    background:var(--fail-soft); border:1px solid #F0C9C9; border-radius:var(--radius-sm);
+  }
+  .cancel-reason{ font-size:14px; line-height:1.75; color:var(--ink); white-space:pre-wrap; word-break:break-word; margin-top:4px; }
+
   /* 客戶資料區塊 */
   .cust{
     margin-top:16px;padding:14px 16px;
@@ -273,6 +304,7 @@
           </div>
         </div>
         <label class="consent-check"><input type="checkbox" id="f-consent" /> 僅顯示同意引用</label>
+        <label class="consent-check"><input type="checkbox" id="f-admin-closed" /> 僅顯示 admin 關閉</label>
       </div>
     </div>
 
@@ -338,7 +370,7 @@
     const F = {
       email: '', time: 'all', from: '', to: '',
       statuses: new Set(), subject: 'all', lang: 'all', gender: 'all',
-      ratings: new Set(), consentOnly: false,
+      ratings: new Set(), consentOnly: false, adminClosedOnly: false,
     };
 
     async function load(){
@@ -391,6 +423,7 @@
         if (F.gender !== 'all' && t.gender !== F.gender) return false;
         if (F.ratings.size && !F.ratings.has(ratingBucket(t))) return false;
         if (F.consentOnly && t.feedback_consent !== true) return false;
+        if (F.adminClosedOnly && t.closed_by_admin !== true) return false;
         return true;
       });
 
@@ -466,6 +499,7 @@
       });
 
       bindReply(wrap, t);
+      bindClose(wrap, t);
       return wrap;
     }
 
@@ -514,8 +548,19 @@
           ? `<div class="note">已首覆。客戶可於 <strong>${deadline}</strong> 前追問一次；逾期自動結案，無需處理。</div>`
           : `<div class="note">已首覆，追問窗（至 ${deadline}）已過，客戶未追問。此諮詢視為完成。</div>`;
       } else if (t.status === 'closed'){
-        h += `<div class="note">本諮詢已結案。</div>`;
-        h += renderFeedback(t);
+        if (t.closed_by_admin){
+          h += `<div class="cancel-shown"><div class="seg-label">已由管理者關閉</div>` +
+               `<div class="cancel-reason">${esc(t.close_reason || '（未填原因）')}</div>` +
+               `<div class="seg-meta">關閉於 ${fmtDT(t.closed_at)}</div></div>`;
+        } else {
+          h += `<div class="note">本諮詢已結案。</div>`;
+          h += renderFeedback(t);
+        }
+      }
+
+      // 關閉此單（未結案才可）
+      if (t.status !== 'closed'){
+        h += closeBlock(t.id);
       }
 
       // 技術 meta
@@ -523,6 +568,21 @@
            `<span>付款 <code>${esc(t.stripe_session_id || '—')}</code></span></div>`;
 
       return h;
+    }
+
+    function closeBlock(id){
+      return `<div class="close-block" data-close="${id}">
+        <button class="close-toggle" type="button">關閉此單…</button>
+        <div class="close-form fa-hidden">
+          <div class="seg-label">關閉原因（客戶會收到此說明）</div>
+          <textarea class="reply-input close-reason-input" placeholder="說明關閉原因，例如：此問題超出紫微斗數命理諮詢範圍，款項將於數個工作天內退回。如有疑問請與我們聯繫。"></textarea>
+          <div class="close-actions">
+            <button class="btn-close-confirm" type="button" disabled>確認關閉並通知客戶</button>
+            <button class="btn-close-cancel" type="button">取消</button>
+          </div>
+          <div class="close-msg"></div>
+        </div>
+      </div>`;
     }
 
     function renderCust(t){
@@ -634,6 +694,61 @@
       });
     }
 
+    function bindClose(wrap, t){
+      const block = wrap.querySelector('.close-block');
+      if (!block) return;
+      const toggle = block.querySelector('.close-toggle');
+      const form = block.querySelector('.close-form');
+      const input = block.querySelector('.close-reason-input');
+      const confirm = block.querySelector('.btn-close-confirm');
+      const cancel = block.querySelector('.btn-close-cancel');
+      const msg = block.querySelector('.close-msg');
+
+      toggle.addEventListener('click', () => {
+        form.classList.toggle('fa-hidden');
+        toggle.classList.toggle('open');
+      });
+      cancel.addEventListener('click', () => {
+        form.classList.add('fa-hidden');
+        toggle.classList.remove('open');
+      });
+      input.addEventListener('input', () => { confirm.disabled = input.value.trim().length < 1; });
+
+      confirm.addEventListener('click', async () => {
+        confirm.disabled = true;
+        msg.className = 'close-msg';
+        const reason = input.value.trim();
+
+        const { error } = await supabase.rpc('admin_close_ticket', { p_ticket_id: t.id, p_reason: reason });
+        if (error){
+          msg.textContent = mapCloseErr(error.message || '');
+          msg.classList.add('show','err');
+          confirm.disabled = false;
+          return;
+        }
+
+        // best-effort：寄關閉通知信給客戶
+        try {
+          await supabase.functions.invoke('notify-ticket', { body: { event: 'cancelled', ticket_id: t.id } });
+        } catch (e) {
+          console.warn('[notify-ticket] 關閉通知寄送失敗（不影響關閉）：', e);
+        }
+
+        msg.textContent = '已關閉並通知客戶。';
+        msg.classList.add('show','ok');
+        openIds.add(t.id);
+        setTimeout(load, 700);
+      });
+    }
+
+    function mapCloseErr(m){
+      if (m.includes('not_admin'))       return '權限不足。';
+      if (m.includes('already_closed'))  return '此工單已結案，將重新整理。';
+      if (m.includes('empty_reason'))    return '請填寫關閉原因。';
+      if (m.includes('ticket_not_found')) return '找不到此工單。';
+      return '關閉失敗，請稍後再試。';
+    }
+
     function mapErr(m){
       if (m.includes('not_admin'))      return '權限不足。';
       if (m.includes('not_answerable')) return '此工單目前無法回覆（狀態已變更），將重新整理。';
@@ -660,6 +775,7 @@
       $('f-lang').addEventListener('change', (e) => { F.lang = e.target.value; apply(); });
       $('f-gender').addEventListener('change', (e) => { F.gender = e.target.value; apply(); });
       $('f-consent').addEventListener('change', (e) => { F.consentOnly = e.target.checked; apply(); });
+      $('f-admin-closed').addEventListener('change', (e) => { F.adminClosedOnly = e.target.checked; apply(); });
 
       document.querySelectorAll('#status-chips .chip').forEach((c) => {
         const act = () => { toggleChip(F.statuses, c.dataset.status, c); apply(); };
@@ -717,10 +833,11 @@
     function clearFilters(){
       F.email = ''; F.time = 'all'; F.from = ''; F.to = '';
       F.statuses.clear(); F.subject = 'all'; F.lang = 'all'; F.gender = 'all';
-      F.ratings.clear(); F.consentOnly = false;
+      F.ratings.clear(); F.consentOnly = false; F.adminClosedOnly = false;
       $('f-email').value = ''; $('f-time').value = 'all'; $('f-from').value = ''; $('f-to').value = '';
       $('f-subject').value = 'all'; $('f-lang').value = 'all'; $('f-gender').value = 'all';
       $('f-consent').checked = false;
+      $('f-admin-closed').checked = false;
       $('date-row').classList.add('fa-hidden');
       document.querySelectorAll('.chip.on').forEach((c) => c.classList.remove('on'));
       apply();
