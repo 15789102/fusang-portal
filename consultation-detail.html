@@ -25,7 +25,7 @@
     supabase, initConsult,
     pick, isZh, FOLLOWUP_DAYS, SIGNER,
     subjLabel, ratingLabel, STATUS_LABEL, fmtDate, refCode,
-    inFollowupWindow, getTicketById,
+    inFollowupWindow, isAdminClosed, statusText, getTicketById,
     signatureHtml, esc, el, showMsg, reloadSoon,
     mapFollowupErr, mapCloseErr, mapFeedbackErr, RATINGS,
   } from './consultation-common.js';
@@ -80,7 +80,7 @@
       `<div class="card-kicker">${pick('諮詢細節', 'Consultation')} · ${pick('編號', 'Ref')} ${refCode(t.id)}</div>` +
       `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">` +
         `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
-        `<span class="${pillClass}"><span class="dot"></span>${STATUS_LABEL[t.status] || t.status}</span>` +
+        `<span class="${pillClass}"><span class="dot"></span>${statusText(t)}</span>` +
       `</div>` +
       `<div class="qa-block"><div class="qa-label">${pick('你的問題', 'Your question')}</div>` +
       `<div class="qa-text">${esc(t.content)}</div>` +
@@ -143,8 +143,16 @@
         `</div>`;
     }
 
-    // 已結案且未回饋 → 回饋表單
-    if (t.status === 'closed' && !t.rating) {
+    // admin 關閉 → 顯示關閉原因（不出回饋）
+    if (isAdminClosed(t)) {
+      html += `<div class="qa-divider"></div>` +
+        `<div class="qa-block"><div class="qa-label">${pick('諮詢已關閉', 'Consultation closed')}</div>` +
+        `<div class="answer-box" style="background:var(--t-ji-bg);border-color:#e4ccd1;"><div class="qa-text">${esc(t.close_reason || '')}</div></div>` +
+        `<div class="qa-meta">${pick('關閉於', 'Closed')} ${fmtDate(t.closed_at)}</div></div>`;
+    }
+
+    // 已結案且未回饋（非 admin 關閉）→ 回饋表單
+    if (t.status === 'closed' && !t.rating && !t.closed_by_admin) {
       html += `<div class="qa-divider"></div><div id="fb-host"></div>`;
     }
     // 已回饋 → 顯示
