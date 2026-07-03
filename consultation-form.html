@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuSang Vision — 提交問事</title>
+</head>
+<body>
+
+<div id="site-header"></div>
+<div id="consult-nav"></div>
+
+<div class="fs-page">
+  <div class="cons-wrap">
+    <div class="cons-hero">
+      <div class="cons-eyebrow" id="hero-eyebrow">Personal Consultation</div>
+      <h1 class="cons-title" id="hero-title">提交問事</h1>
+      <div class="cons-sub" id="hero-sub">Ask one question that matters.</div>
+      <div class="cons-rule"></div>
+    </div>
+    <div id="cons-loading" class="cons-loading">載入中…</div>
+    <div id="cons-body"></div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  window.FS_ACTIVE_PAGE = 'consultation';
+  import {
+    supabase, initConsult, startCheckout,
+    pick, PRICE_LABEL, SUBJECTS,
+    getMyChartSession, getMyTickets, findActive, findPendingDraft,
+    disclaimerHtml, esc, el, showMsg,
+    mapCreateErr, mapCheckoutErr,
+  } from './consultation-common.js';
+
+  document.getElementById('hero-eyebrow').textContent = pick('提交問事', 'Personal Consultation');
+  document.getElementById('hero-title').textContent   = pick('提交問事', 'Ask One Question');
+  document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', 'A human reading of your chart, for one question that matters.');
+
+  let chartSessionId = null;
+
+  (async () => {
+    const session = await initConsult('form');
+    if (!session) return;
+
+    chartSessionId = await getMyChartSession();
+    const tickets = await getMyTickets();
+
+    document.getElementById('cons-loading').style.display = 'none';
+    const body = document.getElementById('cons-body');
+
+    // 守門 1：無命盤
+    if (!chartSessionId) {
+      body.appendChild(cardNoChart());
+      return;
+    }
+    // 守門 2：已有進行中諮詢 → 不讓重複開，導去看那張
+    const active = findActive(tickets);
+    if (active) {
+      window.location.href = `consultation-detail.html?id=${active.id}`;
+      return;
+    }
+    // 守門 3：有 pending 草稿 → 預填
+    const draft = findPendingDraft(tickets);
+    body.appendChild(cardForm(draft));
+  })();
+
+  function cardNoChart() {
+    const c = el('div', 'cons-card soft');
+    c.innerHTML =
+      `<div class="card-kicker">${pick('尚無命盤', 'No chart yet')}</div>` +
+      `<div class="empty-note">${pick(
+        '單獨問事需先有你的命盤。請先回到儀表板生成命盤，完成後再回來提交問題。',
+        'A personal consultation needs your chart first. Generate it from your dashboard, then come back to ask.'
+      )}<br><br><span class="link-inline" id="go-dash">${pick('前往儀表板 →', 'Go to dashboard →')}</span></div>`;
+    c.querySelector('#go-dash').addEventListener('click', () => { window.location.href = 'dashboard.html'; });
+    return c;
+  }
+
+  function cardForm(draft) {
+    const c = el('div', 'cons-card');
+    let selected = draft?.subject || null;
+
+    const subjButtons = SUBJECTS.map((s) =>
+      `<button class="subj-opt${selected === s.code ? ' sel' : ''}" data-code="${s.code}">${s.zh}<span class="en">${s.en}</span></button>`
+    ).join('');
+
+    c.innerHTML =
+      `<div class="card-kicker">${pick('提交問題', 'Submit a question')}</div>` +
+      (draft ? `<div class="banner">${pick(
+        '你有一筆尚未完成付款的諮詢，已為你載入內容。完成付款後即進入回覆佇列。',
+        'You have an unpaid consultation. Its details are loaded below — complete payment to enter the reply queue.'
+      )}</div>` : '') +
+      `<div class="field-label">${pick('選擇主題', 'Choose a topic')}</div>` +
+      `<div class="subj-grid" id="subj-grid">${subjButtons}</div>` +
+      `<div class="field-label">${pick('描述你的處境', 'Describe your situation')}</div>` +
+      `<div class="field-hint">${pick(
+        '描述越完整，回覆越精準。盡量說明背景、目前的狀況，以及你最想釐清的點。',
+        'The more context you give, the more precise the reading. Include the background, where things stand now, and what you most want clarified.'
+      )}</div>` +
+      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', 'Write your question and situation here…')}">${draft?.content ? esc(draft.content) : ''}</textarea>` +
+      `<div class="char-count" id="char-count">0</div>` +
+      disclaimerHtml() +
+      `<label class="consent"><input type="checkbox" id="consent"><span>${pick(
+        '我了解這是不可退款的數位服務，並同意以上各項。',
+        'I understand this is a non-refundable digital service and agree to the above.'
+      )}</span></label>` +
+      `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
+      `<div class="form-gate" id="form-gate"></div>` +
+      `<div class="msg" id="form-msg"></div>`;
+
+    c.querySelectorAll('.subj-opt').forEach((b) => {
+      b.addEventListener('click', () => {
+        c.querySelectorAll('.subj-opt').forEach((x) => x.classList.remove('sel'));
+        b.classList.add('sel');
+        selected = b.getAttribute('data-code');
+        refresh();
+      });
+    });
+
+    const contentEl = c.querySelector('#content');
+    const countEl = c.querySelector('#char-count');
+    const consentEl = c.querySelector('#consent');
+    const btn = c.querySelector('#submit-btn');
+    const gate = c.querySelector('#form-gate');
+    const msg = c.querySelector('#form-msg');
+
+    const MIN_CHARS = 10;
+    const refresh = () => {
+      const len = contentEl.value.trim().length;
+      countEl.textContent = String(len);
+      const ready = selected && len >= MIN_CHARS && consentEl.checked;
+      btn.disabled = !ready;
+
+      const missing = [];
+      if (!selected) missing.push(pick('選擇主題', 'choose a topic'));
+      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
+      if (!consentEl.checked) missing.push(pick('勾選同意聲明', 'agree to the terms'));
+
+      gate.textContent = ready ? '' : (pick('尚需：', 'To submit: ') + missing.join(pick('、', ', ')));
+    };
+    contentEl.addEventListener('input', refresh);
+    consentEl.addEventListener('change', refresh);
+    refresh();
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      msg.className = 'msg';
+      const content = contentEl.value.trim();
+
+      let ticketId = null;
+      try {
+        const { data, error } = await supabase.rpc('create_consultation_ticket', {
+          p_chart_session_id: chartSessionId,
+          p_subject: selected,
+          p_content: content,
+        });
+        if (error) throw error;
+        ticketId = data;
+      } catch (e) {
+        showMsg(msg, 'err', mapCreateErr(e?.message || ''));
+        refresh();
+        return;
+      }
+
+      const res = await startCheckout('ticket', { ticket_id: ticketId });
+      if (!res.ok) {
+        showMsg(msg, 'err', mapCheckoutErr(res.code));
+        refresh();
+      }
+      // res.ok → startCheckout 已跳轉 Stripe
+    });
+
+    return c;
+  }
+</script>
+
+</body>
+</html>

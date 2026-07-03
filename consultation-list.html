@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuSang Vision — 我的問事紀錄</title>
+</head>
+<body>
+
+<div id="site-header"></div>
+<div id="consult-nav"></div>
+
+<div class="fs-page">
+  <div class="cons-wrap">
+    <div class="cons-hero">
+      <div class="cons-eyebrow" id="hero-eyebrow">My Consultations</div>
+      <h1 class="cons-title" id="hero-title">我的問事紀錄</h1>
+      <div class="cons-rule"></div>
+    </div>
+    <div id="cons-loading" class="cons-loading">載入中…</div>
+    <div id="cons-body"></div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  window.FS_ACTIVE_PAGE = 'consultation';
+  import {
+    initConsult,
+    pick, getMyTickets,
+    subjLabel, STATUS_LABEL, fmtDate, refCode,
+    isActive, isPendingDraft, needsFeedback,
+    el, esc,
+  } from './consultation-common.js';
+
+  document.getElementById('hero-eyebrow').textContent = pick('我的問事紀錄', 'My Consultations');
+  document.getElementById('hero-title').textContent   = pick('我的問事紀錄', 'My Consultations');
+
+  (async () => {
+    const session = await initConsult('list');
+    if (!session) return;
+
+    const tickets = await getMyTickets();
+    document.getElementById('cons-loading').style.display = 'none';
+    const body = document.getElementById('cons-body');
+
+    // 只列已付款的（pending 未付款草稿不列入正式紀錄）
+    const rows = tickets.filter((t) => !isPendingDraft(t));
+
+    if (!rows.length) {
+      body.appendChild(cardEmpty());
+      return;
+    }
+
+    // 進行中置頂，其餘依時間
+    rows.sort((a, b) => {
+      const ai = isActive(a) ? 0 : 1;
+      const bi = isActive(b) ? 0 : 1;
+      if (ai !== bi) return ai - bi;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    rows.forEach((t) => body.appendChild(rowItem(t)));
+
+    // 底部：新問事入口（無進行中才顯示）
+    if (!rows.some(isActive)) {
+      const cta = el('div');
+      cta.style.marginTop = '20px';
+      cta.innerHTML = `<button class="cons-btn" id="new-btn">${pick('提交新的問事', 'New consultation')}</button>`;
+      cta.querySelector('#new-btn').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
+      body.appendChild(cta);
+    }
+  })();
+
+  function rowItem(t) {
+    const row = el('div', 'hist-item');
+    const active = isActive(t);
+    const fb = needsFeedback(t);
+    const statusText = active
+      ? (STATUS_LABEL[t.status] || t.status)
+      : STATUS_LABEL.closed;
+
+    row.innerHTML =
+      `<div>` +
+        `<div class="hist-subj">${subjLabel(t.subject)} ` +
+        `<span style="color:var(--ink-faint);font-family:var(--font-sans);font-size:11px;">#${refCode(t.id)}</span></div>` +
+        `<div class="hist-date" style="margin-top:4px;">${fmtDate(t.created_at)} · ${esc(statusText)}` +
+        (fb ? ` · <span style="color:var(--gold);">${pick('可回饋', 'Feedback')}</span>` : '') +
+        (active ? ` · <span style="color:var(--accent-soft);">${pick('進行中', 'Active')}</span>` : '') +
+        `</div>` +
+      `</div>` +
+      `<span style="color:var(--ink-faint);">→</span>`;
+
+    row.addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${t.id}`; });
+    return row;
+  }
+
+  function cardEmpty() {
+    const c = el('div', 'cons-card soft');
+    c.innerHTML =
+      `<div class="card-kicker">${pick('尚無紀錄', 'No consultations yet')}</div>` +
+      `<div class="empty-note">${pick(
+        '你還沒有任何問事紀錄。',
+        'You haven\'t made any consultations yet.'
+      )}<br><br><span class="link-inline" id="go-form">${pick('提交第一則問事 →', 'Submit your first consultation →')}</span></div>`;
+    c.querySelector('#go-form').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
+    return c;
+  }
+</script>
+
+</body>
+</html>
