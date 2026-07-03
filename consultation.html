@@ -5,491 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FuSang Vision — 單獨問事</title>
 <style>
-  :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
+  /* Landing 專屬（共用樣式由 consultation-common.js 注入）*/
+  .lp-hero { text-align: center; padding: 24px 0 8px; }
+  .lp-eyebrow {
+    font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.32em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+  }
+  .lp-title {
+    font-family: var(--font-serif-zh); font-weight: 500;
+    font-size: clamp(30px, 6vw, 46px); line-height: 1.2; color: var(--ink-darkest);
+    letter-spacing: 0.01em; margin-bottom: 16px;
+  }
+  .lp-sub {
+    font-family: var(--font-serif-en); font-style: italic; font-size: 17px;
+    color: var(--ink-light); max-width: 460px; margin: 0 auto;
+  }
+  .lp-rule { margin: 28px auto 0; width: 64px; height: 1px; background: var(--gold); opacity: 0.6; }
 
-  .cons-wrap { max-width: 760px; margin: 0 auto; padding: 64px 32px 80px; }
-  @media (max-width: 720px) { .cons-wrap { padding: 44px 22px 64px; } }
-
-  /* ── Hero ── */
-  .cons-hero {
-    margin-bottom: 40px;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2,0.7,0.2,1) forwards;
-  }
-  .cons-eyebrow {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 14px;
-  }
-  .cons-title {
-    font-family: var(--font-serif-zh);
-    font-weight: 500;
-    font-size: clamp(28px, 5vw, 40px);
-    line-height: 1.25;
-    color: var(--ink-darkest);
-    letter-spacing: 0.01em;
-  }
-  .cons-sub {
-    margin-top: 12px;
-    font-family: var(--font-serif-en);
-    font-style: italic;
-    font-size: 16px;
-    color: var(--ink-light);
-  }
-  .cons-rule { margin-top: 24px; width: 64px; height: 1px; background: var(--gold); opacity: 0.6; }
-
-  /* ── Card ── */
-  .cons-card {
-    position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 30px 30px 28px;
-    margin-bottom: 22px;
-    overflow: hidden;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2,0.7,0.2,1) forwards;
-  }
-  .cons-card::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 38px; height: 38px;
-    border-top: 1px solid var(--gold);
-    border-right: 1px solid var(--gold);
-    opacity: 0.4;
-    border-top-right-radius: 4px;
-  }
-  .cons-card.soft { background: var(--bg-soft-2); }
-
-  .card-kicker {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-bottom: 14px;
-  }
-  .card-h {
-    font-family: var(--font-serif-zh);
-    font-weight: 500;
-    font-size: 22px;
-    color: var(--ink-darkest);
-    letter-spacing: 0.02em;
-    margin-bottom: 16px;
+  .lp-section { margin: 44px 0; }
+  .lp-lead {
+    font-family: var(--font-serif-zh); font-size: 17px; line-height: 2;
+    color: var(--ink-dark); text-align: center; max-width: 560px; margin: 0 auto;
   }
 
-  /* ── Subject picker ── */
-  .subj-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
+  .lp-features {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 40px 0;
   }
-  @media (max-width: 480px) { .subj-grid { grid-template-columns: 1fr; } }
-  .subj-opt {
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    color: var(--ink-dark);
-    background: var(--bg-primary);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    text-align: left;
+  @media (max-width: 640px) { .lp-features { grid-template-columns: 1fr; } }
+  .lp-feat {
+    position: relative; background: var(--bg-card); border: 1px solid var(--rule);
+    border-radius: 4px; padding: 24px 22px; overflow: hidden;
   }
-  .subj-opt:hover { border-color: var(--gold-soft); }
-  .subj-opt.sel {
-    border-color: var(--accent-soft);
-    background: var(--accent-pale);
-    color: var(--ink-darkest);
+  .lp-feat::before {
+    content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px;
+    border-top: 1px solid var(--gold); border-right: 1px solid var(--gold);
+    opacity: 0.4; border-top-right-radius: 4px;
   }
-  .subj-opt .en {
-    display: block;
-    font-family: var(--font-serif-en);
-    font-style: italic;
-    font-size: 12.5px;
-    color: var(--ink-light);
-    margin-top: 3px;
+  .lp-feat-n {
+    font-family: var(--font-serif-en); font-style: italic; font-size: 15px;
+    color: var(--gold); margin-bottom: 10px;
   }
-
-  /* ── Textarea ── */
-  .field-label {
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    color: var(--ink-dark);
-    margin-bottom: 8px;
+  .lp-feat-h {
+    font-family: var(--font-serif-zh); font-weight: 500; font-size: 17px;
+    color: var(--ink-darkest); margin-bottom: 8px;
   }
-  .field-hint {
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--ink-light);
-    margin-bottom: 12px;
-  }
-  textarea.cons-input {
-    width: 100%;
-    min-height: 150px;
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--ink-darkest);
-    background: var(--bg-primary);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 14px 16px;
-    resize: vertical;
-    transition: border-color 0.2s;
-  }
-  textarea.cons-input:focus { outline: none; border-color: var(--accent-soft); }
-  .char-count {
-    text-align: right;
-    font-family: var(--font-sans);
-    font-size: 11px;
-    color: var(--ink-faint);
-    margin-top: 6px;
-  }
-
-  /* ── Disclaimer block ── */
-  .disclaim {
-    background: var(--bg-soft-2);
-    border: 1px solid var(--rule-soft-2);
-    border-radius: 3px;
-    padding: 18px 20px;
-    margin: 24px 0 20px;
-  }
-  .disclaim-h {
-    font-family: var(--font-sans);
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 12px;
-  }
-  .disclaim ul { list-style: none; }
-  .disclaim li {
-    position: relative;
-    font-family: var(--font-serif-zh);
-    font-size: 13.5px;
-    line-height: 1.75;
-    color: var(--ink-mid);
-    padding-left: 16px;
-    margin-bottom: 9px;
-  }
-  .disclaim li::before {
-    content: '·';
-    position: absolute;
-    left: 4px;
-    color: var(--gold);
-  }
-  .disclaim li strong { color: var(--ink-dark); font-weight: 600; }
-
-  /* ── Consent ── */
-  .consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 22px;
-    cursor: pointer;
-  }
-  .consent input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent-deep); cursor: pointer; }
-  .consent span {
-    font-family: var(--font-serif-zh);
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--ink-dark);
-  }
-
-  /* ── Buttons ── */
-  .cons-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    font-family: var(--font-serif-zh);
-    font-size: 16px;
-    letter-spacing: 0.04em;
-    color: var(--bg-card);
-    background: var(--accent-deep);
-    padding: 15px 24px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.25s, transform 0.25s, opacity 0.25s;
-  }
-  .cons-btn:hover:not([disabled]) { background: #1d4448; transform: translateY(-1px); }
-  .cons-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
-  .cons-btn.ghost {
-    color: var(--accent-deep);
-    background: var(--bg-card);
-    border: 1px solid var(--gold-soft);
-  }
-  .cons-btn.ghost:hover:not([disabled]) { background: var(--accent-pale); }
-
-  /* ── Status / answer blocks ── */
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--accent-pale);
-    color: var(--accent-deep);
-    background: var(--bg-primary);
-  }
-  .status-pill .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent-soft);
-  }
-  .status-pill.wait .dot { animation: fsPulse 1.6s ease-in-out infinite; }
-  .status-pill.done .dot { background: var(--t-lu); }
-
-  .qa-block { margin-top: 22px; }
-  .qa-label {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-bottom: 8px;
-  }
-  .qa-text {
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    line-height: 1.85;
-    color: var(--ink-darkest);
-    white-space: pre-wrap;
-  }
-  .qa-meta {
-    font-family: var(--font-sans);
-    font-size: 11.5px;
-    color: var(--ink-light);
-    margin-top: 6px;
-  }
-  .qa-divider { height: 1px; background: var(--rule); margin: 22px 0; }
-
-  .answer-box {
-    background: var(--t-lu-bg);
-    border: 1px solid #cfe0d5;
-    border-radius: 3px;
-    padding: 18px 20px;
-  }
-
-  .followup-note {
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--ink-mid);
-    margin: 16px 0 12px;
-  }
-  .followup-note strong { color: var(--ink-dark); }
-
-  /* ── History ── */
-  .hist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--rule-soft-2);
-    cursor: pointer;
-  }
-  .hist-item:last-child { border-bottom: none; }
-  .hist-subj { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-dark); }
-  .hist-date { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-light); }
-  .hist-detail {
-    padding: 4px 0 18px;
-    border-bottom: 1px solid var(--rule-soft-2);
-  }
-
-  /* ── Banner ── */
-  .banner {
-    background: var(--bg-soft-2);
-    border: 1px solid var(--gold-soft);
-    border-radius: 3px;
-    padding: 14px 18px;
-    margin-bottom: 22px;
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink-dark);
-  }
-
-  /* ── Inline message ── */
-  .msg {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    line-height: 1.6;
-    margin-top: 14px;
-    padding: 12px 14px;
-    border-radius: 3px;
-    display: none;
-  }
-  .msg.show { display: block; }
-  .msg.err { background: var(--t-ji-bg); color: var(--t-ji); border: 1px solid #e4ccd1; }
-  .msg.ok  { background: var(--t-lu-bg); color: var(--t-lu); border: 1px solid #cfe0d5; }
-
-  /* 按鈕未達標提示 */
-  .form-gate {
-    font-family: var(--font-sans);
-    font-size: 12px;
-    line-height: 1.6;
-    color: var(--ink-light);
-    text-align: center;
-    margin-top: 10px;
-    min-height: 18px;
-    transition: opacity 0.2s;
-  }
-
-  .cons-loading {
-    text-align: center;
-    padding: 90px 20px;
-    font-family: var(--font-serif-zh);
-    color: var(--ink-light);
-    font-size: 15px;
-    letter-spacing: 0.08em;
-  }
-  .empty-note {
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    line-height: 1.9;
+  .lp-feat-p {
+    font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.8;
     color: var(--ink-mid);
   }
-  .link-inline {
-    color: var(--accent-soft);
-    border-bottom: 1px solid var(--accent-pale);
-    cursor: pointer;
-  }
-  .link-inline:hover { color: var(--accent-deep); }
 
-  /* ── 署名區（回覆末尾）── */
-  .sig {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--rule);
+  .lp-media {
+    width: 100%; border-radius: 6px; overflow: hidden; margin: 40px 0;
+    border: 1px solid var(--rule); background: var(--bg-soft-2);
+    aspect-ratio: 16 / 7; display: flex; align-items: center; justify-content: center;
   }
-  .sig img {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    object-fit: cover;
-    object-position: center top;
-    display: block;
-    flex: 0 0 auto;
+  .lp-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lp-media-ph {
+    font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.1em;
+    color: var(--ink-faint); text-transform: uppercase;
   }
-  .sig-name { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest); font-weight: 500; }
-  .sig-org { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-light); letter-spacing: 0.04em; }
 
-  /* ── 結案 / 確認 ── */
-  .close-row { margin-top: 18px; }
-  .close-link {
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    color: var(--ink-light);
-    cursor: pointer;
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 1px;
+  .lp-price { text-align: center; margin: 40px 0 12px; }
+  .lp-price-tag { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-mid); }
+  .lp-price-tag strong {
+    font-family: var(--font-serif-en); font-size: 32px; color: var(--ink-darkest);
+    font-weight: 500; font-style: normal; margin: 0 4px;
   }
-  .close-link:hover { color: var(--ink-mid); }
-  .confirm-box {
-    margin-top: 14px;
-    background: var(--bg-soft-2);
-    border: 1px solid var(--gold-soft);
-    border-radius: 3px;
-    padding: 16px 18px;
-  }
-  .confirm-text {
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ink-dark);
-    margin-bottom: 14px;
-  }
-  .confirm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn-sm {
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    padding: 9px 18px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-  }
-  .btn-sm.confirm { color: var(--bg-card); background: var(--accent-deep); }
-  .btn-sm.confirm:hover { background: #1d4448; }
-  .btn-sm.cancel { color: var(--ink-mid); background: var(--bg-card); border: 1px solid var(--rule); }
-  .btn-sm.cancel:hover { border-color: var(--ink-light); }
 
-  /* ── 回饋卡 ── */
-  .fb-q {
-    font-family: var(--font-serif-zh);
-    font-size: 17px;
-    color: var(--ink-darkest);
-    line-height: 1.6;
-    margin-bottom: 18px;
+  .lp-actions {
+    display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin: 28px auto 0;
   }
-  .fb-opts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-  .fb-opt {
-    flex: 1 1 0;
-    min-width: 92px;
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    color: var(--ink-dark);
-    background: var(--bg-primary);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 14px 10px;
-    cursor: pointer;
-    text-align: center;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .fb-opt:hover { border-color: var(--gold-soft); }
-  .fb-opt.sel { border-color: var(--accent-soft); background: var(--accent-pale); color: var(--ink-darkest); }
-  .fb-consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin: 16px 0 20px;
-    cursor: pointer;
-  }
-  .fb-consent input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent-deep); cursor: pointer; }
-  .fb-consent span { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-mid); }
-  .fb-thanks {
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--ink-mid);
-  }
-  .fb-btn-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    color: var(--accent-deep);
-    background: var(--bg-card);
-    border: 1px solid var(--gold-soft);
-    border-radius: 3px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-  }
-  .fb-btn-inline:hover { background: var(--accent-pale); transform: translateY(-1px); }
-
-  @keyframes fsRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fsPulse { 0%,100% { opacity: 0.4; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.1); } }
-  @media (prefers-reduced-motion: reduce) {
-    .cons-hero, .cons-card { animation: none; opacity: 1; }
-    .status-pill .dot { animation: none; }
+  .lp-note {
+    font-family: var(--font-sans); font-size: 12px; color: var(--ink-light);
+    text-align: center; margin-top: 16px; line-height: 1.7;
   }
 </style>
 </head>
@@ -499,15 +87,35 @@
 
 <div class="fs-page">
   <div class="cons-wrap">
-    <div class="cons-hero">
-      <div class="cons-eyebrow" id="hero-eyebrow">Personal Consultation</div>
-      <h1 class="cons-title" id="hero-title">單獨問事</h1>
-      <div class="cons-sub" id="hero-sub">A human reading of your chart, for one question that matters.</div>
-      <div class="cons-rule"></div>
+
+    <div class="lp-hero">
+      <div class="lp-eyebrow" id="lp-eyebrow">Personal Consultation</div>
+      <h1 class="lp-title" id="lp-title">單獨問事</h1>
+      <div class="lp-sub" id="lp-sub">A human reading of your chart, for one question that matters.</div>
+      <div class="lp-rule"></div>
     </div>
 
-    <div id="cons-loading" class="cons-loading">載入中…</div>
-    <div id="cons-body"></div>
+    <div class="lp-section">
+      <p class="lp-lead" id="lp-lead">
+        當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。
+      </p>
+    </div>
+
+    <div class="lp-media">
+      <!-- <img src="你的素材圖.jpg" alt="FuSang Vision" /> -->
+      <span class="lp-media-ph" id="lp-media-ph">Your image here</span>
+    </div>
+
+    <div class="lp-features" id="lp-features"></div>
+
+    <div class="lp-price">
+      <div class="lp-price-tag" id="lp-price"><strong>US$68</strong></div>
+    </div>
+
+    <div id="lp-loading" class="cons-loading" style="padding:40px 20px;">載入中…</div>
+    <div class="lp-actions" id="lp-actions" style="display:none;"></div>
+    <div class="lp-note" id="lp-note" style="display:none;"></div>
+
   </div>
 </div>
 
@@ -515,591 +123,59 @@
 
 <script type="module">
   window.FS_ACTIVE_PAGE = 'consultation';
-  import { supabase, requireAuth, startCheckout } from './components.js';
+  import {
+    initConsult,
+    pick, getMyTickets, findActive,
+    el,
+  } from './consultation-common.js';
 
-  /* ── 語言（沿用元件快取；只切換靜態標籤）── */
-  const LANG = (() => {
-    try { const c = localStorage.getItem('fs_lang'); if (c) return c; } catch (_) {}
-    return 'zh-TW';
-  })();
-  const isZh = LANG.startsWith('zh');
-  const pick = (zh, en) => (isZh ? zh : en);
+  document.getElementById('lp-eyebrow').textContent = pick('單獨問事', 'Personal Consultation');
+  document.getElementById('lp-title').textContent   = pick('單獨問事', 'Personal Consultation');
+  document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', 'A human reading of your chart, for one question that matters.');
+  document.getElementById('lp-lead').textContent    = pick(
+    '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
+    'When you have a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
+  );
+  document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', 'Your image here');
 
-  const PRICE_LABEL = 'US$68';
-  const FOLLOWUP_DAYS = 7;
-  const AVATAR = 'https://fusang-vision.com/cdn/shop/files/ruei-syuan.jpg?v=1756331083&width=1500';
-  const SIGNER = 'RS Chen';
-
-  const RATINGS = [
-    { code: 'helpful',     zh: '有幫助',   en: 'Helpful' },
-    { code: 'somewhat',    zh: '還好',     en: 'Somewhat' },
-    { code: 'not_helpful', zh: '沒有幫助', en: 'Not really' },
+  const FEATURES = [
+    { n: '01', zh_h: '真人解盤', en_h: 'Answered by a human', zh_p: '由 RS Chen 親自解讀你的命盤，針對你的處境書面回覆。', en_p: 'RS Chen personally reads your chart and replies in writing to your situation.' },
+    { n: '02', zh_h: '為你個別撰寫', en_h: 'Written for you', zh_p: '每一則諮詢都是針對你的問題單獨準備，不是罐頭答案。', en_p: 'Each consultation is prepared individually for your question — never a template.' },
+    { n: '03', zh_h: '可追問一次', en_h: 'One follow-up', zh_p: '收到回覆後，7 天內可再追問一次，把想釐清的地方問清楚。', en_p: 'After the reply, you may ask one follow-up within 7 days to clarify further.' },
   ];
-  const ratingLabel = (code) => {
-    const r = RATINGS.find((x) => x.code === code);
-    return r ? pick(r.zh, r.en) : code;
-  };
+  document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
+    `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
+    `<div class="lp-feat-h">${pick(f.zh_h, f.en_h)}</div>` +
+    `<div class="lp-feat-p">${pick(f.zh_p, f.en_p)}</div></div>`
+  ).join('');
 
-  const SUBJECTS = [
-    { code: 'career',       zh: '事業與工作', en: 'Career & Work' },
-    { code: 'relationship', zh: '感情與關係', en: 'Love & Relationships' },
-    { code: 'wealth',       zh: '財運與理財', en: 'Wealth & Finances' },
-    { code: 'family',       zh: '人際與家庭', en: 'People & Family' },
-    { code: 'self',         zh: '自我與方向', en: 'Self & Direction' },
-    { code: 'other',        zh: '其他／綜合', en: 'Other / General' },
-  ];
-  const subjLabel = (code) => {
-    const s = SUBJECTS.find((x) => x.code === code);
-    return s ? pick(s.zh, s.en) : code;
-  };
-
-  const STATUS_LABEL = {
-    pending:  pick('待付款', 'Awaiting payment'),
-    paid:     pick('已付款・等待回覆', 'Paid · awaiting reply'),
-    answered: pick('已回覆', 'Answered'),
-    followup: pick('追問中・等待回覆', 'Follow-up · awaiting reply'),
-    closed:   pick('已結案', 'Closed'),
-  };
-
-  const fmtDate = (iso) => {
-    if (!iso) return '';
-    try { return new Date(iso).toLocaleDateString(isZh ? 'zh-TW' : 'en-US', { year:'numeric', month:'short', day:'numeric' }); }
-    catch (_) { return iso; }
-  };
-
-  /* hero/text localization */
-  document.getElementById('hero-eyebrow').textContent = pick('單獨問事', 'Personal Consultation');
-  document.getElementById('hero-title').textContent   = pick('單獨問事', 'Ask One Question');
-  document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', 'A human reading of your chart, for one question that matters.');
-
-  let chartSessionId = null;
-
-  const isActive = (t) => {
-    if (t.status === 'paid' || t.status === 'followup') return true;
-    if (t.status === 'answered' && t.answered_at) {
-      return new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
-    }
-    return false;
-  };
-  const isPendingDraft = (t) => t.status === 'pending' && t.payment_status === 'pending';
-  const inFollowupWindow = (t) =>
-    t.status === 'answered' && t.answered_at &&
-    new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
-  // 已結案且尚未回饋 → 可邀請回饋
-  const needsFeedback = (t) => t.status === 'closed' && !t.rating;
-
-  /* ── 主流程 ── */
   (async () => {
-    const session = await requireAuth();
+    const session = await initConsult('home');
     if (!session) return;
 
-    try {
-      const { data: cs } = await supabase.rpc('get_my_chart_session');
-      chartSessionId = cs || null;
-    } catch (_) { chartSessionId = null; }
+    const tickets = await getMyTickets();
+    const active = findActive(tickets);
 
-    let tickets = [];
-    try {
-      const { data } = await supabase
-        .from('consultation_tickets')
-        .select('*')
-        .order('created_at', { ascending: false });
-      tickets = data || [];
-    } catch (_) { tickets = []; }
+    document.getElementById('lp-loading').style.display = 'none';
+    const actions = document.getElementById('lp-actions');
+    const note = document.getElementById('lp-note');
+    actions.style.display = 'flex';
 
-    document.getElementById('cons-loading').style.display = 'none';
-    render(tickets);
-  })();
-
-  function render(tickets) {
-    const body = document.getElementById('cons-body');
-    body.innerHTML = '';
-
-    // 最新一筆未回饋的結案 → 歷史卡中預設展開並內嵌回饋表單
-    const fbTarget = tickets.find(needsFeedback);   // tickets 已按 created_at desc
-    const fbId = fbTarget ? fbTarget.id : null;
-
-    // 1) 無命盤 → 提示先生成
-    if (!chartSessionId) {
-      body.appendChild(cardNoChart());
-      const hist = tickets.filter((t) => !isActive(t) && !isPendingDraft(t));
-      if (hist.length) body.appendChild(cardHistory(hist, fbId));
-      return;
-    }
-
-    // 2) 進行中諮詢 → 檢視端
-    const active = tickets.find(isActive);
     if (active) {
-      body.appendChild(cardActive(active));
-      const hist = tickets.filter((t) => t !== active && !isActive(t) && !isPendingDraft(t));
-      if (hist.length) body.appendChild(cardHistory(hist, fbId));
-      return;
+      actions.innerHTML =
+        `<button class="cons-btn" id="btn-active">${pick('查看進行中的諮詢', 'View your active consultation')}</button>` +
+        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', 'My consultations')}</button>`;
+      actions.querySelector('#btn-active').addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${active.id}`; });
+      note.style.display = 'block';
+      note.textContent = pick('你目前有一則進行中的諮詢。同一時間僅能進行一則。', 'You have one consultation in progress. Only one at a time.');
+    } else {
+      actions.innerHTML =
+        `<button class="cons-btn" id="btn-new">${pick('提交新的問事', 'New consultation')}</button>` +
+        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', 'My consultations')}</button>`;
+      actions.querySelector('#btn-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
     }
-
-    // 3) 無進行中 → 提交表單（草稿則預填）+ 歷史（回饋內嵌於目標 ticket）
-    const draft = tickets.find(isPendingDraft);
-    body.appendChild(cardForm(draft));
-
-    const hist = tickets.filter((t) => !isActive(t) && !isPendingDraft(t));
-    if (hist.length) body.appendChild(cardHistory(hist, fbId));
-  }
-
-  /* ── 無命盤卡 ── */
-  function cardNoChart() {
-    const c = el('div', 'cons-card soft');
-    c.innerHTML =
-      `<div class="card-kicker">${pick('尚無命盤', 'No chart yet')}</div>` +
-      `<div class="empty-note">${pick(
-        '單獨問事需先有你的命盤。請先回到儀表板生成命盤，完成後再回來提交問題。',
-        'A personal consultation needs your chart first. Generate it from your dashboard, then come back to ask.'
-      )}<br><br><span class="link-inline" id="go-dash">${pick('前往儀表板 →', 'Go to dashboard →')}</span></div>`;
-    c.querySelector('#go-dash').addEventListener('click', () => { window.location.href = 'dashboard.html'; });
-    return c;
-  }
-
-  /* ── 提交表單卡 ── */
-  function cardForm(draft) {
-    const c = el('div', 'cons-card');
-    let selected = draft?.subject || null;
-
-    const subjButtons = SUBJECTS.map((s) =>
-      `<button class="subj-opt${selected === s.code ? ' sel' : ''}" data-code="${s.code}">` +
-      `${s.zh}<span class="en">${s.en}</span></button>`
-    ).join('');
-
-    c.innerHTML =
-      `<div class="card-kicker">${pick('提交問題', 'Submit a question')}</div>` +
-      (draft ? `<div class="banner">${pick(
-        '你有一筆尚未完成付款的諮詢，已為你載入內容。完成付款後即進入回覆佇列。',
-        'You have an unpaid consultation. Its details are loaded below — complete payment to enter the reply queue.'
-      )}</div>` : '') +
-      `<div class="field-label">${pick('選擇主題', 'Choose a topic')}</div>` +
-      `<div class="subj-grid" id="subj-grid">${subjButtons}</div>` +
-      `<div class="field-label">${pick('描述你的處境', 'Describe your situation')}</div>` +
-      `<div class="field-hint">${pick(
-        '描述越完整，回覆越精準。盡量說明背景、目前的狀況，以及你最想釐清的點。',
-        'The more context you give, the more precise the reading. Include the background, where things stand now, and what you most want clarified.'
-      )}</div>` +
-      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', 'Write your question and situation here…')}">${draft?.content ? esc(draft.content) : ''}</textarea>` +
-      `<div class="char-count" id="char-count">0</div>` +
-      disclaimerHtml() +
-      `<label class="consent"><input type="checkbox" id="consent"><span>${pick(
-        '我了解這是不可退款的數位服務，並同意以上各項。',
-        'I understand this is a non-refundable digital service and agree to the above.'
-      )}</span></label>` +
-      `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
-      `<div class="form-gate" id="form-gate"></div>` +
-      `<div class="msg" id="form-msg"></div>`;
-
-    // 主題選擇
-    c.querySelectorAll('.subj-opt').forEach((b) => {
-      b.addEventListener('click', () => {
-        c.querySelectorAll('.subj-opt').forEach((x) => x.classList.remove('sel'));
-        b.classList.add('sel');
-        selected = b.getAttribute('data-code');
-        refresh();
-      });
-    });
-
-    const contentEl = c.querySelector('#content');
-    const countEl = c.querySelector('#char-count');
-    const consentEl = c.querySelector('#consent');
-    const btn = c.querySelector('#submit-btn');
-    const gate = c.querySelector('#form-gate');
-    const msg = c.querySelector('#form-msg');
-
-    const MIN_CHARS = 10;
-    const refresh = () => {
-      const len = contentEl.value.trim().length;
-      countEl.textContent = String(len);
-      const ready = selected && len >= MIN_CHARS && consentEl.checked;
-      btn.disabled = !ready;
-
-      // 列出尚缺條件（讓灰按鈕說明原因）
-      const missing = [];
-      if (!selected) missing.push(pick('選擇主題', 'choose a topic'));
-      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
-      if (!consentEl.checked) missing.push(pick('勾選同意聲明', 'agree to the terms'));
-
-      if (ready) {
-        gate.textContent = '';
-      } else {
-        gate.textContent = pick('尚需：', 'To submit: ') + missing.join(pick('、', ', '));
-      }
-    };
-    contentEl.addEventListener('input', refresh);
-    consentEl.addEventListener('change', refresh);
-    refresh();
-
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      msg.className = 'msg';
-      const content = contentEl.value.trim();
-
-      let ticketId = null;
-      try {
-        const { data, error } = await supabase.rpc('create_consultation_ticket', {
-          p_chart_session_id: chartSessionId,
-          p_subject: selected,
-          p_content: content,
-        });
-        if (error) throw error;
-        ticketId = data;
-      } catch (e) {
-        showMsg(msg, 'err', mapCreateErr(e?.message || ''));
-        refresh();
-        return;
-      }
-
-      const res = await startCheckout('ticket', { ticket_id: ticketId });
-      if (!res.ok) {
-        showMsg(msg, 'err', mapCheckoutErr(res.code));
-        refresh();
-      }
-      // res.ok → startCheckout 已跳轉 Stripe
-    });
-
-    return c;
-  }
-
-  /* ── 進行中／已覆 檢視卡 ── */
-  function cardActive(t) {
-    const c = el('div', 'cons-card');
-    const waitState = (t.status === 'paid' || t.status === 'followup');
-    const pillClass = waitState ? 'status-pill wait' : 'status-pill done';
-
-    let html =
-      `<div class="card-kicker">${pick('目前的諮詢', 'Your consultation')} · ${pick('編號', 'Ref')} ${refCode(t.id)}</div>` +
-      `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">` +
-        `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
-        `<span class="${pillClass}"><span class="dot"></span>${STATUS_LABEL[t.status] || t.status}</span>` +
-      `</div>` +
-      `<div class="qa-block"><div class="qa-label">${pick('你的問題', 'Your question')}</div>` +
-      `<div class="qa-text">${esc(t.content)}</div>` +
-      `<div class="qa-meta">${pick('提交於', 'Submitted')} ${fmtDate(t.created_at)}</div></div>`;
-
-    // 待回覆（paid）
-    if (t.status === 'paid') {
-      html += `<div class="qa-divider"></div>` +
-        `<div class="followup-note">${pick(
-          '已收到付款，你的問題已進入回覆佇列。我們會在付款後 <strong>7 天內</strong>以書面回覆，並寄送 Email 通知你。',
-          'Payment received — your question is in the reply queue. You\'ll get a written reply within <strong>7 days</strong>, with an email notification.'
-        )}</div>`;
-    }
-
-    // 首覆（answered）
-    if (t.status === 'answered' || t.status === 'followup' || t.status === 'closed') {
-      if (t.answer) {
-        html += `<div class="qa-divider"></div>` +
-          `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div>` +
-          `<div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div>` +
-          `<div class="qa-meta">${pick('回覆於', 'Replied')} ${fmtDate(t.answered_at)}</div>` +
-          signatureHtml() + `</div>`;
-      }
-    }
-
-    // 追問已提交（followup）
-    if (t.status === 'followup' && t.followup_question) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('你的追問', 'Your follow-up')}</div>` +
-        `<div class="qa-text">${esc(t.followup_question)}</div>` +
-        `<div class="qa-meta">${pick('提交於', 'Submitted')} ${fmtDate(t.followup_at)}</div></div>` +
-        `<div class="followup-note">${pick(
-          '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。',
-          'Your follow-up is in. Awaiting the final reply — the consultation closes after that.'
-        )}</div>`;
-    }
-
-    // 可追問（answered 且窗未過）
-    if (t.status === 'answered' && inFollowupWindow(t)) {
-      const deadline = fmtDate(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5).toISOString());
-      html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('追問一次', 'One follow-up')}</div>` +
-        `<div class="followup-note">${pick(
-          `回覆後可追問 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期諮詢自動結案。`,
-          `You may ask <strong>one</strong> follow-up, until <strong>${deadline}</strong>. After that the consultation closes.`
-        )}</div>` +
-        `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你的追問…', 'Write your follow-up…')}"></textarea>` +
-        `<div class="char-count" id="fu-count">0</div>` +
-        `<button class="cons-btn ghost" id="fu-btn" disabled>${pick('送出追問', 'Send follow-up')}</button>` +
-        `<div class="msg" id="fu-msg"></div>` +
-        // 主動結案入口
-        `<div class="close-row">` +
-          `<span class="close-link" id="close-link">${pick('我沒有其他問題了，結束諮詢', 'No other questions — close this consultation')}</span>` +
-          `<div id="close-host"></div>` +
-        `</div>` +
-        `</div>`;
-    }
-
-    c.innerHTML = html;
-
-    // 追問互動
-    const fuInput = c.querySelector('#fu-input');
-    if (fuInput) {
-      const fuCount = c.querySelector('#fu-count');
-      const fuBtn = c.querySelector('#fu-btn');
-      const fuMsg = c.querySelector('#fu-msg');
-      const fuRefresh = () => {
-        const len = fuInput.value.trim().length;
-        fuCount.textContent = String(len);
-        fuBtn.disabled = len < 5;
-      };
-      fuInput.addEventListener('input', fuRefresh);
-      fuRefresh();
-      fuBtn.addEventListener('click', async () => {
-        fuBtn.disabled = true;
-        fuMsg.className = 'msg';
-        try {
-          const { error } = await supabase.rpc('submit_followup', {
-            p_ticket_id: t.id,
-            p_question: fuInput.value.trim(),
-          });
-          if (error) throw error;
-
-          // best-effort：通知 admin 有追問待覆（失敗不影響追問已送出）
-          try {
-            await supabase.functions.invoke('notify-ticket', {
-              body: { event: 'followup_submitted', ticket_id: t.id },
-            });
-          } catch (e2) {
-            console.warn('[notify-ticket] 通知寄送失敗（不影響追問）：', e2);
-          }
-
-          window.location.reload();
-        } catch (e) {
-          showMsg(fuMsg, 'err', mapFollowupErr(e?.message || ''));
-          fuRefresh();
-        }
-      });
-    }
-
-    // 主動結案互動
-    const closeLink = c.querySelector('#close-link');
-    if (closeLink) {
-      const host = c.querySelector('#close-host');
-      closeLink.addEventListener('click', () => {
-        if (host.querySelector('.confirm-box')) return; // 已展開
-        closeLink.style.display = 'none';
-        const box = el('div', 'confirm-box');
-        box.innerHTML =
-          `<div class="confirm-text">${pick(
-            '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？',
-            'Once closed, you can no longer follow up and this consultation ends. Are you sure?'
-          )}</div>` +
-          `<div class="confirm-actions">` +
-            `<button class="btn-sm confirm" id="close-yes">${pick('確定結案', 'Close it')}</button>` +
-            `<button class="btn-sm cancel" id="close-no">${pick('取消', 'Cancel')}</button>` +
-          `</div>` +
-          `<div class="msg" id="close-msg"></div>`;
-        host.appendChild(box);
-
-        box.querySelector('#close-no').addEventListener('click', () => {
-          box.remove();
-          closeLink.style.display = '';
-        });
-        box.querySelector('#close-yes').addEventListener('click', async () => {
-          const yes = box.querySelector('#close-yes');
-          const cmsg = box.querySelector('#close-msg');
-          yes.disabled = true;
-          cmsg.className = 'msg';
-          try {
-            const { error } = await supabase.rpc('close_ticket', { p_ticket_id: t.id });
-            if (error) throw error;
-            // best-effort：寄結案感謝信
-            try {
-              await supabase.functions.invoke('notify-ticket', {
-                body: { event: 'closed', ticket_id: t.id },
-              });
-            } catch (e2) {
-              console.warn('[notify-ticket] 感謝信寄送失敗（不影響結案）：', e2);
-            }
-            window.location.reload();
-          } catch (e) {
-            showMsg(cmsg, 'err', mapCloseErr(e?.message || ''));
-            yes.disabled = false;
-          }
-        });
-      });
-    }
-
-    return c;
-  }
-
-  /* ── 歷史卡 ── */
-  function cardHistory(items, fbId = null) {
-    const c = el('div', 'cons-card soft');
-    c.innerHTML = `<div class="card-kicker">${pick('過往諮詢', 'Past consultations')}</div>`;
-    items.forEach((t) => {
-      const isFbTarget = fbId && t.id === fbId;    // 未回饋的最新結案 → 預設展開＋內嵌回饋
-      const row = el('div', 'hist-item');
-      row.innerHTML =
-        `<span class="hist-subj">${subjLabel(t.subject)} <span style="color:var(--ink-faint);font-family:var(--font-sans);font-size:11px;">#${refCode(t.id)}</span></span>` +
-        `<span class="hist-date">${fmtDate(t.created_at)} · ${STATUS_LABEL.closed}` +
-        (isFbTarget ? ` · <span style="color:var(--gold);">${pick('可回饋', 'Feedback')}</span>` : '') +
-        `</span>`;
-      const detail = el('div', 'hist-detail');
-      detail.style.display = isFbTarget ? 'block' : 'none';
-      let dh = `<div class="qa-block"><div class="qa-label">${pick('你的問題', 'Your question')}</div><div class="qa-text">${esc(t.content)}</div></div>`;
-      if (t.answer) dh += `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div><div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div></div>`;
-      if (t.followup_question) dh += `<div class="qa-block"><div class="qa-label">${pick('你的追問', 'Your follow-up')}</div><div class="qa-text">${esc(t.followup_question)}</div></div>`;
-      if (t.followup_answer) dh += `<div class="qa-block"><div class="qa-label">${pick('再次回覆', 'Final reply')}</div><div class="answer-box"><div class="qa-text">${esc(t.followup_answer)}</div></div></div>`;
-      // 署名（有任何回覆才顯示）
-      if (t.answer || t.followup_answer) dh += signatureHtml();
-      // 已回饋則顯示
-      if (t.rating) dh += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', 'Your feedback')}</div><div class="qa-text">${esc(ratingLabel(t.rating))}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div></div>`;
-      detail.innerHTML = dh;
-
-      // 內嵌回饋表單（僅未回饋的目標 ticket）
-      if (isFbTarget) detail.appendChild(feedbackForm(t));
-
-      row.addEventListener('click', () => {
-        detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
-      });
-      c.appendChild(row);
-      c.appendChild(detail);
-    });
-    return c;
-  }
-
-  /* ── 署名區 ── */
-  function signatureHtml() {
-    return `<div class="sig">` +
-      `<img src="${AVATAR}" alt="${esc(SIGNER)}" />` +
-      `<div><div class="sig-name">${esc(SIGNER)}</div><div class="sig-org">FuSang Vision</div></div>` +
-    `</div>`;
-  }
-
-  /* ── 回饋表單片段（內嵌於歷史卡目標 ticket；結案後可選填、限一次）── */
-  function feedbackForm(t) {
-    const c = el('div', 'qa-block');
-    let selected = null;
-
-    const opts = RATINGS.map((r) =>
-      `<button class="fb-opt" data-code="${r.code}">${pick(r.zh, r.en)}</button>`
-    ).join('');
-
-    c.innerHTML =
-      `<div class="qa-divider"></div>` +
-      `<div class="fb-q">${pick('這次的回覆，對現在的你有幫助嗎？', 'Was this reading helpful to you right now?')}</div>` +
-      `<div class="fb-opts">${opts}</div>` +
-      `<textarea class="cons-input" id="fb-text" placeholder="${pick('想補充的話（選填）', 'Anything to add (optional)')}" style="min-height:90px;"></textarea>` +
-      `<label class="fb-consent"><input type="checkbox" id="fb-consent"><span>${pick(
-        '我同意 FuSang Vision 匿名引用這則回饋（選填）',
-        'I allow FuSang Vision to share this feedback anonymously (optional)'
-      )}</span></label>` +
-      `<button class="cons-btn" id="fb-btn" disabled>${pick('送出回饋', 'Send feedback')}</button>` +
-      `<div class="form-gate" id="fb-gate">${pick('請先選擇一個選項', 'Choose an option first')}</div>` +
-      `<div class="msg" id="fb-msg"></div>`;
-
-    const btn = c.querySelector('#fb-btn');
-    const gate = c.querySelector('#fb-gate');
-    const msg = c.querySelector('#fb-msg');
-
-    c.querySelectorAll('.fb-opt').forEach((b) => {
-      b.addEventListener('click', () => {
-        c.querySelectorAll('.fb-opt').forEach((x) => x.classList.remove('sel'));
-        b.classList.add('sel');
-        selected = b.getAttribute('data-code');
-        btn.disabled = false;
-        gate.textContent = '';
-      });
-    });
-
-    btn.addEventListener('click', async () => {
-      if (!selected) return;
-      btn.disabled = true;
-      msg.className = 'msg';
-      try {
-        const { error } = await supabase.rpc('submit_feedback', {
-          p_ticket_id: t.id,
-          p_rating: selected,
-          p_feedback: c.querySelector('#fb-text').value.trim() || null,
-          p_consent: c.querySelector('#fb-consent').checked,
-        });
-        if (error) throw error;
-        // 成功 → 顯示感謝，短暫後重整（回饋表單消失、改顯示已回饋）
-        c.innerHTML =
-          `<div class="qa-divider"></div>` +
-          `<div class="fb-thanks">${pick('感謝你的回饋。', 'Thank you for your feedback.')}</div>`;
-        setTimeout(() => window.location.reload(), 1600);
-      } catch (e) {
-        showMsg(msg, 'err', mapFeedbackErr(e?.message || ''));
-        btn.disabled = false;
-      }
-    });
-
-    return c;
-  }
-
-  /* ── 邊界／不退費聲明 ── */
-  function disclaimerHtml() {
-    if (isZh) {
-      return `<div class="disclaim"><div class="disclaim-h">提交前請確認</div><ul>` +
-        `<li>這是由真人解盤的個人化紫微斗數諮詢。提供的背景越完整，回覆越精準。</li>` +
-        `<li>回覆將以你設定的報告語言（繁體中文／简体中文／English）為主，與你的報告內容一致。</li>` +
-        `<li><strong>同一時間僅能進行一則諮詢。</strong>須待目前諮詢結案後，才能再提交新的問題。</li>` +
-        `<li>付款後 <strong>7 天內</strong>你會收到書面回覆。回覆後可於 <strong>7 天內追問一次</strong>；逾時諮詢即結案。</li>` +
-        `<li>本服務僅提供紫微斗數命理解讀，<strong>不</strong>提供醫療、法律、財務或投資意見。</li>` +
-        `<li><strong>數位服務，提交後恕不退款。</strong>每則諮詢皆為你個別撰寫，付款送出後不予退費。</li>` +
-        `</ul></div>`;
-    }
-    return `<div class="disclaim"><div class="disclaim-h">Before you submit</div><ul>` +
-      `<li>This is a personal Zi Wei Dou Shu consultation, answered by a human. The more context you give, the more precise the reading.</li>` +
-      `<li>Your reply will be written in your registered report language (繁體中文 / 简体中文 / English), matching your report.</li>` +
-      `<li><strong>One open consultation at a time.</strong> You can start a new one only after your current consultation is resolved.</li>` +
-      `<li>You'll receive a written reply within <strong>7 days</strong> of payment. After the reply, you may ask <strong>one follow-up within 7 days</strong>; after that the consultation closes.</li>` +
-      `<li>This service provides Zi Wei Dou Shu interpretation only. It is <strong>not</strong> medical, legal, financial, or investment advice.</li>` +
-      `<li><strong>Digital service — all sales are final.</strong> Each consultation is prepared individually for you, so payment is non-refundable once submitted.</li>` +
-      `</ul></div>`;
-  }
-
-  /* ── 錯誤碼 → 文案 ── */
-  function mapCreateErr(m) {
-    if (m.includes('ticket_in_progress')) return pick('你已有一則進行中的諮詢，請先完成後再提交新問題。頁面將重新整理。', 'You already have an open consultation. Finish it first. Refreshing…') + reloadSoon();
-    if (m.includes('chart_not_found'))   return pick('找不到你的命盤，請先回儀表板生成。', 'Your chart wasn\'t found. Please generate it from the dashboard first.');
-    if (m.includes('invalid_subject'))   return pick('請選擇一個主題。', 'Please choose a topic.');
-    if (m.includes('empty_content'))     return pick('請填寫你的問題內容。', 'Please describe your question.');
-    if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-    return pick('提交時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
-  }
-  function mapCheckoutErr(code) {
-    if (code === 'ticket_not_payable') return pick('這筆諮詢已付款或狀態已變更，頁面將重新整理。', 'This consultation is already paid or changed. Refreshing…') + reloadSoon();
-    if (code === 'ticket_not_found')   return pick('找不到對應的諮詢，請重新提交。', 'Consultation not found. Please submit again.');
-    if (code === 'missing_ticket_id')  return pick('提交資料不完整，請重試。', 'Incomplete request. Please try again.');
-    if (code === 'not_authenticated')  return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-    return pick('前往付款時發生問題，請稍後再試。', 'Couldn\'t reach checkout. Please try again.');
-  }
-  function mapFollowupErr(m) {
-    if (m.includes('followup_exists'))        return pick('每則諮詢僅能追問一次。', 'Only one follow-up per consultation.');
-    if (m.includes('followup_window_closed')) return pick('追問期限已過，諮詢已結案。頁面將重新整理。', 'The follow-up window has closed. Refreshing…') + reloadSoon();
-    if (m.includes('not_answerable'))         return pick('目前無法追問。頁面將重新整理。', 'Follow-up isn\'t available right now. Refreshing…') + reloadSoon();
-    if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', 'Consultation not found.');
-    if (m.includes('empty_content'))          return pick('請填寫追問內容。', 'Please write your follow-up.');
-    return pick('送出追問時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
-  }
-  function mapCloseErr(m) {
-    if (m.includes('not_closable'))     return pick('目前無法結案。頁面將重新整理。', 'This consultation can\'t be closed right now. Refreshing…') + reloadSoon();
-    if (m.includes('ticket_not_found')) return pick('找不到這則諮詢。', 'Consultation not found.');
-    if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-    return pick('結案時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
-  }
-  function mapFeedbackErr(m) {
-    if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', 'You\'ve already given feedback for this consultation.');
-    if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', 'Feedback isn\'t available for this consultation.');
-    if (m.includes('invalid_rating'))    return pick('請選擇一個選項。', 'Please choose an option.');
-    if (m.includes('ticket_not_found'))  return pick('找不到這則諮詢。', 'Consultation not found.');
-    return pick('送出回饋時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
-  }
-  function reloadSoon() { setTimeout(() => window.location.reload(), 2200); return ''; }
-
-  /* ── utils ── */
-  function refCode(id) { return String(id || '').slice(0, 8); }
-  function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-  function showMsg(node, kind, text) { node.className = 'msg show ' + kind; node.innerHTML = text; }
+    actions.querySelector('#btn-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
+  })();
 </script>
 
 </body>
