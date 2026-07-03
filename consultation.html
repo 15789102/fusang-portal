@@ -615,11 +615,15 @@
     const body = document.getElementById('cons-body');
     body.innerHTML = '';
 
+    // 最新一筆未回饋的結案 → 歷史卡中預設展開並內嵌回饋表單
+    const fbTarget = tickets.find(needsFeedback);   // tickets 已按 created_at desc
+    const fbId = fbTarget ? fbTarget.id : null;
+
     // 1) 無命盤 → 提示先生成
     if (!chartSessionId) {
       body.appendChild(cardNoChart());
       const hist = tickets.filter((t) => !isActive(t) && !isPendingDraft(t));
-      if (hist.length) body.appendChild(cardHistory(hist));
+      if (hist.length) body.appendChild(cardHistory(hist, fbId));
       return;
     }
 
@@ -628,20 +632,16 @@
     if (active) {
       body.appendChild(cardActive(active));
       const hist = tickets.filter((t) => t !== active && !isActive(t) && !isPendingDraft(t));
-      if (hist.length) body.appendChild(cardHistory(hist));
+      if (hist.length) body.appendChild(cardHistory(hist, fbId));
       return;
     }
 
-    // 3) 無進行中 → （最新未回饋的結案 → 回饋卡）+ 提交表單（草稿則預填）+ 歷史
-    const fbTarget = tickets.find(needsFeedback);   // tickets 已按 created_at desc
-    if (fbTarget) body.appendChild(cardFeedback(fbTarget));
-
+    // 3) 無進行中 → 提交表單（草稿則預填）+ 歷史（回饋內嵌於目標 ticket）
     const draft = tickets.find(isPendingDraft);
     body.appendChild(cardForm(draft));
 
-    const hist = tickets.filter((t) =>
-      !isActive(t) && !isPendingDraft(t) && t !== fbTarget);
-    if (hist.length) body.appendChild(cardHistory(hist));
+    const hist = tickets.filter((t) => !isActive(t) && !isPendingDraft(t));
+    if (hist.length) body.appendChild(cardHistory(hist, fbId));
   }
 
   /* ── 無命盤卡 ── */
@@ -925,16 +925,19 @@
   }
 
   /* ── 歷史卡 ── */
-  function cardHistory(items) {
+  function cardHistory(items, fbId = null) {
     const c = el('div', 'cons-card soft');
     c.innerHTML = `<div class="card-kicker">${pick('過往諮詢', 'Past consultations')}</div>`;
     items.forEach((t) => {
+      const isFbTarget = fbId && t.id === fbId;    // 未回饋的最新結案 → 預設展開＋內嵌回饋
       const row = el('div', 'hist-item');
       row.innerHTML =
         `<span class="hist-subj">${subjLabel(t.subject)}</span>` +
-        `<span class="hist-date">${fmtDate(t.created_at)} · ${STATUS_LABEL.closed}</span>`;
+        `<span class="hist-date">${fmtDate(t.created_at)} · ${STATUS_LABEL.closed}` +
+        (isFbTarget ? ` · <span style="color:var(--gold);">${pick('可回饋', 'Feedback')}</span>` : '') +
+        `</span>`;
       const detail = el('div', 'hist-detail');
-      detail.style.display = 'none';
+      detail.style.display = isFbTarget ? 'block' : 'none';
       let dh = `<div class="qa-block"><div class="qa-label">${pick('你的問題', 'Your question')}</div><div class="qa-text">${esc(t.content)}</div></div>`;
       if (t.answer) dh += `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div><div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div></div>`;
       if (t.followup_question) dh += `<div class="qa-block"><div class="qa-label">${pick('你的追問', 'Your follow-up')}</div><div class="qa-text">${esc(t.followup_question)}</div></div>`;
@@ -944,6 +947,10 @@
       // 已回饋則顯示
       if (t.rating) dh += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', 'Your feedback')}</div><div class="qa-text">${esc(ratingLabel(t.rating))}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div></div>`;
       detail.innerHTML = dh;
+
+      // 內嵌回饋表單（僅未回饋的目標 ticket）
+      if (isFbTarget) detail.appendChild(feedbackForm(t));
+
       row.addEventListener('click', () => {
         detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
       });
@@ -961,9 +968,9 @@
     `</div>`;
   }
 
-  /* ── 回饋卡（結案後，可選填、限一次）── */
-  function cardFeedback(t) {
-    const c = el('div', 'cons-card');
+  /* ── 回饋表單片段（內嵌於歷史卡目標 ticket；結案後可選填、限一次）── */
+  function feedbackForm(t) {
+    const c = el('div', 'qa-block');
     let selected = null;
 
     const opts = RATINGS.map((r) =>
@@ -971,9 +978,9 @@
     ).join('');
 
     c.innerHTML =
-      `<div class="card-kicker">${pick('回饋', 'Feedback')}</div>` +
+      `<div class="qa-divider"></div>` +
       `<div class="fb-q">${pick('這次的回覆，對現在的你有幫助嗎？', 'Was this reading helpful to you right now?')}</div>` +
-      `<div class="fb-opts" id="fb-opts">${opts}</div>` +
+      `<div class="fb-opts">${opts}</div>` +
       `<textarea class="cons-input" id="fb-text" placeholder="${pick('想補充的話（選填）', 'Anything to add (optional)')}" style="min-height:90px;"></textarea>` +
       `<label class="fb-consent"><input type="checkbox" id="fb-consent"><span>${pick(
         '我同意 FuSang Vision 匿名引用這則回饋（選填）',
@@ -1009,9 +1016,9 @@
           p_consent: c.querySelector('#fb-consent').checked,
         });
         if (error) throw error;
-        // 成功 → 顯示感謝，短暫後重整（回饋卡消失）
+        // 成功 → 顯示感謝，短暫後重整（回饋表單消失、改顯示已回饋）
         c.innerHTML =
-          `<div class="card-kicker">${pick('回饋', 'Feedback')}</div>` +
+          `<div class="qa-divider"></div>` +
           `<div class="fb-thanks">${pick('感謝你的回饋。', 'Thank you for your feedback.')}</div>`;
         setTimeout(() => window.location.reload(), 1600);
       } catch (e) {
