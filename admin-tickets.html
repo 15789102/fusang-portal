@@ -86,6 +86,7 @@
   }
   .tk.is-action .tk-dot{background:var(--dawn);}
   .tk-subject{font-weight:600;font-size:14px;flex:0 0 auto;}
+  .tk-ref{font-size:11px;color:var(--faint);font-family:ui-monospace,monospace;flex:0 0 auto;}
   .tk-email{
     color:var(--muted);font-size:13px;flex:1 1 auto;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
@@ -206,7 +207,7 @@
 
     <div class="filterbar" id="filterbar">
       <div class="fbar-row">
-        <input type="text" id="f-email" class="search-input" placeholder="搜尋 Email…" autocomplete="off" />
+        <input type="text" id="f-email" class="search-input" placeholder="搜尋 Email 或諮詢編號…" autocomplete="off" />
         <select id="f-time" class="sel">
           <option value="all">全部時間</option>
           <option value="7d">近 7 天</option>
@@ -361,6 +362,13 @@
 
     const ratingBucket = (t) => t.rating || 'none';
 
+    // 搜尋比對：email 或 ticket id 片段（客戶報的諮詢編號）
+    function matchSearch(t, q){
+      const s = q.toLowerCase();
+      return String(t.user_email || '').toLowerCase().includes(s)
+          || String(t.id || '').toLowerCase().includes(s);
+    }
+
     function matchTime(t){
       if (F.time === 'all') return true;
       const created = new Date(t.created_at).getTime();
@@ -375,7 +383,7 @@
 
     function apply(){
       const filtered = allTickets.filter((t) => {
-        if (F.email && !String(t.user_email || '').toLowerCase().includes(F.email.toLowerCase())) return false;
+        if (F.email && !matchSearch(t, F.email)) return false;
         if (!matchTime(t)) return false;
         if (F.statuses.size && !F.statuses.has(t.status)) return false;
         if (F.subject !== 'all' && t.subject !== F.subject) return false;
@@ -443,6 +451,7 @@
         <div class="tk-head">
           <span class="tk-dot"></span>
           <span class="tk-subject">${esc(SUBJECT_LABEL[t.subject] || t.subject)}</span>
+          <span class="tk-ref">#${esc(String(t.id).slice(0,8))}</span>
           <span class="tk-email" title="${esc(t.user_email)}">${esc(t.user_email)}</span>
           <span class="st ${st.cls}"><span class="dot"></span>${st.label}</span>
           <span class="tk-date">${fmtD(t.created_at)}</span>
