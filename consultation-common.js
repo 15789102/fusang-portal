@@ -90,7 +90,10 @@ export const isPendingDraft = (t) => t.status === 'pending' && t.payment_status 
 export const inFollowupWindow = (t) =>
   t.status === 'answered' && t.answered_at &&
   new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
-export const needsFeedback = (t) => t.status === 'closed' && !t.rating;
+export const needsFeedback = (t) => t.status === 'closed' && !t.rating && !t.closed_by_admin;
+export const isAdminClosed = (t) => t.status === 'closed' && t.closed_by_admin === true;
+// 顯示用狀態文字：admin 關閉 → 已關閉；其餘照 STATUS_LABEL
+export const statusText = (t) => isAdminClosed(t) ? pick('已關閉', 'Closed') : (STATUS_LABEL[t.status] || t.status);
 
 export const findActive = (tickets) => tickets.find(isActive) || null;
 export const findPendingDraft = (tickets) => tickets.find(isPendingDraft) || null;
