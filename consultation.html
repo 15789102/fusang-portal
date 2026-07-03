@@ -769,7 +769,7 @@
     const pillClass = waitState ? 'status-pill wait' : 'status-pill done';
 
     let html =
-      `<div class="card-kicker">${pick('目前的諮詢', 'Your consultation')}</div>` +
+      `<div class="card-kicker">${pick('目前的諮詢', 'Your consultation')} · ${pick('編號', 'Ref')} ${refCode(t.id)}</div>` +
       `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">` +
         `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
         `<span class="${pillClass}"><span class="dot"></span>${STATUS_LABEL[t.status] || t.status}</span>` +
@@ -932,7 +932,7 @@
       const isFbTarget = fbId && t.id === fbId;    // 未回饋的最新結案 → 預設展開＋內嵌回饋
       const row = el('div', 'hist-item');
       row.innerHTML =
-        `<span class="hist-subj">${subjLabel(t.subject)}</span>` +
+        `<span class="hist-subj">${subjLabel(t.subject)} <span style="color:var(--ink-faint);font-family:var(--font-sans);font-size:11px;">#${refCode(t.id)}</span></span>` +
         `<span class="hist-date">${fmtDate(t.created_at)} · ${STATUS_LABEL.closed}` +
         (isFbTarget ? ` · <span style="color:var(--gold);">${pick('可回饋', 'Feedback')}</span>` : '') +
         `</span>`;
@@ -1092,6 +1092,7 @@
   function reloadSoon() { setTimeout(() => window.location.reload(), 2200); return ''; }
 
   /* ── utils ── */
+  function refCode(id) { return String(id || '').slice(0, 8); }
   function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
   function esc(s) {
     return String(s == null ? '' : s)
