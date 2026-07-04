@@ -3,6 +3,44 @@
 <head>
   <script src="config.js"></script>
   <script src="i18n.js"></script>
+  <script>
+    // ── login 專屬 UI 字典(策略 B)──────────────────────────────
+    //   共用 key(footer 等)在 i18n.js;此處只放 login 專屬。
+    //   位置索引已登記於 i18n.js 檔頭。
+    window.FSI18N.addUI({
+      'login.craft':          { 'zh-TW': '紫微斗數', 'zh-CN': '紫微斗数', 'en': 'Zi Wei Dou Shu' },
+      'login.heroTitle':      {
+        'zh-TW': '不是預知命運，<br>而是<span class="accent">穩健有意識地</span><br>走向嚮往的生活。',
+        'zh-CN': '不是预知命运，<br>而是<span class="accent">稳健有意识地</span><br>走向向往的生活。',
+        'en':    'Not to foresee fate,<br>but to move <span class="accent">steadily and consciously</span><br>toward the life you long for.'
+      },
+      'login.heroSub':        {
+        'zh-TW': '您的命盤已備妥。<br>以您專屬的能量地圖，理解此刻所在，看見前行方向。',
+        'zh-CN': '您的命盘已备妥。<br>以您专属的能量地图，理解此刻所在，看见前行方向。',
+        'en':    'Your chart is ready.<br>With your own map of energies, see where you stand and where you are headed.'
+      },
+      'login.welcomeBack':    { 'zh-TW': '歡迎回來', 'zh-CN': '欢迎回来', 'en': 'Welcome Back' },
+      'login.title':          { 'zh-TW': '登入', 'zh-CN': '登录', 'en': 'Log In' },
+      'login.subtitle':       { 'zh-TW': '繼續您的能量探索', 'zh-CN': '继续您的能量探索', 'en': 'Continue your exploration' },
+      'login.email':          { 'zh-TW': '電子郵件', 'zh-CN': '电子邮件', 'en': 'Email' },
+      'login.password':       { 'zh-TW': '密碼', 'zh-CN': '密码', 'en': 'Password' },
+      'login.forgot':         { 'zh-TW': '忘記密碼？', 'zh-CN': '忘记密码？', 'en': 'Forgot password?' },
+      'login.submit':         { 'zh-TW': '登入', 'zh-CN': '登录', 'en': 'Log In' },
+      'login.loading':        { 'zh-TW': '登入中…', 'zh-CN': '登录中…', 'en': 'Signing in…' },
+      'login.sending':        { 'zh-TW': '寄送中…', 'zh-CN': '发送中…', 'en': 'Sending…' },
+      'login.noChartQ':       { 'zh-TW': '還沒有命盤？', 'zh-CN': '还没有命盘？', 'en': 'New here?' },
+      'login.createLink':     { 'zh-TW': '建立您的本命盤', 'zh-CN': '建立您的本命盘', 'en': 'Create your chart' },
+      'login.errEmptyFields': { 'zh-TW': '請輸入電子郵件與密碼', 'zh-CN': '请输入电子邮件与密码', 'en': 'Please enter your email and password.' },
+      'login.errGeneric':     { 'zh-TW': '登入失敗，請確認資料正確', 'zh-CN': '登录失败，请确认资料正确', 'en': 'Sign-in failed. Please check your details.' },
+      'login.errBadCreds':    { 'zh-TW': '電子郵件或密碼錯誤', 'zh-CN': '电子邮件或密码错误', 'en': 'Incorrect email or password.' },
+      'login.errNotConfirmed':{ 'zh-TW': '電子郵件尚未驗證', 'zh-CN': '电子邮件尚未验证', 'en': 'Your email has not been verified yet.' },
+      'login.errRetry':       { 'zh-TW': '登入失敗，請稍後再試', 'zh-CN': '登录失败，请稍后再试', 'en': 'Sign-in failed. Please try again later.' },
+      'login.errForgotNoEmail':{ 'zh-TW': '請先在上方輸入電子郵件，再點「忘記密碼」', 'zh-CN': '请先在上方输入电子邮件，再点「忘记密码」', 'en': 'Enter your email above first, then tap “Forgot password”.' },
+      'login.errBadEmail':    { 'zh-TW': '電子郵件格式不正確', 'zh-CN': '电子邮件格式不正确', 'en': 'That email address does not look right.' },
+      'login.errResetFail':   { 'zh-TW': '寄送失敗，請稍後再試', 'zh-CN': '发送失败，请稍后再试', 'en': 'Could not send the email. Please try again later.' },
+      'login.resetSent':      { 'zh-TW': '密碼重設連結已寄至您的信箱，請查收（可能在垃圾郵件）。', 'zh-CN': '密码重置链接已发送至您的信箱，请查收（可能在垃圾邮件）。', 'en': 'A password reset link has been sent to your inbox (check spam too).' }
+    });
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FuSang Vision — 登入</title>
@@ -366,11 +404,46 @@
       transition: color 0.2s;
     }
     .login-altcta a:hover { color: var(--gold); }
+
+    /* ── 頁內語言切換(header 已移除,固定右上)── */
+    .login-lang {
+      position: fixed;
+      top: 20px; right: 24px;
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+    .login-lang-opt {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+      padding: 6px 10px;
+      line-height: 1;
+      background: transparent;
+      transition: background 0.2s, color 0.2s;
+    }
+    .login-lang-opt + .login-lang-opt { border-left: 1px solid var(--rule); }
+    .login-lang-opt:hover { color: var(--accent-deep); }
+    .login-lang-opt.active { background: var(--accent-deep); color: var(--bg-primary); }
+    @media (max-width: 560px) {
+      .login-lang { top: 14px; right: 14px; }
+      .login-lang-opt { padding: 5px 8px; font-size: 10px; }
+    }
   </style>
 </head>
 <body>
 
-<div id="site-header"></div>
+<!-- header 已移除;以頁內語言切換取代 -->
+<div class="login-lang" id="login-lang">
+  <button type="button" class="login-lang-opt" data-lang="zh-TW">繁中</button>
+  <button type="button" class="login-lang-opt" data-lang="zh-CN">简中</button>
+  <button type="button" class="login-lang-opt" data-lang="en">EN</button>
+</div>
 
 <div class="fs-page login-page">
 
@@ -382,17 +455,17 @@
 
       <div class="login-left-top">
         <div class="login-left-eyebrow">FUSANG VISION</div>
-        <div class="login-left-brand">紫微斗數</div>
+        <div class="login-left-brand" data-i18n="login.craft">紫微斗數</div>
       </div>
 
       <div class="login-left-center">
-        <h1 class="login-left-title">
+        <h1 class="login-left-title" data-i18n-html="login.heroTitle">
           不是預知命運,<br>
           而是<span class="accent">穩健有意識地</span><br>
           走向嚮往的生活。
         </h1>
         <div class="login-left-divider"></div>
-        <p class="login-left-sub">
+        <p class="login-left-sub" data-i18n-html="login.heroSub">
           您的命盤已備妥。<br>
           以您專屬的能量地圖,理解此刻所在,看見前行方向。
         </p>
@@ -406,9 +479,9 @@
     <!-- ════════ RIGHT ════════ -->
     <div class="login-right">
 
-      <div class="login-right-eyebrow">Welcome Back</div>
-      <h2 class="login-right-title">登入</h2>
-      <p class="login-right-sub">繼續您的能量探索</p>
+      <div class="login-right-eyebrow" data-i18n="login.welcomeBack">Welcome Back</div>
+      <h2 class="login-right-title" data-i18n="login.title">登入</h2>
+      <p class="login-right-sub" data-i18n="login.subtitle">繼續您的能量探索</p>
 
       <div class="login-mini-divider"><span>✦</span></div>
 
@@ -418,28 +491,28 @@
       <form id="login-form" novalidate>
 
         <div class="login-field">
-          <label for="email">電子郵件</label>
+          <label for="email" data-i18n="login.email">電子郵件</label>
           <input type="email" id="email" name="email" autocomplete="email" required />
         </div>
 
         <div class="login-field">
-          <label for="password">密碼</label>
+          <label for="password" data-i18n="login.password">密碼</label>
           <input type="password" id="password" name="password" autocomplete="current-password" required />
         </div>
 
         <div class="login-forgot">
-          <a id="forgot-link">忘記密碼?</a>
+          <a id="forgot-link" data-i18n="login.forgot">忘記密碼?</a>
         </div>
 
         <button type="submit" id="login-btn" class="login-btn">
-          <span id="login-btn-text">登入</span>
+          <span id="login-btn-text" data-i18n="login.submit">登入</span>
         </button>
 
       </form>
 
       <div class="login-altcta">
-        還沒有命盤?<br>
-        <a href="account-create.html">建立您的本命盤</a>
+        <span data-i18n="login.noChartQ">還沒有命盤?</span><br>
+        <a href="account-create.html" data-i18n="login.createLink">建立您的本命盤</a>
       </div>
 
     </div>
@@ -451,6 +524,22 @@
 
 <script type="module">
   import { supabase, getSession } from './components.js';
+
+  const F = window.FSI18N;
+
+  // ── 頁內語言切換(只動 UI 字串;此頁無報告內容)──
+  const langBox = document.getElementById('login-lang');
+  function markLang() {
+    const cur = F.getUILang();
+    langBox.querySelectorAll('.login-lang-opt').forEach((b) => {
+      b.classList.toggle('active', b.getAttribute('data-lang') === cur);
+    });
+  }
+  langBox.querySelectorAll('.login-lang-opt').forEach((b) => {
+    b.addEventListener('click', () => F.setUILang(b.getAttribute('data-lang')));
+  });
+  markLang();
+  window.addEventListener('i18n:changed', markLang);
 
   // ── 登入後分流：admin → admin-dashboard.html；其餘 → dashboard.html ──
   // admin_check RPC 失敗時保守導向 dashboard.html（admin 頁本身仍有後端把關）
@@ -492,7 +581,7 @@
   }
   function setLoading(loading) {
     btn.disabled = loading;
-    btnText.textContent = loading ? '登入中...' : '登入';
+    btnText.textContent = loading ? F.t('login.loading') : F.t('login.submit');
   }
 
   form.addEventListener('submit', async (e) => {
@@ -502,7 +591,7 @@
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
-    if (!email || !password) { showError('請輸入電子郵件與密碼'); return; }
+    if (!email || !password) { showError(F.t('login.errEmptyFields')); return; }
 
     setLoading(true);
 
@@ -510,11 +599,11 @@
 
     if (error) {
       console.error('Login error:', error);
-      let msg = '登入失敗,請確認資料正確';
+      let msg = F.t('login.errGeneric');
       if (error.message?.toLowerCase().includes('invalid login credentials')) {
-        msg = '電子郵件或密碼錯誤';
+        msg = F.t('login.errBadCreds');
       } else if (error.message?.toLowerCase().includes('email not confirmed')) {
-        msg = '電子郵件尚未驗證';
+        msg = F.t('login.errNotConfirmed');
       }
       showError(msg);
       setLoading(false);
@@ -524,7 +613,7 @@
     if (data?.session) {
       await routeAfterAuth();
     } else {
-      showError('登入失敗,請稍後再試');
+      showError(F.t('login.errRetry'));
       setLoading(false);
     }
   });
@@ -533,25 +622,25 @@
     clearMessages();
     const email = document.getElementById('email').value.trim();
 
-    if (!email) { showError('請先在上方輸入電子郵件,再點「忘記密碼」'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('電子郵件格式不正確'); return; }
+    if (!email) { showError(F.t('login.errForgotNoEmail')); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError(F.t('login.errBadEmail')); return; }
 
     forgotLink.style.pointerEvents = 'none';
-    forgotLink.textContent = '寄送中...';
+    forgotLink.textContent = F.t('login.sending');
 
     const redirectTo = window.location.origin + window.location.pathname.replace(/login\.html$/, '') + 'set-password.html';
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
     forgotLink.style.pointerEvents = '';
-    forgotLink.textContent = '忘記密碼?';
+    forgotLink.textContent = F.t('login.forgot');
 
     if (error) {
       console.error('Reset password error:', error);
-      showError('寄送失敗,請稍後再試');
+      showError(F.t('login.errResetFail'));
       return;
     }
 
-    showSuccess('密碼重設連結已寄至您的信箱,請查收(可能在垃圾郵件)。');
+    showSuccess(F.t('login.resetSent'));
   });
 </script>
 
