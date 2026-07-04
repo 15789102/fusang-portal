@@ -5,7 +5,17 @@
   <script src="i18n.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 付款已取消</title>
+  <title>付款已取消 - FuSang Vision</title>
+  <script>
+    // payment-cancel 專屬 UI 字典(策略 B;登入頁,用 header 切換鈕)
+    window.FSI18N.addUI({
+      'pc.docTitle':    { 'zh-TW': '付款已取消 - FuSang Vision', 'zh-CN': '付款已取消 - FuSang Vision', 'en': 'Payment Canceled - FuSang Vision' },
+      'pc.title':       { 'zh-TW': '付款已取消', 'zh-CN': '付款已取消', 'en': 'Payment canceled' },
+      'pc.body':        { 'zh-TW': '這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。', 'zh-CN': '这次的购买没有完成，您没有被收取任何费用。<br>随时可以再回来，继续您的阅读。', 'en': "This purchase wasn't completed, and you haven't been charged.<br>Come back anytime to continue your reading." },
+      'pc.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard' },
+      'pc.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart' }
+    });
+  </script>
   <meta name="description" content="Payment canceled." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,13 +65,13 @@
     <div class="pay-mark">—</div>
 
     <div class="pay-eyebrow">Payment Canceled</div>
-    <h1 class="pay-title">付款已取消</h1>
+    <h1 class="pay-title" data-i18n="pc.title">付款已取消</h1>
 
-    <p class="pay-body">這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。</p>
+    <p class="pay-body" data-i18n-html="pc.body">這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。</p>
 
     <div class="pay-actions">
-      <a href="dashboard.html" class="pay-btn primary">返回儀表板</a>
-      <a href="chart.html" class="pay-btn ghost">前往我的命盤</a>
+      <a href="dashboard.html" class="pay-btn primary" data-i18n="pc.btnDashboard">返回儀表板</a>
+      <a href="chart.html" class="pay-btn ghost" data-i18n="pc.btnChart">前往我的命盤</a>
     </div>
   </div>
 </div>
@@ -69,6 +79,15 @@
 <div id="site-footer"></div>
 
 <script type="module" src="./components.js"></script>
+<script>
+  // 分頁標題隨語言更新(其餘 data-i18n 由 header 切換的 applyI18n 自動處理)
+  (function () {
+    const F = window.FSI18N;
+    const setTitle = () => { document.title = F.t('pc.docTitle'); };
+    setTitle();
+    window.addEventListener('i18n:changed', setTitle);
+  })();
+</script>
 
 </body>
 </html>
