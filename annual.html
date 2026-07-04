@@ -12,6 +12,9 @@
 
   <script>window.FS_ACTIVE_PAGE = 'annual';</script>
 
+  <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
+  <script src="config.js"></script>
+
   <style>
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
@@ -372,7 +375,7 @@
 
   const ANNUAL_TABLE = 'annual_palace_reports_gated';
   const ANNUAL_JOBS_TABLE = 'annual_generation_jobs';
-  const ANNUAL_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/annual-v2';
+  const ANNUAL_TRIGGER_URL = window.CFG.WEBHOOK_ANNUAL;
   const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
