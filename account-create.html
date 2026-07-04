@@ -10,6 +10,54 @@
 
   <!-- 設定來源:須先於下方頁面邏輯 script 載入(classic,設定 window.CFG) -->
   <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script>
+    // ── account-create 專屬 UI 字典(策略 B)──────────────────────
+    //   注意:此頁有兩種語言。以下是「介面 UI」字串(右上切換鈕控制)。
+    //   表單內的「報告語言」單選(繁體中文/简体中文/English)是另一回事、註冊即鎖定,不在此。
+    window.FSI18N.addUI({
+      'ac.docTitle':        { 'zh-TW': '建立帳號 · FuSang Vision', 'zh-CN': '建立账号 · FuSang Vision', 'en': 'Create Account · FuSang Vision' },
+      'ac.title':           { 'zh-TW': '建立帳號', 'zh-CN': '建立账号', 'en': 'Create Account' },
+      'ac.subtitle':        { 'zh-TW': '選擇的語言將鎖定，往後報告皆以此語言生成', 'zh-CN': '选择的语言将锁定，往后报告皆以此语言生成', 'en': 'Your chosen language is locked; all future reports are generated in it.' },
+      'ac.reportLangLabel': { 'zh-TW': '報告語言 · Report Language', 'zh-CN': '报告语言 · Report Language', 'en': 'Report Language' },
+      'ac.reportLangNote':  { 'zh-TW': '註冊後鎖定，不可更換。需要其他語言請以另一個 email 註冊。', 'zh-CN': '注册后锁定，不可更换。需要其他语言请以另一个 email 注册。', 'en': 'Locked after registration and cannot be changed. For another language, register with a different email.' },
+      'ac.name':            { 'zh-TW': '姓名', 'zh-CN': '姓名', 'en': 'Name' },
+      'ac.namePh':          { 'zh-TW': '你的全名', 'zh-CN': '你的全名', 'en': 'Your full name' },
+      'ac.email':           { 'zh-TW': '電子郵件', 'zh-CN': '电子邮件', 'en': 'Email' },
+      'ac.password':        { 'zh-TW': '密碼', 'zh-CN': '密码', 'en': 'Password' },
+      'ac.passwordPh':      { 'zh-TW': '至少 8 個字元', 'zh-CN': '至少 8 个字符', 'en': 'At least 8 characters' },
+      'ac.passwordConfirm': { 'zh-TW': '確認密碼', 'zh-CN': '确认密码', 'en': 'Confirm Password' },
+      'ac.passwordConfirmPh':{ 'zh-TW': '再次輸入密碼', 'zh-CN': '再次输入密码', 'en': 'Re-enter your password' },
+      'ac.dob':             { 'zh-TW': '出生日期（陽曆）', 'zh-CN': '出生日期（阳历）', 'en': 'Date of Birth (Solar Calendar)' },
+      'ac.year':            { 'zh-TW': '年', 'zh-CN': '年', 'en': 'Year' },
+      'ac.month':           { 'zh-TW': '月', 'zh-CN': '月', 'en': 'Month' },
+      'ac.day':             { 'zh-TW': '日', 'zh-CN': '日', 'en': 'Day' },
+      'ac.birthHour':       { 'zh-TW': '出生時辰', 'zh-CN': '出生时辰', 'en': 'Birth Hour' },
+      'ac.birthHourPh':     { 'zh-TW': '選擇出生時辰', 'zh-CN': '选择出生时辰', 'en': 'Select birth hour' },
+      'ac.gender':          { 'zh-TW': '性別', 'zh-CN': '性别', 'en': 'Gender' },
+      'ac.female':          { 'zh-TW': '女', 'zh-CN': '女', 'en': 'Female' },
+      'ac.male':            { 'zh-TW': '男', 'zh-CN': '男', 'en': 'Male' },
+      'ac.consent':         { 'zh-TW': '我同意 FuSang Vision 以電子郵件寄送洞察與更新', 'zh-CN': '我同意 FuSang Vision 以电子邮件发送洞察与更新', 'en': 'I agree to receive insights and updates from FuSang Vision via email' },
+      'ac.consentSub':      { 'zh-TW': '為寄送你的個人化報告所需', 'zh-CN': '为发送你的个人化报告所需', 'en': 'Required to receive your personalized report' },
+      'ac.submit':          { 'zh-TW': '生成我的命盤', 'zh-CN': '生成我的命盘', 'en': 'Generate My Chart' },
+      'ac.submitting':      { 'zh-TW': '提交中…', 'zh-CN': '提交中…', 'en': 'Submitting…' },
+      'ac.errName':         { 'zh-TW': '請輸入你的姓名。', 'zh-CN': '请输入你的姓名。', 'en': 'Please enter your name.' },
+      'ac.errEmail':        { 'zh-TW': '請輸入你的電子郵件。', 'zh-CN': '请输入你的电子邮件。', 'en': 'Please enter your email.' },
+      'ac.errEmailInvalid': { 'zh-TW': '請輸入有效的電子郵件。', 'zh-CN': '请输入有效的电子邮件。', 'en': 'Please enter a valid email.' },
+      'ac.errPwEmpty':      { 'zh-TW': '請建立密碼。', 'zh-CN': '请建立密码。', 'en': 'Please create a password.' },
+      'ac.errPwShort':      { 'zh-TW': '密碼至少需 8 個字元。', 'zh-CN': '密码至少需 8 个字符。', 'en': 'Password must be at least 8 characters.' },
+      'ac.errYear':         { 'zh-TW': '請選擇出生年份。', 'zh-CN': '请选择出生年份。', 'en': 'Please select your birth year.' },
+      'ac.errMonth':        { 'zh-TW': '請選擇出生月份。', 'zh-CN': '请选择出生月份。', 'en': 'Please select your birth month.' },
+      'ac.errDay':          { 'zh-TW': '請選擇出生日。', 'zh-CN': '请选择出生日。', 'en': 'Please select your birth day.' },
+      'ac.errHour':         { 'zh-TW': '請選擇出生時辰。', 'zh-CN': '请选择出生时辰。', 'en': 'Please select your birth hour.' },
+      'ac.errGender':       { 'zh-TW': '請選擇性別。', 'zh-CN': '请选择性别。', 'en': 'Please select your gender.' },
+      'ac.errLang':         { 'zh-TW': '請選擇語言。', 'zh-CN': '请选择语言。', 'en': 'Please select a language.' },
+      'ac.errDate':         { 'zh-TW': '請輸入有效的日期。', 'zh-CN': '请输入有效的日期。', 'en': 'Please enter a valid date.' },
+      'ac.errPwMismatch':   { 'zh-TW': '兩次輸入的密碼不一致。', 'zh-CN': '两次输入的密码不一致。', 'en': 'Passwords do not match.' },
+      'ac.errConsent':      { 'zh-TW': '請確認你同意接收電子郵件。', 'zh-CN': '请确认你同意接收电子邮件。', 'en': 'Please confirm you agree to receive emails.' },
+      'ac.errGeneric':      { 'zh-TW': '發生錯誤，請再試一次。', 'zh-CN': '发生错误，请再试一次。', 'en': 'Something went wrong. Please try again.' }
+    });
+  </script>
 
   <style>
     :root {
@@ -84,23 +132,51 @@
     .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .footnote { text-align: center; font-size: 12px; color: var(--ink-light); margin-top: 16px; line-height: 1.6; }
+
+    /* ── 頁內 UI 語言切換(此頁無 header,固定右上)── */
+    .ac-lang {
+      position: fixed; top: 16px; right: 18px; z-index: 20;
+      display: inline-flex; align-items: center;
+      border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
+      background: var(--bg-primary);
+    }
+    .ac-lang-opt {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.06em;
+      color: var(--ink-light); padding: 6px 10px; line-height: 1;
+      background: transparent; border: none; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .ac-lang-opt + .ac-lang-opt { border-left: 1px solid var(--rule); }
+    .ac-lang-opt:hover { color: var(--accent-deep); }
+    .ac-lang-opt.active { background: var(--accent-deep); color: #fff; }
+    @media (max-width: 560px) {
+      .ac-lang { top: 12px; right: 12px; }
+      .ac-lang-opt { padding: 5px 8px; font-size: 10px; }
+    }
   </style>
 </head>
 <body>
+  <!-- 頁內 UI 語言切換(此頁無 header)。與表單內「報告語言」單選各自獨立。 -->
+  <div class="ac-lang" id="ac-lang">
+    <button type="button" class="ac-lang-opt" data-lang="zh-TW">繁中</button>
+    <button type="button" class="ac-lang-opt" data-lang="zh-CN">简中</button>
+    <button type="button" class="ac-lang-opt" data-lang="en">EN</button>
+  </div>
+
   <main class="container">
     <div class="brand-mark">FuSang Vision</div>
-    <h1 class="title">建立帳號</h1>
-    <p class="subtitle">選擇語言將鎖定，之後報告皆以此語言生成</p>
+    <h1 class="title" data-i18n="ac.title">建立帳號</h1>
+    <p class="subtitle" data-i18n="ac.subtitle">選擇語言將鎖定，之後報告皆以此語言生成</p>
 
     <div class="divider"></div>
 
     <form id="chart-form" novalidate>
 
-      <!-- 語言選擇 -->
+      <!-- 報告語言選擇(註冊即鎖定;與右上 UI 語言切換各自獨立)-->
       <div class="lang-field">
-        <label>報告語言 · Report Language</label>
-        <div class="lang-note">註冊後鎖定，不可更換。需要其他語言請用另一個 email 註冊。</div>
-        <div class="lang-options" id="lang-options" role="radiogroup" aria-label="Language">
+        <label data-i18n="ac.reportLangLabel">報告語言 · Report Language</label>
+        <div class="lang-note" data-i18n="ac.reportLangNote">註冊後鎖定，不可更換。需要其他語言請用另一個 email 註冊。</div>
+        <div class="lang-options" id="lang-options" role="radiogroup" aria-label="Report Language">
           <button type="button" class="lang-btn active" data-value="zh-TW">繁體中文</button>
           <button type="button" class="lang-btn" data-value="zh-CN">简体中文</button>
           <button type="button" class="lang-btn" data-value="en">English</button>
@@ -109,38 +185,38 @@
       </div>
 
       <div class="field">
-        <label for="display_name">Name</label>
-        <input type="text" id="display_name" name="display_name" placeholder="Your full name" required autocomplete="name" />
+        <label for="display_name" data-i18n="ac.name">Name</label>
+        <input type="text" id="display_name" name="display_name" placeholder="Your full name" data-i18n-placeholder="ac.namePh" required autocomplete="name" />
       </div>
 
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email" data-i18n="ac.email">Email</label>
         <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
       </div>
 
       <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password" />
+        <label for="password" data-i18n="ac.password">Password</label>
+        <input type="password" id="password" name="password" placeholder="At least 8 characters" data-i18n-placeholder="ac.passwordPh" required minlength="8" autocomplete="new-password" />
       </div>
 
       <div class="field">
-        <label for="password_confirm">Confirm Password</label>
-        <input type="password" id="password_confirm" name="password_confirm" placeholder="Re-enter your password" required minlength="8" autocomplete="new-password" />
+        <label for="password_confirm" data-i18n="ac.passwordConfirm">Confirm Password</label>
+        <input type="password" id="password_confirm" name="password_confirm" placeholder="Re-enter your password" data-i18n-placeholder="ac.passwordConfirmPh" required minlength="8" autocomplete="new-password" />
       </div>
 
       <div class="field">
-        <label>Date of Birth (Solar Calendar)</label>
+        <label data-i18n="ac.dob">Date of Birth (Solar Calendar)</label>
         <div class="row-three">
-          <select id="birth_year" name="birth_year" required><option value="">Year</option></select>
-          <select id="birth_month" name="birth_month" required><option value="">Month</option></select>
-          <select id="birth_day" name="birth_day" required><option value="">Day</option></select>
+          <select id="birth_year" name="birth_year" required><option value="" data-i18n="ac.year">Year</option></select>
+          <select id="birth_month" name="birth_month" required><option value="" data-i18n="ac.month">Month</option></select>
+          <select id="birth_day" name="birth_day" required><option value="" data-i18n="ac.day">Day</option></select>
         </div>
       </div>
 
       <div class="field">
-        <label for="birth_hour">Birth Hour</label>
+        <label for="birth_hour" data-i18n="ac.birthHour">Birth Hour</label>
         <select id="birth_hour" name="birth_hour" required>
-          <option value="">Select birth hour</option>
+          <option value="" data-i18n="ac.birthHourPh">Select birth hour</option>
           <option value="0">子 Zi · 00:00 – 00:59</option>
           <option value="1">丑 Chou · 01:00 – 02:59</option>
           <option value="3">寅 Yin · 03:00 – 04:59</option>
@@ -158,10 +234,10 @@
       </div>
 
       <div class="field">
-        <label>Gender</label>
+        <label data-i18n="ac.gender">Gender</label>
         <div class="toggle-group" role="radiogroup" aria-label="Gender">
-          <button type="button" class="toggle-btn" data-name="gender" data-value="female">Female</button>
-          <button type="button" class="toggle-btn" data-name="gender" data-value="male">Male</button>
+          <button type="button" class="toggle-btn" data-name="gender" data-value="female" data-i18n="ac.female">Female</button>
+          <button type="button" class="toggle-btn" data-name="gender" data-value="male" data-i18n="ac.male">Male</button>
         </div>
         <input type="hidden" id="gender" name="gender" required />
       </div>
@@ -169,15 +245,15 @@
       <div class="consent-box">
         <input type="checkbox" id="newsletter_consent" name="newsletter_consent" required />
         <label for="newsletter_consent">
-          I agree to receive insights and updates from FuSang Vision via email <span class="required-mark">*</span>
-          <span class="consent-sub">Required to receive your personalized report</span>
+          <span data-i18n="ac.consent">I agree to receive insights and updates from FuSang Vision via email</span> <span class="required-mark">*</span>
+          <span class="consent-sub" data-i18n="ac.consentSub">Required to receive your personalized report</span>
         </label>
       </div>
 
       <div id="error-message" class="error-message" role="alert" aria-live="polite"></div>
 
       <button type="submit" id="submit-btn" class="btn-primary">
-        <span class="btn-text">Generate My Chart</span>
+        <span class="btn-text" data-i18n="ac.submit">Generate My Chart</span>
         <span class="btn-arrow">→</span>
       </button>
 
@@ -192,6 +268,7 @@
     const SUPABASE_URL = window.CFG.SUPABASE_URL;
     const SUPABASE_ANON_KEY = window.CFG.SUPABASE_ANON_KEY;
     const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
+    const F = window.FSI18N;
 
     const DEFAULTS = {
       birth_minute: 0,
@@ -201,6 +278,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      bindUiLang();
       initYearOptions();
       initMonthOptions();
       initDayOptions();
@@ -208,6 +286,21 @@
       bindToggleGroups();
       bindForm();
     });
+
+    // 頁內 UI 語言切換(只動介面文字;不碰表單裡「報告語言」單選)
+    function bindUiLang() {
+      const box = document.getElementById('ac-lang');
+      const mark = () => {
+        const cur = F.getUILang();
+        box.querySelectorAll('.ac-lang-opt').forEach((b) =>
+          b.classList.toggle('active', b.getAttribute('data-lang') === cur));
+        document.title = F.t('ac.docTitle');
+      };
+      box.querySelectorAll('.ac-lang-opt').forEach((b) =>
+        b.addEventListener('click', () => F.setUILang(b.getAttribute('data-lang'))));
+      mark();
+      window.addEventListener('i18n:changed', mark);
+    }
 
     function initYearOptions() {
       const yearSelect = document.getElementById('birth_year');
@@ -290,10 +383,10 @@
         if (error) { showError(error); return; }
 
         const passwordConfirm = document.getElementById('password_confirm').value;
-        if (payload.password !== passwordConfirm) { showError('Passwords do not match.'); return; }
+        if (payload.password !== passwordConfirm) { showError(F.t('ac.errPwMismatch')); return; }
 
         if (!document.getElementById('newsletter_consent').checked) {
-          showError('Please confirm you agree to receive emails.'); return;
+          showError(F.t('ac.errConsent')); return;
         }
 
         setSubmitting(submitBtn, true);
@@ -318,27 +411,27 @@
           window.location.href = `submitted.html?${params.toString()}`;
         } catch (err) {
           console.error('Submit error:', err);
-          showError(err.message || 'Something went wrong. Please try again.');
+          showError(err.message || F.t('ac.errGeneric'));
           setSubmitting(submitBtn, false);
         }
       });
     }
 
     function validatePayload(p) {
-      if (!p.display_name) return 'Please enter your name.';
-      if (!p.email) return 'Please enter your email.';
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return 'Please enter a valid email.';
-      if (!p.password) return 'Please create a password.';
-      if (p.password.length < 8) return 'Password must be at least 8 characters.';
-      if (!p.birth_year) return 'Please select your birth year.';
-      if (!p.birth_month) return 'Please select your birth month.';
-      if (!p.birth_day) return 'Please select your birth day.';
-      if (isNaN(p.birth_hour)) return 'Please select your birth hour.';
-      if (!p.gender) return 'Please select your gender.';
-      if (!['zh-TW','zh-CN','en'].includes(p.language)) return 'Please select a language.';
+      if (!p.display_name) return F.t('ac.errName');
+      if (!p.email) return F.t('ac.errEmail');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return F.t('ac.errEmailInvalid');
+      if (!p.password) return F.t('ac.errPwEmpty');
+      if (p.password.length < 8) return F.t('ac.errPwShort');
+      if (!p.birth_year) return F.t('ac.errYear');
+      if (!p.birth_month) return F.t('ac.errMonth');
+      if (!p.birth_day) return F.t('ac.errDay');
+      if (isNaN(p.birth_hour)) return F.t('ac.errHour');
+      if (!p.gender) return F.t('ac.errGender');
+      if (!['zh-TW','zh-CN','en'].includes(p.language)) return F.t('ac.errLang');
       const date = new Date(p.birth_year, p.birth_month - 1, p.birth_day);
       if (date.getFullYear() !== p.birth_year || date.getMonth() !== p.birth_month - 1 || date.getDate() !== p.birth_day) {
-        return 'Please enter a valid date.';
+        return F.t('ac.errDate');
       }
       return null;
     }
@@ -346,11 +439,11 @@
     function setSubmitting(btn, on) {
       if (on) {
         btn.disabled = true;
-        btn.querySelector('.btn-text').textContent = 'Submitting...';
+        btn.querySelector('.btn-text').textContent = F.t('ac.submitting');
         btn.querySelector('.btn-arrow').textContent = '...';
       } else {
         btn.disabled = false;
-        btn.querySelector('.btn-text').textContent = 'Generate My Chart';
+        btn.querySelector('.btn-text').textContent = F.t('ac.submit');
         btn.querySelector('.btn-arrow').textContent = '→';
       }
     }
