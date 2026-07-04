@@ -27,7 +27,7 @@
 //   ‣ chart.html             → 用本檔共用 key,經該頁 applyStaticI18n(id→key)套用
 //   ‣ consultation 四頁       → 字串目前在 consultation-common.js 的 pick(zh,en)
 //                              (中/英二分,尚未三語化;待 consultation 專批改用 addUI)
-//   ‣ login.html             → (待遷移)頁內 addUI inline
+//   ‣ login.html             → 頁內 addUI inline(login.html 的 <head> addUI script)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
