@@ -23,20 +23,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { I18N, SUPPORTED_LANGS } from './i18n.js';
 
 // ─── Supabase ────────────────────────────────────────────────
-// 設定值集中於 config.js(classic script,先於本 module 載入 → window.CFG)。
-// ⚠ 過渡 fallback:若某頁尚未加 <script src="./config.js">,退回下方寫死值,
-//    確保遷移期間不壞站。待全站頁面都接上 config.js 後,刪除 FALLBACK 區塊。
-const FALLBACK = {
-  SUPABASE_URL:      'https://vrquktgjawayuioglqfn.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4',
-};
-const CFG = window.CFG || FALLBACK;
-if (!window.CFG) {
-  console.warn('[components] window.CFG 未載入,使用過渡 fallback。請在本頁 <head> 補 <script src="./config.js"></script>(排在 components.js 之前)。');
+// 設定值集中於 config.js(classic script,須先於本 module 載入 → window.CFG)。
+// 每頁 <head> 皆須有 <script src="config.js">,排在 components.js 之前。
+if (!window.CFG || !window.CFG.SUPABASE_URL || !window.CFG.SUPABASE_ANON_KEY) {
+  throw new Error('[components] window.CFG 未載入。請確認本頁 <head> 內 <script src="config.js"></script> 排在 components.js 之前。');
 }
-
-const SUPABASE_URL = CFG.SUPABASE_URL;
-const SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY;
+const SUPABASE_URL = window.CFG.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.CFG.SUPABASE_ANON_KEY;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },
