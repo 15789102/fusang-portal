@@ -24,6 +24,7 @@
 // ── 各頁專屬字典「位置索引」(遷一頁登記一筆,下一個人照這查)──────
 //   ‣ 共用 UI 字串            → 本檔 UI 區(下方 var UI)
 //   ‣ 報告術語(宮位/星曜/四化) → 本檔 RT 區(下方 var RT)
+//   ‣ 星曜名 fallback(未進 glossary 的星)→ 本檔 var STAR_NAMES(starLabel 用)
 //   ‣ chart.html             → 用本檔共用 key,經該頁 applyStaticI18n(id→key)套用
 //   ‣ consultation 四頁       → 字串目前在 consultation-common.js 的 pick(zh,en)
 //                              (中/英二分,尚未三語化;待 consultation 專批改用 addUI)
@@ -33,6 +34,9 @@
 //   ‣ set-password.html      → 頁內 addUI inline(set-password.html 的 <head> addUI script)
 //   ‣ pricing.html           → 頁內 addUI inline(pricing.html 的 <head> addUI script;登入頁,用 header 切換鈕)
 //   ‣ dashboard.html         → 頁內 addUI inline(dashboard.html 的 <head> addUI script;登入頁,用 header 切換鈕)
+//   ‣ payment-success.html   → 頁內 addUI inline(payment-success.html;登入頁,用 header 切換鈕)
+//   ‣ payment-cancel.html    → 頁內 addUI inline(payment-cancel.html;登入頁,用 header 切換鈕)
+//   ‣ chart.html             → applyStaticI18n(id→key,共用 key 在本檔)+ 頁內 addUI(動態 UI 字串)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
@@ -996,10 +1000,46 @@
     return '';
   }
 
+  // ── 星曜名 fallback(不參與報告生成、未進 DB glossary 的星曜)──────────
+  //   這些星只在前端命盤顯示、不做報告內容,當初沒放進 report_glossary,
+  //   導致英文模式露中文。此處補齊三語(en=CamelCase 拼音);starLabel 以
+  //   glossary 為主、此表為次、中文為底。要新增星只改這裡即可。
+  //   ⚠ 拼音同音重疊(供 review):天福 TianFu 與主星 天府 TianFu 同拼;
+  //     天月 TianYue 與輔星 天鉞 TianYue 同拼(主星/輔星走 glossary,通常不撞)。
+  var STAR_NAMES = {
+    'zh-TW': {
+      '截空':'截空','華蓋':'華蓋','天刑':'天刑','天巫':'天巫','天廚':'天廚',
+      '孤辰':'孤辰','蜚廉':'蜚廉','三台':'三台','台輔':'台輔','解神':'解神',
+      '天哭':'天哭','陰煞':'陰煞','寡宿':'寡宿','咸池':'咸池','天官':'天官',
+      '封誥':'封誥','天福':'天福','破碎':'破碎','八座':'八座','天姚':'天姚',
+      '天虛':'天虛','天月':'天月'
+    },
+    'zh-CN': {
+      '截空':'截空','華蓋':'华盖','天刑':'天刑','天巫':'天巫','天廚':'天厨',
+      '孤辰':'孤辰','蜚廉':'蜚廉','三台':'三台','台輔':'台辅','解神':'解神',
+      '天哭':'天哭','陰煞':'阴煞','寡宿':'寡宿','咸池':'咸池','天官':'天官',
+      '封誥':'封诰','天福':'天福','破碎':'破碎','八座':'八座','天姚':'天姚',
+      '天虛':'天虚','天月':'天月'
+    },
+    'en': {
+      '截空':'JieKong','華蓋':'HuaGai','天刑':'TianXing','天巫':'TianWu','天廚':'TianChu',
+      '孤辰':'GuChen','蜚廉':'FeiLian','三台':'SanTai','台輔':'TaiFu','解神':'JieShen',
+      '天哭':'TianKu','陰煞':'YinSha','寡宿':'GuaSu','咸池':'XianChi','天官':'TianGuan',
+      '封誥':'FengGao','天福':'TianFu','破碎':'PoSui','八座':'BaZuo','天姚':'TianYao',
+      '天虛':'TianXu','天月':'TianYue'
+    }
+  };
+
   // ── 報告 glossary(星曜/宮位名 DB 對照,由 components.loadReportGlossary 注入)──
   function setGlossary(g) { _glossary = g || null; }
   function palaceLabel(zh) { return (_glossary && _glossary.palaces && _glossary.palaces[zh]) || zh; }
-  function starLabel(zh)   { return (_glossary && _glossary.stars   && _glossary.stars[zh])   || zh; }
+  // starLabel:glossary(DB,與後端一致)優先 → STAR_NAMES(前端補漏)→ 中文原名
+  function starLabel(zh) {
+    if (_glossary && _glossary.stars && _glossary.stars[zh]) return _glossary.stars[zh];
+    var m = STAR_NAMES[_reportLang];
+    if (m && m[zh] !== undefined) return m[zh];
+    return zh;
+  }
   function transformLabel(zh) {
     var localized = td('TRANSFORM_NAME', zh);
     if (localized) return localized;
