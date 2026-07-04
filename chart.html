@@ -3,6 +3,16 @@
 <head>
   <script src="config.js"></script>
   <script src="i18n.js"></script>
+  <script>
+    // chart 專屬 UI 字典(策略 B):cutover 時 applyStaticI18n 未涵蓋的 JS 動態 UI 字串。
+    // 這些是付費牆/空狀態 chrome(走 tx=UI 語言);切換由 rerender() 重跑對應 render。
+    window.FSI18N.addUI({
+      'chart.secLock':      { 'zh-TW': '解鎖後可見', 'zh-CN': '解锁后可见', 'en': 'Unlock to view' },
+      'chart.noContent':    { 'zh-TW': '(尚無內容)', 'zh-CN': '(尚无内容)', 'en': '(No content yet)' },
+      'chart.feedLockHint': { 'zh-TW': '這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。', 'zh-CN': '这部分需要完整解读才能看见——它会告诉你，哪些领域正以资源、主导与名声在背后支持你。', 'en': 'This part becomes visible with the full reading — it shows which areas support you through resources, influence, and reputation.' },
+      'chart.feedUnlock':   { 'zh-TW': '查看方案 →', 'zh-CN': '查看方案 →', 'en': 'View plans →' }
+    });
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FuSang Vision — 我的本命盤</title>
@@ -540,7 +550,7 @@
 
   // 各段輕量鎖（未解鎖時放在 02/03/04 內容區位置）
   function secLockHtml() {
-    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> 解鎖後可見</div>`;
+    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> ${tx('chart.secLock')}</div>`;
   }
 
   
@@ -638,7 +648,7 @@
 
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
-    if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { el.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${tx('chart.noContent')}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let html = '';
     paras.forEach((p, i) => {
@@ -724,7 +734,7 @@
 
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
-    if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { wrap.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${tx('chart.noContent')}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let inner = '<div class="epilogue-eyebrow">— Epilogue —</div><div class="epilogue-prose">';
     paras.forEach((p, i) => {
@@ -858,7 +868,7 @@
     // 未解鎖時該欄為 null，改顯示小提示導向 pricing
     if (!isUnlocked) {
       document.getElementById('ov-feed').innerHTML =
-        `<div class="ov-locked-hint">這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。<span class="ov-locked-link" id="ov-feed-unlock">查看方案 →</span></div>`;
+        `<div class="ov-locked-hint">${tx('chart.feedLockHint')}<span class="ov-locked-link" id="ov-feed-unlock">${tx('chart.feedUnlock')}</span></div>`;
       const lk = document.getElementById('ov-feed-unlock');
       if (lk) lk.addEventListener('click', goPricing);
     } else {
