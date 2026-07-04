@@ -16,11 +16,26 @@
 //   登入者 UI 預設取 preferred_language(seedUILangFromProfile),之後以使用者切換為準。
 //   匿名者 UI 預設 en(英文優先)。舊快取 fs_lang 會一次性遷移到 fs_ui_lang。
 //
-// ── 新增「頁面」──────────────────────────────────────────────
-//   1) UI 文字進 UI 三語;宮位/星曜/四化等術語進 RT 三語。
-//   2) DOM 標 data-i18n(textContent) / data-i18n-html(innerHTML) /
-//      data-i18n-placeholder / data-i18n-title / data-i18n-aria-label。
-//   3) 載入順序 config.js → i18n.js →(module)components.js。切換由 header 統一處理。
+// ── 各頁 UI 字串:共用進本檔、專屬跟各頁(策略 B)──────────────
+//   共用 key(nav/footer/共用按鈕/共用錯誤)→ 留在本檔 UI 區,數量有上限、不隨頁面數膨脹。
+//   各頁「專屬」key → 不進本檔;由該頁載入時以 window.FSI18N.addUI({...}) 併入。
+//   → 本檔不會因頁面變多而爆大;翻譯分散、各頁自維護。
+//
+// ── 各頁專屬字典「位置索引」(遷一頁登記一筆,下一個人照這查)──────
+//   ‣ 共用 UI 字串            → 本檔 UI 區(下方 var UI)
+//   ‣ 報告術語(宮位/星曜/四化) → 本檔 RT 區(下方 var RT)
+//   ‣ chart.html             → 用本檔共用 key,經該頁 applyStaticI18n(id→key)套用
+//   ‣ consultation 四頁       → 字串目前在 consultation-common.js 的 pick(zh,en)
+//                              (中/英二分,尚未三語化;待 consultation 專批改用 addUI)
+//   ‣ login.html             → (待遷移)頁內 addUI inline
+//   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
+//
+// ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
+//   1) 該頁 <head> 載入 i18n.js 後,呼叫 window.FSI18N.addUI({ 'page.key':{ 'zh-TW':…,'zh-CN':…,'en':… } })。
+//   2) DOM 標 data-i18n(textContent)/ data-i18n-html(innerHTML)/ data-i18n-placeholder / -title / -aria-label。
+//   3) 字串很多的頁,可獨立成小檔 <page>.i18n.js 再 <script> 引入(內容一樣呼叫 addUI)。
+//   4) 回到上方「位置索引」登記一行,讓後人找得到。
+//   載入順序:config.js → i18n.js →(該頁 addUI)→ components.js/頁面 module。
 //
 // ── 新增「語言」──────────────────────────────────────────────
 //   SUPPORTED_LANGS 加一項 + UI/RT 各加一個頂層 key + report_glossary 加一 row +
@@ -1035,6 +1050,28 @@
     fire();
   }
 
+  // ── 各頁專屬 UI 字典併入(策略 B)────────────────────────────
+  //   dict = { 'page.key': { 'zh-TW':…, 'zh-CN':…, 'en':… }, … }
+  //   純合併進記憶體 UI 字典(同 key 後者覆蓋);不自動套 DOM。
+  //   標準用法:頁面 <head> 載入 i18n.js 後直接呼叫 → 首次渲染由 DOMContentLoaded 的
+  //   applyI18n 負責;切換語言由 setUILang 重掃。若在 DOM 已渲染後才 addUI,請自行再
+  //   呼叫 window.FSI18N.applyI18n() 套用。
+  function addUI(dict) {
+    if (!dict) return;
+    for (var key in dict) {
+      if (!Object.prototype.hasOwnProperty.call(dict, key)) continue;
+      var per = dict[key];
+      if (!per) continue;
+      for (var i = 0; i < SUPPORTED_LANGS.length; i++) {
+        var L = SUPPORTED_LANGS[i];
+        if (per[L] !== undefined) {
+          if (!UI[L]) UI[L] = {};
+          UI[L][key] = per[L];
+        }
+      }
+    }
+  }
+
   // ── 初始化(同步設好 uiLang;DOM ready 後首次套用)──────────────
   _uiLang = resolveInitialUILang();
   setDocLang(_uiLang);
@@ -1054,6 +1091,7 @@
     getReportLang: getReportLang,
     setReportLang: setReportLang,
     getLang: getReportLang,               // 別名:chart.html 報告內容分隔符判斷用
+    addUI: addUI,                         // 各頁專屬 UI 字典併入(策略 B)
     seedUILangFromProfile: seedUILangFromProfile,
     setGlossary: setGlossary,
     palaceLabel: palaceLabel,
