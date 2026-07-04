@@ -21,7 +21,7 @@
 
 (function () {
   // ─── 唯一切換點 ──────────────────────────────────────────
-  const ENV = 'staging';   // 'production' | 'staging'
+  const ENV = 'production';   // 'production' | 'staging'
 
   const CONFIGS = {
     // ── 正式環境 ──
