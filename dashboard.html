@@ -5,7 +5,52 @@
 <script src="i18n.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuSang Vision — 我的儀表板</title>
+<title>我的儀表板 - FuSang Vision</title>
+<script>
+  // ── dashboard 專屬 UI 字典(策略 B;位置索引見 i18n.js 檔頭)──
+  //   裝飾性英文(card-name-en 副標、hero-sub「Your celestial map awaits.」)刻意保留靜態。
+  window.FSI18N.addUI({
+    'dash.docTitle':   { 'zh-TW': '我的儀表板 - FuSang Vision', 'zh-CN': '我的仪表板 - FuSang Vision', 'en': 'Dashboard - FuSang Vision' },
+    'dash.loading':    { 'zh-TW': '載入中…', 'zh-CN': '载入中…', 'en': 'Loading…' },
+    'dash.heroEyebrow':{ 'zh-TW': '歡迎回來', 'zh-CN': '欢迎回来', 'en': 'Welcome Back' },
+    'dash.heroTitle':  { 'zh-TW': '歡迎回來，{name}', 'zh-CN': '欢迎回来，{name}', 'en': 'Welcome back, {name}' },
+    'dash.friend':     { 'zh-TW': '朋友', 'zh-CN': '朋友', 'en': 'friend' },
+
+    'dash.kNatal':     { 'zh-TW': '本命', 'zh-CN': '本命', 'en': 'Natal' },
+    'dash.kDecade':    { 'zh-TW': '大限', 'zh-CN': '大限', 'en': 'Major Limit' },
+    'dash.kAnnual':    { 'zh-TW': '流年', 'zh-CN': '流年', 'en': 'Annual' },
+    'dash.kMonthly':   { 'zh-TW': '流月', 'zh-CN': '流月', 'en': 'Monthly' },
+    'dash.now':        { 'zh-TW': '現在', 'zh-CN': '现在', 'en': 'Now' },
+
+    'dash.nNatal':     { 'zh-TW': '你是誰', 'zh-CN': '你是谁', 'en': 'Who You Are' },
+    'dash.nDecade':    { 'zh-TW': '你正在哪一段', 'zh-CN': '你正在哪一段', 'en': 'Where You Are Now' },
+    'dash.nAnnual':    { 'zh-TW': '今年的主軸', 'zh-CN': '今年的主轴', 'en': "This Year's Focus" },
+    'dash.nMonthly':   { 'zh-TW': '這個月的提示', 'zh-CN': '这个月的提示', 'en': "This Month's Cues" },
+
+    'dash.dNatal':     { 'zh-TW': '與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。', 'zh-CN': '与生俱来的倾向 — 你的性格、天赋，与这辈子自然会走向的方向。', 'en': 'Your innate tendencies — your character, gifts, and the direction you naturally lean toward.' },
+    'dash.dDecade':    { 'zh-TW': '人生十年一段，這是你目前的階段，以及它的整體基調。', 'zh-CN': '人生十年一段，这是你目前的阶段，以及它的整体基调。', 'en': "Life moves in ten-year chapters — this is the one you're in, and its overall tone." },
+    'dash.dAnnual':    { 'zh-TW': '這一年的重心落在哪裡 — 什麼值得你把心力放上去。', 'zh-CN': '这一年的重心落在哪里 — 什么值得你把心力放上去。', 'en': "Where this year's weight falls — what's worth putting your energy into." },
+    'dash.dMonthly':   { 'zh-TW': '鏡頭拉到最近，這個月特別值得留意或把握的事。', 'zh-CN': '镜头拉到最近，这个月特别值得留意或把握的事。', 'en': "Zooming in close — what's worth noticing or seizing this month." },
+
+    'dash.viewMore':   { 'zh-TW': '查閱更多', 'zh-CN': '查阅更多', 'en': 'View more' },
+    'dash.generating': { 'zh-TW': '內容生成中', 'zh-CN': '内容生成中', 'en': 'Generating…' },
+    'dash.refresh':    { 'zh-TW': '重新整理狀態', 'zh-CN': '刷新状态', 'en': 'Refresh status' },
+    'dash.genNatal':   { 'zh-TW': '您的本命盤正在排算與生成，約需 15–20 分鐘。完成後我們會以電子郵件通知您，您也可以稍後回來重新整理。', 'zh-CN': '您的本命盘正在排算与生成，约需 15–20 分钟。完成后我们会以电子邮件通知您，您也可以稍后回来刷新。', 'en': "Your natal chart is being calculated and prepared (about 15–20 minutes). We'll email you when it's ready, or come back and refresh later." },
+    'dash.genDecade':  { 'zh-TW': '您的本命盤完成後，即可在此展開各十年大限。您也可以稍後回來重新整理。', 'zh-CN': '您的本命盘完成后，即可在此展开各十年大限。您也可以稍后回来刷新。', 'en': 'Once your natal chart is ready, your ten-year cycles will open here. You can also come back and refresh later.' },
+    'dash.genAnnual':  { 'zh-TW': '您的流年運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。', 'zh-CN': '您的流年运势正在生成，完成后即可在此查看。您也可以稍后回来刷新。', 'en': 'Your annual reading is being prepared and will appear here once ready. You can also come back and refresh later.' },
+    'dash.genMonthly': { 'zh-TW': '您的流月運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。', 'zh-CN': '您的流月运势正在生成，完成后即可在此查看。您也可以稍后回来刷新。', 'en': 'Your monthly reading is being prepared and will appear here once ready. You can also come back and refresh later.' },
+
+    'dash.unlockTitle':{ 'zh-TW': '解鎖完整命盤解讀', 'zh-CN': '解锁完整命盘解读', 'en': 'Unlock your full reading' },
+    'dash.unlockNote': { 'zh-TW': '一次解鎖，看懂本命・大限・流年中，能量如何流動、該往哪使力。', 'zh-CN': '一次解锁，看懂本命・大限・流年中，能量如何流动、该往哪使力。', 'en': 'Unlock once to see how energy flows across Natal, Decade & Annual — and where to focus.' },
+    'dash.viewPlans':  { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans' },
+    'dash.subLine':    { 'zh-TW': '每月運勢導航需訂閱解鎖', 'zh-CN': '每月运势导航需订阅解锁', 'en': 'Monthly Guidance requires a subscription' },
+
+    'dash.consultKicker':{ 'zh-TW': '單獨問事', 'zh-CN': '单独问事', 'en': 'Personal Consultation' },
+    'dash.consultName':{ 'zh-TW': '有一個真正重要的問題？', 'zh-CN': '有一个真正重要的问题？', 'en': 'Have a question that truly matters?' },
+    'dash.consultDesc':{ 'zh-TW': '選定主題、說明處境，由真人為你解盤並書面回覆。', 'zh-CN': '选定主题、说明处境，由真人为你解盘并书面回复。', 'en': 'Choose a topic, describe your situation, and get a written reading from a real person.' },
+    'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' }
+  });
+</script>
 <style>
   /* ── dashboard 專屬樣式（共用 tokens 由 components.js 注入）── */
   :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
@@ -369,13 +414,13 @@
   <div class="dash-wrap">
 
     <!-- loading -->
-    <div id="dash-loading" class="dash-loading">載入中…</div>
+    <div id="dash-loading" class="dash-loading" data-i18n="dash.loading">載入中…</div>
 
     <!-- content (hidden until ready) -->
     <div id="dash-content" style="display:none;">
       <div class="dash-hero">
-        <div class="dash-eyebrow">Welcome Back · 歡迎回來</div>
-        <h1 class="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
+        <div class="dash-eyebrow" data-i18n="dash.heroEyebrow">歡迎回來</div>
+        <h1 class="dash-title" id="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
         <div class="dash-sub">Your celestial map awaits.</div>
         <div class="dash-rule"></div>
       </div>
@@ -387,28 +432,28 @@
 
           <!-- 本命卡 -->
           <div class="dash-card" id="card-natal" style="animation-delay:0.10s;">
-            <div class="card-kicker">本命 · Natal</div>
-            <div class="card-name">你是誰</div>
+            <div class="card-kicker"><span data-i18n="dash.kNatal">本命</span></div>
+            <div class="card-name" data-i18n="dash.nNatal">你是誰</div>
             <div class="card-name-en">Your Innate Blueprint</div>
-            <div class="card-desc" id="desc-natal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
+            <div class="card-desc" id="desc-natal" data-i18n="dash.dNatal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
             <div id="card-natal-action"><!-- 動態填入 --></div>
           </div>
 
           <!-- 大限卡 -->
           <div class="dash-card" id="card-decade" style="animation-delay:0.18s;">
-            <div class="card-kicker">大限 · Major Limit</div>
-            <div class="card-name">你正在哪一段</div>
+            <div class="card-kicker"><span data-i18n="dash.kDecade">大限</span></div>
+            <div class="card-name" data-i18n="dash.nDecade">你正在哪一段</div>
             <div class="card-name-en">Your Ten-Year Cycle</div>
-            <div class="card-desc" id="desc-decade">人生十年一段，這是你目前的階段，以及它的整體基調。</div>
+            <div class="card-desc" id="desc-decade" data-i18n="dash.dDecade">人生十年一段，這是你目前的階段，以及它的整體基調。</div>
             <div id="card-decade-action"><!-- 動態填入 --></div>
           </div>
 
           <!-- 流年卡 -->
           <div class="dash-card" id="card-annual" style="animation-delay:0.26s;">
-            <div class="card-kicker">流年 · Annual<span class="card-now">現在</span></div>
-            <div class="card-name">今年的主軸</div>
+            <div class="card-kicker"><span data-i18n="dash.kAnnual">流年</span><span class="card-now" data-i18n="dash.now">現在</span></div>
+            <div class="card-name" data-i18n="dash.nAnnual">今年的主軸</div>
             <div class="card-name-en">This Year's Currents</div>
-            <div class="card-desc" id="desc-annual">這一年的重心落在哪裡 — 什麼值得你把心力放上去。</div>
+            <div class="card-desc" id="desc-annual" data-i18n="dash.dAnnual">這一年的重心落在哪裡 — 什麼值得你把心力放上去。</div>
             <div id="card-annual-action"><!-- 動態填入 --></div>
           </div>
 
@@ -419,10 +464,10 @@
 
         <!-- ── 右欄：流月（撐滿高度）── -->
         <div class="dash-card dash-card--monthly" id="card-monthly" style="animation-delay:0.34s;">
-          <div class="card-kicker">流月 · Monthly<span class="card-now">現在</span></div>
-          <div class="card-name">這個月的提示</div>
+          <div class="card-kicker"><span data-i18n="dash.kMonthly">流月</span><span class="card-now" data-i18n="dash.now">現在</span></div>
+          <div class="card-name" data-i18n="dash.nMonthly">這個月的提示</div>
           <div class="card-name-en">Your Monthly Currents</div>
-          <div class="card-desc" id="desc-monthly">鏡頭拉到最近，這個月特別值得留意或把握的事。</div>
+          <div class="card-desc" id="desc-monthly" data-i18n="dash.dMonthly">鏡頭拉到最近，這個月特別值得留意或把握的事。</div>
           <div id="card-monthly-action"><!-- 動態填入 --></div>
           <!-- 第二層付費牆：流月訂閱（未訂閱才出現）-->
           <div id="sub-monthly"></div>
@@ -433,11 +478,11 @@
       <!-- ── 單獨問事入口 ── -->
       <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
         <div class="dc-textwrap">
-          <div class="dc-kicker">單獨問事 · Personal Consultation</div>
-          <div class="dc-name">有一個真正重要的問題？</div>
-          <div class="dc-desc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
+          <div class="dc-kicker" data-i18n="dash.consultKicker">單獨問事</div>
+          <div class="dc-name" data-i18n="dash.consultName">有一個真正重要的問題？</div>
+          <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
         </div>
-        <span class="dc-cta" data-go="consultation.html">前往問事 <span class="arrow">→</span></span>
+        <span class="dc-cta" data-go="consultation.html"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
       </div>
 
     </div>
@@ -449,6 +494,13 @@
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
+
+  const F = window.FSI18N;
+  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // 供語言切換重繪:存下抓到的狀態
+  const S = { ready: false, displayName: '', layers: {} };
+  const GEN_KEY = { natal: 'dash.genNatal', decade: 'dash.genDecade', annual: 'dash.genAnnual', monthly: 'dash.genMonthly' };
 
   /* ════════════════════════════════════════════════════════════
      CONFIG — 上線前需依實際 schema 確認的設定，全部集中在這裡
@@ -540,7 +592,7 @@
     const userId = session.user.id;
 
     // display_name + 付費狀態（一次撈齊；撈不到就用 CONFIG 預設）
-    let displayName = email.split('@')[0] || '朋友';
+    let displayName = email.split('@')[0] || F.t('dash.friend');
     try {
       const { data: profile } = await supabase
         .from('user_profiles')
@@ -553,7 +605,7 @@
         CONFIG.monthlySubscribed  = profile.monthly_subscribed === true;
       }
     } catch (_) { /* 靜默 fallback，沿用 CONFIG 預設 */ }
-    document.getElementById('dash-name').textContent = displayName;
+    S.displayName = displayName;
 
     // 並行撈四層
     const [natal, decade, annual, monthly] = await Promise.all([
@@ -562,14 +614,10 @@
       fetchLayer('annual'),
       fetchLayer('monthly'),
     ]);
+    S.layers = { natal, decade, annual, monthly };
+    S.ready = true;
 
-    renderCard('natal',   natal,   '您的本命盤正在排算與生成，約需 15–20 分鐘。完成後我們會以電子郵件通知您，您也可以稍後回來重新整理。');
-    renderCard('decade',  decade,  '您的本命盤完成後，即可在此展開各十年大限。您也可以稍後回來重新整理。');
-    renderCard('annual',  annual,  '您的流年運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。');
-    renderCard('monthly', monthly, '您的流月運勢正在生成，完成後即可在此查看。您也可以稍後回來重新整理。');
-
-    renderTransformUnlock();   // 第一層付費牆
-    renderMonthlySub();        // 第二層付費牆
+    renderAllDynamic();   // hero 標題 + 四卡 + 兩層付費牆(可隨語言重繪)
 
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
@@ -583,40 +631,69 @@
     }
   })();
 
-  /* 渲染單一卡片的摘要 + 動作區 */
-  function renderCard(key, state, generatingNote) {
-    // 有摘要 → 覆蓋靜態副文
+  /* hero 標題(含姓名,隨語言重繪) */
+  function renderHeroTitle() {
+    const h = document.getElementById('dash-title');
+    if (h) h.innerHTML = F.t('dash.heroTitle')
+      .replace('{name}', '<span class="name">' + escapeHtml(S.displayName) + '</span>');
+  }
+
+  /* 重繪所有 JS 動態內容(初次 + 語言切換共用) */
+  function renderAllDynamic() {
+    if (!S.ready) return;
+    renderHeroTitle();
+    ['natal', 'decade', 'annual', 'monthly'].forEach(renderCard);
+    renderTransformUnlock();
+    renderMonthlySub();
+  }
+
+  /* 語言切換(header 切換鈕派 i18n:changed)→ 標題 + 動態內容重繪。
+     靜態 data-i18n 由 setUILang 的 applyI18n 自動重譯。 */
+  function applyLangUi() {
+    document.title = F.t('dash.docTitle');
+    renderAllDynamic();
+  }
+  applyLangUi();
+  window.addEventListener('i18n:changed', applyLangUi);
+
+  /* 渲染單一卡片的摘要 + 動作區(讀 S.layers[key]) */
+  function renderCard(key) {
+    const state = S.layers[key];
+    if (!state) return;
+
+    // 有摘要 → 覆蓋靜態副文;並移除 data-i18n,避免語言切換時被 applyI18n 蓋回
+    // （摘要來自報告內容,屬鎖定語言;此為邊界 1 可接受的混語）
     if (state.excerpt) {
       const d = document.getElementById('desc-' + key);
-      if (d) d.textContent = state.excerpt;
+      if (d) { d.textContent = state.excerpt; d.removeAttribute('data-i18n'); }
     }
 
     const el = document.getElementById('card-' + key + '-action');
     if (state.ready) {
       el.innerHTML =
-        '<span class="card-cta" data-go="' + LAYER[key].page + '">查閱更多 <span class="arrow">→</span></span>';
+        '<span class="card-cta" data-go="' + LAYER[key].page + '">' + F.t('dash.viewMore') + ' <span class="arrow">→</span></span>';
       el.querySelector('[data-go]').addEventListener('click', (e) => {
         window.location.href = e.currentTarget.getAttribute('data-go');
       });
     } else {
       document.getElementById('card-' + key).classList.add('is-soon');
       el.innerHTML =
-        '<div class="card-status"><span class="pulse"></span> 內容生成中</div>' +
-        '<div class="card-note">' + generatingNote + '</div>' +
-        '<span class="card-refresh" data-refresh>重新整理狀態</span>';
+        '<div class="card-status"><span class="pulse"></span> ' + F.t('dash.generating') + '</div>' +
+        '<div class="card-note">' + F.t(GEN_KEY[key]) + '</div>' +
+        '<span class="card-refresh" data-refresh>' + F.t('dash.refresh') + '</span>';
       el.querySelector('[data-refresh]').addEventListener('click', () => window.location.reload());
     }
   }
 
   /* 第一層付費牆：本命/大限/流年 一次解鎖完整解讀 → 導去 pricing */
   function renderTransformUnlock() {
-    if (CONFIG.hasTransformAccess) return; // 已購買 → 不顯示
     const host = document.getElementById('unlock-transforms');
+    if (CONFIG.hasTransformAccess) { host.innerHTML = ''; return; } // 已購買 → 不顯示
     host.innerHTML =
       '<div class="dash-unlock" style="animation-delay:0.32s;">' +
-        '<div class="u-title"><span class="u-icon">✦</span> 解鎖完整命盤解讀</div>' +
-        '<div class="u-note">一次解鎖，看懂本命・大限・流年中，能量如何流動、該往哪使力。</div>' +
-        '<button class="u-btn" id="btn-unlock-transforms">查看方案</button>' +
+        '<div class="u-title"><span class="u-icon">✦</span> ' + F.t('dash.unlockTitle') + '</div>' +
+        '<div class="u-note">' + F.t('dash.unlockNote') + '</div>' +
+        '<button class="u-btn" id="btn-unlock-transforms">' + F.t('dash.viewPlans') + '</button>' +
       '</div>';
     document.getElementById('btn-unlock-transforms')
       .addEventListener('click', () => { window.location.href = CONFIG.pricingPage; });
@@ -624,12 +701,12 @@
 
   /* 第二層付費牆：流月導航 → 導去 pricing */
   function renderMonthlySub() {
-    if (CONFIG.monthlySubscribed) return; // 已訂閱 → 不顯示
     const host = document.getElementById('sub-monthly');
+    if (CONFIG.monthlySubscribed) { host.innerHTML = ''; return; } // 已訂閱 → 不顯示
     host.innerHTML =
       '<div class="monthly-sub">' +
-        '<div class="ms-line"><span class="lock">⟳</span> 每月運勢導航需訂閱解鎖</div>' +
-        '<button class="sub-btn" id="btn-sub-monthly">查看方案</button>' +
+        '<div class="ms-line"><span class="lock">⟳</span> ' + F.t('dash.subLine') + '</div>' +
+        '<button class="sub-btn" id="btn-sub-monthly">' + F.t('dash.viewPlans') + '</button>' +
       '</div>';
     document.getElementById('btn-sub-monthly')
       .addEventListener('click', () => { window.location.href = CONFIG.pricingPage; });
