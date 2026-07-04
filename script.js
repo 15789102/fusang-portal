@@ -5,8 +5,20 @@
 // ============================================================
 
 // ---- Configuration ----
-const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
+// 設定值集中於 config.js(classic script,須先於本檔載入 → window.CFG)。
+// ⚠ 過渡 fallback:若本頁尚未加 <script src="./config.js">,退回下方寫死值,
+//    確保遷移期間不壞站。待本頁接上 config.js 後,刪除 FALLBACK 區塊。
+const FALLBACK_CFG = {
+  SUPABASE_URL:      'https://vrquktgjawayuioglqfn.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4',
+};
+const _CFG = window.CFG || FALLBACK_CFG;
+if (!window.CFG) {
+  console.warn('[script] window.CFG 未載入,使用過渡 fallback。請在本頁 <head> 補 <script src="./config.js"></script>(排在 script.js 之前)。');
+}
+
+const SUPABASE_URL = _CFG.SUPABASE_URL;
+const SUPABASE_ANON_KEY = _CFG.SUPABASE_ANON_KEY;
 const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
 
 // ---- Supported languages (must match backend report_glossary / email_templates) ----
