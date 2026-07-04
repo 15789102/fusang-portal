@@ -5,7 +5,18 @@
   <script src="i18n.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 付款完成</title>
+  <title>付款完成 - FuSang Vision</title>
+  <script>
+    // payment-success 專屬 UI 字典(策略 B;登入頁,用 header 切換鈕)
+    window.FSI18N.addUI({
+      'ps.docTitle':    { 'zh-TW': '付款完成 - FuSang Vision', 'zh-CN': '付款完成 - FuSang Vision', 'en': 'Payment Complete - FuSang Vision' },
+      'ps.title':       { 'zh-TW': '付款完成，謝謝您', 'zh-CN': '付款完成，谢谢您', 'en': 'Payment complete — thank you' },
+      'ps.body':        { 'zh-TW': '您的購買已經完成，內容正在為您開啟。', 'zh-CN': '您的购买已经完成，内容正在为您开启。', 'en': 'Your purchase is complete and your content is being unlocked.' },
+      'ps.note':        { 'zh-TW': '<strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。', 'zh-CN': '<strong>内容尚未解锁？</strong>系统正在为您更新权限，通常只需几秒钟。若您前往报告页后仍看到锁定状态，请<strong>刷新页面</strong>即可显示完整内容。', 'en': "<strong>Content not unlocked yet?</strong> We're updating your access — it usually takes just a few seconds. If a report page still shows as locked, please <strong>refresh the page</strong> to reveal the full content." },
+      'ps.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart' },
+      'ps.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard' }
+    });
+  </script>
   <meta name="description" content="Payment successful." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -66,17 +77,17 @@
     <div class="pay-check">✓</div>
 
     <div class="pay-eyebrow">Payment Successful</div>
-    <h1 class="pay-title">付款完成，謝謝您</h1>
+    <h1 class="pay-title" data-i18n="ps.title">付款完成，謝謝您</h1>
 
-    <p class="pay-body">您的購買已經完成，內容正在為您開啟。</p>
+    <p class="pay-body" data-i18n="ps.body">您的購買已經完成，內容正在為您開啟。</p>
 
-    <div class="pay-note">
+    <div class="pay-note" data-i18n-html="ps.note">
       <strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。
     </div>
 
     <div class="pay-actions">
-      <a href="chart.html" class="pay-btn primary">前往我的命盤</a>
-      <a href="dashboard.html" class="pay-btn ghost">返回儀表板</a>
+      <a href="chart.html" class="pay-btn primary" data-i18n="ps.btnChart">前往我的命盤</a>
+      <a href="dashboard.html" class="pay-btn ghost" data-i18n="ps.btnDashboard">返回儀表板</a>
     </div>
 
     <div class="pay-session" id="pay-session" style="display:none;">
@@ -91,6 +102,11 @@
 <script>
   // 顯示 Stripe checkout session id(僅供對帳參考,不查驗;A 版純靜態落地)
   (function () {
+    const F = window.FSI18N;
+    const setTitle = () => { document.title = F.t('ps.docTitle'); };
+    setTitle();
+    window.addEventListener('i18n:changed', setTitle);
+
     const params = new URLSearchParams(window.location.search);
     const sid = params.get('session_id');
     if (sid) {
