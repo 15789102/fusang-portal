@@ -8,6 +8,7 @@
     //   共用 key(footer 等)在 i18n.js;此處只放 login 專屬。
     //   位置索引已登記於 i18n.js 檔頭。
     window.FSI18N.addUI({
+      'login.docTitle':       { 'zh-TW': 'FuSang Vision — 登入', 'zh-CN': 'FuSang Vision — 登录', 'en': 'FuSang Vision — Log In' },
       'login.craft':          { 'zh-TW': '紫微斗數', 'zh-CN': '紫微斗数', 'en': 'Zi Wei Dou Shu' },
       'login.heroTitle':      {
         'zh-TW': '不是預知命運，<br>而是<span class="accent">穩健有意識地</span><br>走向嚮往的生活。',
@@ -534,6 +535,7 @@
     langBox.querySelectorAll('.login-lang-opt').forEach((b) => {
       b.classList.toggle('active', b.getAttribute('data-lang') === cur);
     });
+    document.title = F.t('login.docTitle');
   }
   langBox.querySelectorAll('.login-lang-opt').forEach((b) => {
     b.addEventListener('click', () => F.setUILang(b.getAttribute('data-lang')));
