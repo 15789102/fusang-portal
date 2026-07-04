@@ -36,6 +36,7 @@
 //   ‣ dashboard.html         → 頁內 addUI inline(dashboard.html 的 <head> addUI script;登入頁,用 header 切換鈕)
 //   ‣ payment-success.html   → 頁內 addUI inline(payment-success.html;登入頁,用 header 切換鈕)
 //   ‣ payment-cancel.html    → 頁內 addUI inline(payment-cancel.html;登入頁,用 header 切換鈕)
+//   ‣ account.html           → 頁內 addUI inline(account.html;登入頁,用 header 切換鈕;動態值存 S 隨語言重繪)
 //   ‣ chart.html             → applyStaticI18n(id→key,共用 key 在本檔)+ 頁內 addUI(動態 UI 字串)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
