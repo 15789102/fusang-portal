@@ -31,7 +31,7 @@
 
       // webhook 真值待遷移 annual/monthly/decade.html 時,從各檔搬入
       WEBHOOK_MONTHLY:   'https://ben880153-n8n-free.hf.space/webhook/monthly_v3_trigger',
-      WEBHOOK_DECADE:    'TODO_FILL_FROM_decade_html',
+      WEBHOOK_DECADE:    'https://ben880153-n8n-free.hf.space/webhook/decade-v2',
       WEBHOOK_ANNUAL:    'TODO_FILL_FROM_annual_html',
     },
 
