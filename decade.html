@@ -12,6 +12,9 @@
 
   <script>window.FS_ACTIVE_PAGE = 'decade';</script>
 
+  <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
+  <script src="config.js"></script>
+
   <style>
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
@@ -406,7 +409,7 @@
 
   const DECADE_TABLE = 'decade_palace_reports_gated';
   const DECADE_JOBS_TABLE = 'decade_generation_jobs';
-  const DECADE_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/decade-v2';
+  const DECADE_TRIGGER_URL = window.CFG.WEBHOOK_DECADE;
   const POLL_INTERVAL_MS = 5000;
   const FUTURE_PREVIEW = 2;
 
