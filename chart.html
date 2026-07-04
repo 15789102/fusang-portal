@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
   <script src="config.js"></script>
+  <script src="i18n.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FuSang Vision — 我的本命盤</title>
@@ -443,8 +444,10 @@
 <div id="site-footer"></div>
 
 <script type="module">
-  import { supabase, requireAuth } from './components.js';
-  import { initI18n, t as tx, td, getLang, palaceLabel, starLabel, transformLabel } from './i18n.js';
+  import { supabase, requireAuth, loadReportGlossary } from './components.js';
+  // i18n 核心為 classic 全域(window.FSI18N,已於 <head> 的 <script src="i18n.js"> 載入)。
+  // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel/getLang=報告內容(reportLang,鎖定)。
+  const { t: tx, td, getReportLang: getLang, palaceLabel, starLabel, transformLabel } = window.FSI18N;
 
   const PRICING_PAGE = 'pricing.html';
 
@@ -468,8 +471,11 @@
   let reportsByPalace = {};
   let chartSessionId = null;
   let isUnlocked = false;   // sihua_unlocked：四化付費內容是否解鎖
+  let currentView = 'view-overview';  // 目前顯示的 view(語言切換重繪後還原用)
+  let currentPalace = null;           // 目前開啟的宮位(同上)
 
   function showView(id) {
+    currentView = id;
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
     const t = document.getElementById(id);
     if (t) t.classList.add('active');
@@ -572,6 +578,7 @@
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
+    currentPalace = palaceName;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
     document.getElementById('detail-eyebrow').textContent = palaceLabel(palaceName);
@@ -904,7 +911,7 @@
       const session = await requireAuth();
       if (!session) return;
 
-      await initI18n(session);
+      await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary(UI 未明選則採用同語言)
       applyStaticI18n();
 
       const userEmail = session.user.email;
@@ -959,6 +966,20 @@
   document.addEventListener('click', () => {
     document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
   });
+
+  // ── UI 語言切換(header 語言鈕)→ 以快取資料就地重繪 ──
+  //   UI 字串(tx)換新語言;報告內容(td/palaceLabel…)維持鎖定語言不變。
+  //   還原切換前的 view / 開啟中的宮位,不打擾使用者當前位置。
+  function rerender() {
+    if (!chartSessionId) return;      // 資料尚未載入 → 交由 init 首次渲染
+    const view = currentView;
+    applyStaticI18n();
+    renderOverview();
+    renderHub();
+    if (currentPalace && reportsByPalace[currentPalace]) openDetail(currentPalace);
+    showView(view);
+  }
+  window.addEventListener('i18n:changed', rerender);
 
   init();
 </script>
