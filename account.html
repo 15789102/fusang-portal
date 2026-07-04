@@ -8,6 +8,9 @@
 <!-- 標記當前導航頁(供 components.js header 高亮),須在 module 載入前設定 -->
 <script>window.FS_ACTIVE_PAGE = 'account';</script>
 
+<!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
+<script src="config.js"></script>
+
 <style>
   :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
 
@@ -556,7 +559,7 @@
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(
-        'https://vrquktgjawayuioglqfn.supabase.co/functions/v1/create-portal-session',
+        `${window.CFG.SUPABASE_URL}/functions/v1/create-portal-session`,
         {
           method: 'POST',
           headers: {
