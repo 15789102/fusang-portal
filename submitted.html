@@ -6,6 +6,36 @@
   <title>FuSang Vision — Chart in Progress</title>
   <meta name="description" content="Your Zi Wei Dou Shu chart is being prepared." />
 
+  <!-- i18n 核心(classic;此頁不需 config.js/Supabase)-->
+  <script src="i18n.js"></script>
+  <script>
+    // ── submitted 專屬 UI 字典(策略 B;位置索引見 i18n.js 檔頭)──
+    window.FSI18N.addUI({
+      'sm.docTitle':  { 'zh-TW': 'FuSang Vision — 命盤生成中', 'zh-CN': 'FuSang Vision — 命盘生成中', 'en': 'FuSang Vision — Chart in Progress' },
+      'sm.title':     { 'zh-TW': '正在為您繪製命盤', 'zh-CN': '正在为您绘制命盘', 'en': 'Crafting your chart' },
+      'sm.subtitle':  { 'zh-TW': '請稍候——以下是幕後正在進行的步驟。', 'zh-CN': '请稍候——以下是幕后正在进行的步骤。', 'en': "Hang tight — here's what's happening behind the scenes." },
+      'sm.s1Eyebrow': { 'zh-TW': '完成 · 剛剛', 'zh-CN': '完成 · 刚刚', 'en': 'Done · just now' },
+      'sm.s1Title':   { 'zh-TW': '已提交', 'zh-CN': '已提交', 'en': 'Submitted' },
+      'sm.s1Desc':    { 'zh-TW': '您的出生資料已收到，專屬工作階段已建立。', 'zh-CN': '您的出生资料已收到，专属工作会话已建立。', 'en': 'Your birth details are in and your session is created.' },
+      'sm.s2Eyebrow': { 'zh-TW': '進行中', 'zh-CN': '进行中', 'en': 'In progress' },
+      'sm.s2Title':   { 'zh-TW': '分析中', 'zh-CN': '分析中', 'en': 'Analyzing' },
+      'sm.s2Desc':    { 'zh-TW': '正在計算您的本命盤，解讀十二宮、四化與對宮影響。', 'zh-CN': '正在计算您的本命盘，解读十二宫、四化与对宫影响。', 'en': 'Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.' },
+      'sm.s3Eyebrow': { 'zh-TW': '約 20 分鐘', 'zh-CN': '约 20 分钟', 'en': 'About 20 minutes' },
+      'sm.s3Title':   { 'zh-TW': '解讀完成', 'zh-CN': '解读完成', 'en': 'Reading complete' },
+      'sm.s3Desc':    { 'zh-TW': '您完整的紫微解讀已彙整並儲存至您的帳戶。', 'zh-CN': '您完整的紫微解读已汇整并保存至您的账户。', 'en': 'Your full Zi Wei reading is assembled and saved to your account.' },
+      'sm.s4Eyebrow': { 'zh-TW': '完成時', 'zh-CN': '完成时', 'en': 'When ready' },
+      'sm.s4Title':   { 'zh-TW': '通知信即將寄出', 'zh-CN': '通知信即将发送', 'en': 'Email on its way' },
+      'sm.s4Desc':    { 'zh-TW': '命盤一準備好，我們會立即寄信到 {email} 通知您。', 'zh-CN': '命盘一准备好，我们会立即发送邮件到 {email} 通知您。', 'en': "We'll let you know at {email} the moment it's ready to view." },
+      'sm.yourInbox': { 'zh-TW': '您的信箱', 'zh-CN': '您的信箱', 'en': 'your inbox' },
+      'sm.refLabel':  { 'zh-TW': '參考編號', 'zh-CN': '参考编号', 'en': 'Reference ID' },
+      'sm.refHint':   { 'zh-TW': '請保存此編號——若需我們的團隊協助時會用到。', 'zh-CN': '请保存此编号——若需我们的团队协助时会用到。', 'en': 'Save this ID — useful if our team needs to assist you.' },
+      'sm.copyAria':  { 'zh-TW': '複製參考編號', 'zh-CN': '复制参考编号', 'en': 'Copy reference ID' },
+      'sm.footClose': { 'zh-TW': '您可以放心關閉此視窗，命盤完成時我們會以電子郵件通知您。', 'zh-CN': '您可以放心关闭此窗口，命盘完成时我们会以电子邮件通知您。', 'en': "You can safely close this window. We'll email you when your chart is ready." },
+      'sm.footHelp':  { 'zh-TW': '需要協助？', 'zh-CN': '需要协助？', 'en': 'Need help?' },
+      'sm.footContact':{ 'zh-TW': '聯絡我們的團隊 →', 'zh-CN': '联系我们的团队 →', 'en': 'Contact our team →' }
+    });
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -207,63 +237,92 @@
     @media (max-width: 420px) {
       .title { font-size: 28px; }
     }
+
+    /* ── 頁內 UI 語言切換(此頁無 header,固定右上)── */
+    .sm-lang {
+      position: fixed; top: 16px; right: 18px; z-index: 20;
+      display: inline-flex; align-items: center;
+      border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
+      background: var(--bg-primary);
+    }
+    .sm-lang-opt {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.06em;
+      color: var(--ink-light); padding: 6px 10px; line-height: 1;
+      background: transparent; border: none; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .sm-lang-opt + .sm-lang-opt { border-left: 1px solid var(--rule); }
+    .sm-lang-opt:hover { color: var(--accent-deep); }
+    .sm-lang-opt.active { background: var(--accent-deep); color: #fff; }
+    @media (max-width: 560px) {
+      .sm-lang { top: 12px; right: 12px; }
+      .sm-lang-opt { padding: 5px 8px; font-size: 10px; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- 頁內 UI 語言切換(此頁無 header)-->
+  <div class="sm-lang" id="sm-lang">
+    <button type="button" class="sm-lang-opt" data-lang="zh-TW">繁中</button>
+    <button type="button" class="sm-lang-opt" data-lang="zh-CN">简中</button>
+    <button type="button" class="sm-lang-opt" data-lang="en">EN</button>
+  </div>
 
   <main class="container">
 
     <div class="brand-mark">FuSang Vision</div>
 
-    <h1 class="title">Crafting your chart</h1>
-    <p class="subtitle">Hang tight — here's what's happening behind the scenes.</p>
+    <h1 class="title" data-i18n="sm.title">Crafting your chart</h1>
+    <p class="subtitle" data-i18n="sm.subtitle">Hang tight — here's what's happening behind the scenes.</p>
 
     <div class="divider"></div>
 
     <ol class="timeline">
       <li class="step done">
         <span class="node" aria-hidden="true">✓</span>
-        <div class="eyebrow">Done · just now</div>
-        <div class="s-title">Submitted</div>
-        <div class="s-desc">Your birth details are in and your session is created.</div>
+        <div class="eyebrow" data-i18n="sm.s1Eyebrow">Done · just now</div>
+        <div class="s-title" data-i18n="sm.s1Title">Submitted</div>
+        <div class="s-desc" data-i18n="sm.s1Desc">Your birth details are in and your session is created.</div>
       </li>
 
       <li class="step active">
         <span class="node" aria-hidden="true">2</span>
-        <div class="eyebrow">In progress</div>
-        <div class="s-title">Analyzing</div>
-        <div class="s-desc">Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.</div>
+        <div class="eyebrow" data-i18n="sm.s2Eyebrow">In progress</div>
+        <div class="s-title" data-i18n="sm.s2Title">Analyzing</div>
+        <div class="s-desc" data-i18n="sm.s2Desc">Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.</div>
       </li>
 
       <li class="step upcoming">
         <span class="node" aria-hidden="true">3</span>
-        <div class="eyebrow">About 20 minutes</div>
-        <div class="s-title">Reading complete</div>
-        <div class="s-desc">Your full Zi Wei reading is assembled and saved to your account.</div>
+        <div class="eyebrow" data-i18n="sm.s3Eyebrow">About 20 minutes</div>
+        <div class="s-title" data-i18n="sm.s3Title">Reading complete</div>
+        <div class="s-desc" data-i18n="sm.s3Desc">Your full Zi Wei reading is assembled and saved to your account.</div>
       </li>
 
       <li class="step upcoming">
         <span class="node" aria-hidden="true">4</span>
-        <div class="eyebrow">When ready</div>
-        <div class="s-title">Email on its way</div>
-        <div class="s-desc">We'll let you know at <code id="user-email">your inbox</code> the moment it's ready to view.</div>
+        <div class="eyebrow" data-i18n="sm.s4Eyebrow">When ready</div>
+        <div class="s-title" data-i18n="sm.s4Title">Email on its way</div>
+        <!-- 含動態 email → 由 JS 以 {email} 模板組(不用 data-i18n,避免切換時覆蓋信箱) -->
+        <div class="s-desc" id="s4-desc"></div>
       </li>
     </ol>
 
     <div class="ref-card">
-      <div class="ref-label">Reference ID</div>
+      <div class="ref-label" data-i18n="sm.refLabel">Reference ID</div>
       <div class="ref-row">
         <code id="ref-id">—</code>
-        <button id="copy-ref" type="button" class="copy-btn" aria-label="Copy reference ID">
+        <button id="copy-ref" type="button" class="copy-btn" data-i18n-aria-label="sm.copyAria" aria-label="Copy reference ID">
           <span class="copy-icon" aria-hidden="true">⎘</span>
         </button>
       </div>
-      <div class="ref-hint">Save this ID — useful if our team needs to assist you.</div>
+      <div class="ref-hint" data-i18n="sm.refHint">Save this ID — useful if our team needs to assist you.</div>
     </div>
 
     <p class="footnote">
-      You can safely close this window. We'll email you when your chart is ready.<br>
-      Need help? <a href="mailto:info@fusang-vision.com">Contact our team →</a>
+      <span data-i18n="sm.footClose">You can safely close this window. We'll email you when your chart is ready.</span><br>
+      <span data-i18n="sm.footHelp">Need help?</span> <a href="mailto:info@fusang-vision.com" data-i18n="sm.footContact">Contact our team →</a>
     </p>
 
   </main>
@@ -273,18 +332,40 @@
   </footer>
 
   <script>
-    // Read query params and populate the page
     (function () {
+      const F = window.FSI18N;
       const params = new URLSearchParams(window.location.search);
       const jobId = params.get('job_id');
       const email = params.get('email');
 
+      function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
       if (jobId) {
         document.getElementById('ref-id').textContent = jobId;
       }
-      if (email) {
-        document.getElementById('user-email').textContent = email;
+
+      // step-4 描述含動態信箱 → 以 {email} 模板組(隨語言重繪)
+      function renderStep4() {
+        const el = document.getElementById('s4-desc');
+        const inbox = email ? escapeHtml(email) : F.t('sm.yourInbox');
+        el.innerHTML = F.t('sm.s4Desc').replace('{email}', '<code>' + inbox + '</code>');
       }
+
+      // 頁內 UI 語言切換(只動介面;此頁無報告內容)
+      const langBox = document.getElementById('sm-lang');
+      function applyLangUi() {
+        const cur = F.getUILang();
+        langBox.querySelectorAll('.sm-lang-opt').forEach((b) =>
+          b.classList.toggle('active', b.getAttribute('data-lang') === cur));
+        document.title = F.t('sm.docTitle');
+        renderStep4();
+      }
+      langBox.querySelectorAll('.sm-lang-opt').forEach((b) =>
+        b.addEventListener('click', () => F.setUILang(b.getAttribute('data-lang'))));
+      applyLangUi();
+      window.addEventListener('i18n:changed', applyLangUi);
 
       // Copy button
       document.getElementById('copy-ref').addEventListener('click', async () => {
