@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuSang Vision — 帳戶</title>
+<title>帳戶 - FuSang Vision</title>
 
 <!-- 標記當前導航頁(供 components.js header 高亮),須在 module 載入前設定 -->
 <script>window.FS_ACTIVE_PAGE = 'account';</script>
@@ -11,6 +11,71 @@
 <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
 <script src="config.js"></script>
 <script src="i18n.js"></script>
+<script>
+  // ── account 專屬 UI 字典(策略 B;登入頁,用 header 切換鈕)──
+  window.FSI18N.addUI({
+    'acc.docTitle':   { 'zh-TW': '帳戶 - FuSang Vision', 'zh-CN': '账户 - FuSang Vision', 'en': 'Account - FuSang Vision' },
+    'acc.loading':    { 'zh-TW': '載入中…', 'zh-CN': '载入中…', 'en': 'Loading…' },
+    'acc.heroEyebrow':{ 'zh-TW': '帳戶', 'zh-CN': '账户', 'en': 'Account' },
+    'acc.title':      { 'zh-TW': '我的帳戶', 'zh-CN': '我的账户', 'en': 'My Account' },
+    'acc.lblProfile': { 'zh-TW': '基本資料', 'zh-CN': '基本资料', 'en': 'Profile' },
+    'acc.lblBirth':   { 'zh-TW': '出生資料（國曆）', 'zh-CN': '出生资料（国历）', 'en': 'Birth Data (Solar)' },
+    'acc.lblPlan':    { 'zh-TW': '購買狀況', 'zh-CN': '购买状况', 'en': 'Plan' },
+    'acc.lblDelivery':{ 'zh-TW': '月報寄送設定', 'zh-CN': '月报发送设置', 'en': 'Delivery' },
+    'acc.lblSub':     { 'zh-TW': '訂閱管理', 'zh-CN': '订阅管理', 'en': 'Subscription' },
+    'acc.lblSecurity':{ 'zh-TW': '安全性', 'zh-CN': '安全', 'en': 'Security' },
+    'acc.kName':      { 'zh-TW': '顯示名稱', 'zh-CN': '显示名称', 'en': 'Name' },
+    'acc.kEmail':     { 'zh-TW': '電子郵件', 'zh-CN': '电子邮件', 'en': 'Email' },
+    'acc.kGender':    { 'zh-TW': '性別', 'zh-CN': '性别', 'en': 'Gender' },
+    'acc.kBdate':     { 'zh-TW': '出生日期', 'zh-CN': '出生日期', 'en': 'Date of Birth' },
+    'acc.kBtime':     { 'zh-TW': '出生時間', 'zh-CN': '出生时间', 'en': 'Time of Birth' },
+    'acc.kBplace':    { 'zh-TW': '出生地', 'zh-CN': '出生地', 'en': 'Birthplace' },
+    'acc.kSihua':     { 'zh-TW': '本命四化解鎖', 'zh-CN': '本命四化解锁', 'en': 'Full Reading' },
+    'acc.kMonthly':   { 'zh-TW': '付費月報訂閱', 'zh-CN': '付费月报订阅', 'en': 'Monthly Subscription' },
+    'acc.kReportDay': { 'zh-TW': '每月收報日', 'zh-CN': '每月收报日', 'en': 'Delivery day' },
+    'acc.change':     { 'zh-TW': '更改', 'zh-CN': '更改', 'en': 'Change' },
+    'acc.changeTo':   { 'zh-TW': '改為每月', 'zh-CN': '改为每月', 'en': 'Change to day' },
+    'acc.dayUnit':    { 'zh-TW': '號', 'zh-CN': '号', 'en': 'of each month' },
+    'acc.save':       { 'zh-TW': '儲存', 'zh-CN': '保存', 'en': 'Save' },
+    'acc.savedMsg':   { 'zh-TW': '已更新，將於下個月生效。', 'zh-CN': '已更新，将于下个月生效。', 'en': 'Updated — takes effect next month.' },
+    'acc.utcHint':    { 'zh-TW': '日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。', 'zh-CN': '日期以世界标准时间（UTC）计算。变更会套用到下一期，本期维持原定日期。', 'en': 'Dates are in UTC. Changes apply to the next cycle; the current cycle keeps its original date.' },
+    'acc.cancelDelivery':{ 'zh-TW': '取消月報寄送', 'zh-CN': '取消月报发送', 'en': 'Stop monthly delivery' },
+    'acc.subDesc':    { 'zh-TW': '管理您的訂閱、付款方式與發票紀錄。點擊下方按鈕前往安全的 Stripe 管理頁面。', 'zh-CN': '管理您的订阅、付款方式与发票记录。点击下方按钮前往安全的 Stripe 管理页面。', 'en': 'Manage your subscription, payment methods, and invoices. The button below opens the secure Stripe portal.' },
+    'acc.manageSub':  { 'zh-TW': '管理訂閱', 'zh-CN': '管理订阅', 'en': 'Manage subscription' },
+    'acc.secDesc':    { 'zh-TW': '需要更換密碼嗎？點擊下方按鈕，我們會寄一封重設密碼的連結到您的信箱。', 'zh-CN': '需要更换密码吗？点击下方按钮，我们会寄一封重置密码的链接到您的信箱。', 'en': "Need to change your password? The button below emails you a reset link." },
+    'acc.resetPw':    { 'zh-TW': '重設密碼', 'zh-CN': '重置密码', 'en': 'Reset password' },
+
+    'acc.notProvided':{ 'zh-TW': '未提供', 'zh-CN': '未提供', 'en': 'Not provided' },
+    'acc.notGenerated':{ 'zh-TW': '尚未生成', 'zh-CN': '尚未生成', 'en': 'Not generated yet' },
+    'acc.male':       { 'zh-TW': '男', 'zh-CN': '男', 'en': 'Male' },
+    'acc.female':     { 'zh-TW': '女', 'zh-CN': '女', 'en': 'Female' },
+    'acc.birthDate':  { 'zh-TW': '{y} 年 {m} 月 {d} 日', 'zh-CN': '{y} 年 {m} 月 {d} 日', 'en': '{y}/{m}/{d}' },
+    'acc.placeSep':   { 'zh-TW': '，', 'zh-CN': '，', 'en': ', ' },
+    'acc.sihuaOn':    { 'zh-TW': '已開通', 'zh-CN': '已开通', 'en': 'Unlocked' },
+    'acc.sihuaOff':   { 'zh-TW': '未開通', 'zh-CN': '未开通', 'en': 'Not unlocked' },
+    'acc.subNone':    { 'zh-TW': '尚未訂閱', 'zh-CN': '尚未订阅', 'en': 'Not subscribed' },
+    'acc.subActive':  { 'zh-TW': '訂閱中（每月自動續扣）', 'zh-CN': '订阅中（每月自动续扣）', 'en': 'Active (auto-renews monthly)' },
+    'acc.subUntil':   { 'zh-TW': '有效至 {date}', 'zh-CN': '有效至 {date}', 'en': 'Valid until {date}' },
+    'acc.subYes':     { 'zh-TW': '已訂閱', 'zh-CN': '已订阅', 'en': 'Subscribed' },
+    'acc.dayUtc':     { 'zh-TW': '{d} 號（UTC）', 'zh-CN': '{d} 号（UTC）', 'en': 'Day {d} (UTC)' },
+    'acc.pendingNote':{ 'zh-TW': '＊下期起將改為每月 {d} 號', 'zh-CN': '＊下期起将改为每月 {d} 号', 'en': '* Changes to day {d} each month from the next cycle' },
+    'acc.canceled':   { 'zh-TW': '已取消', 'zh-CN': '已取消', 'en': 'Canceled' },
+    'acc.saveFail':   { 'zh-TW': '儲存失敗：{msg}', 'zh-CN': '保存失败：{msg}', 'en': 'Save failed: {msg}' },
+    'acc.cancelBlockedSub':{ 'zh-TW': '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。', 'zh-CN': '您有进行中的付费订阅，请先于下方「订阅管理」取消付费订阅后，再取消月报发送。', 'en': 'You have an active paid subscription. Please cancel it under "Subscription" below before stopping monthly delivery.' },
+    'acc.cancelConfirmPrepaid':{ 'zh-TW': '你的流月權限為買斷方案，有效至 {date}。\n\n取消寄送不會退費，你的權限仍然保留——隨時可回到流月頁面重新開通、繼續收取報告，直到期限為止。\n\n確定要暫停月報寄送嗎？', 'zh-CN': '你的流月权限为买断方案，有效至 {date}。\n\n取消发送不会退费，你的权限仍然保留——随时可回到流月页面重新开通、继续收取报告，直到期限为止。\n\n确定要暂停月报发送吗？', 'en': 'Your monthly access is a one-time purchase, valid until {date}.\n\nStopping delivery is not refunded, and your access remains — you can re-enable it from the Monthly page anytime to keep receiving reports until it expires.\n\nStop monthly delivery?' },
+    'acc.cancelConfirm':{ 'zh-TW': '確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n你隨時可以回到流月頁面重新開通。', 'zh-CN': '确定要取消月报发送吗？取消后将不再收到每月流月报告。\n\n你随时可以回到流月页面重新开通。', 'en': "Stop monthly delivery? You'll no longer receive the monthly report.\n\nYou can re-enable it from the Monthly page anytime." },
+    'acc.cancelFail': { 'zh-TW': '取消失敗：{msg}', 'zh-CN': '取消失败：{msg}', 'en': 'Cancel failed: {msg}' },
+    'acc.cancelDone': { 'zh-TW': '已取消月報寄送。你隨時可以回到流月頁面重新開通。', 'zh-CN': '已取消月报发送。你随时可以回到流月页面重新开通。', 'en': 'Monthly delivery stopped. You can re-enable it from the Monthly page anytime.' },
+    'acc.opening':    { 'zh-TW': '前往中…', 'zh-CN': '前往中…', 'en': 'Opening…' },
+    'acc.portalErr':  { 'zh-TW': '無法開啟管理頁面', 'zh-CN': '无法开启管理页面', 'en': 'Could not open the portal' },
+    'acc.portalFail': { 'zh-TW': '無法開啟訂閱管理：{msg}', 'zh-CN': '无法开启订阅管理：{msg}', 'en': "Couldn't open subscription management: {msg}" },
+    'acc.tryLater':   { 'zh-TW': '請稍後再試。', 'zh-CN': '请稍后再试。', 'en': 'Please try again later.' },
+    'acc.sending':    { 'zh-TW': '寄送中…', 'zh-CN': '发送中…', 'en': 'Sending…' },
+    'acc.resetSent':  { 'zh-TW': '已寄出重設密碼連結，請至 {email} 收信。', 'zh-CN': '已发送重置密码链接，请至 {email} 收信。', 'en': 'A reset link has been sent to {email}.' },
+    'acc.resetSentBtn':{ 'zh-TW': '已寄出', 'zh-CN': '已发送', 'en': 'Sent' },
+    'acc.resetFail':  { 'zh-TW': '寄送失敗：{msg}', 'zh-CN': '发送失败：{msg}', 'en': 'Send failed: {msg}' }
+  });
+</script>
 
 <style>
   :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
@@ -164,46 +229,46 @@
 <div class="fs-page">
   <div class="acc-wrap">
 
-    <div id="acc-loading" class="acc-loading">載入中…</div>
+    <div id="acc-loading" class="acc-loading" data-i18n="acc.loading">載入中…</div>
 
     <div id="acc-content" style="display:none;">
       <div class="acc-hero">
-        <div class="acc-eyebrow">Account · 帳戶</div>
-        <h1 class="acc-title">我的帳戶</h1>
+        <div class="acc-eyebrow" data-i18n="acc.heroEyebrow">帳戶</div>
+        <h1 class="acc-title" data-i18n="acc.title">我的帳戶</h1>
         <div class="acc-title-en">Your profile &amp; settings</div>
         <div class="acc-rule"></div>
       </div>
 
       <!-- 個人資料 -->
       <div class="acc-card">
-        <div class="acc-card-label">Profile · 基本資料</div>
+        <div class="acc-card-label" data-i18n="acc.lblProfile">基本資料</div>
         <div class="acc-row">
-          <span class="acc-row-key">顯示名稱</span>
+          <span class="acc-row-key" data-i18n="acc.kName">顯示名稱</span>
           <span class="acc-row-val" id="acc-name">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">電子郵件</span>
+          <span class="acc-row-key" data-i18n="acc.kEmail">電子郵件</span>
           <span class="acc-row-val" id="acc-email">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">性別</span>
+          <span class="acc-row-key" data-i18n="acc.kGender">性別</span>
           <span class="acc-row-val" id="acc-gender">—</span>
         </div>
       </div>
 
       <!-- 出生資料 -->
       <div class="acc-card">
-        <div class="acc-card-label">Birth Data · 出生資料(國曆)</div>
+        <div class="acc-card-label" data-i18n="acc.lblBirth">出生資料（國曆）</div>
         <div class="acc-row">
-          <span class="acc-row-key">出生日期</span>
+          <span class="acc-row-key" data-i18n="acc.kBdate">出生日期</span>
           <span class="acc-row-val" id="acc-bdate">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">出生時間</span>
+          <span class="acc-row-key" data-i18n="acc.kBtime">出生時間</span>
           <span class="acc-row-val" id="acc-btime">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">出生地</span>
+          <span class="acc-row-key" data-i18n="acc.kBplace">出生地</span>
           <span class="acc-row-val" id="acc-bplace">—</span>
         </div>
         <div class="acc-row">
@@ -214,26 +279,26 @@
 
 <!-- 購買狀況 -->
       <div class="acc-card">
-        <div class="acc-card-label">Plan · 購買狀況</div>
+        <div class="acc-card-label" data-i18n="acc.lblPlan">購買狀況</div>
         <div class="acc-row">
-          <span class="acc-row-key">本命四化解鎖</span>
+          <span class="acc-row-key" data-i18n="acc.kSihua">本命四化解鎖</span>
           <span class="acc-row-val" id="acc-sihua-status">—</span>
         </div>
         <div class="acc-row">
-          <span class="acc-row-key">付費月報訂閱</span>
+          <span class="acc-row-key" data-i18n="acc.kMonthly">付費月報訂閱</span>
           <span class="acc-row-val" id="acc-monthly-status">—</span>
         </div>
       </div>
 
       <!-- 月報設定(僅已開通收報日者顯示) -->
       <div class="acc-card" id="acc-report-day-card" style="display:none;">
-        <div class="acc-card-label">Delivery · 月報寄送設定</div>
+        <div class="acc-card-label" data-i18n="acc.lblDelivery">月報寄送設定</div>
         <div class="acc-row" style="border-bottom:none;">
-          <span class="acc-row-key">每月收報日</span>
+          <span class="acc-row-key" data-i18n="acc.kReportDay">每月收報日</span>
           <span class="acc-row-val">
             <span class="rd-current">
               <span class="rd-current-day" id="rd-current-day">—</span>
-              <span class="rd-edit-link" id="rd-edit-link">更改</span>
+              <span class="rd-edit-link" id="rd-edit-link" data-i18n="acc.change">更改</span>
             </span>
           </span>
         </div>
@@ -241,17 +306,17 @@
 
         <div class="rd-edit-box" id="rd-edit-box">
           <div class="rd-edit-row">
-            <span class="rd-pre">改為每月</span>
+            <span class="rd-pre" data-i18n="acc.changeTo">改為每月</span>
             <select id="rd-select" class="rd-select"></select>
-            <span class="rd-pre">號</span>
-            <button class="rd-save-btn" id="rd-save-btn">儲存</button>
+            <span class="rd-pre" data-i18n="acc.dayUnit">號</span>
+            <button class="rd-save-btn" id="rd-save-btn" data-i18n="acc.save">儲存</button>
           </div>
-          <div class="rd-saved-msg" id="rd-saved-msg">已更新，將於下個月生效。</div>
-          <div class="rd-utc-hint">日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。</div>
+          <div class="rd-saved-msg" id="rd-saved-msg" data-i18n="acc.savedMsg">已更新，將於下個月生效。</div>
+          <div class="rd-utc-hint" data-i18n="acc.utcHint">日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。</div>
         </div>
 
         <div class="rd-cancel-row">
-          <span class="rd-cancel-link" id="rd-cancel-link">取消月報寄送</span>
+          <span class="rd-cancel-link" id="rd-cancel-link" data-i18n="acc.cancelDelivery">取消月報寄送</span>
           <div class="rd-cancel-msg" id="rd-cancel-msg"></div>
         </div>
       </div>
@@ -259,21 +324,21 @@
 
       <!-- 訂閱管理(僅付費者顯示) -->
       <div class="acc-card" id="acc-billing-card" style="display:none;">
-        <div class="acc-card-label">Subscription · 訂閱管理</div>
-        <div class="acc-sec-desc">
+        <div class="acc-card-label" data-i18n="acc.lblSub">訂閱管理</div>
+        <div class="acc-sec-desc" data-i18n="acc.subDesc">
           管理您的訂閱、付款方式與發票紀錄。點擊下方按鈕前往安全的 Stripe 管理頁面。
         </div>
-        <span class="acc-btn" id="acc-portal">管理訂閱</span>
+        <span class="acc-btn" id="acc-portal" data-i18n="acc.manageSub">管理訂閱</span>
         <div class="acc-msg" id="acc-portal-msg"></div>
       </div>
 
       <!-- 安全性 -->
       <div class="acc-card">
-        <div class="acc-card-label">Security · 安全性</div>
-        <div class="acc-sec-desc">
+        <div class="acc-card-label" data-i18n="acc.lblSecurity">安全性</div>
+        <div class="acc-sec-desc" data-i18n="acc.secDesc">
           需要更換密碼嗎？點擊下方按鈕，我們會寄一封重設密碼的連結到您的信箱。
         </div>
-        <span class="acc-btn" id="acc-reset">重設密碼</span>
+        <span class="acc-btn" id="acc-reset" data-i18n="acc.resetPw">重設密碼</span>
         <div class="acc-msg" id="acc-reset-msg"></div>
       </div>
     </div>
@@ -286,320 +351,225 @@
 <script type="module">
   import { supabase, requireAuth } from './components.js';
 
-  const GENDER_MAP = { male: '男', female: '女', '1': '男', '0': '女' };
+  const F = window.FSI18N;
 
-  (async () => {
-    const session = await requireAuth();
-    if (!session) return;
+  // 存下資料,供語言切換重繪(只讀顯示);監聽只綁一次
+  const S = {
+    email: '', name: '—', userId: '',
+    birth: undefined,        // undefined=未載入, null=無資料, object=有
+    sessionId: undefined,    // undefined=未載入, null=尚未生成, string=有
+    billing: undefined,      // undefined=未載入, null/object
+    pendingDay: undefined,   // 本 session 剛存的 pending(覆蓋 billing)
+    deliveryCanceled: false, // 本 session 剛取消月報
+  };
 
-    const email = session.user.email || '';
-    const userId = session.user.id;
-    document.getElementById('acc-email').textContent = email;
-
-    // ── display_name(撈不到 fallback email 前綴)──
-    let displayName = email.split('@')[0] || '—';
-    try {
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('display_name')
-        .eq('id', userId)
-        .maybeSingle();
-      if (profile && profile.display_name) displayName = profile.display_name;
-    } catch (_) {}
-    document.getElementById('acc-name').textContent = displayName;
-
-    // ── 出生資料(user_birth_data,國曆輸入)──
-    try {
-      const { data: birth } = await supabase
-        .from('user_birth_data')
-        .select('birth_year, birth_month, birth_day, birth_hour, birth_minute, gender, birth_city, birth_country')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (birth) {
-        document.getElementById('acc-gender').textContent =
-          GENDER_MAP[String(birth.gender)] || birth.gender || '—';
-        document.getElementById('acc-bdate').textContent =
-          `${birth.birth_year} 年 ${birth.birth_month} 月 ${birth.birth_day} 日`;
-        const hh = String(birth.birth_hour).padStart(2, '0');
-        const mm = String(birth.birth_minute ?? 0).padStart(2, '0');
-        document.getElementById('acc-btime').textContent = `${hh}:${mm}`;
-        const place = [birth.birth_city, birth.birth_country].filter(Boolean).join('，');
-        document.getElementById('acc-bplace').textContent = place || '—';
-      } else {
-        markMuted(['acc-gender', 'acc-bdate', 'acc-btime', 'acc-bplace'], '未提供');
-      }
-    } catch (_) {
-      markMuted(['acc-gender', 'acc-bdate', 'acc-btime', 'acc-bplace'], '未提供');
-    }
-
-    // ── Chart Session(最新 done)──
-    try {
-      const { data: job } = await supabase
-        .from('chart_generation_jobs')
-        .select('chart_session_id')
-        .eq('user_email', email)
-        .eq('status', 'done')
-        .order('completed_at', { ascending: false, nullsFirst: false })
-        .limit(1)
-        .maybeSingle();
-      document.getElementById('acc-session').textContent =
-        job?.chart_session_id || '尚未生成';
-    } catch (_) {
-      document.getElementById('acc-session').textContent = '尚未生成';
-    }
-
-    // ── 購買狀況 + 訂閱管理 + 月報設定(一次查齊)──
-    try {
-      const { data: billing } = await supabase
-        .from('user_profiles')
-        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
-        .eq('id', userId)
-        .maybeSingle();
-      renderPlanStatus(billing);
-      if (billing && billing.stripe_customer_id) {
-        document.getElementById('acc-billing-card').style.display = 'block';
-        document.getElementById('acc-portal').addEventListener('click', openPortal);
-      }
-      // 月報設定卡（僅已開通收報日者顯示）
-      renderReportDayCard(billing, userId);
-    } catch (_) {
-      renderPlanStatus(null);
-    }
-
-    // ── 重設密碼 ──
-    document.getElementById('acc-reset').addEventListener('click', () => sendReset(email));
-
-    document.getElementById('acc-loading').style.display = 'none';
-    document.getElementById('acc-content').style.display = 'block';
-  })();
-
-  function markMuted(ids, text) {
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.classList.add('muted');
-    });
-  }
+  function setMuted(el, on) { if (el) el.classList.toggle('muted', on); }
   function fmtDate(ts) {
     const d = new Date(ts);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}/${m}/${day}`;
+    return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  // ── 只讀顯示:隨語言重繪(不綁監聽)──
+  function renderStatic() {
+    document.title = F.t('acc.docTitle');
+    const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    set('acc-name', S.name || '—');
+    set('acc-email', S.email || '—');
+
+    const gEl = document.getElementById('acc-gender');
+    const bdEl = document.getElementById('acc-bdate');
+    const btEl = document.getElementById('acc-btime');
+    const bpEl = document.getElementById('acc-bplace');
+    if (S.birth) {
+      const b = S.birth, g = String(b.gender);
+      gEl.textContent = (g === 'male' || g === '1') ? F.t('acc.male')
+        : (g === 'female' || g === '0') ? F.t('acc.female')
+        : (b.gender || '—');
+      bdEl.textContent = F.t('acc.birthDate')
+        .replace('{y}', b.birth_year).replace('{m}', b.birth_month).replace('{d}', b.birth_day);
+      const hh = String(b.birth_hour).padStart(2, '0');
+      const mm = String(b.birth_minute ?? 0).padStart(2, '0');
+      btEl.textContent = `${hh}:${mm}`;
+      const place = [b.birth_city, b.birth_country].filter(Boolean).join(F.t('acc.placeSep'));
+      bpEl.textContent = place || '—';
+      [gEl, bdEl, btEl].forEach(el => setMuted(el, false));
+      setMuted(bpEl, !place);
+    } else if (S.birth === null) {
+      [gEl, bdEl, btEl, bpEl].forEach(el => { el.textContent = F.t('acc.notProvided'); setMuted(el, true); });
+    }
+
+    if (S.sessionId !== undefined) set('acc-session', S.sessionId || F.t('acc.notGenerated'));
+
+    if (S.billing !== undefined) { renderPlanStatus(S.billing); renderReportDayDisplay(); }
   }
 
   function renderPlanStatus(p) {
     const sihuaEl = document.getElementById('acc-sihua-status');
     const monthlyEl = document.getElementById('acc-monthly-status');
-
-    // 1. 本命四化解鎖
-    if (p && p.sihua_unlocked === true) {
-      sihuaEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>已開通</span>';
-    } else {
-      sihuaEl.innerHTML = '<span class="acc-badge off"><span class="dot"></span>未開通</span>';
-    }
-
-    // 2. 月報訂閱(三來源:年方案買斷 / 月訂閱中 / 未訂閱)
+    if (!sihuaEl || !monthlyEl) return;
+    const badge = (cls, txt) => `<span class="acc-badge ${cls}"><span class="dot"></span>${txt}</span>`;
+    sihuaEl.innerHTML = (p && p.sihua_unlocked === true) ? badge('on', F.t('acc.sihuaOn')) : badge('off', F.t('acc.sihuaOff'));
     const subscribed = !!(p && p.monthly_subscribed === true);
     const status = p && p.subscription_status;
     const expires = p && p.monthly_access_expires_at;
-
-    if (!subscribed) {
-      monthlyEl.innerHTML = '<span class="acc-badge off"><span class="dot"></span>尚未訂閱</span>';
-    } else if (status === 'active' || status === 'trialing') {
-      // 月訂閱:滾動續扣,到期日於 Stripe 管理頁查看
-      monthlyEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>訂閱中（每月自動續扣）</span>';
-    } else if (expires) {
-      // 年方案買斷:顯示有效期限
-      monthlyEl.innerHTML =
-        '<span class="acc-badge on"><span class="dot"></span>有效至 ' + fmtDate(expires) + '</span>';
-    } else {
-      // subscribed=true 但無 status 無日期的保底
-      monthlyEl.innerHTML = '<span class="acc-badge on"><span class="dot"></span>已訂閱</span>';
-    }
+    if (!subscribed) monthlyEl.innerHTML = badge('off', F.t('acc.subNone'));
+    else if (status === 'active' || status === 'trialing') monthlyEl.innerHTML = badge('on', F.t('acc.subActive'));
+    else if (expires) monthlyEl.innerHTML = badge('on', F.t('acc.subUntil').replace('{date}', fmtDate(expires)));
+    else monthlyEl.innerHTML = badge('on', F.t('acc.subYes'));
   }
 
-// ── 月報設定卡：渲染 + 改日期(寫 pending) + 取消(清 preferred_report_day) ──
-  function renderReportDayCard(p, userId) {
+  function renderReportDayDisplay() {
+    const p = S.billing;
     const card = document.getElementById('acc-report-day-card');
-    // 未開通收報日（preferred_report_day 為 NULL）→ 不顯示此卡
+    if (!card) return;
     if (!p || p.preferred_report_day == null) { card.style.display = 'none'; return; }
     card.style.display = 'block';
-
-    const curDay = p.preferred_report_day;
-    const pending = p.preferred_report_day_pending;
-
-    // 顯示目前收報日
-    document.getElementById('rd-current-day').textContent = curDay + ' 號（UTC）';
-
-    // pending 提示
+    const curEl = document.getElementById('rd-current-day');
     const pendRow = document.getElementById('rd-pending-row');
-    if (pending != null) {
-      pendRow.style.display = 'block';
-      pendRow.textContent = '＊下期起將改為每月 ' + pending + ' 號';
-    } else {
-      pendRow.style.display = 'none';
-    }
+    if (S.deliveryCanceled) { curEl.textContent = F.t('acc.canceled'); pendRow.style.display = 'none'; return; }
+    curEl.textContent = F.t('acc.dayUtc').replace('{d}', p.preferred_report_day);
+    const pend = (S.pendingDay !== undefined) ? S.pendingDay : p.preferred_report_day_pending;
+    if (pend != null) { pendRow.style.display = 'block'; pendRow.textContent = F.t('acc.pendingNote').replace('{d}', pend); }
+    else pendRow.style.display = 'none';
+  }
 
-    // 填充下拉 1–15（預設選目前值）
+  // 語言切換 → 重繪只讀顯示 + 標題(靜態 data-i18n 由 header 切換的 applyI18n 處理)
+  document.title = F.t('acc.docTitle');
+  window.addEventListener('i18n:changed', renderStatic);
+
+  // ── 綁定(只綁一次)──
+  function bindReportDay(userId) {
+    const p = S.billing;
+    if (!p || p.preferred_report_day == null) return;
     const sel = document.getElementById('rd-select');
     sel.innerHTML = '';
     for (let d = 1; d <= 15; d++) {
-      const opt = document.createElement('option');
-      opt.value = String(d);
-      opt.textContent = d;
-      if (d === (pending != null ? pending : curDay)) opt.selected = true;
-      sel.appendChild(opt);
+      const o = document.createElement('option');
+      o.value = String(d); o.textContent = d;
+      if (d === (p.preferred_report_day_pending != null ? p.preferred_report_day_pending : p.preferred_report_day)) o.selected = true;
+      sel.appendChild(o);
     }
+    document.getElementById('rd-edit-link').addEventListener('click', () => document.getElementById('rd-edit-box').classList.toggle('show'));
 
-    // 「更改」展開/收合
-    const editLink = document.getElementById('rd-edit-link');
-    const editBox = document.getElementById('rd-edit-box');
-    editLink.addEventListener('click', () => {
-      editBox.classList.toggle('show');
-    });
-
-    // 儲存 → 寫 preferred_report_day_pending
     const saveBtn = document.getElementById('rd-save-btn');
     saveBtn.addEventListener('click', async () => {
       const newDay = Number(sel.value);
       if (!newDay || newDay < 1 || newDay > 15) return;
       saveBtn.disabled = true;
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ preferred_report_day_pending: newDay })
-        .eq('id', userId);
+      const { error } = await supabase.from('user_profiles').update({ preferred_report_day_pending: newDay }).eq('id', userId);
       saveBtn.disabled = false;
       const savedMsg = document.getElementById('rd-saved-msg');
-      if (error) {
-        savedMsg.textContent = '儲存失敗：' + error.message;
-        savedMsg.style.color = 'var(--t-ji)';
-        savedMsg.classList.add('show');
-        return;
-      }
-      savedMsg.textContent = '已更新，將於下個月生效。';
-      savedMsg.style.color = 'var(--t-lu)';
-      savedMsg.classList.add('show');
-      // 更新 pending 提示
-      pendRow.style.display = 'block';
-      pendRow.textContent = '＊下期起將改為每月 ' + newDay + ' 號';
+      if (error) { savedMsg.textContent = F.t('acc.saveFail').replace('{msg}', error.message); savedMsg.style.color = 'var(--t-ji)'; savedMsg.classList.add('show'); return; }
+      savedMsg.textContent = F.t('acc.savedMsg'); savedMsg.style.color = 'var(--t-lu)'; savedMsg.classList.add('show');
+      S.pendingDay = newDay; renderReportDayDisplay();
     });
 
-    // 取消月報寄送 → 先檢測付費狀態
     const cancelLink = document.getElementById('rd-cancel-link');
     const cancelMsg = document.getElementById('rd-cancel-msg');
     cancelLink.addEventListener('click', async () => {
-      // gating：取消前即時重查最新付費狀態（避免頁面載入後在 Portal 取消付費、未重整造成的快照過期）
       let st = p.subscription_status;
       try {
-        const { data: fresh } = await supabase
-          .from('user_profiles')
-          .select('subscription_status')
-          .eq('id', userId)
-          .maybeSingle();
+        const { data: fresh } = await supabase.from('user_profiles').select('subscription_status').eq('id', userId).maybeSingle();
         if (fresh) st = fresh.subscription_status;
-      } catch (_) { /* 重查失敗則沿用載入時的快照 */ }
-
-      // 有 active/trialing 月訂閱 → 擋，要先去 Portal 取消付費
-      if (st === 'active' || st === 'trialing') {
-        cancelMsg.className = 'rd-cancel-msg show err';
-        cancelMsg.textContent = '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。';
-        return;
-      }
-
-      // 判斷是否為「買斷且未到期」者 → 給專屬提示（不退費、權限保留、可重開）
+      } catch (_) {}
+      if (st === 'active' || st === 'trialing') { cancelMsg.className = 'rd-cancel-msg show err'; cancelMsg.textContent = F.t('acc.cancelBlockedSub'); return; }
       const expiresAt = p.monthly_access_expires_at ? new Date(p.monthly_access_expires_at) : null;
       const isPrepaidActive = expiresAt && expiresAt.getTime() > Date.now();
-
-      let confirmMsg;
-      if (isPrepaidActive) {
-        const y = expiresAt.getFullYear();
-        const m = String(expiresAt.getMonth() + 1).padStart(2, '0');
-        const d = String(expiresAt.getDate()).padStart(2, '0');
-        confirmMsg =
-          '你的流月權限為買斷方案，有效至 ' + y + '/' + m + '/' + d + '。\n\n' +
-          '取消寄送不會退費，你的權限仍然保留——隨時可回到流月頁面重新開通、繼續收取報告，直到期限為止。\n\n' +
-          '確定要暫停月報寄送嗎？';
-      } else {
-        confirmMsg =
-          '確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n' +
-          '你隨時可以回到流月頁面重新開通。';
-      }
+      const confirmMsg = isPrepaidActive
+        ? F.t('acc.cancelConfirmPrepaid').replace('{date}', fmtDate(expiresAt))
+        : F.t('acc.cancelConfirm');
       if (!confirm(confirmMsg)) return;
-
       cancelLink.style.pointerEvents = 'none';
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ preferred_report_day: null, preferred_report_day_pending: null })
-        .eq('id', userId);
-      if (error) {
-        cancelLink.style.pointerEvents = 'auto';
-        cancelMsg.className = 'rd-cancel-msg show err';
-        cancelMsg.textContent = '取消失敗：' + error.message;
-        return;
-      }
-      cancelMsg.className = 'rd-cancel-msg show ok';
-      cancelMsg.textContent = '已取消月報寄送。你隨時可以回到流月頁面重新開通。';
-      // 隱藏編輯/更改入口
+      const { error } = await supabase.from('user_profiles').update({ preferred_report_day: null, preferred_report_day_pending: null }).eq('id', userId);
+      if (error) { cancelLink.style.pointerEvents = 'auto'; cancelMsg.className = 'rd-cancel-msg show err'; cancelMsg.textContent = F.t('acc.cancelFail').replace('{msg}', error.message); return; }
+      cancelMsg.className = 'rd-cancel-msg show ok'; cancelMsg.textContent = F.t('acc.cancelDone');
+      S.deliveryCanceled = true;
       document.getElementById('rd-edit-link').style.display = 'none';
       document.getElementById('rd-edit-box').classList.remove('show');
-      document.getElementById('rd-current-day').textContent = '已取消';
-      pendRow.style.display = 'none';
+      renderReportDayDisplay();
     });
   }
 
   async function openPortal() {
     const btn = document.getElementById('acc-portal');
     const msg = document.getElementById('acc-portal-msg');
-    btn.disabled = true;
-    btn.textContent = '前往中…';
-    msg.className = 'acc-msg';
+    btn.disabled = true; btn.textContent = F.t('acc.opening'); msg.className = 'acc-msg';
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${window.CFG.SUPABASE_URL}/functions/v1/create-portal-session`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + session.access_token,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const res = await fetch(`${window.CFG.SUPABASE_URL}/functions/v1/create-portal-session`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
+      });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || '無法開啟管理頁面');
+      if (!res.ok) throw new Error(data?.error || F.t('acc.portalErr'));
       window.location.href = data.url;
     } catch (err) {
-      msg.textContent = '無法開啟訂閱管理：' + (err.message || '請稍後再試。');
-      msg.classList.add('show', 'err');
-      btn.disabled = false;
-      btn.textContent = '管理訂閱';
+      msg.textContent = F.t('acc.portalFail').replace('{msg}', err.message || F.t('acc.tryLater'));
+      msg.classList.add('show', 'err'); btn.disabled = false; btn.textContent = F.t('acc.manageSub');
     }
   }
 
   async function sendReset(email) {
     const btn = document.getElementById('acc-reset');
     const msg = document.getElementById('acc-reset-msg');
-    btn.disabled = true;
-    btn.textContent = '寄送中…';
-    msg.className = 'acc-msg';
+    btn.disabled = true; btn.textContent = F.t('acc.sending'); msg.className = 'acc-msg';
     try {
       const redirectTo = window.location.origin + window.location.pathname.replace(/account\.html$/, 'set-password.html');
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
       if (error) throw error;
-      msg.textContent = '已寄出重設密碼連結，請至 ' + email + ' 收信。';
-      msg.classList.add('show', 'ok');
-      btn.textContent = '已寄出';
+      msg.textContent = F.t('acc.resetSent').replace('{email}', email); msg.classList.add('show', 'ok'); btn.textContent = F.t('acc.resetSentBtn');
     } catch (err) {
-      msg.textContent = '寄送失敗：' + (err.message || '請稍後再試。');
-      msg.classList.add('show', 'err');
-      btn.disabled = false;
-      btn.textContent = '重設密碼';
+      msg.textContent = F.t('acc.resetFail').replace('{msg}', err.message || F.t('acc.tryLater')); msg.classList.add('show', 'err'); btn.disabled = false; btn.textContent = F.t('acc.resetPw');
     }
   }
+
+  // ── init ──
+  (async () => {
+    const session = await requireAuth();
+    if (!session) return;
+    S.email = session.user.email || '';
+    S.userId = session.user.id;
+    S.name = (S.email.split('@')[0]) || '—';
+
+    try {
+      const { data: profile } = await supabase.from('user_profiles').select('display_name').eq('id', S.userId).maybeSingle();
+      if (profile && profile.display_name) S.name = profile.display_name;
+    } catch (_) {}
+
+    try {
+      const { data: birth } = await supabase.from('user_birth_data')
+        .select('birth_year, birth_month, birth_day, birth_hour, birth_minute, gender, birth_city, birth_country')
+        .eq('user_id', S.userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+      S.birth = birth || null;
+    } catch (_) { S.birth = null; }
+
+    try {
+      const { data: job } = await supabase.from('chart_generation_jobs')
+        .select('chart_session_id').eq('user_email', S.email).eq('status', 'done')
+        .order('completed_at', { ascending: false, nullsFirst: false }).limit(1).maybeSingle();
+      S.sessionId = job?.chart_session_id || null;
+    } catch (_) { S.sessionId = null; }
+
+    try {
+      const { data: billing } = await supabase.from('user_profiles')
+        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
+        .eq('id', S.userId).maybeSingle();
+      S.billing = billing || null;
+    } catch (_) { S.billing = null; }
+
+    renderStatic();
+
+    // 綁定(只一次)
+    if (S.billing && S.billing.stripe_customer_id) {
+      document.getElementById('acc-billing-card').style.display = 'block';
+      document.getElementById('acc-portal').addEventListener('click', openPortal);
+    }
+    bindReportDay(S.userId);
+    document.getElementById('acc-reset').addEventListener('click', () => sendReset(S.email));
+
+    document.getElementById('acc-loading').style.display = 'none';
+    document.getElementById('acc-content').style.display = 'block';
+  })();
 </script>
 
 </body>
