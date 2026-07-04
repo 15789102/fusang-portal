@@ -2,25 +2,37 @@
 // FuSang Vision Portal — Shared Components
 //
 // 用法(每個頁面):
-//   <script src="./config.js"></script>              ← 先載入(classic,設定來源)
+//   <script src="./config.js"></script>              ← 環境設定(classic,最先)
+//   <script src="./i18n.js"></script>                ← i18n 核心(classic,設 window.FSI18N,次)
 //   <div id="site-header"></div>
 //   ... 頁面內容 ...
 //   <div id="site-footer"></div>
-//   <script type="module" src="components.js"></script>
+//   <script type="module" src="components.js"></script>  ← 本檔(module,最後)
 //
 // 提供:
 //   - 共用 design tokens CSS(自動注入 <head>)
-//   - Header(Logo 左 + 導航右)
+//   - Header(Logo 左 + 導航右 + 語言切換)
 //   - Footer(標語 + 連結 + 版權)
 //   - Supabase client(window.fsSupabase)
 //   - requireAuth() / getSession() / signOut()
-//   - startCheckout(productType, extra)  ← 購買/訂閱
+//   - startCheckout(productType, extra)   ← 購買/訂閱
+//   - loadReportGlossary(session)         ← 報告頁:鎖定報告語言 + 載入術語 glossary
+//
+// i18n:
+//   UI 字串走 window.FSI18N(classic,i18n.js 提供)。header/footer 以 data-i18n 標記,
+//   語言切換由 header 的語言鈕統一處理(setUILang → applyI18n → 派 i18n:changed)。
+//   本檔不再 import i18n.js(i18n.js 已是 classic 全域)。
 //
 // 改 header/footer/樣式 → 只改這個檔案,全站生效
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import { I18N, SUPPORTED_LANGS } from './i18n.js';
+
+// ─── 前置檢查:i18n 核心須先於本 module 載入(classic → window.FSI18N)──────
+if (!window.FSI18N) {
+  throw new Error('[components] window.FSI18N 未載入。請確認本頁 <head> 內 <script src="i18n.js"></script> 排在 components.js 之前。');
+}
+const I18N = window.FSI18N;
 
 // ─── Supabase ────────────────────────────────────────────────
 // 設定值集中於 config.js(classic script,須先於本 module 載入 → window.CFG)。
@@ -37,26 +49,8 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 // 也掛到 window,讓非 module script 也能用
 window.fsSupabase = supabase;
 
-// ─── 元件用語言(同步,讀快取)─────────────────────────────────
-//   header/footer 只需 UI 字串,不需 glossary → 同步讀 localStorage 即可,不阻塞。
-//   快取由各頁 initI18n() 寫入(語言鎖定不變)。首次無快取 → 預設 zh-TW。
-const LANG_CACHE_KEY = 'fs_lang';
-function fsLang() {
-  try {
-    const c = localStorage.getItem(LANG_CACHE_KEY);
-    if (c && SUPPORTED_LANGS.includes(c)) return c;
-  } catch (_) {}
-  return 'zh-TW';
-}
-// 元件 UI 字串(fallback 鏈:當前→en→zh-TW→key)
-function tc(key) {
-  const lang = fsLang();
-  for (const L of [lang, 'en', 'zh-TW']) {
-    const v = I18N[L] && I18N[L][key];
-    if (v !== undefined) return v;
-  }
-  return key;
-}
+// UI 字串短別名(header/footer 內部用;等同 window.FSI18N.t)
+function tc(key) { return I18N.t(key); }
 
 // ─── Design tokens CSS(注入 head)────────────────────────────
 const SHARED_CSS = `
@@ -170,10 +164,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .fs-nav-signout:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
 
+/* ── 語言切換(segmented)── */
+.fs-lang-switch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.fs-lang-opt {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  padding: 6px 10px;
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1;
+}
+.fs-lang-opt + .fs-lang-opt { border-left: 1px solid var(--rule); }
+.fs-lang-opt:hover { color: var(--accent-deep); }
+.fs-lang-opt.active { background: var(--accent-deep); color: var(--bg-primary); }
+
 @media (max-width: 560px) {
   .fs-header { padding: 16px 20px; }
   .fs-header-nav { gap: 16px; }
   .fs-nav-link { font-size: 13px; }
+  .fs-lang-opt { padding: 5px 8px; font-size: 10px; }
 }
 
 /* ── Footer ── */
@@ -249,28 +266,38 @@ function injectCss() {
 }
 
 // ─── Header ──────────────────────────────────────────────────
-// activePage: 'chart' | 'decade' | 'annual' | 'monthly' | 'account' | null
+// activePage: 'chart' | 'decade' | 'annual' | 'monthly' | 'consultation' | 'account' | null
 function injectHeader(activePage = null) {
   const el = document.getElementById('site-header');
   if (!el) return;
 
+  // nav 文字以 data-i18n 標記 → 由 applyI18n 填入 / 切換時自動更新
   el.innerHTML = `
     <header class="fs-header">
       <div class="fs-header-brand" id="fs-brand">
         <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
       </div>
       <nav class="fs-header-nav">
-        <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart">${tc('navChart')}</span>
-        <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade">${tc('navDecade') === 'navDecade' ? '大限' : tc('navDecade')}</span>
-        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual">${tc('navAnnual')}</span>
-        <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly">${tc('navMonthly')}</span>
-        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation">${tc('navConsultation') === 'navConsultation' ? '單獨問事' : tc('navConsultation')}</span>
-        <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account">${tc('navAccount')}</span>
-        <span class="fs-nav-signout" id="fs-signout">${tc('navSignOut')}</span>
+        <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
+        <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade" data-i18n="navDecade"></span>
+        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual" data-i18n="navAnnual"></span>
+        <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly" data-i18n="navMonthly"></span>
+        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation" data-i18n="navConsultation"></span>
+        <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account" data-i18n="navAccount"></span>
+        <span class="fs-nav-signout" id="fs-signout" data-i18n="navSignOut"></span>
+        <span class="fs-lang-switch" id="fs-lang-switch">
+          <button class="fs-lang-opt" data-lang="zh-TW">繁中</button>
+          <button class="fs-lang-opt" data-lang="zh-CN">简中</button>
+          <button class="fs-lang-opt" data-lang="en">EN</button>
+        </span>
       </nav>
     </header>
   `;
 
+  // 填入 / 更新 nav 文字
+  I18N.applyI18n(el);
+
+  // 導航點擊
   document.getElementById('fs-brand').addEventListener('click', () => {
     window.location.href = 'dashboard.html';
   });
@@ -293,6 +320,20 @@ function injectHeader(activePage = null) {
     window.location.href = 'account.html';
   });
   document.getElementById('fs-signout').addEventListener('click', signOut);
+
+  // 語言切換:點選 → setUILang(只動 UI,不碰報告 / glossary)
+  const markActiveLang = () => {
+    const cur = I18N.getUILang();
+    el.querySelectorAll('.fs-lang-opt').forEach((b) => {
+      b.classList.toggle('active', b.getAttribute('data-lang') === cur);
+    });
+  };
+  el.querySelectorAll('.fs-lang-opt').forEach((b) => {
+    b.addEventListener('click', () => I18N.setUILang(b.getAttribute('data-lang')));
+  });
+  markActiveLang();
+  // UI 語言變動(含 header 切換、profile 採用)→ 更新 active 標記
+  window.addEventListener('i18n:changed', markActiveLang);
 }
 
 // ─── Footer ──────────────────────────────────────────────────
@@ -305,17 +346,18 @@ function injectFooter() {
       <div class="fs-footer-brand">
         <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
       </div>
-      <div class="fs-footer-tagline">
-        ${tc('footerTagline')}
-      </div>
+      <div class="fs-footer-tagline" data-i18n-html="footerTagline"></div>
       <div class="fs-footer-links">
-        <a href="#" class="fs-footer-link">${tc('footerPrivacy')}</a>
-        <a href="#" class="fs-footer-link">${tc('footerDisclaimer')}</a>
-        <a href="mailto:info@fusang-vision.com" class="fs-footer-link">${tc('footerContact')}</a>
+        <a href="#" class="fs-footer-link" data-i18n="footerPrivacy"></a>
+        <a href="#" class="fs-footer-link" data-i18n="footerDisclaimer"></a>
+        <a href="mailto:info@fusang-vision.com" class="fs-footer-link" data-i18n="footerContact"></a>
       </div>
-      <div class="fs-footer-copy">© 2026 FuSang Vision · ${tc('footerCopySuffix')}</div>
+      <div class="fs-footer-copy">© 2026 FuSang Vision · <span data-i18n="footerCopySuffix"></span></div>
     </footer>
   `;
+
+  // 填入 / 更新 footer 文字
+  I18N.applyI18n(el);
 }
 
 // ─── Auth helpers ────────────────────────────────────────────
@@ -337,9 +379,55 @@ export async function requireAuth() {
 }
 
 export async function signOut() {
-  try { localStorage.removeItem(LANG_CACHE_KEY); } catch (_) {}
+  // 清 UI 語言快取(含舊單軌 key);報告語言由 profile 權威,無需清
+  try {
+    localStorage.removeItem('fs_ui_lang');
+    localStorage.removeItem('fs_lang');
+  } catch (_) {}
   await supabase.auth.signOut();
   window.location.href = 'login.html';
+}
+
+// ─── 報告語言 + 術語 glossary(報告頁專用)────────────────────
+// 報告頁(chart/decade/annual/monthly/result)在 render 前 await 這支:
+//   1) 由 preferred_language 決定「報告語言」(鎖定) → setReportLang
+//   2) 若使用者未曾明選 UI 語言 → seedUILangFromProfile(採用同語言,不寫快取)
+//   3) 載入該語言 report_glossary(星曜/宮位/四化對照)→ setGlossary
+// 回傳:實際採用的 reportLang。
+// 注意:此支只在頁面初始化呼叫一次;header 語言切換「不」呼叫它(不重載 glossary)。
+export async function loadReportGlossary(session) {
+  let reportLang = 'zh-TW'; // 保底(理論上必被 profile 覆蓋)
+
+  // 1) 報告語言 = profile.preferred_language(權威、鎖定)
+  try {
+    const email = session?.user?.email;
+    if (email) {
+      const { data } = await supabase
+        .from('user_profiles')
+        .select('preferred_language')
+        .eq('email', email)
+        .maybeSingle();
+      const pl = data?.preferred_language;
+      if (pl && I18N.SUPPORTED_LANGS.includes(pl)) reportLang = pl;
+    }
+  } catch (_) {}
+
+  I18N.setReportLang(reportLang);
+  I18N.seedUILangFromProfile(reportLang); // UI 未明選 → 預設取報告語言
+
+  // 2) 載入該語言 glossary
+  try {
+    const { data } = await supabase
+      .from('report_glossary')
+      .select('glossary')
+      .eq('language_code', reportLang)
+      .maybeSingle();
+    I18N.setGlossary(data?.glossary || null);
+  } catch (_) {
+    I18N.setGlossary(null);
+  }
+
+  return reportLang;
 }
 
 // ─── Checkout（購買/訂閱）────────────────────────────────────
@@ -386,9 +474,9 @@ export async function startCheckout(productType, extra = {}) {
 }
 
 // ─── Init ────────────────────────────────────────────────────
-// 頁面可在 script 裡設 window.FS_ACTIVE_PAGE = 'chart' 來標記當前頁
+// 頁面可在 script 裡設 window.FS_ACTIVE_PAGE = 'chart' 來標記當前頁。
+// documentElement.lang 由 i18n.js 管理(初始 uiLang;報告頁 setReportLang 後更新)。
 function initComponents() {
-  try { document.documentElement.lang = fsLang(); } catch (_) {}
   injectCss();
   injectHeader(window.FS_ACTIVE_PAGE || null);
   injectFooter();
