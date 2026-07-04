@@ -10,6 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- 設定來源:須先於下方自建 client 的 module 載入(classic,設定 window.CFG) -->
+  <script src="config.js"></script>
+
   <style>
     :root {
       --bg-primary: #faf7f1;
@@ -356,8 +359,8 @@
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
-  const SUPABASE_URL = 'https://vrquktgjawayuioglqfn.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4';
+  const SUPABASE_URL = window.CFG.SUPABASE_URL;
+  const SUPABASE_ANON_KEY = window.CFG.SUPABASE_ANON_KEY;
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },
