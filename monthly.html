@@ -469,7 +469,7 @@
           <div class="intro-offer">
             <div class="intro-offer-label">What you'll receive · 開始後</div>
             <div class="intro-offer-body">
-              我們會為你生成 <strong>本月與下個月</strong> 的完整流月，往後每個月，新的流月會自動為你展開。
+              我們會為你生成 <strong>下個月</strong> 的完整流月（本月不另生成）；往後每個月，新的流月會自動為你展開。
             </div>
             <div class="intro-offer-list">
               <div class="intro-offer-item"><span class="marker">I</span><span>十二宮的逐宮解讀，看清每個領域這個月的狀態</span></div>
@@ -490,7 +490,7 @@
             </div>
             <div id="ctx-slots" class="ctx-slots"><!-- JS 動態填入 slot --></div>
             <div id="ctx-upsell" class="ctx-upsell" style="display:none;">
-              訂閱後可同時設定 <strong>3 個</strong> 領域。
+              目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。
             </div>
           </div>
           
@@ -505,18 +505,18 @@
               <span class="rd-pretext">號收到下一期流月</span>
             </div>
             <div class="report-day-note">
-              開通後立即為你生成<strong>本月與下個月</strong>；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。
+              開通後立即為你生成<strong>下個月</strong>的流月；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。
               <span class="rd-utc">日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>
             </div>
           </div>
 
           <div class="intro-cta-wrap">
             <button id="intro-subscribe-btn" class="intro-cta" disabled>開始閱讀我的流月</button>
-            <div class="intro-cta-note">為你生成本月與下個月，約需數分鐘</div>
+            <div class="intro-cta-note">為你生成下個月的流月，約需數分鐘</div>
           </div>
         </div>
 
-        <!-- 生成中：兩個 pulse 區塊 -->
+        <!-- 生成中：每份 job 一張卡片 -->
         <div id="intro-generating" class="intro-generating" style="display:none;">
           <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
           <div class="intro-gen-head">
@@ -829,7 +829,6 @@
   let metaByPalace = {};          // 當月各宮 metadata（overview 用）
   let userEmail = null;           // 登入用戶 email（訂閱觸發用）
   let pollTimer = null;           // 生成中輪詢計時器
-  let monthlyPlan = null;         // 訂閱計畫 { targets:[{target_year,target_month}], fired:Number }；依序發 month1→month2、重整續跑
   let preferredReportDay = null;  // 收報日（enrollment signal；NULL = 未訂閱/已取消）
 
   function showView(id) {
@@ -1518,14 +1517,14 @@
   // 一筆 job 是否已完成（可閱讀）
   function jobDone(j) { return j.report_status === 'done'; }
 
-  // 渲染生成中畫面（兩個月卡片），回傳「是否全部完成」
+  // 渲染生成中畫面（每份 job 一張卡片），回傳「是否全部完成」
   function renderGenerating(jobs) {
     document.getElementById('intro-pitch').style.display = 'none';
     document.getElementById('intro-generating').style.display = 'block';
 
     const wrap = document.getElementById('gen-cards');
     const base = nowAsLunarBase();
-    // 以農曆年月排序（本月在前）
+    // 以農曆年月排序（由舊到新）
     const sorted = [...jobs].sort((a, b) =>
       (a.target_year * 12 + a.target_month) - (b.target_year * 12 + b.target_month));
 
@@ -1597,32 +1596,6 @@
     return years;
   }
 
-  // ── 訂閱計畫持久化（依序發 month1→month2、重整續跑）──
-  //   只把已算好的農曆 target 與已發筆數存起來，重整後不需重算
-  function planKey() { return 'fs_monthly_plan_' + (userEmail || ''); }
-  function savePlan(plan) {
-    try { localStorage.setItem(planKey(), JSON.stringify(plan)); } catch (e) {}
-  }
-  function loadPlan() {
-    try { const raw = localStorage.getItem(planKey()); return raw ? JSON.parse(raw) : null; }
-    catch (e) { return null; }
-  }
-  function clearPlan() {
-    try { localStorage.removeItem(planKey()); } catch (e) {}
-  }
-  // 某 target 是否已有 done 的 job
-  function targetDone(t, jobs) {
-    return jobs.some(j =>
-      Number(j.target_year) === Number(t.target_year) &&
-      Number(j.target_month) === Number(t.target_month) &&
-      jobDone(j));
-  }
-  // 計畫的所有 target 是否都 done
-  function planAllDone(plan, jobs) {
-    if (!plan || !Array.isArray(plan.targets) || plan.targets.length === 0) return false;
-    return plan.targets.every(t => targetDone(t, jobs));
-  }
-
   // 發單一 target 的 materials webhook（送出即視為觸發，狀態以 job 表為準）
   async function fireTarget(t) {
     try {
@@ -1640,7 +1613,7 @@
     }
   }
 
-  // 訂閱：先寫入收報日(preferred_report_day)，成功後本月＋下月「依序」生成
+  // 訂閱：先寫入收報日(preferred_report_day)，成功後只生成「下個月」一份
   async function subscribeMonthly() {
     const btn = document.getElementById('intro-subscribe-btn');
     const sel = document.getElementById('report-day-select');
@@ -1670,65 +1643,38 @@
     }
     preferredReportDay = day;   // 同步模組狀態
 
-    // 2. 算本月＋下月農曆 target
+    // 2. 只算「下個月」一份農曆 target（與後端 scheduler「發下一期」邏輯統一）
     const now = new Date();
     const sy = now.getFullYear(), sm = now.getMonth() + 1;
-    const targets = [
-      solarToLunarTarget(sy, sm, 'current'),
-      solarToLunarTarget(sy, sm, 'next'),
-    ];
+    const nextTarget = solarToLunarTarget(sy, sm, 'next');
 
-    // 建立並持久化計畫；只發第一筆，避免兩個 flow 並發
-    monthlyPlan = { targets, fired: 1 };
-    savePlan(monthlyPlan);
-    await fireTarget(targets[0]);
+    // 直接發這一份
+    await fireTarget(nextTarget);
 
-    // 切生成中、開始輪詢（month1 done → 輪詢補發 month2）
+    // 切生成中、開始輪詢（這一份 done → 進閱讀）
     const jobs = await fetchJobs();
     renderGenerating(jobs);
     startPolling();
   }
 
-  // 輪詢 job 狀態：
-  //   有計畫 → 依序補發（上一筆 done 才發下一筆）；全 target done → 進閱讀
-  //   無計畫（舊資料/單筆）→ 沿用「現有 job 全 done」判斷
+ // 輪詢 job 狀態：現有 job 全 done → 進閱讀（落在最新一份的年份）
   function startPolling() {
     stopPolling();
     pollTimer = setInterval(async () => {
       const jobs = await fetchJobs();
       if (jobs.length) renderGenerating(jobs);
 
-      if (monthlyPlan && Array.isArray(monthlyPlan.targets)) {
-        // 依序補發：上一筆 done 且還有未發 target → 發下一筆
-        if (monthlyPlan.fired < monthlyPlan.targets.length) {
-          const lastFired = monthlyPlan.targets[monthlyPlan.fired - 1];
-          if (targetDone(lastFired, jobs)) {
-            const next = monthlyPlan.targets[monthlyPlan.fired];
-            monthlyPlan.fired += 1;   // 先記再發，避免重疊 tick 重複觸發
-            savePlan(monthlyPlan);
-            await fireTarget(next);
-          }
-        }
-        // 全 target done → 完成
-        if (planAllDone(monthlyPlan, jobs)) {
-          stopPolling();
-          clearPlan();
-          monthlyPlan = null;
-          const base = nowAsLunarBase();
-          await enterReading(base.year);
-        }
-        return;
-      }
-
-      // 無計畫 fallback
       if (jobs.length === 0) return;
       if (jobs.every(jobDone)) {
         stopPolling();
-        const base = nowAsLunarBase();
-        await enterReading(base.year);
+        // 落在已完成 job 中農曆年月最大那筆的年份
+        const latest = jobs.filter(jobDone)
+          .reduce((a, b) => (b.target_year * 12 + b.target_month) > (a.target_year * 12 + a.target_month) ? b : a);
+        await enterReading(latest.target_year);
       }
     }, POLL_INTERVAL_MS);
   }
+  
   function stopPolling() {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   }
@@ -1770,21 +1716,6 @@
 
       // 2. 查流月訂閱狀態（以 monthly_generation_jobs 有無 job 判斷）
       const jobs = await fetchJobs();
-
-      // 2.5 載入可能存在的訂閱計畫（依序發、重整續跑）
-      monthlyPlan = loadPlan();
-      // 計畫已全完成（可能上次在完成瞬間關頁未清）→ 清掉，照常往下走
-      if (monthlyPlan && planAllDone(monthlyPlan, jobs)) {
-        clearPlan();
-        monthlyPlan = null;
-      }
-      // 計畫未完成 → 續跑（即使現有 job 看似全 done，仍可能有未發的 month2）
-      if (monthlyPlan && !planAllDone(monthlyPlan, jobs)) {
-        showView('view-intro');
-        renderGenerating(jobs);
-        startPolling();
-        return;
-      }
 
       // ── (C) 三態判斷：enrollment = preferred_report_day ──
       // preferred_report_day 為 NULL → 全新未訂閱 或 已取消 → 一律顯示開通 CTA（含收報日收集）
