@@ -30,7 +30,7 @@
       SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycXVrdGdqYXdheXVpb2dscWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAzNjIsImV4cCI6MjA5NTA0NjM2Mn0.6qd9mW2jWYgplfBzr3uTrxVVTilFplJ__ZYM5R7Rrw4',
 
       // webhook 真值待遷移 annual/monthly/decade.html 時,從各檔搬入
-      WEBHOOK_MONTHLY:   'TODO_FILL_FROM_monthly_html',
+      WEBHOOK_MONTHLY:   'https://ben880153-n8n-free.hf.space/webhook/monthly_v3_trigger',
       WEBHOOK_DECADE:    'TODO_FILL_FROM_decade_html',
       WEBHOOK_ANNUAL:    'TODO_FILL_FROM_annual_html',
     },
