@@ -7,15 +7,24 @@
     // chart 專屬 UI 字典(策略 B):cutover 時 applyStaticI18n 未涵蓋的 JS 動態 UI 字串。
     // 這些是付費牆/空狀態 chrome(走 tx=UI 語言);切換由 rerender() 重跑對應 render。
     window.FSI18N.addUI({
+      'chart.docTitle':     { 'zh-TW': '我的本命盤 - FuSang Vision', 'zh-CN': '我的本命盘 - FuSang Vision', 'en': 'My Natal Chart - FuSang Vision' },
       'chart.secLock':      { 'zh-TW': '解鎖後可見', 'zh-CN': '解锁后可见', 'en': 'Unlock to view' },
       'chart.noContent':    { 'zh-TW': '(尚無內容)', 'zh-CN': '(尚无内容)', 'en': '(No content yet)' },
       'chart.feedLockHint': { 'zh-TW': '這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。', 'zh-CN': '这部分需要完整解读才能看见——它会告诉你，哪些领域正以资源、主导与名声在背后支持你。', 'en': 'This part becomes visible with the full reading — it shows which areas support you through resources, influence, and reputation.' },
-      'chart.feedUnlock':   { 'zh-TW': '查看方案 →', 'zh-CN': '查看方案 →', 'en': 'View plans →' }
+      'chart.feedUnlock':   { 'zh-TW': '查看方案 →', 'zh-CN': '查看方案 →', 'en': 'View plans →' },
+      'chart.hubToOverview':{ 'zh-TW': '← 總覽', 'zh-CN': '← 总览', 'en': '← Overview' },
+      'chart.errDefault':   { 'zh-TW': '發生了一點問題，請稍後再試。', 'zh-CN': '发生了一点问题，请稍后再试。', 'en': 'Something went wrong. Please try again later.' },
+      'chart.paywallTitle': { 'zh-TW': '解鎖完整分析', 'zh-CN': '解锁完整分析', 'en': 'Unlock the full reading' },
+      'chart.paywallItem1': { 'zh-TW': '<b>能量飛入</b>　哪些資源正在幫助你、推動你。', 'zh-CN': '<b>能量飞入</b>　哪些资源正在帮助你、推动你。', 'en': '<b>Inflowing energy</b> — which resources are helping and driving you.' },
+      'chart.paywallItem2': { 'zh-TW': '<b>能量飛出</b>　你正在影響、推動哪些面向。', 'zh-CN': '<b>能量飞出</b>　你正在影响、推动哪些面向。', 'en': "<b>Outflowing energy</b> — which areas you're influencing and driving." },
+      'chart.paywallItem3': { 'zh-TW': '<b>專屬行動建議</b>', 'zh-CN': '<b>专属行动建议</b>', 'en': '<b>Tailored guidance</b>' },
+      'chart.paywallCta':   { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans' },
+      'chart.paywallNote':  { 'zh-TW': '已購買？回此頁重新整理即可顯示', 'zh-CN': '已购买？回此页刷新即可显示', 'en': 'Already purchased? Refresh this page to display it.' }
     });
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 我的本命盤</title>
+  <title>我的本命盤 - FuSang Vision</title>
   <meta name="description" content="View your personalized Zi Wei Dou Shu chart." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -489,8 +498,12 @@
   function goPricing() { window.location.href = PRICING_PAGE; }
 
   function applyStaticI18n() {
+    document.title = tx('chart.docTitle');
     const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
     const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    setText('ov-to-hub', 'ovToHub');
+    setText('hub-to-overview', 'chart.hubToOverview');
+    setText('error-detail', 'chart.errDefault');
     setText('loading-title', 'loadingTitle');
     setText('loading-sub', 'loadingSub');
     setText('hub-title', 'hubTitle');
@@ -560,14 +573,14 @@
       <div class="paywall">
         <div class="paywall-lock" aria-hidden="true">&#128274;</div>
         <div class="paywall-eyebrow">Unlock Full Reading</div>
-        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-title">${tx('chart.paywallTitle')}</div>
         <div class="paywall-list">
-          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
-          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
-          <div class="paywall-item"><span class="mk">III</span><span><b>專屬行動建議</b></span></div>
+          <div class="paywall-item"><span class="mk">I</span><span>${tx('chart.paywallItem1')}</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span>${tx('chart.paywallItem2')}</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span>${tx('chart.paywallItem3')}</span></div>
         </div>
-        <span class="paywall-cta" id="paywall-cta">查看方案</span>
-        <div class="paywall-note">已購買？回此頁重新整理即可顯示</div>
+        <span class="paywall-cta" id="paywall-cta">${tx('chart.paywallCta')}</span>
+        <div class="paywall-note">${tx('chart.paywallNote')}</div>
       </div>`;
   }
 
@@ -963,7 +976,7 @@
     if (currentPalace && reportsByPalace[currentPalace]) openDetail(currentPalace);
     showView(view);
   }
-  window.addEventListener('i18n:changed', rerender);
+  window.addEventListener('i18n:changed', () => { document.title = tx('chart.docTitle'); rerender(); });
 
   init();
 </script>
