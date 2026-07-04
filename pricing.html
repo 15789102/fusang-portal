@@ -5,7 +5,59 @@
   <script src="i18n.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 解鎖完整內容</title>
+  <title>解鎖完整內容 - FuSang Vision</title>
+  <script>
+    // ── pricing 專屬 UI 字典(策略 B;位置索引見 i18n.js 檔頭)──
+    //   價格數字($14.99/$6.87/$68.00)與裝飾性英文 eyebrow 刻意保留靜態。
+    window.FSI18N.addUI({
+      'pr.docTitle':  { 'zh-TW': '解鎖完整內容 - FuSang Vision', 'zh-CN': '解锁完整内容 - FuSang Vision', 'en': 'Unlock Full Reading - FuSang Vision' },
+      'pr.title':     { 'zh-TW': '解鎖完整內容', 'zh-CN': '解锁完整内容', 'en': 'Unlock Your Full Reading' },
+      'pr.sub':       { 'zh-TW': '免費版讓你看見命盤的輪廓；解鎖後，每個領域的能量如何流動、彼此牽引，以及該往哪使力，將完整為你展開。', 'zh-CN': '免费版让你看见命盘的轮廓；解锁后，每个领域的能量如何流动、彼此牵引，以及该往哪使力，将完整为你展开。', 'en': 'The free version shows the outline of your chart. Unlock to see how energy moves through each area of life, how they pull on one another, and where to focus.' },
+
+      'pr.c1Badge':   { 'zh-TW': '最受歡迎', 'zh-CN': '最受欢迎', 'en': 'Most Popular' },
+      'pr.c1Name':    { 'zh-TW': '完整命盤解讀', 'zh-CN': '完整命盘解读', 'en': 'Full Chart Reading' },
+      'pr.c1Sub':     { 'zh-TW': '看懂能量如何流動 · 含本命・大限・流年四化全解', 'zh-CN': '看懂能量如何流动 · 含本命・大限・流年四化全解', 'en': 'See how energy flows · Natal, Decade & Annual transformations' },
+      'pr.c1Pitch':   { 'zh-TW': '不只看見「你是誰」，更看懂十二個生活領域之間，能量如何彼此牽引、影響——以及該把心力放在哪裡。一次解鎖，永久有效。', 'zh-CN': '不只看见「你是谁」，更看懂十二个生活领域之间，能量如何彼此牵引、影响——以及该把心力放在哪里。一次解锁，永久有效。', 'en': 'Not just who you are, but how energy pulls between all twelve areas of life — and where to place your focus. Unlock once, keep forever.' },
+      'pr.c1Unit':    { 'zh-TW': '一次買斷', 'zh-CN': '一次买断', 'en': 'one-time' },
+      'pr.c1PriceNote':{ 'zh-TW': '永久有效，含未來年份，不再另外收費', 'zh-CN': '永久有效，含未来年份，不再另外收费', 'en': 'Yours forever, future years included, no extra charge' },
+      'pr.c1F1':      { 'zh-TW': '本命・大限・流年 三個層次的完整解讀', 'zh-CN': '本命・大限・流年 三个层次的完整解读', 'en': 'Full reading across Natal, Decade & Annual layers' },
+      'pr.c1F2':      { 'zh-TW': '能量如何流入與流出，看清領域間的牽引', 'zh-CN': '能量如何流入与流出，看清领域间的牵引', 'en': 'How energy flows in and out, revealing the pull between areas' },
+      'pr.c1F3':      { 'zh-TW': '每一個領域的專屬行動建議', 'zh-CN': '每一个领域的专属行动建议', 'en': 'Tailored guidance for every area of life' },
+      'pr.c1F4':      { 'zh-TW': '未來新增的年份自動解鎖，永久有效', 'zh-CN': '未来新增的年份自动解锁，永久有效', 'en': 'Future years unlock automatically, forever' },
+      'pr.c1Btn':     { 'zh-TW': '永久解鎖完整解讀', 'zh-CN': '永久解锁完整解读', 'en': 'Unlock Full Reading' },
+
+      'pr.c2Name':    { 'zh-TW': '每月運勢導航', 'zh-CN': '每月运势导航', 'en': 'Monthly Guidance' },
+      'pr.c2Sub':     { 'zh-TW': '每個月為你更新的流月指引', 'zh-CN': '每个月为你更新的流月指引', 'en': 'Fresh monthly guidance, updated each month' },
+      'pr.c2Pitch':   { 'zh-TW': '每個月，為你展開當月十二個領域的運勢重心與專屬建議。哪一塊正被推動、哪一塊需要多花心思，一個月一個月看清楚。', 'zh-CN': '每个月，为你展开当月十二个领域的运势重心与专属建议。哪一块正被推动、哪一块需要多花心思，一个月一个月看清楚。', 'en': "Each month, the focus and guidance for all twelve areas unfold for you — what's being pushed forward, what needs care — month by month." },
+      'pr.c2Unit':    { 'zh-TW': '/ 月', 'zh-CN': '/ 月', 'en': '/ mo' },
+      'pr.c2PriceNote':{ 'zh-TW': '隨時可取消，按月計費', 'zh-CN': '随时可取消，按月计费', 'en': 'Cancel anytime, billed monthly' },
+      'pr.c2F1':      { 'zh-TW': '每月流月深度內容，逐領域解讀', 'zh-CN': '每月流月深度内容，逐领域解读', 'en': 'In-depth monthly content, area by area' },
+      'pr.c2F2':      { 'zh-TW': '可設定 3 個個人化追蹤主題', 'zh-CN': '可设定 3 个个人化追踪主题', 'en': 'Set up to 3 personal tracking themes' },
+      'pr.c2F3':      { 'zh-TW': '新的月份自動為你生成', 'zh-CN': '新的月份自动为你生成', 'en': 'New months generated automatically' },
+      'pr.c2Btn':     { 'zh-TW': '開始月訂閱', 'zh-CN': '开始月订阅', 'en': 'Start Monthly' },
+
+      'pr.c3Badge':   { 'zh-TW': '省 17%', 'zh-CN': '省 17%', 'en': 'Save 17%' },
+      'pr.c3Name':    { 'zh-TW': '全年運勢通行', 'zh-CN': '全年运势通行', 'en': 'Year Pass' },
+      'pr.c3Sub':     { 'zh-TW': '每月運勢導航 · 一次付清 12 個月', 'zh-CN': '每月运势导航 · 一次付清 12 个月', 'en': 'Monthly Guidance · 12 months, paid once' },
+      'pr.c3Pitch':   { 'zh-TW': '和每月導航相同的完整流月，一樣每個月為你展開（你也能逐月調整追蹤重心）。差別只在一次付清 12 個月，不必每月扣款、不自動續訂。', 'zh-CN': '和每月导航相同的完整流月，一样每个月为你展开（你也能逐月调整追踪重心）。差别只在一次付清 12 个月，不必每月扣款、不自动续订。', 'en': 'The same full monthly guidance, unfolding each month (you can adjust your focus month to month too). The only difference: pay once for 12 months — no monthly charges, no auto-renewal.' },
+      'pr.c3Unit':    { 'zh-TW': '/ 12 個月', 'zh-CN': '/ 12 个月', 'en': '/ 12 mo' },
+      'pr.c3PriceNote':{ 'zh-TW': '<span class="save-hl">比月訂閱省 17%</span>，一次付清、不自動續訂', 'zh-CN': '<span class="save-hl">比月订阅省 17%</span>，一次付清、不自动续订', 'en': '<span class="save-hl">17% less than monthly</span> · paid once, no auto-renewal' },
+      'pr.c3F1':      { 'zh-TW': '與每月導航完全相同的流月內容', 'zh-CN': '与每月导航完全相同的流月内容', 'en': 'Exactly the same monthly content as Monthly Guidance' },
+      'pr.c3F2':      { 'zh-TW': '每月持續展開，可逐月調整追蹤重心', 'zh-CN': '每月持续展开，可逐月调整追踪重心', 'en': 'Unfolds each month; adjust your focus as you go' },
+      'pr.c3F3':      { 'zh-TW': '一次付清 12 個月，比月訂閱省 17%', 'zh-CN': '一次付清 12 个月，比月订阅省 17%', 'en': 'Pay once for 12 months — 17% less than monthly' },
+      'pr.c3F4':      { 'zh-TW': '到期前不再扣款，不自動續訂', 'zh-CN': '到期前不再扣款，不自动续订', 'en': 'No charges until it ends, no auto-renewal' },
+      'pr.c3Btn':     { 'zh-TW': '一次付清・省 17%', 'zh-CN': '一次付清・省 17%', 'en': 'Pay Once · Save 17%' },
+
+      'pr.footNote':  { 'zh-TW': '所有付款透過 Stripe 安全處理 · 價格以美元計價<br>流月內容每月持續為你展開，並非購買當下一次釋出全部月份。<br>購買後若內容尚未解鎖，回到報告頁重新整理即可顯示。', 'zh-CN': '所有付款透过 Stripe 安全处理 · 价格以美元计价<br>流月内容每月持续为你展开，并非购买当下一次释出全部月份。<br>购买后若内容尚未解锁，回到报告页重新整理即可显示。', 'en': "All payments are securely processed by Stripe · priced in USD<br>Monthly content unfolds each month — not released all at once at purchase.<br>If content hasn't unlocked yet after buying, refresh the report page to display it." },
+
+      'pr.checkingOut':{ 'zh-TW': '正在前往結帳…', 'zh-CN': '正在前往结账…', 'en': 'Taking you to checkout…' },
+      'pr.noticeSubscribed':{ 'zh-TW': '您已經有有效的<strong>每月運勢導航訂閱</strong>，無需重複購買。若要調整或取消，請前往帳戶頁管理訂閱。', 'zh-CN': '您已经有有效的<strong>每月运势导航订阅</strong>，无需重复购买。若要调整或取消，请前往账户页管理订阅。', 'en': 'You already have an active <strong>Monthly Guidance subscription</strong> — no need to buy again. To change or cancel, manage it on your account page.' },
+      'pr.noticeAnnualHeld':{ 'zh-TW': '您目前持有<strong>全年運勢通行</strong>{until}，期間內無需再訂閱月方案。若要再延長 12 個月，可直接再次購買全年通行疊加。', 'zh-CN': '您目前持有<strong>全年运势通行</strong>{until}，期间内无需再订阅月方案。若要再延长 12 个月，可直接再次购买全年通行叠加。', 'en': 'You currently hold a <strong>Year Pass</strong>{until} — no need for a monthly plan during this time. To add another 12 months, purchase the Year Pass again to stack it.' },
+      'pr.noticeAnnualUntil':{ 'zh-TW': '（有效至 {date}）', 'zh-CN': '（有效至 {date}）', 'en': ' (valid until {date})' },
+      'pr.noticeAuth':{ 'zh-TW': '請先登入再進行購買。', 'zh-CN': '请先登录再进行购买。', 'en': 'Please sign in before purchasing.' },
+      'pr.noticeError':{ 'zh-TW': '購買流程暫時無法啟動，請稍後再試，或重新整理頁面。若持續發生，請與我們聯繫。', 'zh-CN': '购买流程暂时无法启动，请稍后再试，或重新整理页面。若持续发生，请与我们联系。', 'en': "Checkout couldn't start right now. Please try again shortly or refresh the page. If it keeps happening, contact us." }
+    });
+  </script>
   <meta name="description" content="Unlock your full Zi Wei Dou Shu reading." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -97,8 +149,8 @@
     <div class="pr-head">
       <div class="pr-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
       <div class="pr-eyebrow">Unlock Your Reading</div>
-      <h1 class="pr-title">解鎖完整內容</h1>
-      <p class="pr-sub">免費版讓你看見命盤的輪廓；解鎖後，每個領域的能量如何流動、彼此牽引，以及該往哪使力，將完整為你展開。</p>
+      <h1 class="pr-title" data-i18n="pr.title">解鎖完整內容</h1>
+      <p class="pr-sub" data-i18n="pr.sub">免費版讓你看見命盤的輪廓；解鎖後，每個領域的能量如何流動、彼此牽引，以及該往哪使力，將完整為你展開。</p>
     </div>
 
     <div id="pr-notice" class="pr-notice"></div>
@@ -107,68 +159,68 @@
 
       <!-- 1 Sihua -->
       <div class="pr-card featured">
-        <div class="pr-badge">最受歡迎</div>
+        <div class="pr-badge" data-i18n="pr.c1Badge">最受歡迎</div>
         <div class="pr-card-eyebrow">Full Reading</div>
-        <div class="pr-card-name">完整命盤解讀</div>
-        <div class="pr-card-sub-zh">看懂能量如何流動 · 含本命・大限・流年四化全解</div>
-        <div class="pr-card-pitch">不只看見「你是誰」，更看懂十二個生活領域之間，能量如何彼此牽引、影響——以及該把心力放在哪裡。一次解鎖，永久有效。</div>
+        <div class="pr-card-name" data-i18n="pr.c1Name">完整命盤解讀</div>
+        <div class="pr-card-sub-zh" data-i18n="pr.c1Sub">看懂能量如何流動 · 含本命・大限・流年四化全解</div>
+        <div class="pr-card-pitch" data-i18n="pr.c1Pitch">不只看見「你是誰」，更看懂十二個生活領域之間，能量如何彼此牽引、影響——以及該把心力放在哪裡。一次解鎖，永久有效。</div>
         <div class="pr-price">
           <span class="pr-price-amount">$14.99</span>
-          <span class="pr-price-unit">一次買斷</span>
+          <span class="pr-price-unit" data-i18n="pr.c1Unit">一次買斷</span>
         </div>
-        <div class="pr-price-note">永久有效，含未來年份，不再另外收費</div>
+        <div class="pr-price-note" data-i18n="pr.c1PriceNote">永久有效，含未來年份，不再另外收費</div>
         <ul class="pr-features">
-          <li class="pr-feature"><span class="mk">I</span><span>本命・大限・流年 三個層次的完整解讀</span></li>
-          <li class="pr-feature"><span class="mk">II</span><span>能量如何流入與流出，看清領域間的牽引</span></li>
-          <li class="pr-feature"><span class="mk">III</span><span>每一個領域的專屬行動建議</span></li>
-          <li class="pr-feature"><span class="mk">IV</span><span>未來新增的年份自動解鎖，永久有效</span></li>
+          <li class="pr-feature"><span class="mk">I</span><span data-i18n="pr.c1F1">本命・大限・流年 三個層次的完整解讀</span></li>
+          <li class="pr-feature"><span class="mk">II</span><span data-i18n="pr.c1F2">能量如何流入與流出，看清領域間的牽引</span></li>
+          <li class="pr-feature"><span class="mk">III</span><span data-i18n="pr.c1F3">每一個領域的專屬行動建議</span></li>
+          <li class="pr-feature"><span class="mk">IV</span><span data-i18n="pr.c1F4">未來新增的年份自動解鎖，永久有效</span></li>
         </ul>
-        <button class="pr-btn" data-product="sihua">永久解鎖完整解讀</button>
+        <button class="pr-btn" data-product="sihua" data-i18n="pr.c1Btn">永久解鎖完整解讀</button>
       </div>
 
       <!-- 2 Monthly -->
       <div class="pr-card">
         <div class="pr-card-eyebrow">Monthly Guidance</div>
-        <div class="pr-card-name">每月運勢導航</div>
-        <div class="pr-card-sub-zh">每個月為你更新的流月指引</div>
-        <div class="pr-card-pitch">每個月，為你展開當月十二個領域的運勢重心與專屬建議。哪一塊正被推動、哪一塊需要多花心思，一個月一個月看清楚。</div>
+        <div class="pr-card-name" data-i18n="pr.c2Name">每月運勢導航</div>
+        <div class="pr-card-sub-zh" data-i18n="pr.c2Sub">每個月為你更新的流月指引</div>
+        <div class="pr-card-pitch" data-i18n="pr.c2Pitch">每個月，為你展開當月十二個領域的運勢重心與專屬建議。哪一塊正被推動、哪一塊需要多花心思，一個月一個月看清楚。</div>
         <div class="pr-price">
           <span class="pr-price-amount">$6.87</span>
-          <span class="pr-price-unit">/ 月</span>
+          <span class="pr-price-unit" data-i18n="pr.c2Unit">/ 月</span>
         </div>
-        <div class="pr-price-note">隨時可取消，按月計費</div>
+        <div class="pr-price-note" data-i18n="pr.c2PriceNote">隨時可取消，按月計費</div>
         <ul class="pr-features">
-          <li class="pr-feature"><span class="mk">I</span><span>每月流月深度內容，逐領域解讀</span></li>
-          <li class="pr-feature"><span class="mk">II</span><span>可設定 3 個個人化追蹤主題</span></li>
-          <li class="pr-feature"><span class="mk">III</span><span>新的月份自動為你生成</span></li>
+          <li class="pr-feature"><span class="mk">I</span><span data-i18n="pr.c2F1">每月流月深度內容，逐領域解讀</span></li>
+          <li class="pr-feature"><span class="mk">II</span><span data-i18n="pr.c2F2">可設定 3 個個人化追蹤主題</span></li>
+          <li class="pr-feature"><span class="mk">III</span><span data-i18n="pr.c2F3">新的月份自動為你生成</span></li>
         </ul>
-        <button class="pr-btn outline" data-product="monthly_sub">開始月訂閱</button>
+        <button class="pr-btn outline" data-product="monthly_sub" data-i18n="pr.c2Btn">開始月訂閱</button>
       </div>
 
       <!-- 3 Annual Pack -->
       <div class="pr-card">
-        <div class="pr-badge save">省 17%</div>
+        <div class="pr-badge save" data-i18n="pr.c3Badge">省 17%</div>
         <div class="pr-card-eyebrow">Year Pass</div>
-        <div class="pr-card-name">全年運勢通行</div>
-        <div class="pr-card-sub-zh">每月運勢導航 · 一次付清 12 個月</div>
-        <div class="pr-card-pitch">和每月導航相同的完整流月，一樣每個月為你展開（你也能逐月調整追蹤重心）。差別只在一次付清 12 個月，不必每月扣款、不自動續訂。</div>
+        <div class="pr-card-name" data-i18n="pr.c3Name">全年運勢通行</div>
+        <div class="pr-card-sub-zh" data-i18n="pr.c3Sub">每月運勢導航 · 一次付清 12 個月</div>
+        <div class="pr-card-pitch" data-i18n="pr.c3Pitch">和每月導航相同的完整流月，一樣每個月為你展開（你也能逐月調整追蹤重心）。差別只在一次付清 12 個月，不必每月扣款、不自動續訂。</div>
         <div class="pr-price">
           <span class="pr-price-amount">$68.00</span>
-          <span class="pr-price-unit">/ 12 個月</span>
+          <span class="pr-price-unit" data-i18n="pr.c3Unit">/ 12 個月</span>
         </div>
-        <div class="pr-price-note"><span class="save-hl">比月訂閱省 17%</span>，一次付清、不自動續訂</div>
+        <div class="pr-price-note" data-i18n-html="pr.c3PriceNote"><span class="save-hl">比月訂閱省 17%</span>，一次付清、不自動續訂</div>
         <ul class="pr-features">
-          <li class="pr-feature"><span class="mk">I</span><span>與每月導航完全相同的流月內容</span></li>
-          <li class="pr-feature"><span class="mk">II</span><span>每月持續展開，可逐月調整追蹤重心</span></li>
-          <li class="pr-feature"><span class="mk">III</span><span>一次付清 12 個月，比月訂閱省 17%</span></li>
-          <li class="pr-feature"><span class="mk">IV</span><span>到期前不再扣款，不自動續訂</span></li>
+          <li class="pr-feature"><span class="mk">I</span><span data-i18n="pr.c3F1">與每月導航完全相同的流月內容</span></li>
+          <li class="pr-feature"><span class="mk">II</span><span data-i18n="pr.c3F2">每月持續展開，可逐月調整追蹤重心</span></li>
+          <li class="pr-feature"><span class="mk">III</span><span data-i18n="pr.c3F3">一次付清 12 個月，比月訂閱省 17%</span></li>
+          <li class="pr-feature"><span class="mk">IV</span><span data-i18n="pr.c3F4">到期前不再扣款，不自動續訂</span></li>
         </ul>
-        <button class="pr-btn outline" data-product="annual_pack">一次付清・省 17%</button>
+        <button class="pr-btn outline" data-product="annual_pack" data-i18n="pr.c3Btn">一次付清・省 17%</button>
       </div>
 
     </div>
 
-    <div class="pr-foot-note">
+    <div class="pr-foot-note" data-i18n-html="pr.footNote">
       所有付款透過 Stripe 安全處理 · 價格以美元計價<br>
       流月內容每月持續為你展開，並非購買當下一次釋出全部月份。<br>
       購買後若內容尚未解鎖，回到報告頁重新整理即可顯示。
@@ -182,14 +234,10 @@
 <script type="module">
   import { requireAuth, startCheckout } from './components.js';
 
+  const F = window.FSI18N;
   const noticeEl = document.getElementById('pr-notice');
 
-  function showNotice(html, kind = 'warn') {
-    noticeEl.className = 'pr-notice show' + (kind === 'info' ? ' info' : '');
-    noticeEl.innerHTML = html;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function hideNotice() { noticeEl.className = 'pr-notice'; noticeEl.innerHTML = ''; }
+  let activeNotice = null;   // { code, extra } 或 null(供語言切換時重繪)
 
   function fmtDate(iso) {
     if (!iso) return '';
@@ -199,18 +247,35 @@
     } catch (_) { return ''; }
   }
 
-  function handleBlocked(code, extra) {
+  // 依 code 組通知訊息(讀當前語言)
+  function noticeMessage(code, extra) {
     if (code === 'already_subscribed_monthly') {
-      showNotice('您已經有有效的<strong>每月運勢導航訂閱</strong>，無需重複購買。若要調整或取消，請前往帳戶頁管理訂閱。');
-    } else if (code === 'active_annual_pack') {
-      const until = fmtDate(extra.expires_at);
-      showNotice('您目前持有<strong>全年運勢通行</strong>' + (until ? '（有效至 ' + until + '）' : '') + '，期間內無需再訂閱月方案。若要再延長 12 個月，可直接再次購買全年通行疊加。');
-    } else if (code === 'not_authenticated') {
-      showNotice('請先登入再進行購買。');
-    } else {
-      showNotice('購買流程暫時無法啟動，請稍後再試，或重新整理頁面。若持續發生，請與我們聯繫。');
+      return F.t('pr.noticeSubscribed');
     }
+    if (code === 'active_annual_pack') {
+      const until = extra?.expires_at
+        ? F.t('pr.noticeAnnualUntil').replace('{date}', fmtDate(extra.expires_at))
+        : '';
+      return F.t('pr.noticeAnnualHeld').replace('{until}', until);
+    }
+    if (code === 'not_authenticated') {
+      return F.t('pr.noticeAuth');
+    }
+    return F.t('pr.noticeError');
   }
+
+  function renderNotice() {
+    if (!activeNotice) { noticeEl.className = 'pr-notice'; noticeEl.innerHTML = ''; return; }
+    noticeEl.className = 'pr-notice show';
+    noticeEl.innerHTML = noticeMessage(activeNotice.code, activeNotice.extra);
+  }
+
+  function showBlocked(code, extra) {
+    activeNotice = { code, extra: extra || {} };
+    renderNotice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideNotice() { activeNotice = null; renderNotice(); }
 
   function bindButtons() {
     document.querySelectorAll('.pr-btn[data-product]').forEach(btn => {
@@ -219,17 +284,26 @@
         const product = btn.dataset.product;
         const original = btn.textContent;
         btn.disabled = true;
-        btn.textContent = '正在前往結帳…';
+        btn.textContent = F.t('pr.checkingOut');
 
         const res = await startCheckout(product);
         if (!res || !res.ok) {
           btn.disabled = false;
           btn.textContent = original;
-          handleBlocked(res?.code, res || {});
+          showBlocked(res?.code, res || {});
         }
       });
     });
   }
+
+  // 語言切換(header 切換鈕派 i18n:changed)→ 更新標題、重繪通知
+  //   頁面靜態內容(data-i18n)由 setUILang 的 applyI18n 自動重譯,此處只補非 data-i18n 部分。
+  function applyLangUi() {
+    document.title = F.t('pr.docTitle');
+    renderNotice();
+  }
+  applyLangUi();
+  window.addEventListener('i18n:changed', applyLangUi);
 
   (async function init() {
     const session = await requireAuth();
