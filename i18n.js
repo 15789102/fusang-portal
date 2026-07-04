@@ -32,6 +32,7 @@
 //   ‣ submitted.html         → 頁內 addUI inline(submitted.html 的 <head> addUI script)
 //   ‣ set-password.html      → 頁內 addUI inline(set-password.html 的 <head> addUI script)
 //   ‣ pricing.html           → 頁內 addUI inline(pricing.html 的 <head> addUI script;登入頁,用 header 切換鈕)
+//   ‣ dashboard.html         → 頁內 addUI inline(dashboard.html 的 <head> addUI script;登入頁,用 header 切換鈕)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
