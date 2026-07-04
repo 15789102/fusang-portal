@@ -29,6 +29,7 @@
 //                              (中/英二分,尚未三語化;待 consultation 專批改用 addUI)
 //   ‣ login.html             → 頁內 addUI inline(login.html 的 <head> addUI script)
 //   ‣ account-create.html    → 頁內 addUI inline(account-create.html 的 <head> addUI script)
+//   ‣ submitted.html         → 頁內 addUI inline(submitted.html 的 <head> addUI script)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
