@@ -13,6 +13,9 @@
   <!-- 標記當前導航頁(供 components.js header 高亮)，須在 module 載入前設定 -->
   <script>window.FS_ACTIVE_PAGE = 'monthly';</script>
 
+  <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
+  <script src="config.js"></script>
+
   <style>
     /* ── monthly 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
@@ -722,8 +725,8 @@
   const INTERP_TABLE = 'palace_interpretations';
   // 流月生成狀態表（訂閱判斷 + 生成中輪詢）
   const MONTHLY_JOBS_TABLE = 'monthly_generation_jobs';
-  // materials flow 觸發 webhook（production）
-  const MONTHLY_TRIGGER_URL = 'https://ben880153-n8n-free.hf.space/webhook/monthly_v3_trigger';
+  // materials flow 觸發 webhook（來源:config.js → window.CFG.WEBHOOK_MONTHLY）
+  const MONTHLY_TRIGGER_URL = window.CFG.WEBHOOK_MONTHLY;
   // 生成中輪詢間隔（毫秒）
   const POLL_INTERVAL_MS = 15000;
 
