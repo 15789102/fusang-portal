@@ -5,7 +5,7 @@
 <script src="i18n.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuSang Vision — 諮詢細節</title>
+<title>諮詢細節 - FuSang Vision</title>
 </head>
 <body>
 
@@ -31,6 +31,8 @@
     signatureHtml, esc, el, showMsg, reloadSoon,
     mapFollowupErr, mapCloseErr, mapFeedbackErr, RATINGS,
   } from './consultation-common.js';
+
+  document.title = pick('諮詢細節 - FuSang Vision', '咨询细节 - FuSang Vision', 'Consultation - FuSang Vision');
 
   const qs = new URLSearchParams(location.search);
   const ticketId = qs.get('id');
@@ -64,11 +66,12 @@
   function notFound() {
     const c = el('div', 'cons-card soft');
     c.innerHTML =
-      `<div class="card-kicker">${pick('找不到諮詢', 'Not found')}</div>` +
+      `<div class="card-kicker">${pick('找不到諮詢', '找不到咨询', 'Not found')}</div>` +
       `<div class="empty-note">${pick(
         '找不到這則諮詢，或它不屬於你的帳號。',
+        '找不到这则咨询，或它不属于你的账号。',
         'This consultation wasn\'t found, or it doesn\'t belong to your account.'
-      )}<br><br><span class="link-inline" id="go-list">${pick('返回我的問事紀錄 →', 'Back to my consultations →')}</span></div>`;
+      )}<br><br><span class="link-inline" id="go-list">${pick('返回我的問事紀錄 →', '返回我的问事纪录 →', 'Back to my consultations →')}</span></div>`;
     c.querySelector('#go-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
     return c;
   }
@@ -79,20 +82,21 @@
     const pillClass = waitState ? 'status-pill wait' : 'status-pill done';
 
     let html =
-      `<div class="card-kicker">${pick('諮詢細節', 'Consultation')} · ${pick('編號', 'Ref')} ${refCode(t.id)}</div>` +
+      `<div class="card-kicker">${pick('諮詢細節', '咨询细节', 'Consultation')} · ${pick('編號', '编号', 'Ref')} ${refCode(t.id)}</div>` +
       `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">` +
         `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
         `<span class="${pillClass}"><span class="dot"></span>${statusText(t)}</span>` +
       `</div>` +
-      `<div class="qa-block"><div class="qa-label">${pick('你的問題', 'Your question')}</div>` +
+      `<div class="qa-block"><div class="qa-label">${pick('你的問題', '你的问题', 'Your question')}</div>` +
       `<div class="qa-text">${esc(t.content)}</div>` +
-      `<div class="qa-meta">${pick('提交於', 'Submitted')} ${fmtDate(t.created_at)}</div></div>`;
+      `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.created_at)}</div></div>`;
 
     // 待回覆（paid）
     if (t.status === 'paid') {
       html += `<div class="qa-divider"></div>` +
         `<div class="followup-note">${pick(
           '已收到付款，你的問題已進入回覆佇列。我們會在付款後 <strong>7 天內</strong>以書面回覆，並寄送 Email 通知你。',
+          '已收到付款，你的问题已进入回复队列。我们会在付款后 <strong>7 天内</strong>以书面回复，并寄送 Email 通知你。',
           'Payment received — your question is in the reply queue. You\'ll get a written reply within <strong>7 days</strong>, with an email notification.'
         )}</div>`;
     }
@@ -100,28 +104,29 @@
     // 首覆內容
     if (t.answer) {
       html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('回覆', 'Reply')}</div>` +
+        `<div class="qa-block"><div class="qa-label">${pick('回覆', '回复', 'Reply')}</div>` +
         `<div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div>` +
-        `<div class="qa-meta">${pick('回覆於', 'Replied')} ${fmtDate(t.answered_at)}</div>` +
+        `<div class="qa-meta">${pick('回覆於', '回复于', 'Replied')} ${fmtDate(t.answered_at)}</div>` +
         signatureHtml() + `</div>`;
     }
 
     // 追問已提交（followup）
     if (t.status === 'followup' && t.followup_question) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('你的追問', 'Your follow-up')}</div>` +
+      html += `<div class="qa-block"><div class="qa-label">${pick('你的追問', '你的追问', 'Your follow-up')}</div>` +
         `<div class="qa-text">${esc(t.followup_question)}</div>` +
-        `<div class="qa-meta">${pick('提交於', 'Submitted')} ${fmtDate(t.followup_at)}</div></div>` +
+        `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.followup_at)}</div></div>` +
         `<div class="followup-note">${pick(
           '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。',
+          '已送出追问，等待再次回复。回复完成后本咨询即结案。',
           'Your follow-up is in. Awaiting the final reply — the consultation closes after that.'
         )}</div>`;
     }
 
     // 再覆（closed 且有 followup_answer）
     if (t.followup_answer) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('再次回覆', 'Final reply')}</div>` +
+      html += `<div class="qa-block"><div class="qa-label">${pick('再次回覆', '再次回复', 'Final reply')}</div>` +
         `<div class="answer-box"><div class="qa-text">${esc(t.followup_answer)}</div></div>` +
-        `<div class="qa-meta">${pick('回覆於', 'Replied')} ${fmtDate(t.followup_answered_at)}</div>` +
+        `<div class="qa-meta">${pick('回覆於', '回复于', 'Replied')} ${fmtDate(t.followup_answered_at)}</div>` +
         signatureHtml() + `</div>`;
     }
 
@@ -129,17 +134,18 @@
     if (t.status === 'answered' && inFollowupWindow(t)) {
       const deadline = fmtDate(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5).toISOString());
       html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('追問一次', 'One follow-up')}</div>` +
+        `<div class="qa-block"><div class="qa-label">${pick('追問一次', '追问一次', 'One follow-up')}</div>` +
         `<div class="followup-note">${pick(
           `回覆後可追問 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期諮詢自動結案。`,
+          `回复后可追问 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期咨询自动结案。`,
           `You may ask <strong>one</strong> follow-up, until <strong>${deadline}</strong>. After that the consultation closes.`
         )}</div>` +
-        `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你的追問…', 'Write your follow-up…')}"></textarea>` +
+        `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你的追問…', '写下你的追问…', 'Write your follow-up…')}"></textarea>` +
         `<div class="char-count" id="fu-count">0</div>` +
-        `<button class="cons-btn ghost" id="fu-btn" disabled>${pick('送出追問', 'Send follow-up')}</button>` +
+        `<button class="cons-btn ghost" id="fu-btn" disabled>${pick('送出追問', '送出追问', 'Send follow-up')}</button>` +
         `<div class="msg" id="fu-msg"></div>` +
         `<div class="close-row">` +
-          `<span class="close-link" id="close-link">${pick('我沒有其他問題了，結束諮詢', 'No other questions — close this consultation')}</span>` +
+          `<span class="close-link" id="close-link">${pick('我沒有其他問題了，結束諮詢', '我没有其他问题了，结束咨询', 'No other questions — close this consultation')}</span>` +
           `<div id="close-host"></div>` +
         `</div>` +
         `</div>`;
@@ -148,9 +154,9 @@
     // admin 關閉 → 顯示關閉原因（不出回饋）
     if (isAdminClosed(t)) {
       html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('諮詢已關閉', 'Consultation closed')}</div>` +
+        `<div class="qa-block"><div class="qa-label">${pick('諮詢已關閉', '咨询已关闭', 'Consultation closed')}</div>` +
         `<div class="answer-box" style="background:var(--t-ji-bg);border-color:#e4ccd1;"><div class="qa-text">${esc(t.close_reason || '')}</div></div>` +
-        `<div class="qa-meta">${pick('關閉於', 'Closed')} ${fmtDate(t.closed_at)}</div></div>`;
+        `<div class="qa-meta">${pick('關閉於', '关闭于', 'Closed')} ${fmtDate(t.closed_at)}</div></div>`;
     }
 
     // 已結案且未回饋（非 admin 關閉）→ 回饋表單
@@ -159,7 +165,7 @@
     }
     // 已回饋 → 顯示
     if (t.rating) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', 'Your feedback')}</div>` +
+      html += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', '你的反馈', 'Your feedback')}</div>` +
         `<div class="qa-text">${esc(ratingLabel(t.rating))}${t.followup_answer || t.answer ? '' : ''}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div></div>`;
     }
 
@@ -201,11 +207,12 @@
         box.innerHTML =
           `<div class="confirm-text">${pick(
             '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？',
+            '结案后将无法再追问，且此咨询会结束。确定要结束吗？',
             'Once closed, you can no longer follow up and this consultation ends. Are you sure?'
           )}</div>` +
           `<div class="confirm-actions">` +
-            `<button class="btn-sm confirm" id="close-yes">${pick('確定結案', 'Close it')}</button>` +
-            `<button class="btn-sm cancel" id="close-no">${pick('取消', 'Cancel')}</button>` +
+            `<button class="btn-sm confirm" id="close-yes">${pick('確定結案', '确定结案', 'Close it')}</button>` +
+            `<button class="btn-sm cancel" id="close-no">${pick('取消', '取消', 'Cancel')}</button>` +
           `</div>` +
           `<div class="msg" id="close-msg"></div>`;
         host.appendChild(box);
@@ -240,18 +247,19 @@
   function feedbackForm(t) {
     const c = el('div', 'qa-block');
     let selected = null;
-    const opts = RATINGS.map((r) => `<button class="fb-opt" data-code="${r.code}">${pick(r.zh, r.en)}</button>`).join('');
+    const opts = RATINGS.map((r) => `<button class="fb-opt" data-code="${r.code}">${pick(r.zh, r.cn, r.en)}</button>`).join('');
 
     c.innerHTML =
-      `<div class="fb-q">${pick('這次的回覆，對現在的你有幫助嗎？', 'Was this reading helpful to you right now?')}</div>` +
+      `<div class="fb-q">${pick('這次的回覆，對現在的你有幫助嗎？', '这次的回复，对现在的你有帮助吗？', 'Was this reading helpful to you right now?')}</div>` +
       `<div class="fb-opts">${opts}</div>` +
-      `<textarea class="cons-input" id="fb-text" placeholder="${pick('想補充的話（選填）', 'Anything to add (optional)')}" style="min-height:90px;"></textarea>` +
+      `<textarea class="cons-input" id="fb-text" placeholder="${pick('想補充的話（選填）', '想补充的话（选填）', 'Anything to add (optional)')}" style="min-height:90px;"></textarea>` +
       `<label class="fb-consent"><input type="checkbox" id="fb-consent"><span>${pick(
         '我同意 FuSang Vision 匿名引用這則回饋（選填）',
+        '我同意 FuSang Vision 匿名引用这则反馈（选填）',
         'I allow FuSang Vision to share this feedback anonymously (optional)'
       )}</span></label>` +
-      `<button class="cons-btn" id="fb-btn" disabled>${pick('送出回饋', 'Send feedback')}</button>` +
-      `<div class="form-gate" id="fb-gate">${pick('請先選擇一個選項', 'Choose an option first')}</div>` +
+      `<button class="cons-btn" id="fb-btn" disabled>${pick('送出回饋', '送出反馈', 'Send feedback')}</button>` +
+      `<div class="form-gate" id="fb-gate">${pick('請先選擇一個選項', '请先选择一个选项', 'Choose an option first')}</div>` +
       `<div class="msg" id="fb-msg"></div>`;
 
     const btn = c.querySelector('#fb-btn');
@@ -280,7 +288,7 @@
           p_consent: c.querySelector('#fb-consent').checked,
         });
         if (error) throw error;
-        c.innerHTML = `<div class="fb-thanks">${pick('感謝你的回饋。', 'Thank you for your feedback.')}</div>`;
+        c.innerHTML = `<div class="fb-thanks">${pick('感謝你的回饋。', '感谢你的反馈。', 'Thank you for your feedback.')}</div>`;
         reloadSoon(1600);
       } catch (e) {
         showMsg(msg, 'err', mapFeedbackErr(e?.message || ''));
