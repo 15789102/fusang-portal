@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 我的流年</title>
+  <title>我的流年 - FuSang Vision</title>
   <meta name="description" content="View your personalized Zi Wei Dou Shu annual chart." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,6 +15,55 @@
   <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
   <script src="config.js"></script>
   <script src="i18n.js"></script>
+  <script>
+    // annual 專屬 UI 字典(策略 B):共用 chrome/報告術語走中央 UI/RT;此處僅本頁動態 UI 字串。
+    // 星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流年語境 explainer/tooltip → td(...ANNUAL)。
+    window.FSI18N.addUI({
+      "an.docTitle":        { "zh-TW": "我的流年 - FuSang Vision", "zh-CN": "我的流年 - FuSang Vision", "en": "My Annual Chart - FuSang Vision" },
+
+      "an.loadingTitle":    { "zh-TW": "載入您的流年", "zh-CN": "载入您的流年", "en": "Loading your annual chart" },
+      "an.loadingSub":      { "zh-TW": "正在查找您的流年運勢…", "zh-CN": "正在查找您的流年运势…", "en": "Retrieving your annual readings…" },
+      "an.loadingYearTitle":{ "zh-TW": "載入 {year} 流年", "zh-CN": "载入 {year} 流年", "en": "Loading the {year} annual chart" },
+      "an.loadingYearSub":  { "zh-TW": "正在展開當年的十二宮…", "zh-CN": "正在展开当年的十二宫…", "en": "Unfolding the twelve palaces for this year…" },
+
+      "an.introPitchTitle": { "zh-TW": "產生您的流年運勢", "zh-CN": "产生您的流年运势", "en": "Generate your annual reading" },
+      "an.introPitchSub":   { "zh-TW": "為您生成今年（{year}）的十二宮流年解讀", "zh-CN": "为您生成今年（{year}）的十二宫流年解读", "en": "A twelve-palace annual reading for this year ({year})" },
+      "an.introGenerateBtn":{ "zh-TW": "開始生成今年流年", "zh-CN": "开始生成今年流年", "en": "Generate this year's reading" },
+      "an.introGenerating": { "zh-TW": "正在為您開始…", "zh-CN": "正在为您开始…", "en": "Starting…" },
+      "an.genTitle":        { "zh-TW": "正在為您生成流年", "zh-CN": "正在为您生成流年", "en": "Generating your annual reading" },
+      "an.genSub":          { "zh-TW": "生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信", "zh-CN": "生成需要几分钟，完成后可在此阅读，也会寄送通知信", "en": "This takes a few minutes. You can read it here when it's done, and we'll email you too." },
+      "an.genCardDone":     { "zh-TW": "已完成 · 點擊閱讀", "zh-CN": "已完成 · 点击阅读", "en": "Complete · Tap to read" },
+      "an.genCardGenerating":{ "zh-TW": "生成中…", "zh-CN": "生成中…", "en": "Generating…" },
+
+      "an.yearsTitle":      { "zh-TW": "我的流年運勢", "zh-CN": "我的流年运势", "en": "My Annual Charts" },
+      "an.yearsSub":        { "zh-TW": "選擇一個年份，閱讀當年的十二宮運勢", "zh-CN": "选择一个年份，阅读当年的十二宫运势", "en": "Choose a year to read its twelve palaces" },
+      "an.yearsEmptyTitle": { "zh-TW": "尚無流年資料", "zh-CN": "尚无流年资料", "en": "No annual data yet" },
+      "an.yearsEmptyBody":  { "zh-TW": "您目前還沒有任何年份的流年運勢報告。<br>當流年報告生成完成後，可閱讀的年份會出現在這裡。", "zh-CN": "您目前还没有任何年份的流年运势报告。<br>当流年报告生成完成后，可阅读的年份会出现在这里。", "en": "You don't have any annual readings yet.<br>Once an annual report is generated, the years you can read will appear here." },
+
+      "an.hubToYears":      { "zh-TW": "← 選擇年份", "zh-CN": "← 选择年份", "en": "← Choose a year" },
+      "an.hubEyebrow":      { "zh-TW": "{year} 流年", "zh-CN": "{year} 流年", "en": "Your {year} Annual Chart" },
+      "an.hubTitle":        { "zh-TW": "{year} 流年十二宮", "zh-CN": "{year} 流年十二宫", "en": "The {year} Twelve Palaces" },
+
+      "an.backAllPalaces":  { "zh-TW": "← 全部十二宮", "zh-CN": "← 全部十二宫", "en": "← All Twelve Palaces" },
+      "an.allPalaces":      { "zh-TW": "全部十二宮", "zh-CN": "全部十二宫", "en": "All Twelve Palaces" },
+      "an.secInflowDesc":   { "zh-TW": "<strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。", "zh-CN": "<strong>能量飞入</strong>——其他宫位的星曜，以四化的形式流入本宫。代表您的这个领域，正被本年哪些方面<strong>滋养、推动或牵引</strong>。", "en": "<strong>Inflowing energy</strong> — stars from other palaces flow into this one as transformations. They show which parts of this year are <strong>nourishing, driving, or pulling on</strong> this area of your life." },
+      "an.secOutflowDesc":  { "zh-TW": "<strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。", "zh-CN": "<strong>能量飞出</strong>——本宫的能量，以四化的形式飞入其他宫位。代表您的这个领域，正在<strong>影响、贡献或牵引</strong>哪些方面。", "en": "<strong>Outflowing energy</strong> — this palace's energy flows into other palaces as transformations. It shows which parts of your life this area is <strong>influencing, contributing to, or pulling on</strong> this year." },
+
+      "an.paywallTitle":    { "zh-TW": "解鎖完整分析", "zh-CN": "解锁完整分析", "en": "Unlock the full reading" },
+      "an.paywallItem1":    { "zh-TW": "<b>能量飛入</b>　哪些資源正在幫助你、推動你。", "zh-CN": "<b>能量飞入</b>　哪些资源正在帮助你、推动你。", "en": "<b>Inflowing energy</b> — which resources are helping and driving you." },
+      "an.paywallItem2":    { "zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving." },
+      "an.paywallItem3":    { "zh-TW": "<b>專屬行動建議</b>", "zh-CN": "<b>专属行动建议</b>", "en": "<b>Tailored guidance</b>" },
+      "an.paywallCta":      { "zh-TW": "查看方案", "zh-CN": "查看方案", "en": "View plans" },
+      "an.paywallNote":     { "zh-TW": "已購買？回此頁重新整理即可顯示", "zh-CN": "已购买？回此页刷新即可显示", "en": "Already purchased? Refresh this page to display it." },
+      "an.secLock":         { "zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view" },
+      "an.noContent":       { "zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)" },
+
+      "an.errTitle":        { "zh-TW": "無法載入流年", "zh-CN": "无法载入流年", "en": "Couldn't load your annual chart" },
+      "an.errDefault":      { "zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later." },
+      "an.errReportsFail":  { "zh-TW": "無法載入 {year} 流年內容：", "zh-CN": "无法载入 {year} 流年内容：", "en": "Couldn't load the {year} annual content: " },
+      "an.errNoContent":    { "zh-TW": "找不到 {year} 的流年宮位內容。", "zh-CN": "找不到 {year} 的流年宫位内容。", "en": "No palace content found for the {year} annual chart." }
+    });
+  </script>
 
   <style>
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
@@ -206,8 +255,8 @@
     <section id="view-loading" class="view active">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       <div style="text-align: center;">
-        <h1 class="loading-title">載入您的流年</h1>
-        <p class="loading-sub">正在查找您的流年運勢…</p>
+        <h1 class="loading-title" id="loading-title">載入您的流年</h1>
+        <p class="loading-sub" id="loading-sub">正在查找您的流年運勢…</p>
       </div>
     </section>
 
@@ -215,8 +264,8 @@
       <div id="intro-pitch">
         <div class="years-head">
           <div class="years-eyebrow">Annual Fortune · 流年</div>
-          <h1 class="years-title">產生您的流年運勢</h1>
-          <p class="years-sub">為您生成今年（<span id="intro-year"></span>）的十二宮流年解讀</p>
+          <h1 class="years-title" id="intro-pitch-title">產生您的流年運勢</h1>
+          <p class="years-sub" id="intro-pitch-sub"></p>
         </div>
         <div style="text-align:center; margin-top:32px;">
           <button id="intro-generate-btn" class="btn-primary">開始生成今年流年</button>
@@ -225,8 +274,8 @@
       <div id="intro-generating" style="display:none;">
         <div class="years-head">
           <div class="years-eyebrow">Generating · 生成中</div>
-          <h1 class="years-title">正在為您生成流年</h1>
-          <p class="years-sub">生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信</p>
+          <h1 class="years-title" id="intro-gen-title">正在為您生成流年</h1>
+          <p class="years-sub" id="intro-gen-sub">生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信</p>
         </div>
         <div id="gen-cards" class="years-grid"></div>
       </div>
@@ -235,13 +284,13 @@
     <section id="view-years" class="view">
       <div class="years-head">
         <div class="years-eyebrow">Annual Fortune · 流年</div>
-        <h1 class="years-title">我的流年運勢</h1>
-        <p class="years-sub">選擇一個年份，閱讀當年的十二宮運勢</p>
+        <h1 class="years-title" id="years-title">我的流年運勢</h1>
+        <p class="years-sub" id="years-sub">選擇一個年份，閱讀當年的十二宮運勢</p>
       </div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
-        <div class="years-empty-title">尚無流年資料</div>
-        <div class="years-empty-body">您目前還沒有任何年份的流年運勢報告。<br>當流年報告生成完成後，可閱讀的年份會出現在這裡。</div>
+        <div class="years-empty-title" id="years-empty-title">尚無流年資料</div>
+        <div class="years-empty-body" id="years-empty-body">您目前還沒有任何年份的流年運勢報告。<br>當流年報告生成完成後，可閱讀的年份會出現在這裡。</div>
       </div>
     </section>
 
@@ -250,7 +299,7 @@
       <div class="hub-head">
         <div class="hub-eyebrow" id="hub-eyebrow">Annual Chart</div>
         <h1 class="hub-title" id="hub-title">流年十二宮</h1>
-        <p class="hub-sub">點選一宮以閱讀完整內容</p>
+        <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
       <div id="palace-grid" class="palace-grid"></div>
       <div class="hub-meta">
@@ -277,14 +326,14 @@
         <div class="palace-explainer-label" id="detail-explainer-label">About this Palace</div>
         <div class="palace-explainer-body" id="detail-explainer"></div>
       </div>
-      <div class="palace-subtitle">本宮主星 · 輔星 · 四化</div>
+      <div class="palace-subtitle" id="palace-subtitle">本宮主星 · 輔星 · 四化</div>
       <div class="palace-stars-line" id="detail-stars-line"></div>
 
       <section class="section">
         <div class="section-head">
           <div class="section-num">01</div>
           <div class="section-titles">
-            <div class="section-title-zh">宮位解析</div>
+            <div class="section-title-zh" id="sec1-title">宮位解析</div>
             <div class="section-title-en">Reading of the Palace</div>
           </div>
         </div>
@@ -296,13 +345,13 @@
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛入</div>
+            <div class="section-title-zh" id="sec2-title">能量飛入</div>
             <div class="section-title-en">Inflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↘</div>
-          <div><strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。</div>
+          <div id="sec2-desc"><strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。</div>
         </div>
         <div id="detail-transforms-in" class="transform-blocks"></div>
         <div id="lock-02" class="seclock" style="display:none;"></div>
@@ -312,13 +361,13 @@
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛出</div>
+            <div class="section-title-zh" id="sec3-title">能量飛出</div>
             <div class="section-title-en">Outflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↗</div>
-          <div><strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。</div>
+          <div id="sec3-desc"><strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。</div>
         </div>
         <div id="detail-transforms-out" class="transform-blocks"></div>
         <div id="lock-03" class="seclock" style="display:none;"></div>
@@ -328,7 +377,7 @@
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">我們的建議</div>
+            <div class="section-title-zh" id="sec4-title">我們的建議</div>
             <div class="section-title-en">Our Suggestions</div>
           </div>
         </div>
@@ -347,9 +396,9 @@
     </section>
 
     <section id="view-error" class="view">
-      <h1 class="error-title">無法載入流年</h1>
+      <h1 class="error-title" id="error-title">無法載入流年</h1>
       <p id="error-detail" class="error-detail">發生了一點問題，請稍後再試。</p>
-      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary">返回儀表板</a></div>
+      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary" id="btn-back-dashboard">返回儀表板</a></div>
     </section>
 
   </div>
@@ -358,7 +407,11 @@
 <div id="site-footer"></div>
 
 <script type="module">
-  import { supabase, requireAuth } from './components.js';
+  import { supabase, requireAuth, loadReportGlossary } from './components.js';
+
+  // i18n 核心為 classic 全域(window.FSI18N,已於 <head> 的 <script src="i18n.js"> 載入)。
+  // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel=報告內容(reportLang,鎖定)。
+  const { t: tx, td, palaceLabel, starLabel, transformLabel } = window.FSI18N;
 
   const PRICING_PAGE = 'pricing.html';
 
@@ -368,41 +421,10 @@
   const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
-  const PALACE_EN = {
-    '命宮':'Palace of Self','兄弟宮':'Palace of Siblings','夫妻宮':'Palace of Spouse','子女宮':'Palace of Children',
-    '財帛宮':'Palace of Wealth','疾厄宮':'Palace of Health','遷移宮':'Palace of Travel','交友宮':'Palace of Friends',
-    '官祿宮':'Palace of Career','田宅宮':'Palace of Home','福德宮':'Palace of Spirit','父母宮':'Palace of Parents',
-  };
-  const PALACE_TAGLINE = {
-    '命宮':'本性與內在<br>your innate nature','兄弟宮':'至親與同輩<br>siblings & peers','夫妻宮':'伴侶與情感<br>partner & love',
-    '子女宮':'創造與後輩<br>creation & legacy','財帛宮':'財富與資源<br>wealth & resources','疾厄宮':'身體與感受<br>body & feeling',
-    '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
-    '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
-  };
-  const PALACE_EXPLAINER = {
-    '命宮':'流年命宮代表您<span class="domain-keyword">本年整體的基調、心境與行動姿態</span>——這一年您看待自己與處境的主軸，所有其他宮位的流年能量，都會在這裡匯流。',
-    '兄弟宮':'流年兄弟宮反映本年您與<span class="domain-keyword">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。',
-    '夫妻宮':'流年夫妻宮反映本年您的<span class="domain-keyword">親密關係、伴侶互動與情感狀態</span>——這一年感情的流向與課題。',
-    '子女宮':'流年子女宮反映本年您的<span class="domain-keyword">子女、後輩、創造力與作品</span>——這一年您孕育、栽培之事的動向。',
-    '財帛宮':'流年財帛宮反映本年您的<span class="domain-keyword">財富、現金流與用錢態度</span>——這一年金錢的進出與價值取捨。',
-    '疾厄宮':'流年疾厄宮反映本年您的<span class="domain-keyword">身體、健康與情緒狀態</span>——這一年身心的感受與需要留意的節奏。',
-    '遷移宮':'流年遷移宮反映本年您的<span class="domain-keyword">外在際遇、機運與社會形象</span>——這一年離開熟悉環境後的機會與人緣。',
-    '交友宮':'流年交友宮反映本年您的<span class="domain-keyword">朋友、人脈、下屬與社交網絡</span>——這一年人際的助力與往來。',
-    '官祿宮':'流年官祿宮反映本年您的<span class="domain-keyword">事業、志向與表現舞台</span>——這一年工作與成就的動向。',
-    '田宅宮':'流年田宅宮反映本年您的<span class="domain-keyword">家庭、不動產與安身之所</span>——這一年居家、家族與根基的變化。',
-    '福德宮':'流年福德宮反映本年您的<span class="domain-keyword">精神世界、興趣與內在感受</span>——這一年心靈的快樂來源與安頓。',
-    '父母宮':'流年父母宮反映本年您與<span class="domain-keyword">父母、長輩、權威與庇蔭</span>的關係，以及學養與上位者的往來。',
-  };
-
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
+  // 裝飾性英文副標(靜態,不隨語言切換);短名/tooltip 走 transformLabel/td。
   const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
-  const TRANSFORM_TOOLTIP = {
-    '化祿': { title: '化祿 · Resource (Lu)', body: '喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅，是本年容易順利展開的領域。' },
-    '化權': { title: '化權 · Anchor (Quan)', body: '權力與掌控。能量賦予主導感、決策力與影響力，是本年您想要「說了算」、想為事情負責的領域。' },
-    '化科': { title: '化科 · Stage (Ke)', body: '名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象，是本年會發光、被欣賞的舞台。' },
-    '化忌': { title: '化忌 · Direction (Ji)', body: '不滿足與執著。能量讓您在這個領域反覆投入、深耕。這不是缺憾，而是本年特別需要關注、用心的方向。' },
-  };
 
   let reportsByPalace = {};
   let chartSessionId = null;
@@ -410,8 +432,16 @@
   let userEmail = null;
   let pollTimer = null;
   let isUnlocked = false;   // sihua_unlocked
+  let currentView = 'view-loading';
+  let currentPalace = null;
+  let introMode = null;     // 'pitch' | 'generating' | null
+  let lastYears = [];
+  let lastJobs = [];
+
+  function currentAnnualTargetYear() { return new Date().getFullYear(); }
 
   function showView(id) {
+    currentView = id;
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
     const t = document.getElementById(id);
     if (t) t.classList.add('active');
@@ -427,7 +457,57 @@
   }
   function goPricing() { window.location.href = PRICING_PAGE; }
 
+  // ── 靜態 UI 字串套用(id→key);document.title 一併更新 ──
+  function applyStaticI18n() {
+    document.title = tx('an.docTitle');
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
+    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    // loading(預設,未選年份時)
+    setText('loading-title', 'an.loadingTitle');
+    setText('loading-sub', 'an.loadingSub');
+    // intro — pitch
+    setText('intro-pitch-title', 'an.introPitchTitle');
+    const ipSub = document.getElementById('intro-pitch-sub');
+    if (ipSub) ipSub.textContent = tx('an.introPitchSub').replace('{year}', currentAnnualTargetYear());
+    setText('intro-generate-btn', 'an.introGenerateBtn');
+    // intro — generating
+    setText('intro-gen-title', 'an.genTitle');
+    setText('intro-gen-sub', 'an.genSub');
+    // years
+    setText('years-title', 'an.yearsTitle');
+    setText('years-sub', 'an.yearsSub');
+    setText('years-empty-title', 'an.yearsEmptyTitle');
+    setHtml('years-empty-body', 'an.yearsEmptyBody');
+    // hub
+    setText('hub-to-years', 'an.hubToYears');
+    setText('hub-sub', 'hubSub');
+    // detail 靜態
+    setText('back-to-hub-top', 'an.backAllPalaces');
+    setText('back-to-hub-bottom', 'an.allPalaces');
+    setText('detail-explainer-label', 'palaceExplainerLabel');
+    setText('palace-subtitle', 'palaceSubtitle');
+    setText('sec1-title', 'sectionPalaceAnalysis');
+    setText('sec2-title', 'secInflowTitle');
+    setText('sec3-title', 'secOutflowTitle');
+    setText('sec4-title', 'secSuggestTitle');
+    setHtml('sec2-desc', 'an.secInflowDesc');
+    setHtml('sec3-desc', 'an.secOutflowDesc');
+    // error
+    setText('error-title', 'an.errTitle');
+    setText('error-detail', 'an.errDefault');
+    setText('btn-back-dashboard', 'btnBackDashboard');
+  }
+
+  function setHubHeader(year) {
+    const eb = document.getElementById('hub-eyebrow');
+    const ti = document.getElementById('hub-title');
+    if (eb) eb.textContent = tx('an.hubEyebrow').replace('{year}', year);
+    if (ti) ti.textContent = tx('an.hubTitle').replace('{year}', year);
+  }
+
   function renderYears(years) {
+    introMode = null;
+    lastYears = years || [];
     const grid = document.getElementById('years-grid');
     const empty = document.getElementById('years-empty');
     grid.innerHTML = '';
@@ -454,8 +534,8 @@
   async function loadYear(year) {
     currentYear = year;
     showView('view-loading');
-    document.querySelector('#view-loading .loading-title').textContent = `載入 ${year} 流年`;
-    document.querySelector('#view-loading .loading-sub').textContent = '正在展開當年的十二宮…';
+    document.getElementById('loading-title').textContent = tx('an.loadingYearTitle').replace('{year}', year);
+    document.getElementById('loading-sub').textContent = tx('an.loadingYearSub');
 
     const { data: reports, error } = await supabase
       .from(ANNUAL_TABLE)
@@ -465,14 +545,13 @@
       .eq('language', 'zh-TW')
       .eq('valid_year_start', year);
 
-    if (error) { showError('無法載入 ' + year + ' 流年內容：' + error.message); return; }
-    if (!reports || reports.length === 0) { showError('找不到 ' + year + ' 的流年宮位內容。'); return; }
+    if (error) { showError(tx('an.errReportsFail').replace('{year}', year) + error.message); return; }
+    if (!reports || reports.length === 0) { showError(tx('an.errNoContent').replace('{year}', year)); return; }
 
     reportsByPalace = {};
     for (const row of reports) reportsByPalace[row.palace_name] = row;
 
-    document.getElementById('hub-eyebrow').textContent = `Your ${year} Annual Chart`;
-    document.getElementById('hub-title').textContent = `${year} 流年十二宮`;
+    setHubHeader(year);
     renderHub();
     showView('view-hub');
   }
@@ -488,13 +567,13 @@
       idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
       card.appendChild(idx);
       const nameEl = document.createElement('div');
-      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceName;
+      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceLabel(palaceName);
       card.appendChild(nameEl);
       const starsEl = document.createElement('div');
       starsEl.className = 'palace-card-stars';
       starsEl.textContent = row?.composition?.main_stars?.length
-        ? row.composition.main_stars.map(s => (typeof s === 'string') ? s : s?.star).join(' · ')
-        : '(無主星)';
+        ? row.composition.main_stars.map(s => starLabel((typeof s === 'string') ? s : s?.star)).join(' · ')
+        : tx('emptyNoMainStar');
       card.appendChild(starsEl);
       if (row) card.addEventListener('click', () => openDetail(palaceName));
       else card.style.opacity = '0.45';
@@ -505,37 +584,37 @@
 
   // 各段輕量鎖（未解鎖時放在 02/03/04 內容區位置）
   function secLockHtml() {
-    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> 解鎖後可見</div>`;
+    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> ${escapeHtml(tx('an.secLock'))}</div>`;
   }
-  
 
   function paywallCtaHtml() {
     return `
       <div class="paywall">
         <div class="paywall-lock" aria-hidden="true">&#128274;</div>
         <div class="paywall-eyebrow">Unlock Full Reading</div>
-        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-title">${tx('an.paywallTitle')}</div>
         <div class="paywall-list">
-          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
-          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
-          <div class="paywall-item"><span class="mk">III</span><span><b>專屬行動建議</b></span></div>
+          <div class="paywall-item"><span class="mk">I</span><span>${tx('an.paywallItem1')}</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span>${tx('an.paywallItem2')}</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span>${tx('an.paywallItem3')}</span></div>
         </div>
-        <span class="paywall-cta" id="paywall-cta">查看方案</span>
-        <div class="paywall-note">已購買？回此頁重新整理即可顯示</div>
+        <span class="paywall-cta" id="paywall-cta">${tx('an.paywallCta')}</span>
+        <div class="paywall-note">${tx('an.paywallNote')}</div>
       </div>`;
   }
 
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
+    currentPalace = palaceName;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
-    document.getElementById('detail-eyebrow').textContent = (PALACE_EN[palaceName] || '') + (currentYear ? ` · ${currentYear}` : '');
-    document.getElementById('detail-title-zh').textContent = palaceName;
+    document.getElementById('detail-eyebrow').textContent = currentYear ? String(currentYear) : '';
+    document.getElementById('detail-title-zh').textContent = palaceLabel(palaceName);
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
-    document.getElementById('detail-tagline').innerHTML = PALACE_TAGLINE[palaceName] || '';
-    document.getElementById('detail-explainer-label').textContent = currentYear ? `About this Palace · ${currentYear}` : 'About this Palace';
-    document.getElementById('detail-explainer').innerHTML = PALACE_EXPLAINER[palaceName] || '';
+    document.getElementById('detail-tagline').innerHTML = td('PALACE_TAGLINE', palaceName);
+    document.getElementById('detail-explainer-label').textContent = tx('palaceExplainerLabel');
+    document.getElementById('detail-explainer').innerHTML = td('PALACE_EXPLAINER_ANNUAL', palaceName);
 
     renderStarsLine(row.composition);
     renderAnalysis(row.palace_analysis);
@@ -570,8 +649,8 @@
     const next = PALACE_ORDER[(idx + 1) % 12];
     const prevEl = document.getElementById('nav-prev');
     const nextEl = document.getElementById('nav-next');
-    prevEl.innerHTML = `<span class="arrow">←</span>${prev}`;
-    nextEl.innerHTML = `${next}<span class="arrow">→</span>`;
+    prevEl.innerHTML = `<span class="arrow">←</span>${escapeHtml(palaceLabel(prev))}`;
+    nextEl.innerHTML = `${escapeHtml(palaceLabel(next))}<span class="arrow">→</span>`;
     prevEl.onclick = () => openDetail(prev);
     nextEl.onclick = () => openDetail(next);
 
@@ -584,27 +663,27 @@
     (comp?.main_stars || []).forEach(s => {
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
-      let html = `<span class="main-star">${escapeHtml(name)}</span>`;
-      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      let html = `<span class="main-star">${escapeHtml(starLabel(name))}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${escapeHtml(transformLabel(tf))}</span>`;
       parts.push(html);
     });
     const pushStar = (s) => {
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
       if (!name) return;
-      let html = `<span>${escapeHtml(name)}</span>`;
-      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      let html = `<span>${escapeHtml(starLabel(name))}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${escapeHtml(transformLabel(tf))}</span>`;
       parts.push(html);
     };
     (comp?.support_stars || []).forEach(pushStar);
     (comp?.sha_ji_stars || []).forEach(pushStar);
     (comp?.minor_stars || []).forEach(pushStar);
-    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : '<span style="color:var(--ink-light);font-style:italic;">(無星)</span>';
+    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('emptyNoStar'))}</span>`;
   }
 
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
-    if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { el.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('an.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let html = '';
     paras.forEach((p, i) => {
@@ -624,8 +703,10 @@
     const container = document.getElementById(elId);
     container.innerHTML = '';
 
+    const emptyText = direction === 'in' ? tx('energyEmptyIn') : tx('energyEmptyOut');
+
     if (!transforms || typeof transforms !== 'object') {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = `<div class="transform-empty">${escapeHtml(emptyText)}</div>`;
       return;
     }
 
@@ -641,20 +722,20 @@
       if (!t || (!t.title && !t.content)) continue;
       hasAny = true;
 
-      const tip = TRANSFORM_TOOLTIP[tt];
+      const tip = td('TRANSFORM_TOOLTIP_ANNUAL', tt) || {};
       const metaItems = metaByTransform[tt] || [];
 
       let chipsHtml = '';
       if (metaItems.length) {
-        const label = direction === 'in' ? '來源' : '流向';
-        chipsHtml = `<div class="source-row"><span class="source-label">${label}</span>` +
+        const label = direction === 'in' ? tx('chipSourceLabel') : tx('chipFlowLabel');
+        chipsHtml = `<div class="source-row"><span class="source-label">${escapeHtml(label)}</span>` +
           metaItems.map(m => `
             <span class="source-chip">
-              <span class="palace-from">${escapeHtml(m.from_palace)}</span>
+              <span class="palace-from">${escapeHtml(palaceLabel(m.from_palace))}</span>
               <span class="arrow">→</span>
-              <span class="palace-to">${escapeHtml(m.to_palace)}</span>
-              <span class="star-tag">${escapeHtml(m.star)}</span>
-              <span class="mini-transform ${tt}">${tt}</span>
+              <span class="palace-to">${escapeHtml(palaceLabel(m.to_palace))}</span>
+              <span class="star-tag">${escapeHtml(starLabel(m.star))}</span>
+              <span class="mini-transform ${tt}">${escapeHtml(transformLabel(tt))}</span>
             </span>`).join('') +
           `</div>`;
       }
@@ -665,10 +746,10 @@
         <article class="transform-card ${tt}">
           <div class="transform-card-head">
             <span class="tooltip-wrap">
-              <span class="transform-card-tag" tabindex="0">${tt}<span class="info-dot">i</span></span>
+              <span class="transform-card-tag" tabindex="0">${escapeHtml(transformLabel(tt))}<span class="info-dot">i</span></span>
               <div class="tooltip-body">
-                <div class="tooltip-title">${tip.title}</div>
-                <p>${tip.body}</p>
+                <div class="tooltip-title">${escapeHtml(tip.title || '')}</div>
+                <p>${escapeHtml(tip.body || '')}</p>
               </div>
             </span>
             <span class="transform-card-en">${TRANSFORM_EN[tt]}</span>
@@ -682,7 +763,7 @@
     }
 
     if (!hasAny) {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = `<div class="transform-empty">${escapeHtml(emptyText)}</div>`;
     }
 
     bindTooltips(container);
@@ -690,7 +771,7 @@
 
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
-    if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { wrap.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('an.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let inner = '<div class="epilogue-eyebrow">— Epilogue —</div><div class="epilogue-prose">';
     paras.forEach((p, i) => {
@@ -710,8 +791,6 @@
       });
     });
   }
-
-  function currentAnnualTargetYear() { return new Date().getFullYear(); }
 
   async function fetchYears() {
     let years = [];
@@ -746,16 +825,18 @@
   function jobDone(j) { return j.report_status === 'done'; }
 
   function renderGenerating(jobs) {
+    introMode = 'generating';
+    lastJobs = jobs || [];
     document.getElementById('intro-pitch').style.display = 'none';
     document.getElementById('intro-generating').style.display = 'block';
     const wrap = document.getElementById('gen-cards');
-    const list = jobs.length ? jobs : [{ target_year: currentAnnualTargetYear(), report_status: 'pending' }];
+    const list = (jobs && jobs.length) ? jobs : [{ target_year: currentAnnualTargetYear(), report_status: 'pending' }];
     const sorted = [...list].sort((a, b) => b.target_year - a.target_year);
     wrap.innerHTML = sorted.map(j => {
       const done = jobDone(j);
       return `<div class="year-card" data-year="${j.target_year}" data-done="${done}" style="cursor:${done ? 'pointer' : 'default'};">
         <div class="year-card-num">${j.target_year}</div>
-        <div class="year-card-label">${done ? '已完成 · 點擊閱讀' : '生成中…'}</div>
+        <div class="year-card-label">${done ? escapeHtml(tx('an.genCardDone')) : escapeHtml(tx('an.genCardGenerating'))}</div>
       </div>`;
     }).join('');
     wrap.querySelectorAll('.year-card[data-done="true"]').forEach(card => {
@@ -767,7 +848,7 @@
   async function subscribeAnnual() {
     const btn = document.getElementById('intro-generate-btn');
     btn.disabled = true;
-    btn.textContent = '正在為您開始…';
+    btn.textContent = tx('an.introGenerating');
     const targetYear = currentAnnualTargetYear();
     try {
       await fetch(ANNUAL_TRIGGER_URL, {
@@ -806,6 +887,9 @@
       const session = await requireAuth();
       if (!session) return;
 
+      await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary
+      applyStaticI18n();
+
       userEmail = session.user.email;
 
       try {
@@ -826,8 +910,8 @@
         .limit(1)
         .maybeSingle();
 
-      if (jobError) { showError('無法取得您的命盤資料：' + jobError.message); return; }
-      if (!jobData?.chart_session_id) { showError('您的命盤尚未完成，請稍候幾分鐘後再回來查看。'); return; }
+      if (jobError) { showError(tx('errJobFail') + jobError.message); return; }
+      if (!jobData?.chart_session_id) { showError(tx('errNotReady')); return; }
 
       chartSessionId = jobData.chart_session_id;
 
@@ -845,15 +929,31 @@
         renderYears(years);
         showView('view-years');
       } else {
-        document.getElementById('intro-year').textContent = currentAnnualTargetYear();
+        introMode = 'pitch';
         document.getElementById('intro-pitch').style.display = 'block';
         document.getElementById('intro-generating').style.display = 'none';
         showView('view-intro');
       }
     } catch (err) {
-      showError(err.message || '載入時發生錯誤。');
+      showError(err.message || tx('errLoad'));
     }
   }
+
+  // ── UI 語言切換(header 語言鈕)→ 以快取資料就地重繪 ──
+  //   UI 字串(tx)換新語言;報告內容(td/palaceLabel…)維持鎖定語言不變。
+  function rerender() {
+    const view = currentView;
+    applyStaticI18n();
+    if (introMode === 'generating') renderGenerating(lastJobs);
+    if (lastYears && lastYears.length) renderYears(lastYears);
+    if (currentYear != null && Object.keys(reportsByPalace).length) {
+      setHubHeader(currentYear);
+      renderHub();
+      if (currentPalace && reportsByPalace[currentPalace]) openDetail(currentPalace);
+    }
+    if (view) showView(view);
+  }
+  window.addEventListener('i18n:changed', () => { document.title = tx('an.docTitle'); rerender(); });
 
   document.getElementById('intro-generate-btn').addEventListener('click', subscribeAnnual);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
