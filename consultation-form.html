@@ -5,7 +5,7 @@
 <script src="i18n.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuSang Vision — 提交問事</title>
+<title>提交問事 - FuSang Vision</title>
 </head>
 <body>
 
@@ -37,9 +37,11 @@
     mapCreateErr, mapCheckoutErr,
   } from './consultation-common.js';
 
-  document.getElementById('hero-eyebrow').textContent = pick('提交問事', 'Personal Consultation');
-  document.getElementById('hero-title').textContent   = pick('提交問事', 'Ask One Question');
-  document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', 'A human reading of your chart, for one question that matters.');
+  document.title = pick('提交問事 - FuSang Vision', '提交问事 - FuSang Vision', 'Ask One Question - FuSang Vision');
+
+  document.getElementById('hero-eyebrow').textContent = pick('提交問事', '提交问事', 'Personal Consultation');
+  document.getElementById('hero-title').textContent   = pick('提交問事', '提交问事', 'Ask One Question');
+  document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
 
   let chartSessionId = null;
 
@@ -72,11 +74,12 @@
   function cardNoChart() {
     const c = el('div', 'cons-card soft');
     c.innerHTML =
-      `<div class="card-kicker">${pick('尚無命盤', 'No chart yet')}</div>` +
+      `<div class="card-kicker">${pick('尚無命盤', '尚无命盘', 'No chart yet')}</div>` +
       `<div class="empty-note">${pick(
         '單獨問事需先有你的命盤。請先回到儀表板生成命盤，完成後再回來提交問題。',
+        '单独问事需先有你的命盘。请先回到仪表板生成命盘，完成后再回来提交问题。',
         'A personal consultation needs your chart first. Generate it from your dashboard, then come back to ask.'
-      )}<br><br><span class="link-inline" id="go-dash">${pick('前往儀表板 →', 'Go to dashboard →')}</span></div>`;
+      )}<br><br><span class="link-inline" id="go-dash">${pick('前往儀表板 →', '前往仪表板 →', 'Go to dashboard →')}</span></div>`;
     c.querySelector('#go-dash').addEventListener('click', () => { window.location.href = 'dashboard.html'; });
     return c;
   }
@@ -86,30 +89,33 @@
     let selected = draft?.subject || null;
 
     const subjButtons = SUBJECTS.map((s) =>
-      `<button class="subj-opt${selected === s.code ? ' sel' : ''}" data-code="${s.code}">${s.zh}<span class="en">${s.en}</span></button>`
+      `<button class="subj-opt${selected === s.code ? ' sel' : ''}" data-code="${s.code}">${pick(s.zh, s.cn, s.en)}<span class="en">${s.en}</span></button>`
     ).join('');
 
     c.innerHTML =
-      `<div class="card-kicker">${pick('提交問題', 'Submit a question')}</div>` +
+      `<div class="card-kicker">${pick('提交問題', '提交问题', 'Submit a question')}</div>` +
       (draft ? `<div class="banner">${pick(
         '你有一筆尚未完成付款的諮詢，已為你載入內容。完成付款後即進入回覆佇列。',
+        '你有一笔尚未完成付款的咨询，已为你载入内容。完成付款后即进入回复队列。',
         'You have an unpaid consultation. Its details are loaded below — complete payment to enter the reply queue.'
       )}</div>` : '') +
-      `<div class="field-label">${pick('選擇主題', 'Choose a topic')}</div>` +
+      `<div class="field-label">${pick('選擇主題', '选择主题', 'Choose a topic')}</div>` +
       `<div class="subj-grid" id="subj-grid">${subjButtons}</div>` +
-      `<div class="field-label">${pick('描述你的處境', 'Describe your situation')}</div>` +
+      `<div class="field-label">${pick('描述你的處境', '描述你的处境', 'Describe your situation')}</div>` +
       `<div class="field-hint">${pick(
         '描述越完整，回覆越精準。盡量說明背景、目前的狀況，以及你最想釐清的點。',
+        '描述越完整，回复越精准。尽量说明背景、目前的状况，以及你最想厘清的点。',
         'The more context you give, the more precise the reading. Include the background, where things stand now, and what you most want clarified.'
       )}</div>` +
-      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', 'Write your question and situation here…')}">${draft?.content ? esc(draft.content) : ''}</textarea>` +
+      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', '在这里写下你的问题与处境…', 'Write your question and situation here…')}">${draft?.content ? esc(draft.content) : ''}</textarea>` +
       `<div class="char-count" id="char-count">0</div>` +
       disclaimerHtml() +
       `<label class="consent"><input type="checkbox" id="consent"><span>${pick(
         '我了解這是不可退款的數位服務，並同意以上各項。',
+        '我了解这是不可退款的数字服务，并同意以上各项。',
         'I understand this is a non-refundable digital service and agree to the above.'
       )}</span></label>` +
-      `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
+      `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', '提交并付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
       `<div class="form-gate" id="form-gate"></div>` +
       `<div class="msg" id="form-msg"></div>`;
 
@@ -137,11 +143,11 @@
       btn.disabled = !ready;
 
       const missing = [];
-      if (!selected) missing.push(pick('選擇主題', 'choose a topic'));
-      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
-      if (!consentEl.checked) missing.push(pick('勾選同意聲明', 'agree to the terms'));
+      if (!selected) missing.push(pick('選擇主題', '选择主题', 'choose a topic'));
+      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `再写 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
+      if (!consentEl.checked) missing.push(pick('勾選同意聲明', '勾选同意声明', 'agree to the terms'));
 
-      gate.textContent = ready ? '' : (pick('尚需：', 'To submit: ') + missing.join(pick('、', ', ')));
+      gate.textContent = ready ? '' : (pick('尚需：', '尚需：', 'To submit: ') + missing.join(pick('、', '、', ', ')));
     };
     contentEl.addEventListener('input', refresh);
     consentEl.addEventListener('change', refresh);
