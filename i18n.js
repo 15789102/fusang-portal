@@ -38,6 +38,8 @@
 //   ‣ payment-cancel.html    → 頁內 addUI inline(payment-cancel.html;登入頁,用 header 切換鈕)
 //   ‣ account.html           → 頁內 addUI inline(account.html;登入頁,用 header 切換鈕;動態值存 S 隨語言重繪)
 //   ‣ chart.html             → applyStaticI18n(id→key,共用 key 在本檔)+ 頁內 addUI(動態 UI 字串)
+//   ‣ decade.html            → applyStaticI18n(id→key,共用 UI 在本檔)+ 頁內 addUI(dc.*);
+//                              RT 新增 PALACE_EXPLAINER_DECADE / TRANSFORM_TOOLTIP_DECADE(大限語境,td 取)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
@@ -347,6 +349,26 @@
       "福德宮": "福德宮代表您的<span class=\"domain-keyword\">精神世界、興趣與享受</span>——您的內在快樂來源、價值信念,以及您靈魂層面的滿足與安頓。",
       "父母宮": "父母宮代表您與<span class=\"domain-keyword\">父母、長輩、權威與庇蔭</span>的關係,也反映您的學養根基、與上位者的相處,以及您所承接的家世背景。"
     },
+    "PALACE_EXPLAINER_DECADE": {
+      "命宮": "大限命宮代表您<span class=\"domain-keyword\">這個大限整體的基調、心境與行動姿態</span>——這一年您看待自己與處境的主軸，所有其他宮位的大限能量，都會在這裡匯流。",
+      "兄弟宮": "大限兄弟宮反映這個大限您與<span class=\"domain-keyword\">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。",
+      "夫妻宮": "大限夫妻宮反映這個大限您的<span class=\"domain-keyword\">親密關係、伴侶互動與情感狀態</span>——這一年感情的流向與課題。",
+      "子女宮": "大限子女宮反映這個大限您的<span class=\"domain-keyword\">子女、後輩、創造力與作品</span>——這一年您孕育、栽培之事的動向。",
+      "財帛宮": "大限財帛宮反映這個大限您的<span class=\"domain-keyword\">財富、現金流與用錢態度</span>——這一年金錢的進出與價值取捨。",
+      "疾厄宮": "大限疾厄宮反映這個大限您的<span class=\"domain-keyword\">身體、健康與情緒狀態</span>——這一年身心的感受與需要留意的節奏。",
+      "遷移宮": "大限遷移宮反映這個大限您的<span class=\"domain-keyword\">外在際遇、機運與社會形象</span>——這一年離開熟悉環境後的機會與人緣。",
+      "交友宮": "大限交友宮反映這個大限您的<span class=\"domain-keyword\">朋友、人脈、下屬與社交網絡</span>——這一年人際的助力與往來。",
+      "官祿宮": "大限官祿宮反映這個大限您的<span class=\"domain-keyword\">事業、志向與表現舞台</span>——這一年工作與成就的動向。",
+      "田宅宮": "大限田宅宮反映這個大限您的<span class=\"domain-keyword\">家庭、不動產與安身之所</span>——這一年居家、家族與根基的變化。",
+      "福德宮": "大限福德宮反映這個大限您的<span class=\"domain-keyword\">精神世界、興趣與內在感受</span>——這一年心靈的快樂來源與安頓。",
+      "父母宮": "大限父母宮反映這個大限您與<span class=\"domain-keyword\">父母、長輩、權威與庇蔭</span>的關係，以及學養與上位者的往來。"
+    },
+    "TRANSFORM_TOOLTIP_DECADE": {
+      "化祿": {"title": "化祿 · Resource (Lu)", "body": "喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅，是這個大限容易順利展開的領域。"},
+      "化權": {"title": "化權 · Anchor (Quan)", "body": "權力與掌控。能量賦予主導感、決策力與影響力，是這個大限您想要「說了算」、想為事情負責的領域。"},
+      "化科": {"title": "化科 · Stage (Ke)", "body": "名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象，是這個大限會發光、被欣賞的舞台。"},
+      "化忌": {"title": "化忌 · Direction (Ji)", "body": "不滿足與執著。能量讓您在這個領域反覆投入、深耕。這不是缺憾，而是這個大限特別需要關注、用心的方向。"}
+    },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
         "title": "化祿 · Resource (Lu)",
@@ -558,6 +580,26 @@
       "福德宮": "福德宫代表您的<span class=\"domain-keyword\">精神世界、兴趣与享受</span>——您的内在快乐来源、价值信念,以及您灵魂层面的满足与安顿。",
       "父母宮": "父母宫代表您与<span class=\"domain-keyword\">父母、长辈、权威与庇荫</span>的关系,也反映您的学养根基、与上位者的相处,以及您所承接的家世背景。"
     },
+    "PALACE_EXPLAINER_DECADE": {
+      "命宮": "大限命宫代表您<span class=\"domain-keyword\">这个大限整体的基调、心境与行动姿态</span>——这一年您看待自己与处境的主轴，所有其他宫位的大限能量，都会在这里汇流。",
+      "兄弟宮": "大限兄弟宫反映这个大限您与<span class=\"domain-keyword\">手足、同辈、密切伙伴</span>的互动与资源往来，以及团队、同侪关系的流动。",
+      "夫妻宮": "大限夫妻宫反映这个大限您的<span class=\"domain-keyword\">亲密关系、伴侣互动与情感状态</span>——这一年感情的流向与课题。",
+      "子女宮": "大限子女宫反映这个大限您的<span class=\"domain-keyword\">子女、后辈、创造力与作品</span>——这一年您孕育、栽培之事的动向。",
+      "財帛宮": "大限财帛宫反映这个大限您的<span class=\"domain-keyword\">财富、现金流与用钱态度</span>——这一年金钱的进出与价值取舍。",
+      "疾厄宮": "大限疾厄宫反映这个大限您的<span class=\"domain-keyword\">身体、健康与情绪状态</span>——这一年身心的感受与需要留意的节奏。",
+      "遷移宮": "大限迁移宫反映这个大限您的<span class=\"domain-keyword\">外在际遇、机运与社会形象</span>——这一年离开熟悉环境后的机会与人缘。",
+      "交友宮": "大限交友宫反映这个大限您的<span class=\"domain-keyword\">朋友、人脉、下属与社交网络</span>——这一年人际的助力与往来。",
+      "官祿宮": "大限官禄宫反映这个大限您的<span class=\"domain-keyword\">事业、志向与表现舞台</span>——这一年工作与成就的动向。",
+      "田宅宮": "大限田宅宫反映这个大限您的<span class=\"domain-keyword\">家庭、不动产与安身之所</span>——这一年居家、家族与根基的变化。",
+      "福德宮": "大限福德宫反映这个大限您的<span class=\"domain-keyword\">精神世界、兴趣与内在感受</span>——这一年心灵的快乐来源与安顿。",
+      "父母宮": "大限父母宫反映这个大限您与<span class=\"domain-keyword\">父母、长辈、权威与庇荫</span>的关系，以及学养与上位者的往来。"
+    },
+    "TRANSFORM_TOOLTIP_DECADE": {
+      "化祿": {"title": "化禄 · Resource (Lu)", "body": "喜悦与缘分增加。能量带来资源、人脉、顺流感与成就的喜悦，是这个大限容易顺利展开的领域。"},
+      "化權": {"title": "化权 · Anchor (Quan)", "body": "权力与掌控。能量赋予主导感、决策力与影响力，是这个大限您想要「说了算」、想为事情负责的领域。"},
+      "化科": {"title": "化科 · Stage (Ke)", "body": "名望与被看见。能量让您在这个领域容易获得声誉、肯定与优雅形象，是这个大限会发光、被欣赏的舞台。"},
+      "化忌": {"title": "化忌 · Direction (Ji)", "body": "不满足与执着。能量让您在这个领域反复投入、深耕。这不是缺憾，而是这个大限特别需要关注、用心的方向。"}
+    },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
         "title": "化禄 · Resource (Lu)",
@@ -768,6 +810,26 @@
       "田宅宮": "This palace represents your <span class=\"domain-keyword\">family, property, and place of belonging</span> — your living environment, your family base, and your inner sense of roots and belonging.",
       "福德宮": "This palace represents your <span class=\"domain-keyword\">inner world, interests, and enjoyment</span> — the sources of your inner joy, your beliefs and values, and the contentment you find at the level of the soul.",
       "父母宮": "This palace represents your relationship with <span class=\"domain-keyword\">parents, elders, authority, and protection</span>, and reflects your foundation of learning, how you relate to those above you, and the family background you inherit."
+    },
+    "PALACE_EXPLAINER_DECADE": {
+      "命宮": "In this Major Limit, this palace sets your <span class=\"domain-keyword\">overall tone, mood, and stance for the decade</span> — the axis through which you see yourself and your circumstances. The energy of every other palace in this period ultimately converges here.",
+      "兄弟宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">exchanges with siblings, peers, and close partners</span>, and how team and collegial relationships flow through this decade.",
+      "夫妻宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">intimate relationship, partnership, and emotional state</span> — where love moves and what it asks of you in this period.",
+      "子女宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">children, juniors, creativity, and creations</span> — how what you nurture and cultivate unfolds through this decade.",
+      "財帛宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">wealth, cash flow, and spending</span> — how money moves and the value choices of this period.",
+      "疾厄宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">body, health, and emotional state</span> — the felt sense of body and mind, and the rhythms worth minding this decade.",
+      "遷移宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">outer circumstances, opportunities, and public image</span> — the chances and connections that arise once you step beyond the familiar in this period.",
+      "交友宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">friends, network, subordinates, and social circles</span> — the support and exchange within your relationships this decade.",
+      "官祿宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">career, ambition, and stage of expression</span> — how work and achievement move through this period.",
+      "田宅宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">family, property, and place of belonging</span> — shifts in home, household, and foundations this decade.",
+      "福德宮": "In this Major Limit, this palace reflects your <span class=\"domain-keyword\">inner world, interests, and felt experience</span> — where the mind finds joy and rest in this period.",
+      "父母宮": "In this Major Limit, this palace reflects your relationship with <span class=\"domain-keyword\">parents, elders, authority, and shelter</span>, and your dealings with learning and those in positions above you."
+    },
+    "TRANSFORM_TOOLTIP_DECADE": {
+      "化祿": {"title": "Resource (Lu)", "body": "Joy and connection increase. This energy brings resources, people, flow, and the pleasure of achievement — an area where this decade tends to open up with ease."},
+      "化權": {"title": "Anchor (Quan)", "body": "Power and control. This energy gives you leadership, decisiveness, and influence — an area where, in this decade, you want the final say and to take responsibility."},
+      "化科": {"title": "Stage (Ke)", "body": "Reputation and being seen. This energy brings recognition, esteem, and a graceful presence here — a stage where you shine and are appreciated this decade."},
+      "化忌": {"title": "Direction (Ji)", "body": "Yearning and devotion. This energy draws you to invest and deepen here again and again. Not a shortcoming, but the direction this decade most asks you to attend to."}
     },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
