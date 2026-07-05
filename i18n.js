@@ -1217,6 +1217,15 @@
     }
   };
 
+  // ── 運限前綴(大限/流年/流月)本地化：報告資料中的運限星名帶前綴,
+  //   如「大限陀羅」;starLabel 會拆前綴、譯基礎星、再本地化前綴。──
+  var LIMIT_PREFIX_ORDER = ['大限', '流年', '流月'];
+  var LIMIT_PREFIX = {
+    'zh-TW': { '大限':'大限', '流年':'流年', '流月':'流月' },
+    'zh-CN': { '大限':'大限', '流年':'流年', '流月':'流月' },
+    'en':    { '大限':'Decade', '流年':'Annual', '流月':'Monthly' }
+  };
+
   // ── 報告 glossary(星曜/宮位名 DB 對照,由 components.loadReportGlossary 注入)──
   function setGlossary(g) { _glossary = g || null; }
   function palaceLabel(zh) { return (_glossary && _glossary.palaces && _glossary.palaces[zh]) || zh; }
@@ -1225,6 +1234,16 @@
     if (_glossary && _glossary.stars && _glossary.stars[zh]) return _glossary.stars[zh];
     var m = STAR_NAMES[_reportLang];
     if (m && m[zh] !== undefined) return m[zh];
+    // 運限前綴星(大限/流年/流月 + 基礎星名):拆前綴 → 譯基礎星 → 前綴本地化
+    for (var i = 0; i < LIMIT_PREFIX_ORDER.length; i++) {
+      var p = LIMIT_PREFIX_ORDER[i];
+      if (zh.indexOf(p) === 0 && zh.length > p.length) {
+        var base = starLabel(zh.slice(p.length));
+        var pmap = LIMIT_PREFIX[_reportLang] || LIMIT_PREFIX['zh-TW'];
+        var pl = (pmap && pmap[p] !== undefined) ? pmap[p] : p;
+        return (_reportLang === 'en') ? (pl + ' ' + base) : (pl + base);
+      }
+    }
     return zh;
   }
   function transformLabel(zh) {
