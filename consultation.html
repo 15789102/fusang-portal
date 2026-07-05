@@ -131,40 +131,41 @@
     el,
   } from './consultation-common.js';
 
-  document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Personal Consultation - FuSang Vision');
-
-  document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Personal Consultation');
-  document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Personal Consultation');
-  document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
-  document.getElementById('lp-lead').textContent    = pick(
-    '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
-    '当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的一次解读。',
-    'When you have a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
-  );
-  document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', '图片素材（待放入）', 'Your image here');
-
   const FEATURES = [
     { n: '01', zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human', zh_p: '由 RS Chen 親自解讀你的命盤，針對你的處境書面回覆。', cn_p: '由 RS Chen 亲自解读你的命盘，针对你的处境书面回复。', en_p: 'RS Chen personally reads your chart and replies in writing to your situation.' },
     { n: '02', zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you', zh_p: '每一則諮詢都是針對你的問題單獨準備，不是罐頭答案。', cn_p: '每一则咨询都是针对你的问题单独准备，不是罐头答案。', en_p: 'Each consultation is prepared individually for your question — never a template.' },
     { n: '03', zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up', zh_p: '收到回覆後，7 天內可再追問一次，把想釐清的地方問清楚。', cn_p: '收到回复后，7 天内可再追问一次，把想厘清的地方问清楚。', en_p: 'After the reply, you may ask one follow-up within 7 days to clarify further.' },
   ];
-  document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
-    `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
-    `<div class="lp-feat-h">${pick(f.zh_h, f.cn_h, f.en_h)}</div>` +
-    `<div class="lp-feat-p">${pick(f.zh_p, f.cn_p, f.en_p)}</div></div>`
-  ).join('');
 
-  (async () => {
-    const session = await initConsult('home');
-    if (!session) return;
+  // 靜態文字(可重繪：語言切換時重套)
+  function applyStaticText() {
+    document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Personal Consultation - FuSang Vision');
+    document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Personal Consultation');
+    document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Personal Consultation');
+    document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
+    document.getElementById('lp-lead').textContent    = pick(
+      '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
+      '当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的一次解读。',
+      'When you have a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
+    );
+    document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', '图片素材（待放入）', 'Your image here');
+    document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
+      `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
+      `<div class="lp-feat-h">${pick(f.zh_h, f.cn_h, f.en_h)}</div>` +
+      `<div class="lp-feat-p">${pick(f.zh_p, f.cn_p, f.en_p)}</div></div>`
+    ).join('');
+  }
 
-    const tickets = await getMyTickets();
-    const active = findActive(tickets);
-
+  // 動作區(依是否有進行中諮詢;快取 active 供語言切換重繪)
+  let lastActive = undefined;
+  function renderActions(active) {
+    lastActive = active;
     document.getElementById('lp-loading').style.display = 'none';
     const actions = document.getElementById('lp-actions');
     const note = document.getElementById('lp-note');
     actions.style.display = 'flex';
+    note.style.display = 'none';
+    note.textContent = '';
 
     if (active) {
       actions.innerHTML =
@@ -180,7 +181,22 @@
       actions.querySelector('#btn-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
     }
     actions.querySelector('#btn-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
+  }
+
+  applyStaticText();
+
+  (async () => {
+    const session = await initConsult('home');
+    if (!session) return;
+    const tickets = await getMyTickets();
+    renderActions(findActive(tickets));
   })();
+
+  // 即時語言切換：重套靜態文字 + 重繪動作區(用快取,不重查)
+  window.addEventListener('i18n:changed', () => {
+    applyStaticText();
+    if (lastActive !== undefined) renderActions(lastActive);
+  });
 </script>
 
 </body>
