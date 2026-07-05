@@ -32,47 +32,50 @@ export const SIGNER = 'RS Chen';
 
 /* ── 語言（沿用元件快取；只切換靜態標籤：中/英）── */
 export const LANG = (() => {
-  try { const c = localStorage.getItem('fs_lang'); if (c) return c; } catch (_) {}
+  try { const L = window.FSI18N && window.FSI18N.getUILang && window.FSI18N.getUILang(); if (L) return L; } catch (_) {}
+  try { const c = localStorage.getItem('fs_ui_lang'); if (c) return c; } catch (_) {}
   return 'zh-TW';
 })();
 export const isZh = LANG.startsWith('zh');
-export const pick = (zh, en) => (isZh ? zh : en);
+export const isCN = LANG === 'zh-CN';
+// 三語挑選：繁中／简中／English（依 uiLang,於頁面載入時決定;切換語言需重載頁面）
+export const pick = (tw, cn, en) => (LANG === 'en' ? en : (LANG === 'zh-CN' ? cn : tw));
 
 /* ── 標籤 ── */
 export const SUBJECTS = [
-  { code: 'career',       zh: '事業與工作', en: 'Career & Work' },
-  { code: 'relationship', zh: '感情與關係', en: 'Love & Relationships' },
-  { code: 'wealth',       zh: '財運與理財', en: 'Wealth & Finances' },
-  { code: 'family',       zh: '人際與家庭', en: 'People & Family' },
-  { code: 'self',         zh: '自我與方向', en: 'Self & Direction' },
-  { code: 'other',        zh: '其他／綜合', en: 'Other / General' },
+  { code: 'career',       zh: '事業與工作', cn: '事业与工作', en: 'Career & Work' },
+  { code: 'relationship', zh: '感情與關係', cn: '感情与关系', en: 'Love & Relationships' },
+  { code: 'wealth',       zh: '財運與理財', cn: '财运与理财', en: 'Wealth & Finances' },
+  { code: 'family',       zh: '人際與家庭', cn: '人际与家庭', en: 'People & Family' },
+  { code: 'self',         zh: '自我與方向', cn: '自我与方向', en: 'Self & Direction' },
+  { code: 'other',        zh: '其他／綜合', cn: '其他／综合', en: 'Other / General' },
 ];
 export const subjLabel = (code) => {
   const s = SUBJECTS.find((x) => x.code === code);
-  return s ? pick(s.zh, s.en) : code;
+  return s ? pick(s.zh, s.cn, s.en) : code;
 };
 
 export const RATINGS = [
-  { code: 'helpful',     zh: '有幫助',   en: 'Helpful' },
-  { code: 'somewhat',    zh: '還好',     en: 'Somewhat' },
-  { code: 'not_helpful', zh: '沒有幫助', en: 'Not really' },
+  { code: 'helpful',     zh: '有幫助',   cn: '有帮助',   en: 'Helpful' },
+  { code: 'somewhat',    zh: '還好',     cn: '还好',     en: 'Somewhat' },
+  { code: 'not_helpful', zh: '沒有幫助', cn: '没有帮助', en: 'Not really' },
 ];
 export const ratingLabel = (code) => {
   const r = RATINGS.find((x) => x.code === code);
-  return r ? pick(r.zh, r.en) : code;
+  return r ? pick(r.zh, r.cn, r.en) : code;
 };
 
 export const STATUS_LABEL = {
-  pending:  pick('待付款', 'Awaiting payment'),
-  paid:     pick('已付款・等待回覆', 'Paid · awaiting reply'),
-  answered: pick('已回覆', 'Answered'),
-  followup: pick('追問中・等待回覆', 'Follow-up · awaiting reply'),
-  closed:   pick('已結案', 'Closed'),
+  pending:  pick('待付款', '待付款', 'Awaiting payment'),
+  paid:     pick('已付款・等待回覆', '已付款・等待回复', 'Paid · awaiting reply'),
+  answered: pick('已回覆', '已回复', 'Answered'),
+  followup: pick('追問中・等待回覆', '追问中・等待回复', 'Follow-up · awaiting reply'),
+  closed:   pick('已結案', '已结案', 'Closed'),
 };
 
 export const fmtDate = (iso) => {
   if (!iso) return '';
-  try { return new Date(iso).toLocaleDateString(isZh ? 'zh-TW' : 'en-US', { year:'numeric', month:'short', day:'numeric' }); }
+  try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-US' : (LANG === 'zh-CN' ? 'zh-CN' : 'zh-TW'), { year:'numeric', month:'short', day:'numeric' }); }
   catch (_) { return iso; }
 };
 
@@ -93,7 +96,7 @@ export const inFollowupWindow = (t) =>
 export const needsFeedback = (t) => t.status === 'closed' && !t.rating && !t.closed_by_admin;
 export const isAdminClosed = (t) => t.status === 'closed' && t.closed_by_admin === true;
 // 顯示用狀態文字：admin 關閉 → 已關閉；其餘照 STATUS_LABEL
-export const statusText = (t) => isAdminClosed(t) ? pick('已關閉', 'Closed') : (STATUS_LABEL[t.status] || t.status);
+export const statusText = (t) => isAdminClosed(t) ? pick('已關閉', '已关闭', 'Closed') : (STATUS_LABEL[t.status] || t.status);
 
 export const findActive = (tickets) => tickets.find(isActive) || null;
 export const findPendingDraft = (tickets) => tickets.find(isPendingDraft) || null;
@@ -135,6 +138,16 @@ export function signatureHtml() {
 }
 
 export function disclaimerHtml() {
+  if (LANG === 'zh-CN') {
+    return `<div class="disclaim"><div class="disclaim-h">提交前请确认</div><ul>` +
+      `<li>这是由真人解盘的个人化紫微斗数咨询。提供的背景越完整，回复越精准。</li>` +
+      `<li>回复将以你设定的报告语言（繁体中文／简体中文／English）为主，与你的报告内容一致。</li>` +
+      `<li><strong>同一时间仅能进行一则咨询。</strong>须待目前咨询结案后，才能再提交新的问题。</li>` +
+      `<li>付款后 <strong>7 天内</strong>你会收到书面回复。回复后可于 <strong>7 天内追问一次</strong>；逾时咨询即结案。</li>` +
+      `<li>本服务仅提供紫微斗数命理解读，<strong>不</strong>提供医疗、法律、财务或投资意见。</li>` +
+      `<li><strong>数字服务，提交后恕不退款。</strong>每则咨询皆为你个别撰写，付款送出后不予退费。</li>` +
+      `</ul></div>`;
+  }
   if (isZh) {
     return `<div class="disclaim"><div class="disclaim-h">提交前請確認</div><ul>` +
       `<li>這是由真人解盤的個人化紫微斗數諮詢。提供的背景越完整，回覆越精準。</li>` +
@@ -157,40 +170,40 @@ export function disclaimerHtml() {
 
 /* ── 錯誤對應 ── */
 export function mapCreateErr(m) {
-  if (m.includes('ticket_in_progress')) return pick('你已有一則進行中的諮詢，請先完成後再提交新問題。', 'You already have an open consultation. Finish it first.');
-  if (m.includes('chart_not_found'))   return pick('找不到你的命盤，請先回儀表板生成。', 'Your chart wasn\'t found. Please generate it from the dashboard first.');
-  if (m.includes('invalid_subject'))   return pick('請選擇一個主題。', 'Please choose a topic.');
-  if (m.includes('empty_content'))     return pick('請填寫你的問題內容。', 'Please describe your question.');
-  if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-  return pick('提交時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  if (m.includes('ticket_in_progress')) return pick('你已有一則進行中的諮詢，請先完成後再提交新問題。', '你已有一则进行中的咨询，请先完成后再提交新问题。', 'You already have an open consultation. Finish it first.');
+  if (m.includes('chart_not_found'))   return pick('找不到你的命盤，請先回儀表板生成。', '找不到你的命盘，请先回仪表板生成。', 'Your chart wasn\'t found. Please generate it from the dashboard first.');
+  if (m.includes('invalid_subject'))   return pick('請選擇一個主題。', '请选择一个主题。', 'Please choose a topic.');
+  if (m.includes('empty_content'))     return pick('請填寫你的問題內容。', '请填写你的问题内容。', 'Please describe your question.');
+  if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
+  return pick('提交時發生問題，請稍後再試。', '提交时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 export function mapCheckoutErr(code) {
-  if (code === 'ticket_not_payable') return pick('這筆諮詢已付款或狀態已變更。', 'This consultation is already paid or changed.');
-  if (code === 'ticket_not_found')   return pick('找不到對應的諮詢，請重新提交。', 'Consultation not found. Please submit again.');
-  if (code === 'missing_ticket_id')  return pick('提交資料不完整，請重試。', 'Incomplete request. Please try again.');
-  if (code === 'not_authenticated')  return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-  return pick('前往付款時發生問題，請稍後再試。', 'Couldn\'t reach checkout. Please try again.');
+  if (code === 'ticket_not_payable') return pick('這筆諮詢已付款或狀態已變更。', '这笔咨询已付款或状态已变更。', 'This consultation is already paid or changed.');
+  if (code === 'ticket_not_found')   return pick('找不到對應的諮詢，請重新提交。', '找不到对应的咨询，请重新提交。', 'Consultation not found. Please submit again.');
+  if (code === 'missing_ticket_id')  return pick('提交資料不完整，請重試。', '提交资料不完整，请重试。', 'Incomplete request. Please try again.');
+  if (code === 'not_authenticated')  return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
+  return pick('前往付款時發生問題，請稍後再試。', '前往付款时发生问题，请稍后再试。', 'Couldn\'t reach checkout. Please try again.');
 }
 export function mapFollowupErr(m) {
-  if (m.includes('followup_exists'))        return pick('每則諮詢僅能追問一次。', 'Only one follow-up per consultation.');
-  if (m.includes('followup_window_closed')) return pick('追問期限已過，諮詢已結案。', 'The follow-up window has closed.');
-  if (m.includes('not_answerable'))         return pick('目前無法追問。', 'Follow-up isn\'t available right now.');
-  if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', 'Consultation not found.');
-  if (m.includes('empty_content'))          return pick('請填寫追問內容。', 'Please write your follow-up.');
-  return pick('送出追問時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  if (m.includes('followup_exists'))        return pick('每則諮詢僅能追問一次。', '每则咨询仅能追问一次。', 'Only one follow-up per consultation.');
+  if (m.includes('followup_window_closed')) return pick('追問期限已過，諮詢已結案。', '追问期限已过，咨询已结案。', 'The follow-up window has closed.');
+  if (m.includes('not_answerable'))         return pick('目前無法追問。', '目前无法追问。', 'Follow-up isn\'t available right now.');
+  if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
+  if (m.includes('empty_content'))          return pick('請填寫追問內容。', '请填写追问内容。', 'Please write your follow-up.');
+  return pick('送出追問時發生問題，請稍後再試。', '送出追问时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 export function mapCloseErr(m) {
-  if (m.includes('not_closable'))     return pick('目前無法結案。', 'This consultation can\'t be closed right now.');
-  if (m.includes('ticket_not_found')) return pick('找不到這則諮詢。', 'Consultation not found.');
-  if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', 'Your session expired. Please sign in again.');
-  return pick('結案時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  if (m.includes('not_closable'))     return pick('目前無法結案。', '目前无法结案。', 'This consultation can\'t be closed right now.');
+  if (m.includes('ticket_not_found')) return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
+  if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
+  return pick('結案時發生問題，請稍後再試。', '结案时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 export function mapFeedbackErr(m) {
-  if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', 'You\'ve already given feedback for this consultation.');
-  if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', 'Feedback isn\'t available for this consultation.');
-  if (m.includes('invalid_rating'))    return pick('請選擇一個選項。', 'Please choose an option.');
-  if (m.includes('ticket_not_found'))  return pick('找不到這則諮詢。', 'Consultation not found.');
-  return pick('送出回饋時發生問題，請稍後再試。', 'Something went wrong. Please try again.');
+  if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', '这则咨询已反馈过。', 'You\'ve already given feedback for this consultation.');
+  if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', '目前无法反馈。', 'Feedback isn\'t available for this consultation.');
+  if (m.includes('invalid_rating'))    return pick('請選擇一個選項。', '请选择一个选项。', 'Please choose an option.');
+  if (m.includes('ticket_not_found'))  return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
+  return pick('送出回饋時發生問題，請稍後再試。', '送出反馈时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 
 /* ── DOM utils ── */
@@ -206,9 +219,9 @@ export function reloadSoon(ms = 2200) { setTimeout(() => window.location.reload(
 /* ── 頁內導覽 ── */
 // activePage: 'home' | 'form' | 'list' | 'detail'
 const NAV = {
-  form:   { label: pick('提交問事', 'New consultation'),   back: 'consultation.html',       backLabel: pick('問事首頁', 'Consultation') },
-  list:   { label: pick('我的問事紀錄', 'My consultations'), back: 'consultation.html',       backLabel: pick('問事首頁', 'Consultation') },
-  detail: { label: pick('諮詢細節', 'Consultation'),        back: 'consultation-list.html',  backLabel: pick('我的問事紀錄', 'My consultations') },
+  form:   { label: pick('提交問事', '提交问事', 'New consultation'),   back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
+  list:   { label: pick('我的問事紀錄', '我的问事纪录', 'My consultations'), back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
+  detail: { label: pick('諮詢細節', '咨询细节', 'Consultation'),        back: 'consultation-list.html',  backLabel: pick('我的問事紀錄', '我的问事纪录', 'My consultations') },
 };
 
 function injectConsultNav(activePage) {
