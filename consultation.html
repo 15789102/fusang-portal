@@ -5,7 +5,7 @@
 <script src="i18n.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuSang Vision — 單獨問事</title>
+<title>單獨問事 - FuSang Vision</title>
 <style>
   /* Landing 專屬（共用樣式由 consultation-common.js 注入）*/
   .lp-hero { text-align: center; padding: 24px 0 8px; }
@@ -131,24 +131,27 @@
     el,
   } from './consultation-common.js';
 
-  document.getElementById('lp-eyebrow').textContent = pick('單獨問事', 'Personal Consultation');
-  document.getElementById('lp-title').textContent   = pick('單獨問事', 'Personal Consultation');
-  document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', 'A human reading of your chart, for one question that matters.');
+  document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Personal Consultation - FuSang Vision');
+
+  document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Personal Consultation');
+  document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Personal Consultation');
+  document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
   document.getElementById('lp-lead').textContent    = pick(
     '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
+    '当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的一次解读。',
     'When you have a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
   );
-  document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', 'Your image here');
+  document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', '图片素材（待放入）', 'Your image here');
 
   const FEATURES = [
-    { n: '01', zh_h: '真人解盤', en_h: 'Answered by a human', zh_p: '由 RS Chen 親自解讀你的命盤，針對你的處境書面回覆。', en_p: 'RS Chen personally reads your chart and replies in writing to your situation.' },
-    { n: '02', zh_h: '為你個別撰寫', en_h: 'Written for you', zh_p: '每一則諮詢都是針對你的問題單獨準備，不是罐頭答案。', en_p: 'Each consultation is prepared individually for your question — never a template.' },
-    { n: '03', zh_h: '可追問一次', en_h: 'One follow-up', zh_p: '收到回覆後，7 天內可再追問一次，把想釐清的地方問清楚。', en_p: 'After the reply, you may ask one follow-up within 7 days to clarify further.' },
+    { n: '01', zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human', zh_p: '由 RS Chen 親自解讀你的命盤，針對你的處境書面回覆。', cn_p: '由 RS Chen 亲自解读你的命盘，针对你的处境书面回复。', en_p: 'RS Chen personally reads your chart and replies in writing to your situation.' },
+    { n: '02', zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you', zh_p: '每一則諮詢都是針對你的問題單獨準備，不是罐頭答案。', cn_p: '每一则咨询都是针对你的问题单独准备，不是罐头答案。', en_p: 'Each consultation is prepared individually for your question — never a template.' },
+    { n: '03', zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up', zh_p: '收到回覆後，7 天內可再追問一次，把想釐清的地方問清楚。', cn_p: '收到回复后，7 天内可再追问一次，把想厘清的地方问清楚。', en_p: 'After the reply, you may ask one follow-up within 7 days to clarify further.' },
   ];
   document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
     `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
-    `<div class="lp-feat-h">${pick(f.zh_h, f.en_h)}</div>` +
-    `<div class="lp-feat-p">${pick(f.zh_p, f.en_p)}</div></div>`
+    `<div class="lp-feat-h">${pick(f.zh_h, f.cn_h, f.en_h)}</div>` +
+    `<div class="lp-feat-p">${pick(f.zh_p, f.cn_p, f.en_p)}</div></div>`
   ).join('');
 
   (async () => {
@@ -165,15 +168,15 @@
 
     if (active) {
       actions.innerHTML =
-        `<button class="cons-btn" id="btn-active">${pick('查看進行中的諮詢', 'View your active consultation')}</button>` +
-        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', 'My consultations')}</button>`;
+        `<button class="cons-btn" id="btn-active">${pick('查看進行中的諮詢', '查看进行中的咨询', 'View your active consultation')}</button>` +
+        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
       actions.querySelector('#btn-active').addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${active.id}`; });
       note.style.display = 'block';
-      note.textContent = pick('你目前有一則進行中的諮詢。同一時間僅能進行一則。', 'You have one consultation in progress. Only one at a time.');
+      note.textContent = pick('你目前有一則進行中的諮詢。同一時間僅能進行一則。', '你目前有一则进行中的咨询。同一时间仅能进行一则。', 'You have one consultation in progress. Only one at a time.');
     } else {
       actions.innerHTML =
-        `<button class="cons-btn" id="btn-new">${pick('提交新的問事', 'New consultation')}</button>` +
-        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', 'My consultations')}</button>`;
+        `<button class="cons-btn" id="btn-new">${pick('提交新的問事', '提交新的问事', 'New consultation')}</button>` +
+        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
       actions.querySelector('#btn-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
     }
     actions.querySelector('#btn-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
