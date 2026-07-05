@@ -36,18 +36,18 @@
     el, esc,
   } from './consultation-common.js';
 
-  document.title = pick('我的問事紀錄 - FuSang Vision', '我的问事纪录 - FuSang Vision', 'My Consultations - FuSang Vision');
+  function applyStaticText() {
+    document.title = pick('我的問事紀錄 - FuSang Vision', '我的问事纪录 - FuSang Vision', 'My Consultations - FuSang Vision');
+    document.getElementById('hero-eyebrow').textContent = pick('我的問事紀錄', '我的问事纪录', 'My Consultations');
+    document.getElementById('hero-title').textContent   = pick('我的問事紀錄', '我的问事纪录', 'My Consultations');
+  }
 
-  document.getElementById('hero-eyebrow').textContent = pick('我的問事紀錄', '我的问事纪录', 'My Consultations');
-  document.getElementById('hero-title').textContent   = pick('我的問事紀錄', '我的问事纪录', 'My Consultations');
-
-  (async () => {
-    const session = await initConsult('list');
-    if (!session) return;
-
-    const tickets = await getMyTickets();
+  let lastTickets = null;
+  function renderBody(tickets) {
+    lastTickets = tickets;
     document.getElementById('cons-loading').style.display = 'none';
     const body = document.getElementById('cons-body');
+    body.innerHTML = '';
 
     // 只列已付款的（pending 未付款草稿不列入正式紀錄）
     const rows = tickets.filter((t) => !isPendingDraft(t));
@@ -75,7 +75,22 @@
       cta.querySelector('#new-btn').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
       body.appendChild(cta);
     }
+  }
+
+  applyStaticText();
+
+  (async () => {
+    const session = await initConsult('list');
+    if (!session) return;
+    const tickets = await getMyTickets();
+    renderBody(tickets);
   })();
+
+  // 即時語言切換：重套標題 + 以快取票券重繪清單
+  window.addEventListener('i18n:changed', () => {
+    applyStaticText();
+    if (lastTickets) renderBody(lastTickets);
+  });
 
   function rowItem(t) {
     const row = el('div', 'hist-item');
