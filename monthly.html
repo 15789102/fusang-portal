@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FuSang Vision — 我的流月</title>
+  <title>我的流月 - FuSang Vision</title>
   <meta name="description" content="View your personalized Zi Wei Dou Shu monthly chart." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,6 +16,116 @@
   <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
   <script src="config.js"></script>
   <script src="i18n.js"></script>
+  <script>
+    // monthly 專屬 UI 字典(策略 B);共用 chrome/報告術語走中央 UI/RT。
+    //   星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流月語境 explainer/tooltip → td(...MONTHLY)。
+    window.FSI18N.addUI({
+      "mo.docTitle": {"zh-TW": "我的流月 - FuSang Vision", "zh-CN": "我的流月 - FuSang Vision", "en": "My Monthly Chart - FuSang Vision"},
+      "mo.loadingTitle": {"zh-TW": "載入您的流月", "zh-CN": "载入您的流月", "en": "Loading your monthly chart"},
+      "mo.loadingSub": {"zh-TW": "正在查找您的流月運勢…", "zh-CN": "正在查找您的流月运势…", "en": "Retrieving your monthly readings…"},
+      "mo.loadingYearTitle": {"zh-TW": "載入 {year} 流月", "zh-CN": "载入 {year} 流月", "en": "Loading {year} monthly"},
+      "mo.loadingYearSub": {"zh-TW": "正在展開可閱讀的月份…", "zh-CN": "正在展开可阅读的月份…", "en": "Unfolding the months you can read…"},
+      "mo.introTitle": {"zh-TW": "流月運勢", "zh-CN": "流月运势", "en": "Monthly Fortune"},
+      "mo.introBody1": {"zh-TW": "流年看的是這一整年的方向，流月則把時間拉近到每一個月。", "zh-CN": "流年看的是这一整年的方向，流月则把时间拉近到每一个月。", "en": "An annual reading shows the direction of a whole year; a monthly reading brings time closer, to each individual month."},
+      "mo.introBody2": {"zh-TW": "同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。", "zh-CN": "同一张命盘，十二个领域的能量在不同月份各有消长——这个月哪一块正被推动、哪一块需要多花心思、哪些人与事会进到你的生活里。流月把这些一个月一个月摊开，让你不必用一整年的尺度去猜眼前的日子。", "en": "Within the same chart, the energy of your twelve areas rises and falls from month to month — which area is being driven this month, which needs more care, and which people and events are entering your life. A monthly reading lays this out one month at a time, so you needn't guess at the days in front of you on the scale of a whole year."},
+      "mo.introBody3": {"zh-TW": "它不替你判斷好壞，而是讓你更清楚這個月的重心落在哪裡——知道力氣該往哪放，就能把這段日子，好好地過成自己的。", "zh-CN": "它不替你判断好坏，而是让你更清楚这个月的重心落在哪里——知道力气该往哪放，就能把这段日子，好好地过成自己的。", "en": "It doesn't judge good or bad for you; it simply makes clearer where this month's center of gravity falls — and knowing where to put your energy, you can live these days well, as your own."},
+      "mo.introOfferLabel": {"zh-TW": "開始後你會收到", "zh-CN": "开始后你会收到", "en": "What you'll receive"},
+      "mo.introOfferBody": {"zh-TW": "我們會為你生成 <strong>下個月</strong> 的完整流月（本月不另生成）；往後每個月，新的流月會自動為你展開。", "zh-CN": "我们会为你生成 <strong>下个月</strong> 的完整流月（本月不另生成）；往后每个月，新的流月会自动为你展开。", "en": "We'll generate your complete reading for <strong>next month</strong> (this month isn't generated separately); from then on, each new month unfolds for you automatically."},
+      "mo.introOfferItem1": {"zh-TW": "十二宮的逐宮解讀，看清每個領域這個月的狀態", "zh-CN": "十二宫的逐宫解读，看清每个领域这个月的状态", "en": "A palace-by-palace reading of all twelve areas, so you can see the state of each this month"},
+      "mo.introOfferItem2": {"zh-TW": "能量的流入與流出，知道哪些方面正在牽動你", "zh-CN": "能量的流入与流出，知道哪些方面正在牵动你", "en": "The inflow and outflow of energy, so you know which areas are moving you"},
+      "mo.introOfferItem3": {"zh-TW": "順著本月建議，協助您把日子過得自在", "zh-CN": "顺着本月建议，协助您把日子过得自在", "en": "Guidance for the month, to help you live these days with ease"},
+      "mo.ctxLabel": {"zh-TW": "個人化你的流月建議（選填）", "zh-CN": "个人化你的流月建议（选填）", "en": "Personalize your monthly guidance (optional)"},
+      "mo.ctxDesc": {"zh-TW": "選擇你最在意的領域，描述你目前的處境。<br>我們會在該宮位的「本月建議」中，把你的情況納入考量。<span class='ctx-desc-note'>您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>", "zh-CN": "选择你最在意的领域，描述你目前的处境。<br>我们会在该宫位的「本月建议」中，把你的情况纳入考量。<span class='ctx-desc-note'>您设定或调整的主题，会纳入下一期的流月分析；若分析已进入生成阶段，调整将于再下一期生效。</span>", "en": "Choose the area you care about most and describe your current situation.<br>We'll take it into account within that palace's guidance for the month.<span class='ctx-desc-note'>Topics you set or change are included in the next monthly reading; if a reading is already being generated, changes take effect the month after.</span>"},
+      "mo.ctxUpsell": {"zh-TW": "目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。", "zh-CN": "目前可设定 <strong>1 个</strong> 主题；后续付费订阅后开放 <strong>3 个</strong>。", "en": "You can set <strong>1</strong> topic for now; a paid subscription unlocks <strong>3</strong>."},
+      "mo.rdLabel": {"zh-TW": "收報日設定", "zh-CN": "收报日设定", "en": "Delivery day"},
+      "mo.rdEvery": {"zh-TW": "每月", "zh-CN": "每月", "en": "On day"},
+      "mo.rdReceive": {"zh-TW": "號收到下一期流月", "zh-CN": "号收到下一期流月", "en": "of each month, receive your next reading"},
+      "mo.rdSelectPlaceholder": {"zh-TW": "— 選擇日期 —", "zh-CN": "— 选择日期 —", "en": "— Select a day —"},
+      "mo.rdNote": {"zh-TW": "開通後立即為你生成<strong>下個月</strong>的流月；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。<span class='rd-utc'>日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>", "zh-CN": "开通后立即为你生成<strong>下个月</strong>的流月；往后每个月，新的流月会在你选择的日期自动展开、寄至你的信箱。<span class='rd-utc'>日期以世界标准时间（UTC）计算，与你当地日期可能相差数小时。建议选择月初日期，让你有充裕时间为下个月做准备。日后可于「帐户」页随时调整或取消。</span>", "en": "Once enabled, we generate <strong>next month's</strong> reading right away; from then on, each new month unfolds on the day you chose and is sent to your inbox.<span class='rd-utc'>Dates are calculated in UTC and may differ from your local date by a few hours. An early-month day gives you time to prepare for the month ahead. You can adjust or cancel any time on the Account page.</span>"},
+      "mo.introSubscribeBtn": {"zh-TW": "開始閱讀我的流月", "zh-CN": "开始阅读我的流月", "en": "Start reading my monthly chart"},
+      "mo.introCtaNote": {"zh-TW": "為你生成下個月的流月，約需數分鐘", "zh-CN": "为你生成下个月的流月，约需数分钟", "en": "Generating next month's reading takes a few minutes"},
+      "mo.subscribing": {"zh-TW": "正在為你開始…", "zh-CN": "正在为你开始…", "en": "Starting…"},
+      "mo.dayOption": {"zh-TW": "{d} 號", "zh-CN": "{d} 号", "en": "Day {d}"},
+      "mo.alertPickDay": {"zh-TW": "請先選擇每月收到流月的日期。", "zh-CN": "请先选择每月收到流月的日期。", "en": "Please choose the day of the month to receive your reading."},
+      "mo.subscribeFailDay": {"zh-TW": "開通失敗：無法儲存收報日（{msg}），請稍後再試。", "zh-CN": "开通失败：无法储存收报日（{msg}），请稍后再试。", "en": "Couldn't enable: failed to save your delivery day ({msg}). Please try again later."},
+      "mo.genHeadTitle": {"zh-TW": "正在為你展開流月", "zh-CN": "正在为你展开流月", "en": "Unfolding your monthly reading"},
+      "mo.genHeadSub": {"zh-TW": "我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。", "zh-CN": "我们正在逐宫解读你的命盘。<br>这需要几分钟，你可以先离开，稍后再回来查看。", "en": "We're reading your chart palace by palace.<br>This takes a few minutes — you can leave and come back later."},
+      "mo.genCardDone": {"zh-TW": "已完成 · 點擊閱讀", "zh-CN": "已完成 · 点击阅读", "en": "Complete · Tap to read"},
+      "mo.genCardGenerating": {"zh-TW": "正在生成十二宮…", "zh-CN": "正在生成十二宫…", "en": "Generating the twelve palaces…"},
+      "mo.yearsTitle": {"zh-TW": "我的流月運勢", "zh-CN": "我的流月运势", "en": "My Monthly Charts"},
+      "mo.yearsSub": {"zh-TW": "選擇一個年份，再選擇月份閱讀當月的十二宮運勢", "zh-CN": "选择一个年份，再选择月份阅读当月的十二宫运势", "en": "Choose a year, then a month, to read its twelve palaces"},
+      "mo.yearsEmptyTitle": {"zh-TW": "尚無流月資料", "zh-CN": "尚无流月资料", "en": "No monthly data yet"},
+      "mo.yearsEmptyBody": {"zh-TW": "您目前還沒有任何月份的流月運勢報告。<br>當流月報告生成完成後，可閱讀的月份會出現在這裡。", "zh-CN": "您目前还没有任何月份的流月运势报告。<br>当流月报告生成完成后，可阅读的月份会出现在这里。", "en": "You don't have any monthly readings yet.<br>Once a monthly report is generated, the months you can read will appear here."},
+      "mo.hubToYears": {"zh-TW": "← 選擇年份", "zh-CN": "← 选择年份", "en": "← Choose a year"},
+      "mo.hubSub": {"zh-TW": "選擇月份，點選一宮以閱讀完整內容", "zh-CN": "选择月份，点选一宫以阅读完整内容", "en": "Pick a month, then a palace to read in full"},
+      "mo.hubEyebrow": {"zh-TW": "{ym} 流月", "zh-CN": "{ym} 流月", "en": "Your {ym} Monthly Chart"},
+      "mo.hubTitle": {"zh-TW": "{ymLabel} 流月十二宮", "zh-CN": "{ymLabel} 流月十二宫", "en": "The {ymLabel} Twelve Palaces"},
+      "mo.ctxToggle": {"zh-TW": "⚙ 個人化設定", "zh-CN": "⚙ 个人化设定", "en": "⚙ Personalize"},
+      "mo.relPrev": {"zh-TW": "上月", "zh-CN": "上月", "en": "Last month"},
+      "mo.relCurr": {"zh-TW": "本月", "zh-CN": "本月", "en": "This month"},
+      "mo.relNext": {"zh-TW": "下月", "zh-CN": "下月", "en": "Next month"},
+      "mo.monthSuffix": {"zh-TW": "{m}月", "zh-CN": "{m}月", "en": "Month {m}"},
+      "mo.tabLockUpgrade": {"zh-TW": "🔒 升級可見", "zh-CN": "🔒 升级可见", "en": "🔒 Upgrade to view"},
+      "mo.ymLabel": {"zh-TW": "{y} 年 {m} 月", "zh-CN": "{y} 年 {m} 月", "en": "{m}/{y}"},
+      "mo.trackBadge": {"zh-TW": "✦ 追蹤", "zh-CN": "✦ 追踪", "en": "✦ Tracked"},
+      "mo.ovEyebrow": {"zh-TW": "本月能量一覽 · Energy Overview", "zh-CN": "本月能量一览 · Energy Overview", "en": "Energy Overview"},
+      "mo.ovTitle": {"zh-TW": "本月十二領域的能量分布", "zh-CN": "本月十二领域的能量分布", "en": "How energy is distributed across your twelve areas this month"},
+      "mo.ovhTitle": {"zh-TW": "本月亮點 · Bright Spots", "zh-CN": "本月亮点 · Bright Spots", "en": "Bright Spots this month"},
+      "mo.ovLegend": {"zh-TW": "每一條的右側（綠）代表這個月該領域的助力與順流，左側（紅）代表能量張力與需要用心之處——兩者並存、不互相抵銷，因為人生本就是好壞交織。長度是相對於您本月其他領域而言，並非絕對的吉凶評分。這不是要評斷好壞，而是幫您看見：這個月，把心力放在哪裡最值得。", "zh-CN": "每一条的右侧（绿）代表这个月该领域的助力与顺流，左侧（红）代表能量张力与需要用心之处——两者并存、不互相抵销，因为人生本就是好坏交织。长度是相对于您本月其他领域而言，并非绝对的吉凶评分。这不是要评断好坏，而是帮您看见：这个月，把心力放在哪里最值得。", "en": "On each bar, the right side (green) reflects support and flow in that area this month, and the left side (red) reflects tension and where care is needed — they coexist and don't cancel out, because life weaves the two together. Length is relative to your other areas this month, not an absolute score. This isn't about judging good or bad, but about seeing where your energy is best placed this month."},
+      "mo.ovSubFocus": {"zh-TW": "這個月，以下領域的能量張力相對突出，值得多放一點心：", "zh-CN": "这个月，以下领域的能量张力相对突出，值得多放一点心：", "en": "This month, the following areas carry more tension and are worth a little extra care:"},
+      "mo.ovSubCalm": {"zh-TW": "這個月十二宮能量相對平穩，沒有特別需要費心的領域。", "zh-CN": "这个月十二宫能量相对平稳，没有特别需要费心的领域。", "en": "This month your twelve areas are relatively steady, with nothing that especially needs attention."},
+      "mo.tagSha": {"zh-TW": "煞", "zh-CN": "煞", "en": "Malefic"},
+      "mo.tagAus": {"zh-TW": "貴人", "zh-CN": "贵人", "en": "Benefactor"},
+      "mo.tagLuan": {"zh-TW": "紅鸞", "zh-CN": "红鸾", "en": "Hong Luan"},
+      "mo.hlLuanDesc": {"zh-TW": "人緣與情感的契機", "zh-CN": "人缘与情感的契机", "en": "an opening for connection and affection"},
+      "mo.hlLuDesc": {"zh-TW": "資源與順流", "zh-CN": "资源与顺流", "en": "resources and flow"},
+      "mo.hlQuanDesc": {"zh-TW": "主導與承擔", "zh-CN": "主导与承担", "en": "leadership and responsibility"},
+      "mo.hlKeDesc": {"zh-TW": "被看見的舞台", "zh-CN": "被看见的舞台", "en": "a stage to be seen on"},
+      "mo.popAusStar": {"zh-TW": "貴人星：", "zh-CN": "贵人星：", "en": "Benefactor stars: "},
+      "mo.popShaStar": {"zh-TW": "煞星：", "zh-CN": "煞星：", "en": "Malefic stars: "},
+      "mo.popSihua": {"zh-TW": "四化：", "zh-CN": "四化：", "en": "Transformations: "},
+      "mo.popPeach": {"zh-TW": "桃花：", "zh-CN": "桃花：", "en": "Romance: "},
+      "mo.popCountUnit": {"zh-TW": " 顆", "zh-CN": " 颗", "en": " stars"},
+      "mo.popCalm": {"zh-TW": "這個月此宮星曜平和，無特別強烈的能量訊號。", "zh-CN": "这个月此宫星曜平和，无特别强烈的能量讯号。", "en": "This month this area is calm, with no especially strong energy signals."},
+      "mo.popDescNeg": {"zh-TW": "這個月這個領域的能量張力較高，適合放慢腳步、多給自己一些餘裕，把心力溫柔地放在這裡。", "zh-CN": "这个月这个领域的能量张力较高，适合放慢脚步、多给自己一些余裕，把心力温柔地放在这里。", "en": "This area carries more tension this month — a good time to slow down, give yourself some room, and place your attention here gently."},
+      "mo.popDescPos": {"zh-TW": "這個月這個領域相對順流、有助力，是可以放心投入、順勢而為的方向。", "zh-CN": "这个月这个领域相对顺流、有助力，是可以放心投入、顺势而为的方向。", "en": "This area flows relatively well this month, with support — a direction you can invest in and move with confidently."},
+      "mo.popDescNeutral": {"zh-TW": "這個月這個領域大致平穩，依您的節奏自然推進即可。", "zh-CN": "这个月这个领域大致平稳，依您的节奏自然推进即可。", "en": "This area is fairly steady this month; simply proceed at your own pace."},
+      "mo.backAllPalaces": {"zh-TW": "← 全部十二宮", "zh-CN": "← 全部十二宫", "en": "← All Twelve Palaces"},
+      "mo.allPalaces": {"zh-TW": "全部十二宮", "zh-CN": "全部十二宫", "en": "All Twelve Palaces"},
+      "mo.secSuggestTitle": {"zh-TW": "本月建議", "zh-CN": "本月建议", "en": "Guidance for the Month"},
+      "mo.secInflowDesc": {"zh-TW": "<strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本月哪些方面<strong>滋養、推動或牽引</strong>。", "zh-CN": "<strong>能量飞入</strong>——其他宫位的星曜，以四化的形式流入本宫。代表您的这个领域，正被本月哪些方面<strong>滋养、推动或牵引</strong>。", "en": "<strong>Inflowing energy</strong> — stars from other palaces flow into this one as transformations. They show which parts of this month are <strong>nourishing, driving, or pulling on</strong> this area of your life."},
+      "mo.secOutflowDesc": {"zh-TW": "<strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。", "zh-CN": "<strong>能量飞出</strong>——本宫的能量，以四化的形式飞入其他宫位。代表您的这个领域，正在<strong>影响、贡献或牵引</strong>哪些方面。", "en": "<strong>Outflowing energy</strong> — this palace's energy flows into other palaces as transformations. It shows which parts of your life this area is <strong>influencing, contributing to, or pulling on</strong> this month."},
+      "mo.personalTitle": {"zh-TW": "追蹤議題解析", "zh-CN": "追踪议题解析", "en": "Your Tracked Focus"},
+      "mo.personalDesc": {"zh-TW": "<strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。", "zh-CN": "<strong>追踪议题解析</strong>——这是针对您为本宫设定的个人处境，结合本月运势量身提供的建议。", "en": "<strong>Your Tracked Focus</strong> — guidance tailored to the personal situation you set for this palace, combined with this month's reading."},
+      "mo.paywallTitle": {"zh-TW": "解鎖完整分析", "zh-CN": "解锁完整分析", "en": "Unlock the full reading"},
+      "mo.paywallItem1": {"zh-TW": "<b>能量飛入</b>　哪些資源正在幫助你、推動你。", "zh-CN": "<b>能量飞入</b>　哪些资源正在帮助你、推动你。", "en": "<b>Inflowing energy</b> — which resources are helping and driving you."},
+      "mo.paywallItem2": {"zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving."},
+      "mo.paywallItem3": {"zh-TW": "<b>本月專屬建議</b>", "zh-CN": "<b>本月专属建议</b>", "en": "<b>Guidance for the month</b>"},
+      "mo.paywallCta": {"zh-TW": "查看方案", "zh-CN": "查看方案", "en": "View plans"},
+      "mo.paywallNote": {"zh-TW": "已訂閱？回此頁重新整理即可顯示", "zh-CN": "已订阅？回此页刷新即可显示", "en": "Already subscribed? Refresh this page to display it."},
+      "mo.secLock": {"zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view"},
+      "mo.noContent": {"zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)"},
+      "mo.ctxSelectPlaceholder": {"zh-TW": "— 選擇宮位 —", "zh-CN": "— 选择宫位 —", "en": "— Select a palace —"},
+      "mo.ctxSlot": {"zh-TW": "Slot {n}", "zh-CN": "Slot {n}", "en": "Slot {n}"},
+      "mo.ctxPlaceholder": {"zh-TW": "描述你目前在這個領域的處境，例如：我正在轉換跑道，想了解這個月適合主動出擊還是先沉澱。", "zh-CN": "描述你目前在这个领域的处境，例如：我正在转换跑道，想了解这个月适合主动出击还是先沉淀。", "en": "Describe your current situation in this area — e.g. I'm changing careers and want to know whether this month favors making a move or settling first."},
+      "mo.ctxSaved": {"zh-TW": "✓ 已儲存", "zh-CN": "✓ 已储存", "en": "✓ Saved"},
+      "mo.ctxEdit": {"zh-TW": "編輯", "zh-CN": "编辑", "en": "Edit"},
+      "mo.ctxClear": {"zh-TW": "清除", "zh-CN": "清除", "en": "Clear"},
+      "mo.ctxSave": {"zh-TW": "儲存", "zh-CN": "储存", "en": "Save"},
+      "mo.ctxAlertNoPalace": {"zh-TW": "請先選擇一個宮位。", "zh-CN": "请先选择一个宫位。", "en": "Please choose a palace first."},
+      "mo.ctxAlertNoText": {"zh-TW": "請描述你的處境，或按「清除」移除此設定。", "zh-CN": "请描述你的处境，或按「清除」移除此设定。", "en": "Please describe your situation, or press Clear to remove this topic."},
+      "mo.ctxDisclaimer": {"zh-TW": "提醒您：流月的個人化建議是依命盤能量提供的觀點與方向，並非醫療、法律或投資的專業意見。若涉及健康、法律或財務的重要決定，仍建議諮詢專業人士。\n\n按「確定」儲存並納入分析。", "zh-CN": "提醒您：流月的个人化建议是依命盘能量提供的观点与方向，并非医疗、法律或投资的专业意见。若涉及健康、法律或财务的重要决定，仍建议咨询专业人士。\n\n按「确定」储存并纳入分析。", "en": "Please note: monthly personalized guidance offers perspective and direction based on chart energy, not professional medical, legal, or financial advice. For important health, legal, or financial decisions, please consult a professional.\n\nPress OK to save and include this in the analysis."},
+      "mo.ctxSaveFail": {"zh-TW": "儲存失敗：", "zh-CN": "储存失败：", "en": "Save failed: "},
+      "mo.ctxClearConfirm": {"zh-TW": "確定要清除這個主題嗎？此動作無法復原。", "zh-CN": "确定要清除这个主题吗？此动作无法复原。", "en": "Remove this topic? This can't be undone."},
+      "mo.ctxClearFail": {"zh-TW": "清除失敗：", "zh-CN": "清除失败：", "en": "Clear failed: "},
+      "mo.errTitle": {"zh-TW": "無法載入流月", "zh-CN": "无法载入流月", "en": "Couldn't load your monthly chart"},
+      "mo.errDefault": {"zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later."},
+      "mo.errMonthsFail": {"zh-TW": "無法載入 {year} 流月月份：", "zh-CN": "无法载入 {year} 流月月份：", "en": "Couldn't load months for {year}: "},
+      "mo.errNoYearData": {"zh-TW": "找不到 {year} 的流月資料。", "zh-CN": "找不到 {year} 的流月资料。", "en": "No monthly data found for {year}."},
+      "mo.errReportsFail": {"zh-TW": "無法載入 {ym} 流月內容：", "zh-CN": "无法载入 {ym} 流月内容：", "en": "Couldn't load {ym} monthly content: "},
+      "mo.errNoContent": {"zh-TW": "找不到 {ym} 的流月宮位內容。", "zh-CN": "找不到 {ym} 的流月宫位内容。", "en": "No palace content found for {ym}."}
+    });
+  </script>
 
   <style>
     /* ── monthly 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
@@ -446,8 +556,8 @@
     <section id="view-loading" class="view active">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       <div style="text-align: center;">
-        <h1 class="loading-title">載入您的流月</h1>
-        <p class="loading-sub">正在查找您的流月運勢…</p>
+        <h1 class="loading-title" id="loading-title">載入您的流月</h1>
+        <p class="loading-sub" id="loading-sub">正在查找您的流月運勢…</p>
       </div>
     </section>
 
@@ -458,31 +568,31 @@
         <div id="intro-pitch">
           <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
           <div class="intro-eyebrow">Monthly Fortune · 流月</div>
-          <h1 class="intro-title">流月運勢</h1>
+          <h1 class="intro-title" id="intro-title">流月運勢</h1>
 
           <div class="intro-body">
-            <p class="lead-first">流年看的是這一整年的方向，流月則把時間拉近到每一個月。</p>
-            <p>同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。</p>
-            <p>它不替你判斷好壞，而是讓你更清楚這個月的重心落在哪裡——知道力氣該往哪放，就能把這段日子，好好地過成自己的。</p>
+            <p class="lead-first" id="intro-body-1">流年看的是這一整年的方向，流月則把時間拉近到每一個月。</p>
+            <p id="intro-body-2">同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。</p>
+            <p id="intro-body-3">它不替你判斷好壞，而是讓你更清楚這個月的重心落在哪裡——知道力氣該往哪放，就能把這段日子，好好地過成自己的。</p>
           </div>
 
           <div class="intro-offer">
-            <div class="intro-offer-label">What you'll receive · 開始後</div>
-            <div class="intro-offer-body">
+            <div class="intro-offer-label" id="intro-offer-label">What you'll receive · 開始後</div>
+            <div class="intro-offer-body" id="intro-offer-body">
               我們會為你生成 <strong>下個月</strong> 的完整流月（本月不另生成）；往後每個月，新的流月會自動為你展開。
             </div>
             <div class="intro-offer-list">
-              <div class="intro-offer-item"><span class="marker">I</span><span>十二宮的逐宮解讀，看清每個領域這個月的狀態</span></div>
-              <div class="intro-offer-item"><span class="marker">II</span><span>能量的流入與流出，知道哪些方面正在牽動你</span></div>
-              <div class="intro-offer-item"><span class="marker">III</span><span>順著本月建議，協助您把日子過得自在</span></div>
+              <div class="intro-offer-item"><span class="marker">I</span><span id="intro-offer-item-1">十二宮的逐宮解讀，看清每個領域這個月的狀態</span></div>
+              <div class="intro-offer-item"><span class="marker">II</span><span id="intro-offer-item-2">能量的流入與流出，知道哪些方面正在牽動你</span></div>
+              <div class="intro-offer-item"><span class="marker">III</span><span id="intro-offer-item-3">順著本月建議，協助您把日子過得自在</span></div>
             </div>
           </div>
 
           <!-- ── 個人化 context 設定（訂閱前後共用，JS 控制 slot 數）── -->
           <div id="context-panel" class="ctx-panel">
             <div class="ctx-head">
-              <div class="ctx-label">Personalize · 個人化你的流月建議（選填）</div>
-              <div class="ctx-desc">
+              <div class="ctx-label" id="ctx-label">Personalize · 個人化你的流月建議（選填）</div>
+              <div class="ctx-desc" id="ctx-desc">
                 選擇你最在意的領域，描述你目前的處境。<br>
                 我們會在該宮位的「本月建議」中，把你的情況納入考量。
                 <span class="ctx-desc-note">您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>
@@ -496,15 +606,15 @@
           
           <!-- 收報日選擇（必填，開通時寫入 preferred_report_day）-->
           <div class="report-day-panel">
-            <div class="report-day-label">Delivery Day · 收報日設定</div>
+            <div class="report-day-label" id="rd-label">Delivery Day · 收報日設定</div>
             <div class="report-day-row">
-              <span class="rd-pretext">每月</span>
+              <span class="rd-pretext" id="rd-pretext-1">每月</span>
               <select id="report-day-select" class="report-day-select unset">
                 <option value="">— 選擇日期 —</option>
               </select>
-              <span class="rd-pretext">號收到下一期流月</span>
+              <span class="rd-pretext" id="rd-pretext-2">號收到下一期流月</span>
             </div>
-            <div class="report-day-note">
+            <div class="report-day-note" id="rd-note">
               開通後立即為你生成<strong>下個月</strong>的流月；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。
               <span class="rd-utc">日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>
             </div>
@@ -512,7 +622,7 @@
 
           <div class="intro-cta-wrap">
             <button id="intro-subscribe-btn" class="intro-cta" disabled>開始閱讀我的流月</button>
-            <div class="intro-cta-note">為你生成下個月的流月，約需數分鐘</div>
+            <div class="intro-cta-note" id="intro-cta-note">為你生成下個月的流月，約需數分鐘</div>
           </div>
         </div>
 
@@ -520,8 +630,8 @@
         <div id="intro-generating" class="intro-generating" style="display:none;">
           <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
           <div class="intro-gen-head">
-            <div class="g-title">正在為你展開流月</div>
-            <div class="g-sub">我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。</div>
+            <div class="g-title" id="gen-head-title">正在為你展開流月</div>
+            <div class="g-sub" id="gen-head-sub">我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。</div>
           </div>
           <div id="gen-cards" class="gen-cards"></div>
         </div>
@@ -532,13 +642,13 @@
     <section id="view-years" class="view">
       <div class="years-head">
         <div class="years-eyebrow">Monthly Fortune · 流月</div>
-        <h1 class="years-title">我的流月運勢</h1>
-        <p class="years-sub">選擇一個年份，再選擇月份閱讀當月的十二宮運勢</p>
+        <h1 class="years-title" id="years-title">我的流月運勢</h1>
+        <p class="years-sub" id="years-sub">選擇一個年份，再選擇月份閱讀當月的十二宮運勢</p>
       </div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
-        <div class="years-empty-title">尚無流月資料</div>
-        <div class="years-empty-body">您目前還沒有任何月份的流月運勢報告。<br>當流月報告生成完成後，可閱讀的月份會出現在這裡。</div>
+        <div class="years-empty-title" id="years-empty-title">尚無流月資料</div>
+        <div class="years-empty-body" id="years-empty-body">您目前還沒有任何月份的流月運勢報告。<br>當流月報告生成完成後，可閱讀的月份會出現在這裡。</div>
       </div>
     </section>
 
@@ -548,13 +658,13 @@
       <div class="hub-head">
         <div class="hub-eyebrow" id="hub-eyebrow">Monthly Chart</div>
         <h1 class="hub-title" id="hub-title">流月十二宮</h1>
-        <p class="hub-sub">選擇月份，點選一宮以閱讀完整內容</p>
+        <p class="hub-sub" id="hub-sub">選擇月份，點選一宮以閱讀完整內容</p>
       </div>
       
       <!-- 個人化設定摺疊入口（已訂閱者在此隨時調整 context）-->
       <div class="ctx-hub-entry">
         <button id="ctx-toggle" class="ctx-toggle">
-          <span class="ctx-toggle-label">⚙ 個人化設定</span>
+          <span class="ctx-toggle-label" id="ctx-toggle-label">⚙ 個人化設定</span>
           <span class="ctx-toggle-caret" id="ctx-toggle-caret">▾</span>
         </button>
         <div id="ctx-hub-mount" class="ctx-hub-mount" style="display:none;"><!-- JS 把 panel 移進來 --></div>
@@ -566,16 +676,16 @@
 
       <!-- 能量張力一覽 overview -->
       <div id="overview" class="overview" style="display:none;">
-        <div class="overview-eyebrow">Energy Overview · 本月能量一覽</div>
+        <div class="overview-eyebrow" id="overview-eyebrow">Energy Overview · 本月能量一覽</div>
         <div class="overview-title" id="overview-title">本月十二領域的能量分布</div>
         <div class="overview-sub" id="overview-sub"></div>
         <div id="overview-focus" class="overview-focus"></div>
         <div id="overview-highlights" class="overview-highlights" style="display:none;">
-          <div class="ovh-title">本月亮點 · Bright Spots</div>
+          <div class="ovh-title" id="ovh-title">本月亮點 · Bright Spots</div>
           <div id="overview-highlights-chips" class="ovh-chips"></div>
         </div>
         <div id="overview-bars" class="overview-bars"></div>
-        <div class="overview-legend">
+        <div class="overview-legend" id="overview-legend">
           每一條的右側（綠）代表這個月該領域的助力與順流，左側（紅）代表能量張力與需要用心之處——兩者並存、不互相抵銷，因為人生本就是好壞交織。長度是相對於您本月其他領域而言，並非絕對的吉凶評分。這不是要評斷好壞，而是幫您看見：這個月，把心力放在哪裡最值得。
         </div>
       </div>
@@ -606,14 +716,14 @@
         <div class="palace-explainer-label" id="detail-explainer-label">About this Palace</div>
         <div class="palace-explainer-body" id="detail-explainer"></div>
       </div>
-      <div class="palace-subtitle">本宮主星 · 輔星 · 四化</div>
+      <div class="palace-subtitle" id="palace-subtitle">本宮主星 · 輔星 · 四化</div>
       <div class="palace-stars-line" id="detail-stars-line"></div>
 
       <section class="section">
         <div class="section-head">
           <div class="section-num">01</div>
           <div class="section-titles">
-            <div class="section-title-zh">宮位解析</div>
+            <div class="section-title-zh" id="sec1-title">宮位解析</div>
             <div class="section-title-en">Reading of the Palace</div>
           </div>
         </div>
@@ -626,13 +736,13 @@
         <div class="section-head">
           <div class="section-num">02</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛入</div>
+            <div class="section-title-zh" id="sec2-title">能量飛入</div>
             <div class="section-title-en">Inflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↘</div>
-          <div><strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。</div>
+          <div id="sec2-desc"><strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。</div>
         </div>
         <div id="detail-transforms-in" class="transform-blocks"></div>
         <div id="lock-02" class="seclock" style="display:none;"></div>
@@ -642,13 +752,13 @@
         <div class="section-head">
           <div class="section-num">03</div>
           <div class="section-titles">
-            <div class="section-title-zh">能量飛出</div>
+            <div class="section-title-zh" id="sec3-title">能量飛出</div>
             <div class="section-title-en">Outflowing Currents</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">↗</div>
-          <div><strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。</div>
+          <div id="sec3-desc"><strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。</div>
         </div>
         <div id="detail-transforms-out" class="transform-blocks"></div>
         <div id="lock-03" class="seclock" style="display:none;"></div>
@@ -658,7 +768,7 @@
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh">本月建議</div>
+            <div class="section-title-zh" id="sec4-title">本月建議</div>
             <div class="section-title-en">Guidance for the Month</div>
           </div>
         </div>
@@ -674,13 +784,13 @@
         <div class="section-head">
           <div class="section-num">✦</div>
           <div class="section-titles">
-            <div class="section-title-zh">追蹤議題解析</div>
+            <div class="section-title-zh" id="personal-title">追蹤議題解析</div>
             <div class="section-title-en">Your Tracked Focus</div>
           </div>
         </div>
         <div class="section-explainer">
           <div class="section-explainer-icon">✦</div>
-          <div><strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。</div>
+          <div id="personal-desc"><strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。</div>
         </div>
         <div id="detail-personal" class="personal-prose"></div>
       </section>
@@ -693,9 +803,9 @@
     </section>
 
     <section id="view-error" class="view">
-      <h1 class="error-title">無法載入流月</h1>
+      <h1 class="error-title" id="error-title">無法載入流月</h1>
       <p id="error-detail" class="error-detail">發生了一點問題，請稍後再試。</p>
-      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary">返回儀表板</a></div>
+      <div style="text-align: center;"><a href="dashboard.html" class="btn-primary" id="btn-back-dashboard">返回儀表板</a></div>
     </section>
 
   </div>
@@ -704,110 +814,65 @@
 <div id="site-footer"></div>
 
 <script type="module">
-  import { supabase, requireAuth } from './components.js';
+  import { supabase, requireAuth, loadReportGlossary } from './components.js';
+
+  // i18n 核心為 classic 全域(window.FSI18N,已於 <head> 的 <script src="i18n.js"> 載入)。
+  // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel=報告內容(reportLang,鎖定)。
+  const { t: tx, td, palaceLabel, starLabel, transformLabel } = window.FSI18N;
 
   // ── 可調整常數：流月報告表名 ──
   const MONTHLY_TABLE = 'monthly_palace_reports_gated';
-  // metadata 來源表（能量張力 overview 用）
   const INTERP_TABLE = 'palace_interpretations';
-  // 流月生成狀態表（訂閱判斷 + 生成中輪詢）
   const MONTHLY_JOBS_TABLE = 'monthly_generation_jobs';
-  // materials flow 觸發 webhook（來源:config.js → window.CFG.WEBHOOK_MONTHLY）
   const MONTHLY_TRIGGER_URL = window.CFG.WEBHOOK_MONTHLY;
-  // 生成中輪詢間隔（毫秒）
   const POLL_INTERVAL_MS = 15000;
 
-  // ── 會員等級（訂閱系統尚未建立，先用 placeholder）──
-  // 'free'：可看 上月 / 本月 / 下月
-  // 'paid'：可看 上月 / 本月 / 未來三月
+  // 'free'：可看 上月 / 本月 / 下月；'paid'：上月 / 本月 / 未來三月
   const userTier = 'paid';
 
-  // ── 付費牆：四化解鎖狀態（gate = monthly_subscribed）──
-  //   注意：與 ctxLoadTier() 各自獨立讀 monthly_subscribed，互不影響
   let isUnlocked = false;
   const PRICING_PAGE = 'pricing.html';
   function goPricing() { window.location.href = PRICING_PAGE; }
 
-  // overview 計分權重（化忌略加重、權科溫和加分）
-  const SCORE_WEIGHT = {
-    auspicious: 1,
-    hua_lu: 1,
-    hua_quan: 0.5,
-    hua_ke: 0.5,
-    sha_ji: -1,
-    hua_ji: -1.5,
-  };
+  const SCORE_WEIGHT = { auspicious: 1, hua_lu: 1, hua_quan: 0.5, hua_ke: 0.5, sha_ji: -1, hua_ji: -1.5 };
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
-  const PALACE_EN = {
-    '命宮':'Palace of Self','兄弟宮':'Palace of Siblings','夫妻宮':'Palace of Spouse','子女宮':'Palace of Children',
-    '財帛宮':'Palace of Wealth','疾厄宮':'Palace of Health','遷移宮':'Palace of Travel','交友宮':'Palace of Friends',
-    '官祿宮':'Palace of Career','田宅宮':'Palace of Home','福德宮':'Palace of Spirit','父母宮':'Palace of Parents',
-  };
-  const PALACE_TAGLINE = {
-    '命宮':'本性與內在<br>your innate nature','兄弟宮':'至親與同輩<br>siblings & peers','夫妻宮':'伴侶與情感<br>partner & love',
-    '子女宮':'創造與後輩<br>creation & legacy','財帛宮':'財富與資源<br>wealth & resources','疾厄宮':'身體與感受<br>body & feeling',
-    '遷移宮':'外境與機運<br>outer world','交友宮':'朋友與人脈<br>friends & network','官祿宮':'事業與舞台<br>career & stage',
-    '田宅宮':'家庭與基地<br>home & ground','福德宮':'心靈與享受<br>spirit & joy','父母宮':'長輩與權威<br>parents & authority',
-  };
-  // 宮位完整說明（流月語意）
-  const PALACE_EXPLAINER = {
-    '命宮':'流月命宮代表您<span class="domain-keyword">這個月整體的基調、心境與行動姿態</span>——本月您看待自己與處境的主軸，所有其他宮位的流月能量，都會在這裡匯流。',
-    '兄弟宮':'流月兄弟宮反映本月您與<span class="domain-keyword">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。',
-    '夫妻宮':'流月夫妻宮反映本月您的<span class="domain-keyword">親密關係、伴侶互動與情感狀態</span>——這個月感情的流向與課題。',
-    '子女宮':'流月子女宮反映本月您的<span class="domain-keyword">子女、後輩、創造力與作品</span>——這個月您孕育、栽培之事的動向。',
-    '財帛宮':'流月財帛宮反映本月您的<span class="domain-keyword">財富、現金流與用錢態度</span>——這個月金錢的進出與價值取捨。',
-    '疾厄宮':'流月疾厄宮反映本月您的<span class="domain-keyword">身體、健康與情緒狀態</span>——這個月身心的感受與需要留意的節奏。',
-    '遷移宮':'流月遷移宮反映本月您的<span class="domain-keyword">外在際遇、機運與社會形象</span>——這個月離開熟悉環境後的機會與人緣。',
-    '交友宮':'流月交友宮反映本月您的<span class="domain-keyword">朋友、人脈、下屬與社交網絡</span>——這個月人際的助力與往來。',
-    '官祿宮':'流月官祿宮反映本月您的<span class="domain-keyword">事業、志向與表現舞台</span>——這個月工作與成就的動向。',
-    '田宅宮':'流月田宅宮反映本月您的<span class="domain-keyword">家庭、不動產與安身之所</span>——這個月居家、家族與根基的變化。',
-    '福德宮':'流月福德宮反映本月您的<span class="domain-keyword">精神世界、興趣與內在感受</span>——這個月心靈的快樂來源與安頓。',
-    '父母宮':'流月父母宮反映本月您與<span class="domain-keyword">父母、長輩、權威與庇蔭</span>的關係，以及學養與上位者的往來。',
-  };
-
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
+  // 裝飾性英文副標(靜態);短名/tooltip 走 transformLabel/td。
   const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
-  const TRANSFORM_TOOLTIP = {
-    '化祿': { title: '化祿 · Resource (Lu)', body: '喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅，是本月容易順利展開的領域。' },
-    '化權': { title: '化權 · Anchor (Quan)', body: '權力與掌控。能量賦予主導感、決策力與影響力，是本月您想要「說了算」、想為事情負責的領域。' },
-    '化科': { title: '化科 · Stage (Ke)', body: '名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象，是本月會發光、被欣賞的舞台。' },
-    '化忌': { title: '化忌 · Direction (Ji)', body: '不滿足與執著。能量讓您在這個領域反覆投入、深耕。這不是缺憾，而是本月特別需要關注、用心的方向。' },
-  };
 
-  // 月份標籤（相對於現在）
-  const MONTH_REL_LABEL = { '-1': '上月', '0': '本月', '1': '下月', '2': '+2', '3': '+3' };
+  // 月份相對標籤(相對於現在)：走 i18n;+2/+3 維持字面
+  function relLabel(rel) {
+    if (rel === -1) return tx('mo.relPrev');
+    if (rel === 0)  return tx('mo.relCurr');
+    if (rel === 1)  return tx('mo.relNext');
+    if (rel === 2)  return '+2';
+    if (rel === 3)  return '+3';
+    return '';
+  }
 
   // ===================================================================
   // 國曆 / 農曆 對應轉換（固定位移，不做真農曆換算、不處理閏月）
-  //   資料庫存農曆；給用戶看的一律 +1 個月轉國曆（農曆12月→隔年國曆1月）
   // ===================================================================
-
-  // 農曆年月 → 國曆顯示用 { year, month, label }
   function lunarToSolarDisplay(lunarYear, lunarMonth) {
     lunarYear = Number(lunarYear); lunarMonth = Number(lunarMonth);
     let y, m;
     if (lunarMonth === 12) { y = lunarYear + 1; m = 1; }
     else { y = lunarYear; m = lunarMonth + 1; }
-    return { year: y, month: m, label: `${y} 年 ${m} 月` };
+    const label = tx('mo.ymLabel').replace('{y}', y).replace('{m}', m);
+    return { year: y, month: m, label };
   }
-  // 顯示用：農曆年月 → "YYYY/MM"（國曆）
   function lunarToSolarYM(lunarYear, lunarMonth) {
     const d = lunarToSolarDisplay(lunarYear, lunarMonth);
     return `${d.year}/${String(d.month).padStart(2, '0')}`;
   }
-  // 系統當下國曆 → 農曆基準（給 tier 鎖定計算用）：國曆月−1，1月→前一年12月
   function nowAsLunarBase() {
     const now = new Date();
     const sy = now.getFullYear(), sm = now.getMonth() + 1;
     if (sm === 1) return { year: sy - 1, month: 12 };
     return { year: sy, month: sm - 1 };
   }
-
-  // 觸發端：國曆當下 →（本月 or 下月）農曆 target，打 webhook 用這個算
-  //   which="current"：國曆月−1（1月→前一年12月）
-  //   which="next"：在 current 基礎上農曆+1（12月→隔年1月）
   function solarToLunarTarget(solarYear, solarMonth, which = 'current') {
     solarYear = Number(solarYear); solarMonth = Number(solarMonth);
     let ly, lm;
@@ -823,15 +888,21 @@
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
-  let currentMonth = null;        // 當前選中的月份 (1-12)
-  let availableMonths = [];       // 該年有資料的月份清單 [{year, month}]
-  let visibleMonths = [];         // 經 tier 過濾後可見的月份
-  let metaByPalace = {};          // 當月各宮 metadata（overview 用）
-  let userEmail = null;           // 登入用戶 email（訂閱觸發用）
-  let pollTimer = null;           // 生成中輪詢計時器
-  let preferredReportDay = null;  // 收報日（enrollment signal；NULL = 未訂閱/已取消）
+  let currentMonth = null;
+  let availableMonths = [];
+  let visibleMonths = [];
+  let metaByPalace = {};
+  let userEmail = null;
+  let pollTimer = null;
+  let preferredReportDay = null;
+  let currentView = 'view-loading';
+  let currentPalace = null;
+  let introMode = null;       // 'pitch' | 'generating' | null
+  let lastJobs = [];
+  let lastYears = [];
 
   function showView(id) {
+    currentView = id;
     document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
     const t = document.getElementById(id);
     if (t) t.classList.add('active');
@@ -846,8 +917,85 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  // ── 靜態 UI 字串套用(id→key);document.title 一併更新 ──
+  function applyStaticI18n() {
+    document.title = tx('mo.docTitle');
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
+    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    // loading
+    setText('loading-title', 'mo.loadingTitle');
+    setText('loading-sub', 'mo.loadingSub');
+    // intro pitch
+    setText('intro-title', 'mo.introTitle');
+    setText('intro-body-1', 'mo.introBody1');
+    setText('intro-body-2', 'mo.introBody2');
+    setText('intro-body-3', 'mo.introBody3');
+    setText('intro-offer-label', 'mo.introOfferLabel');
+    setHtml('intro-offer-body', 'mo.introOfferBody');
+    setHtml('intro-offer-item-1', 'mo.introOfferItem1');
+    setHtml('intro-offer-item-2', 'mo.introOfferItem2');
+    setHtml('intro-offer-item-3', 'mo.introOfferItem3');
+    setText('ctx-label', 'mo.ctxLabel');
+    setHtml('ctx-desc', 'mo.ctxDesc');
+    setHtml('ctx-upsell', 'mo.ctxUpsell');
+    setText('rd-label', 'mo.rdLabel');
+    setText('rd-pretext-1', 'mo.rdEvery');
+    setText('rd-pretext-2', 'mo.rdReceive');
+    setHtml('rd-note', 'mo.rdNote');
+    setText('intro-subscribe-btn', 'mo.introSubscribeBtn');
+    setText('intro-cta-note', 'mo.introCtaNote');
+    // intro generating
+    setText('gen-head-title', 'mo.genHeadTitle');
+    setHtml('gen-head-sub', 'mo.genHeadSub');
+    // years
+    setText('years-title', 'mo.yearsTitle');
+    setText('years-sub', 'mo.yearsSub');
+    setText('years-empty-title', 'mo.yearsEmptyTitle');
+    setHtml('years-empty-body', 'mo.yearsEmptyBody');
+    // hub
+    setText('hub-to-years', 'mo.hubToYears');
+    setText('hub-sub', 'mo.hubSub');
+    setText('ctx-toggle-label', 'mo.ctxToggle');
+    // overview
+    setText('overview-eyebrow', 'mo.ovEyebrow');
+    setText('overview-title', 'mo.ovTitle');
+    setText('ovh-title', 'mo.ovhTitle');
+    setText('overview-legend', 'mo.ovLegend');
+    // detail static
+    setText('back-to-hub-top', 'mo.backAllPalaces');
+    setText('back-to-hub-bottom', 'mo.allPalaces');
+    setText('detail-explainer-label', 'palaceExplainerLabel');
+    setText('palace-subtitle', 'palaceSubtitle');
+    setText('sec1-title', 'sectionPalaceAnalysis');
+    setText('sec2-title', 'secInflowTitle');
+    setText('sec3-title', 'secOutflowTitle');
+    setText('sec4-title', 'mo.secSuggestTitle');
+    setHtml('sec2-desc', 'mo.secInflowDesc');
+    setHtml('sec3-desc', 'mo.secOutflowDesc');
+    setText('personal-title', 'mo.personalTitle');
+    setHtml('personal-desc', 'mo.personalDesc');
+    // error
+    setText('error-title', 'mo.errTitle');
+    setText('error-detail', 'mo.errDefault');
+    setText('btn-back-dashboard', 'btnBackDashboard');
+    // report-day 下拉的 placeholder option
+    const rdPlaceholder = document.querySelector('#report-day-select option[value=""]');
+    if (rdPlaceholder) rdPlaceholder.textContent = tx('mo.rdSelectPlaceholder');
+  }
+
+  function setHubHeader(year, month) {
+    const disp = lunarToSolarDisplay(year, month);
+    const ymShort = `${disp.year}/${String(disp.month).padStart(2,'0')}`;
+    const eb = document.getElementById('hub-eyebrow');
+    const ti = document.getElementById('hub-title');
+    if (eb) eb.textContent = tx('mo.hubEyebrow').replace('{ym}', ymShort);
+    if (ti) ti.textContent = tx('mo.hubTitle').replace('{ymLabel}', disp.label);
+  }
+
   // ── 年份選擇 ──
   function renderYears(years) {
+    introMode = null;
+    lastYears = years || [];
     const grid = document.getElementById('years-grid');
     const empty = document.getElementById('years-empty');
     grid.innerHTML = '';
@@ -871,14 +1019,12 @@
     });
   }
 
-  // ── 選定年份後：找出該年有資料的月份，套 tier 過濾，載入預設月 ──
   async function loadYear(year) {
     currentYear = year;
     showView('view-loading');
-    document.querySelector('#view-loading .loading-title').textContent = `載入 ${year} 流月`;
-    document.querySelector('#view-loading .loading-sub').textContent = '正在展開可閱讀的月份…';
+    document.getElementById('loading-title').textContent = tx('mo.loadingYearTitle').replace('{year}', year);
+    document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
 
-    // 撈該年有報告的月份
     const { data: rows, error } = await supabase
       .from(MONTHLY_TABLE)
       .select('valid_month_start')
@@ -887,17 +1033,14 @@
       .eq('language', 'zh-TW')
       .eq('valid_year_start', year);
 
-    if (error) { showError('無法載入 ' + year + ' 流月月份：' + error.message); return; }
+    if (error) { showError(tx('mo.errMonthsFail').replace('{year}', year) + error.message); return; }
 
     const months = [...new Set((rows || []).map(r => r.valid_month_start).filter(m => m != null))].sort((a, b) => a - b);
-    if (months.length === 0) { showError('找不到 ' + year + ' 的流月資料。'); return; }
+    if (months.length === 0) { showError(tx('mo.errNoYearData').replace('{year}', year)); return; }
 
     availableMonths = months.map(m => ({ year, month: m }));
-
-    // tier 過濾：以「本月」為基準，free 看 -1~+1，paid 看 -1~+3
     visibleMonths = computeVisibleMonths(availableMonths);
 
-    // 預設選中的月份：優先選「本月」，否則選可見清單第一個
     const base = nowAsLunarBase();
     let defaultPick = visibleMonths.find(v => v.year === base.year && v.month === base.month)
       || visibleMonths.find(v => v.unlocked) || visibleMonths[0];
@@ -907,23 +1050,18 @@
     showView('view-hub');
   }
 
-// 計算可見月份（含鎖定狀態）：以「系統當下的農曆基準」為本月
   function computeVisibleMonths(all) {
-    const base = nowAsLunarBase(); // 農曆基準
-    const baseIdx = base.year * 12 + base.month; // 本月的絕對月序（農曆）
+    const base = nowAsLunarBase();
+    const baseIdx = base.year * 12 + base.month;
     const maxAhead = userTier === 'paid' ? 3 : 1;
-
     return all
       .map(({ year, month }) => {
         const idx = year * 12 + month;
-        const rel = idx - baseIdx; // -1=上月, 0=本月, 正數=未來
+        const rel = idx - baseIdx;
         return { year, month, rel };
       })
       .filter(v => v.rel >= -1 && v.rel <= 3)
-      .map(v => ({
-        ...v,
-        unlocked: v.rel >= -1 && v.rel <= maxAhead,
-      }))
+      .map(v => ({ ...v, unlocked: v.rel >= -1 && v.rel <= maxAhead }))
       .sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
   }
 
@@ -933,11 +1071,11 @@
     visibleMonths.forEach(v => {
       const tab = document.createElement('div');
       tab.className = 'month-tab' + (v.unlocked ? '' : ' locked') + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
-      const relLabel = MONTH_REL_LABEL[String(v.rel)] || `${v.month}月`;
-    tab.innerHTML = `
+      const rl = relLabel(v.rel) || tx('mo.monthSuffix').replace('{m}', v.month);
+      tab.innerHTML = `
         <span class="month-tab-ym">${lunarToSolarYM(v.year, v.month)}</span>
-        <span class="month-tab-label">${relLabel}</span>
-        ${v.unlocked ? '' : '<span class="month-tab-lock">🔒 升級可見</span>'}`;
+        <span class="month-tab-label">${escapeHtml(rl)}</span>
+        ${v.unlocked ? '' : `<span class="month-tab-lock">${escapeHtml(tx('mo.tabLockUpgrade'))}</span>`}`;
       if (v.unlocked) {
         tab.addEventListener('click', () => loadMonth(v.year, v.month));
       }
@@ -945,7 +1083,6 @@
     });
   }
 
-  // ── 載入指定年月的十二宮報告 + metadata overview ──
   async function loadMonth(year, month) {
     currentYear = year;
     currentMonth = month;
@@ -959,24 +1096,20 @@
       .eq('valid_year_start', year)
       .eq('valid_month_start', month);
 
-    if (error) { showError('無法載入 ' + year + '/' + month + ' 流月內容：' + error.message); return; }
-    if (!reports || reports.length === 0) { showError('找不到 ' + year + '/' + month + ' 的流月宮位內容。'); return; }
+    if (error) { showError(tx('mo.errReportsFail').replace('{ym}', year + '/' + month) + error.message); return; }
+    if (!reports || reports.length === 0) { showError(tx('mo.errNoContent').replace('{ym}', year + '/' + month)); return; }
 
     reportsByPalace = {};
     for (const row of reports) reportsByPalace[row.palace_name] = row;
 
-    // 載入 metadata（overview 能量張力）。失敗不阻斷主畫面。
     await loadOverviewMeta(year, month);
 
-    const disp = lunarToSolarDisplay(year, month);
-    document.getElementById('hub-eyebrow').textContent = `Your ${disp.year}/${String(disp.month).padStart(2,'0')} Monthly Chart`;
-    document.getElementById('hub-title').textContent = `${disp.label} 流月十二宮`;
+    setHubHeader(year, month);
     renderMonthTabs();
     renderOverview();
     renderHub();
   }
 
-  // 撈當月各宮 metadata（取 interpretation_type='main' 那筆），parse double-encoded jsonb
   async function loadOverviewMeta(year, month) {
     metaByPalace = {};
     try {
@@ -992,16 +1125,10 @@
       if (error) { console.warn('[monthly] overview metadata 查詢失敗：', error.message); return; }
       (data || []).forEach(row => {
         let m = row.metadata;
-        // double-encoded：jsonb 裡裝 JSON 字串，需 parse 一次
-        if (typeof m === 'string') {
-          try { m = JSON.parse(m); } catch (_) { m = null; }
-        }
+        if (typeof m === 'string') { try { m = JSON.parse(m); } catch (_) { m = null; } }
         if (!m) return;
-        // star_list 可能是 JSON 字串，parse 成陣列備用（tooltip 用）
         let sl = row.star_list;
-        if (typeof sl === 'string') {
-          try { sl = JSON.parse(sl); } catch (_) { sl = []; }
-        }
+        if (typeof sl === 'string') { try { sl = JSON.parse(sl); } catch (_) { sl = []; } }
         m.__star_list = Array.isArray(sl) ? sl : [];
         metaByPalace[row.palace_name] = m;
       });
@@ -1010,12 +1137,7 @@
     }
   }
 
-  // 依權重算單宮能量分數（紅鸞不進分數，只進亮點）
-  function palaceScore(m) {
-    if (!m) return null;
-    return palacePosScore(m) - palaceNegScore(m);
-  }
-  // 正向能量（綠，往右）：貴人 + 化祿 + 0.5化權 + 0.5化科
+  function palaceScore(m) { if (!m) return null; return palacePosScore(m) - palaceNegScore(m); }
   function palacePosScore(m) {
     if (!m) return 0;
     const n = (k) => Number(m[k]) || 0;
@@ -1024,7 +1146,6 @@
          + SCORE_WEIGHT.hua_quan   * n('hua_quan_count')
          + SCORE_WEIGHT.hua_ke     * n('hua_ke_count');
   }
-  // 張力能量（紅，往左）：煞 + 1.5化忌（取正值表示「量」）
   function palaceNegScore(m) {
     if (!m) return 0;
     const n = (k) => Number(m[k]) || 0;
@@ -1032,70 +1153,62 @@
          + Math.abs(SCORE_WEIGHT.hua_ji) * n('hua_ji_count');
   }
 
-  // 產生單宮的能量標籤（bar 旁）
   function palaceTags(m) {
     if (!m) return [];
     const n = (k) => Number(m[k]) || 0;
+    const mult = (x) => x > 1 ? ` ×${x}` : '';
     const tags = [];
-    if (n('sha_ji_count') > 0) tags.push({ cls: 'sha',  text: `煞 ×${n('sha_ji_count')}` });
-    if (n('hua_ji_count') > 0) tags.push({ cls: 'ji',   text: `化忌${n('hua_ji_count') > 1 ? ' ×' + n('hua_ji_count') : ''}` });
-    if (n('hua_lu_count') > 0) tags.push({ cls: 'lu',   text: `化祿${n('hua_lu_count') > 1 ? ' ×' + n('hua_lu_count') : ''}` });
-    if (n('hua_quan_count') > 0) tags.push({ cls: 'quan', text: `化權${n('hua_quan_count') > 1 ? ' ×' + n('hua_quan_count') : ''}` });
-    if (n('hua_ke_count') > 0) tags.push({ cls: 'ke',   text: `化科${n('hua_ke_count') > 1 ? ' ×' + n('hua_ke_count') : ''}` });
-    if (n('auspicious_count') > 0) tags.push({ cls: 'aus', text: `貴人 ×${n('auspicious_count')}` });
-    if (m.hong_luan_detected === true) tags.push({ cls: 'luan', text: '紅鸞' });
+    if (n('sha_ji_count') > 0) tags.push({ cls: 'sha',  text: `${tx('mo.tagSha')} ×${n('sha_ji_count')}` });
+    if (n('hua_ji_count') > 0) tags.push({ cls: 'ji',   text: `${transformLabel('化忌')}${mult(n('hua_ji_count'))}` });
+    if (n('hua_lu_count') > 0) tags.push({ cls: 'lu',   text: `${transformLabel('化祿')}${mult(n('hua_lu_count'))}` });
+    if (n('hua_quan_count') > 0) tags.push({ cls: 'quan', text: `${transformLabel('化權')}${mult(n('hua_quan_count'))}` });
+    if (n('hua_ke_count') > 0) tags.push({ cls: 'ke',   text: `${transformLabel('化科')}${mult(n('hua_ke_count'))}` });
+    if (n('auspicious_count') > 0) tags.push({ cls: 'aus', text: `${tx('mo.tagAus')} ×${n('auspicious_count')}` });
+    if (m.hong_luan_detected === true) tags.push({ cls: 'luan', text: tx('mo.tagLuan') });
     return tags;
   }
 
-  // 該宮是否有正向亮點（貴人 / 紅鸞 / 化祿權科）
   function palaceHighlight(palace, m) {
     if (!m) return null;
     const n = (k) => Number(m[k]) || 0;
     const parts = [];
     if (n('auspicious_count') > 0) {
-      const names = Array.isArray(m.auspicious_list) ? m.auspicious_list.join('、') : '';
-      parts.push({ tag: '貴人', text: names || `貴人 ×${n('auspicious_count')}` });
+      const names = Array.isArray(m.auspicious_list) ? m.auspicious_list.map(starLabel).join('、') : '';
+      parts.push({ tag: tx('mo.tagAus'), text: names || `${tx('mo.tagAus')} ×${n('auspicious_count')}` });
     }
-    if (m.hong_luan_detected === true) parts.push({ tag: '紅鸞', text: '人緣與情感的契機' });
-    if (n('hua_lu_count') > 0) parts.push({ tag: '化祿', text: '資源與順流' });
-    if (n('hua_quan_count') > 0) parts.push({ tag: '化權', text: '主導與承擔' });
-    if (n('hua_ke_count') > 0) parts.push({ tag: '化科', text: '被看見的舞台' });
+    if (m.hong_luan_detected === true) parts.push({ tag: tx('mo.tagLuan'), text: tx('mo.hlLuanDesc') });
+    if (n('hua_lu_count') > 0) parts.push({ tag: transformLabel('化祿'), text: tx('mo.hlLuDesc') });
+    if (n('hua_quan_count') > 0) parts.push({ tag: transformLabel('化權'), text: tx('mo.hlQuanDesc') });
+    if (n('hua_ke_count') > 0) parts.push({ tag: transformLabel('化科'), text: tx('mo.hlKeDesc') });
     return parts.length ? parts : null;
   }
 
-  // tooltip 內容（重點星 + 一句定性）
   function palacePopHtml(palace, m, score) {
     const n = (k) => Number(m[k]) || 0;
     const items = [];
-    // 重點星：從 star_list 篩煞/貴人/紅鸞，四化以 count 呈現
     const aus = Array.isArray(m.auspicious_list) ? m.auspicious_list : [];
-    if (aus.length) items.push(`<div class="ovb-pop-item">貴人星：<b>${aus.join('、')}</b></div>`);
-    if (n('sha_ji_count') > 0) items.push(`<div class="ovb-pop-item">煞星：<b>${n('sha_ji_count')} 顆</b></div>`);
+    if (aus.length) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popAusStar'))}<b>${escapeHtml(aus.map(starLabel).join('、'))}</b></div>`);
+    if (n('sha_ji_count') > 0) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popShaStar'))}<b>${n('sha_ji_count')}${escapeHtml(tx('mo.popCountUnit'))}</b></div>`);
     const huaParts = [];
-    if (n('hua_lu_count') > 0)  huaParts.push('化祿');
-    if (n('hua_quan_count') > 0) huaParts.push('化權');
-    if (n('hua_ke_count') > 0)  huaParts.push('化科');
-    if (n('hua_ji_count') > 0)  huaParts.push('化忌');
-    if (huaParts.length) items.push(`<div class="ovb-pop-item">四化：<b>${huaParts.join('、')}</b></div>`);
-    if (m.hong_luan_detected === true) items.push(`<div class="ovb-pop-item">桃花：<b>紅鸞</b></div>`);
-    if (items.length === 0) items.push(`<div class="ovb-pop-item">這個月此宮星曜平和，無特別強烈的能量訊號。</div>`);
+    if (n('hua_lu_count') > 0)  huaParts.push(transformLabel('化祿'));
+    if (n('hua_quan_count') > 0) huaParts.push(transformLabel('化權'));
+    if (n('hua_ke_count') > 0)  huaParts.push(transformLabel('化科'));
+    if (n('hua_ji_count') > 0)  huaParts.push(transformLabel('化忌'));
+    if (huaParts.length) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popSihua'))}<b>${escapeHtml(huaParts.join('、'))}</b></div>`);
+    if (m.hong_luan_detected === true) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popPeach'))}<b>${escapeHtml(tx('mo.tagLuan'))}</b></div>`);
+    if (items.length === 0) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popCalm'))}</div>`);
 
-    // 一句定性（不評價吉凶）
     let desc;
-    if (score < 0) {
-      desc = '這個月這個領域的能量張力較高，適合放慢腳步、多給自己一些餘裕，把心力溫柔地放在這裡。';
-    } else if (score > 0) {
-      desc = '這個月這個領域相對順流、有助力，是可以放心投入、順勢而為的方向。';
-    } else {
-      desc = '這個月這個領域大致平穩，依您的節奏自然推進即可。';
-    }
+    if (score < 0) desc = tx('mo.popDescNeg');
+    else if (score > 0) desc = tx('mo.popDescPos');
+    else desc = tx('mo.popDescNeutral');
+
     return `
-      <div class="ovb-pop-name">${palace}　${PALACE_EN[palace] || ''}</div>
+      <div class="ovb-pop-name">${escapeHtml(palaceLabel(palace))}</div>
       <div class="ovb-pop-items">${items.join('')}</div>
-      <div class="ovb-pop-desc">${desc}</div>`;
+      <div class="ovb-pop-desc">${escapeHtml(desc)}</div>`;
   }
 
-  // 浮層元素（單例）
   let _ovbPop = null;
   function getPop() {
     if (!_ovbPop) {
@@ -1109,7 +1222,6 @@
     const pop = getPop();
     pop.innerHTML = html;
     pop.classList.add('show');
-    // 先定位再量測，避免超出視窗右緣
     pop.style.left = '0px'; pop.style.top = '0px';
     const rect = pop.getBoundingClientRect();
     let left = x + 14, top = y + 14;
@@ -1126,7 +1238,6 @@
     const barsEl = document.getElementById('overview-bars');
     const subEl = document.getElementById('overview-sub');
 
-    // 算每宮的正項（綠）與負項（紅），不抵銷
     const scored = PALACE_ORDER
       .map(p => {
         const m = metaByPalace[p];
@@ -1135,32 +1246,22 @@
       })
       .filter(Boolean);
 
-    if (scored.length === 0) {
-      box.style.display = 'none';
-      return;
-    }
+    if (scored.length === 0) { box.style.display = 'none'; return; }
     box.style.display = 'block';
 
-    // 紅、綠各自的全月最大值（各自獨立刻度，避免「紅天生偏多」造成壓迫）
     const maxPos = Math.max(1, ...scored.map(x => x.pos));
     const maxNeg = Math.max(1, ...scored.map(x => x.neg));
 
-    // 「最需要被照顧」＝ 張力（負項）最突出的宮，取最多 2 個（且 neg > 0）
     const focus = [...scored].filter(x => x.neg > 0).sort((a, b) => b.neg - a.neg).slice(0, 2);
 
-    subEl.textContent = focus.length
-      ? `這個月，以下領域的能量張力相對突出，值得多放一點心：`
-      : `這個月十二宮能量相對平穩，沒有特別需要費心的領域。`;
+    subEl.textContent = focus.length ? tx('mo.ovSubFocus') : tx('mo.ovSubCalm');
 
     focusEl.innerHTML = focus.map(f => `
-      <span class="overview-focus-chip" data-palace="${f.palace}">
-        ${f.palace}<span class="fc-label">${PALACE_EN[f.palace] || ''}</span>
-      </span>`).join('');
+      <span class="overview-focus-chip" data-palace="${f.palace}">${escapeHtml(palaceLabel(f.palace))}</span>`).join('');
     focusEl.querySelectorAll('.overview-focus-chip').forEach(chip => {
       chip.addEventListener('click', () => openDetail(chip.dataset.palace));
     });
 
-    // 本月亮點：彙整有正向訊號的宮位
     const hlBox = document.getElementById('overview-highlights');
     const hlChips = document.getElementById('overview-highlights-chips');
     const highlights = [];
@@ -1172,7 +1273,7 @@
       hlBox.style.display = 'block';
       hlChips.innerHTML = highlights.map(h => `
         <span class="ovh-chip" data-palace="${h.palace}">
-          <span class="ovh-tag">${h.tag}</span>${h.palace}・${h.text}
+          <span class="ovh-tag">${escapeHtml(h.tag)}</span>${escapeHtml(palaceLabel(h.palace))}・${escapeHtml(h.text)}
         </span>`).join('');
       hlChips.querySelectorAll('.ovh-chip').forEach(chip => {
         chip.addEventListener('click', () => openDetail(chip.dataset.palace));
@@ -1181,40 +1282,37 @@
       hlBox.style.display = 'none';
     }
 
-    // 雙向橫條（綠右紅左、不抵銷，各自正規化）＋ 標籤 ＋ tooltip
     barsEl.innerHTML = PALACE_ORDER.map(p => {
       const item = scored.find(x => x.palace === p);
       const m = metaByPalace[p];
       const tags = palaceTags(m);
       const tagsHtml = tags.length
-        ? `<div class="ovb-tags">${tags.map(t => `<span class="ovb-tag ${t.cls}">${t.text}</span>`).join('')}</div>`
+        ? `<div class="ovb-tags">${tags.map(t => `<span class="ovb-tag ${t.cls}">${escapeHtml(t.text)}</span>`).join('')}</div>`
         : '';
       let barInner;
       if (!item) {
         barInner = `<div class="ovb-track"><div class="ovb-mid"></div></div>`;
       } else {
-        const posPct = Math.round(item.pos / maxPos * 50); // 右半最多 50%
-        const negPct = Math.round(item.neg / maxNeg * 50); // 左半最多 50%
+        const posPct = Math.round(item.pos / maxPos * 50);
+        const negPct = Math.round(item.neg / maxNeg * 50);
         const posFill = item.pos > 0 ? `<div class="ovb-fill pos" style="width:${posPct}%;"></div>` : '';
         const negFill = item.neg > 0 ? `<div class="ovb-fill neg" style="width:${negPct}%;"></div>` : '';
         barInner = `<div class="ovb-track"><div class="ovb-mid"></div>${posFill}${negFill}</div>`;
       }
       return `<div class="ovb-row-wrap" data-palace="${p}">
         <div class="overview-bar-row">
-          <span class="ovb-name">${p}</span>
+          <span class="ovb-name">${escapeHtml(palaceLabel(p))}</span>
           ${barInner}
         </div>
         ${tagsHtml}
       </div>`;
     }).join('');
 
-    // 綁定：點擊進詳細；hover 顯示 tooltip
     barsEl.querySelectorAll('.ovb-row-wrap').forEach(row => {
       const p = row.dataset.palace;
       const m = metaByPalace[p];
       const item = scored.find(x => x.palace === p);
       const popHtml = m ? palacePopHtml(p, m, item ? (item.pos - item.neg) : 0) : null;
-
       row.addEventListener('click', () => openDetail(p));
       if (popHtml) {
         row.addEventListener('mouseenter', (e) => showPop(popHtml, e.clientX, e.clientY));
@@ -1235,20 +1333,19 @@
       idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
       card.appendChild(idx);
       const nameEl = document.createElement('div');
-      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceName;
+      nameEl.className = 'palace-card-name'; nameEl.textContent = palaceLabel(palaceName);
       card.appendChild(nameEl);
       const starsEl = document.createElement('div');
       starsEl.className = 'palace-card-stars';
       starsEl.textContent = row?.composition?.main_stars?.length
-        ? row.composition.main_stars.map(s => (typeof s === 'string') ? s : s?.star).join(' · ')
-        : '(無主星)';
+        ? row.composition.main_stars.map(s => starLabel((typeof s === 'string') ? s : s?.star)).join(' · ')
+        : tx('emptyNoMainStar');
       card.appendChild(starsEl);
-      // 有個人追蹤議題 → 標記
       if (row && row.suggestion_personal) {
         card.classList.add('has-personal');
         const mk = document.createElement('div');
         mk.className = 'palace-card-track';
-        mk.textContent = '✦ 追蹤';
+        mk.textContent = tx('mo.trackBadge');
         card.appendChild(mk);
       }
       if (row) card.addEventListener('click', () => openDetail(palaceName));
@@ -1258,45 +1355,43 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
-  // 各段輕量鎖（未解鎖時放在 02/03/04 內容區位置）
   function secLockHtml() {
-    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> 解鎖後可見</div>`;
+    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> ${escapeHtml(tx('mo.secLock'))}</div>`;
   }
 
-  // 付費牆 HTML（未解鎖時取代 02/03/04 三段）
   function paywallCtaHtml() {
     return `
       <div class="paywall">
         <div class="paywall-lock" aria-hidden="true">&#128274;</div>
         <div class="paywall-eyebrow">Unlock Full Reading</div>
-        <div class="paywall-title">解鎖完整分析</div>
+        <div class="paywall-title">${tx('mo.paywallTitle')}</div>
         <div class="paywall-list">
-          <div class="paywall-item"><span class="mk">I</span><span><b>能量飛入</b>　哪些資源正在幫助你、推動你。</span></div>
-          <div class="paywall-item"><span class="mk">II</span><span><b>能量飛出</b>　你正在影響、推動哪些面向。</span></div>
-          <div class="paywall-item"><span class="mk">III</span><span><b>本月專屬建議</b></span></div>
+          <div class="paywall-item"><span class="mk">I</span><span>${tx('mo.paywallItem1')}</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span>${tx('mo.paywallItem2')}</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span>${tx('mo.paywallItem3')}</span></div>
         </div>
-        <span class="paywall-cta" id="paywall-cta">查看方案</span>
-        <div class="paywall-note">已訂閱？回此頁重新整理即可顯示</div>
+        <span class="paywall-cta" id="paywall-cta">${tx('mo.paywallCta')}</span>
+        <div class="paywall-note">${tx('mo.paywallNote')}</div>
       </div>`;
   }
 
   function openDetail(palaceName) {
     const row = reportsByPalace[palaceName];
     if (!row) return;
+    currentPalace = palaceName;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
     const ymLabel = (currentYear && currentMonth) ? lunarToSolarYM(currentYear, currentMonth) : '';
-    document.getElementById('detail-eyebrow').textContent = (PALACE_EN[palaceName] || '') + (ymLabel ? ` · ${ymLabel}` : '');
-    document.getElementById('detail-title-zh').textContent = palaceName;
+    document.getElementById('detail-eyebrow').textContent = ymLabel;
+    document.getElementById('detail-title-zh').textContent = palaceLabel(palaceName);
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
-    document.getElementById('detail-tagline').innerHTML = PALACE_TAGLINE[palaceName] || '';
-    document.getElementById('detail-explainer-label').textContent = ymLabel ? `About this Palace · ${ymLabel}` : 'About this Palace';
-    document.getElementById('detail-explainer').innerHTML = PALACE_EXPLAINER[palaceName] || '';
+    document.getElementById('detail-tagline').innerHTML = td('PALACE_TAGLINE', palaceName);
+    document.getElementById('detail-explainer-label').textContent = tx('palaceExplainerLabel');
+    document.getElementById('detail-explainer').innerHTML = td('PALACE_EXPLAINER_MONTHLY', palaceName);
 
     renderStarsLine(row.composition);
     renderAnalysis(row.palace_analysis);
 
-    // ── 付費牆（丙方案）：02/03/04 標題+explainer 保留；未解鎖時內容換輕量鎖、底部放單一 CTA ──
     const ctaHost = document.getElementById('detail-paywall-cta');
     const locks = ['02','03','04'].map(n => document.getElementById('lock-' + n));
     const contents = [
@@ -1325,13 +1420,12 @@
     // 追蹤議題解析為免費，無論解鎖與否都呼叫：
     renderPersonalSuggestion(row.suggestion_personal);
 
-    
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
     const prevEl = document.getElementById('nav-prev');
     const nextEl = document.getElementById('nav-next');
-    prevEl.innerHTML = `<span class="arrow">←</span>${prev}`;
-    nextEl.innerHTML = `${next}<span class="arrow">→</span>`;
+    prevEl.innerHTML = `<span class="arrow">←</span>${escapeHtml(palaceLabel(prev))}`;
+    nextEl.innerHTML = `${escapeHtml(palaceLabel(next))}<span class="arrow">→</span>`;
     prevEl.onclick = () => openDetail(prev);
     nextEl.onclick = () => openDetail(next);
 
@@ -1344,28 +1438,27 @@
     (comp?.main_stars || []).forEach(s => {
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
-      let html = `<span class="main-star">${escapeHtml(name)}</span>`;
-      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      let html = `<span class="main-star">${escapeHtml(starLabel(name))}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${escapeHtml(transformLabel(tf))}</span>`;
       parts.push(html);
     });
     const pushStar = (s) => {
       const name = (typeof s === 'string') ? s : s?.star;
       const tf = (typeof s === 'object') ? s?.transform : null;
       if (!name) return;
-      let html = `<span>${escapeHtml(name)}</span>`;
-      if (tf) html += `<span class="transform-tag ${tf}">${tf}</span>`;
+      let html = `<span>${escapeHtml(starLabel(name))}</span>`;
+      if (tf) html += `<span class="transform-tag ${tf}">${escapeHtml(transformLabel(tf))}</span>`;
       parts.push(html);
     };
     (comp?.support_stars || []).forEach(pushStar);
     (comp?.sha_ji_stars || []).forEach(pushStar);
     (comp?.minor_stars || []).forEach(pushStar);
-    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : '<span style="color:var(--ink-light);font-style:italic;">(無星)</span>';
+    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('emptyNoStar'))}</span>`;
   }
 
-  // A 段：drop cap + 自動 pull quote
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
-    if (!text) { el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { el.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('mo.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let html = '';
     paras.forEach((p, i) => {
@@ -1381,13 +1474,14 @@
     el.innerHTML = html;
   }
 
-  // B/C 段：卡片 + 來源 chip（讀 meta）
   function renderTransforms(elId, transforms, meta, direction) {
     const container = document.getElementById(elId);
     container.innerHTML = '';
 
+    const emptyText = direction === 'in' ? tx('energyEmptyIn') : tx('energyEmptyOut');
+
     if (!transforms || typeof transforms !== 'object') {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = `<div class="transform-empty">${escapeHtml(emptyText)}</div>`;
       return;
     }
 
@@ -1403,20 +1497,20 @@
       if (!t || (!t.title && !t.content)) continue;
       hasAny = true;
 
-      const tip = TRANSFORM_TOOLTIP[tt];
+      const tip = td('TRANSFORM_TOOLTIP_MONTHLY', tt) || {};
       const metaItems = metaByTransform[tt] || [];
 
       let chipsHtml = '';
       if (metaItems.length) {
-        const label = direction === 'in' ? '來源' : '流向';
-        chipsHtml = `<div class="source-row"><span class="source-label">${label}</span>` +
+        const label = direction === 'in' ? tx('chipSourceLabel') : tx('chipFlowLabel');
+        chipsHtml = `<div class="source-row"><span class="source-label">${escapeHtml(label)}</span>` +
           metaItems.map(m => `
             <span class="source-chip">
-              <span class="palace-from">${escapeHtml(m.from_palace)}</span>
+              <span class="palace-from">${escapeHtml(palaceLabel(m.from_palace))}</span>
               <span class="arrow">→</span>
-              <span class="palace-to">${escapeHtml(m.to_palace)}</span>
-              <span class="star-tag">${escapeHtml(m.star)}</span>
-              <span class="mini-transform ${tt}">${tt}</span>
+              <span class="palace-to">${escapeHtml(palaceLabel(m.to_palace))}</span>
+              <span class="star-tag">${escapeHtml(starLabel(m.star))}</span>
+              <span class="mini-transform ${tt}">${escapeHtml(transformLabel(tt))}</span>
             </span>`).join('') +
           `</div>`;
       }
@@ -1427,10 +1521,10 @@
         <article class="transform-card ${tt}">
           <div class="transform-card-head">
             <span class="tooltip-wrap">
-              <span class="transform-card-tag" tabindex="0">${tt}<span class="info-dot">i</span></span>
+              <span class="transform-card-tag" tabindex="0">${escapeHtml(transformLabel(tt))}<span class="info-dot">i</span></span>
               <div class="tooltip-body">
-                <div class="tooltip-title">${tip.title}</div>
-                <p>${tip.body}</p>
+                <div class="tooltip-title">${escapeHtml(tip.title || '')}</div>
+                <p>${escapeHtml(tip.body || '')}</p>
               </div>
             </span>
             <span class="transform-card-en">${TRANSFORM_EN[tt]}</span>
@@ -1444,16 +1538,15 @@
     }
 
     if (!hasAny) {
-      container.innerHTML = '<div class="transform-empty">此宮無能量' + (direction === 'in' ? '飛入' : '飛出') + '</div>';
+      container.innerHTML = `<div class="transform-empty">${escapeHtml(emptyText)}</div>`;
     }
 
     bindTooltips(container);
   }
 
-  // D 段：epilogue 樣式
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
-    if (!text) { wrap.innerHTML = '<p style="color:var(--ink-light);font-style:italic;">(尚無內容)</p>'; return; }
+    if (!text) { wrap.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('mo.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let inner = '<div class="epilogue-eyebrow">— Epilogue —</div><div class="epilogue-prose">';
     paras.forEach((p, i) => {
@@ -1464,20 +1557,14 @@
     wrap.innerHTML = `<div class="epilogue">${inner}</div>`;
   }
 
-  // 追蹤議題解析（suggestion_personal）：有才顯示
   function renderPersonalSuggestion(text) {
     const sec = document.getElementById('detail-personal-section');
     const el = document.getElementById('detail-personal');
     if (!sec || !el) return;
-    if (!text) {
-      sec.style.display = 'none';
-      el.innerHTML = '';
-      return;
-    }
+    if (!text) { sec.style.display = 'none'; el.innerHTML = ''; return; }
     sec.style.display = 'block';
     let paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     if (paras.length <= 1) {
-      // E 偶爾只給單換行 → 退而用單換行切段，避免擠成一塊
       paras = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
     }
     el.innerHTML = paras.length
@@ -1498,8 +1585,6 @@
   // ===================================================================
   // 訂閱機制（無訂閱表，以 monthly_generation_jobs 有無 job 判斷訂閱狀態）
   // ===================================================================
-
-  // 撈本用戶所有 job（依年月新到舊）
   async function fetchJobs() {
     const { data, error } = await supabase
       .from(MONTHLY_JOBS_TABLE)
@@ -1507,63 +1592,53 @@
       .eq('user_email', userEmail)
       .order('target_year', { ascending: false })
       .order('target_month', { ascending: false });
-    if (error) {
-      console.warn('[monthly] job 查詢失敗：', error.message);
-      return [];
-    }
+    if (error) { console.warn('[monthly] job 查詢失敗：', error.message); return []; }
     return data || [];
   }
-
-  // 一筆 job 是否已完成（可閱讀）
   function jobDone(j) { return j.report_status === 'done'; }
 
-  // 渲染生成中畫面（每份 job 一張卡片），回傳「是否全部完成」
   function renderGenerating(jobs) {
+    introMode = 'generating';
+    lastJobs = jobs || [];
     document.getElementById('intro-pitch').style.display = 'none';
     document.getElementById('intro-generating').style.display = 'block';
 
     const wrap = document.getElementById('gen-cards');
     const base = nowAsLunarBase();
-    // 以農曆年月排序（由舊到新）
-    const sorted = [...jobs].sort((a, b) =>
+    const sorted = [...(jobs || [])].sort((a, b) =>
       (a.target_year * 12 + a.target_month) - (b.target_year * 12 + b.target_month));
 
     wrap.innerHTML = sorted.map(j => {
       const done = jobDone(j);
       const rel = (j.target_year * 12 + j.target_month) - (base.year * 12 + base.month);
-      const relLabel = rel === 0 ? '本月' : (rel === 1 ? '下月' : (rel === -1 ? '上月' : ''));
-      const disp = lunarToSolarDisplay(j.target_year, j.target_month); // 農曆→國曆顯示
+      const rl = (rel === 0 || rel === 1 || rel === -1) ? relLabel(rel) : '';
+      const disp = lunarToSolarDisplay(j.target_year, j.target_month);
       const left = done
         ? '<div class="gen-card-check">✓</div>'
         : '<div class="gen-card-spinner"><span></span><span></span><span></span></div>';
-      const statusText = done ? '已完成 · 點擊閱讀' : '正在生成十二宮…';
+      const statusText = done ? tx('mo.genCardDone') : tx('mo.genCardGenerating');
       return `<div class="gen-card ${done ? 'done' : ''}" data-year="${j.target_year}" data-month="${j.target_month}" data-done="${done}">
         ${left}
         <div class="gen-card-info">
-          <div class="gen-card-month">${disp.label}${relLabel ? `<span class="rel">${relLabel}</span>` : ''}</div>
-          <div class="gen-card-status">${statusText}</div>
+          <div class="gen-card-month">${escapeHtml(disp.label)}${rl ? `<span class="rel">${escapeHtml(rl)}</span>` : ''}</div>
+          <div class="gen-card-status">${escapeHtml(statusText)}</div>
         </div>
         <div class="gen-card-arrow">→ Read</div>
       </div>`;
     }).join('');
 
-    // 已完成的卡片可點擊進入該年閱讀
     wrap.querySelectorAll('.gen-card.done').forEach(card => {
-      card.addEventListener('click', () => {
-        const y = Number(card.dataset.year);
-        enterReading(y);
-      });
+      card.addEventListener('click', () => { enterReading(Number(card.dataset.year)); });
     });
 
     return sorted.length > 0 && sorted.every(jobDone);
   }
 
-  // 進入閱讀流程（指定農曆年）：撈年份清單 → 進 view-years/view-hub
   async function enterReading(preferLunarYear) {
     stopPolling();
     showView('view-loading');
-    document.querySelector('#view-loading .loading-title').textContent = '載入您的流月';
-    document.querySelector('#view-loading .loading-sub').textContent = '正在展開可閱讀的月份…';
+    document.getElementById('loading-title').textContent = tx('mo.loadingTitle');
+    document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
 
     const years = await fetchAvailableYears();
     renderYears(years);
@@ -1574,7 +1649,6 @@
     }
   }
 
-  // 撈有報告的流月年份（農曆年）
   async function fetchAvailableYears() {
     let years = [];
     try {
@@ -1587,8 +1661,7 @@
       if (error) {
         console.warn('[monthly] 流月年份查詢失敗：', error.message);
       } else if (rows) {
-        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y != null))]
-          .sort((a, b) => b - a);
+        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y != null))].sort((a, b) => b - a);
       }
     } catch (e) {
       console.warn('[monthly] 流月年份查詢例外：', e);
@@ -1596,39 +1669,28 @@
     return years;
   }
 
-  // 發單一 target 的 materials webhook（送出即視為觸發，狀態以 job 表為準）
   async function fireTarget(t) {
     try {
       await fetch(MONTHLY_TRIGGER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_email: userEmail,
-          target_year: t.target_year,
-          target_month: t.target_month,
-        }),
+        body: JSON.stringify({ user_email: userEmail, target_year: t.target_year, target_month: t.target_month }),
       });
     } catch (e) {
       console.warn('[monthly] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
     }
   }
 
-  // 訂閱：先寫入收報日(preferred_report_day)，成功後只生成「下個月」一份
   async function subscribeMonthly() {
     const btn = document.getElementById('intro-subscribe-btn');
     const sel = document.getElementById('report-day-select');
     const day = sel ? Number(sel.value) : NaN;
 
-    // 收報日必填驗證（1–15）
-    if (!day || day < 1 || day > 15) {
-      alert('請先選擇每月收到流月的日期。');
-      return;
-    }
+    if (!day || day < 1 || day > 15) { alert(tx('mo.alertPickDay')); return; }
 
     btn.disabled = true;
-    btn.textContent = '正在為你開始…';
+    btn.textContent = tx('mo.subscribing');
 
-    // 1. 先寫入 preferred_report_day（enrollment signal）。寫成功才往下，避免「生成了但排程不推進」
     const { data: { session } } = await supabase.auth.getSession();
     const { error: dayErr } = await supabase
       .from('user_profiles')
@@ -1636,57 +1698,50 @@
       .eq('id', session.user.id);
 
     if (dayErr) {
-      alert('開通失敗：無法儲存收報日（' + dayErr.message + '），請稍後再試。');
+      alert(tx('mo.subscribeFailDay').replace('{msg}', dayErr.message));
       btn.disabled = false;
-      btn.textContent = '開始閱讀我的流月';
+      btn.textContent = tx('mo.introSubscribeBtn');
       return;
     }
-    preferredReportDay = day;   // 同步模組狀態
+    preferredReportDay = day;
 
-    // 2. 只算「下個月」一份農曆 target（與後端 scheduler「發下一期」邏輯統一）
     const now = new Date();
     const sy = now.getFullYear(), sm = now.getMonth() + 1;
     const nextTarget = solarToLunarTarget(sy, sm, 'next');
 
-    // 直接發這一份
     await fireTarget(nextTarget);
 
-    // 切生成中、開始輪詢（這一份 done → 進閱讀）
     const jobs = await fetchJobs();
     renderGenerating(jobs);
     startPolling();
   }
 
- // 輪詢 job 狀態：現有 job 全 done → 進閱讀（落在最新一份的年份）
   function startPolling() {
     stopPolling();
     pollTimer = setInterval(async () => {
       const jobs = await fetchJobs();
       if (jobs.length) renderGenerating(jobs);
-
       if (jobs.length === 0) return;
       if (jobs.every(jobDone)) {
         stopPolling();
-        // 落在已完成 job 中農曆年月最大那筆的年份
         const latest = jobs.filter(jobDone)
           .reduce((a, b) => (b.target_year * 12 + b.target_month) > (a.target_year * 12 + a.target_month) ? b : a);
         await enterReading(latest.target_year);
       }
     }, POLL_INTERVAL_MS);
   }
-  
-  function stopPolling() {
-    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-  }
+  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
   async function init() {
     try {
       const session = await requireAuth();
-      if (!session) return; // requireAuth 已導向 login.html
+      if (!session) return;
+
+      await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary
+      applyStaticI18n();
 
       userEmail = session.user.email;
 
-      // 1. 取命盤 session（訂閱前提：已有完成的命盤）
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
         .select('chart_session_id, status')
@@ -1696,12 +1751,11 @@
         .limit(1)
         .maybeSingle();
 
-      if (jobError) { showError('無法取得您的命盤資料：' + jobError.message); return; }
-      if (!jobData?.chart_session_id) { showError('您的命盤尚未完成，請稍候幾分鐘後再回來查看。'); return; }
+      if (jobError) { showError(tx('errJobFail') + jobError.message); return; }
+      if (!jobData?.chart_session_id) { showError(tx('errNotReady')); return; }
 
       chartSessionId = jobData.chart_session_id;
 
-      // 1.5 讀付費牆解鎖狀態 + 收報日開通狀態（gate = monthly_subscribed；enrollment = preferred_report_day）
       try {
         const { data: prof } = await supabase
           .from('user_profiles').select('monthly_subscribed, preferred_report_day')
@@ -1710,62 +1764,51 @@
         preferredReportDay = (prof && prof.preferred_report_day != null) ? prof.preferred_report_day : null;
       } catch (_) { isUnlocked = false; preferredReportDay = null; }
 
-      // context 面板初始化（需 userEmail + chartSessionId 已就緒）
       await ctxInit();
       ctxBindHubToggle();
 
-      // 2. 查流月訂閱狀態（以 monthly_generation_jobs 有無 job 判斷）
       const jobs = await fetchJobs();
 
-      // ── (C) 三態判斷：enrollment = preferred_report_day ──
-      // preferred_report_day 為 NULL → 全新未訂閱 或 已取消 → 一律顯示開通 CTA（含收報日收集）
       if (preferredReportDay == null) {
+        introMode = 'pitch';
         document.getElementById('intro-pitch').style.display = 'block';
         document.getElementById('intro-generating').style.display = 'none';
         showView('view-intro');
         return;
       }
 
-      // preferred_report_day 有值 = 訂閱中
       if (jobs.length === 0) {
-        // 有開通但尚無 job（異常/剛開通未生成）→ 顯示介紹頁等待
+        introMode = 'pitch';
         document.getElementById('intro-pitch').style.display = 'block';
         document.getElementById('intro-generating').style.display = 'none';
         showView('view-intro');
         return;
       }
 
-      // 有 job：分「全完成」與「仍在生成」
       const allDone = jobs.every(jobDone);
       if (allDone) {
-        // 全部完成 → 正常閱讀
         const years = await fetchAvailableYears();
         renderYears(years);
         showView('view-years');
       } else {
-        // 仍有生成中 → 顯示生成中並輪詢
         showView('view-intro');
         renderGenerating(jobs);
         startPolling();
       }
     } catch (err) {
-      showError(err.message || '載入時發生錯誤。');
+      showError(err.message || tx('errLoad'));
     }
   }
 
   // ===================================================================
   // Context 個人化面板（訂閱前後共用；slot 數依 monthly_subscribed）
-  //   表：monthly_palace_context（slot 模型）｜history 由 DB trigger 自動記錄
   // ===================================================================
   const CTX_TABLE = 'monthly_palace_context';
-  const CTX_MAX_LEN = 500;            // context 字數上限
-  let ctxSlotCount = 1;               // 依訂閱決定（false=1, true=3）
-  let ctxData = {};                   // { slot_no: {palace_name, context_text} }
-  let ctxMountedIn = 'intro';         // panel 目前掛在 'intro' 還是 'hub'
-  let ctxEditing = new Set();         // 哪些 slot 正在編輯（解鎖態）
-  const CTX_DISCLAIMER = '提醒您：流月的個人化建議是依命盤能量提供的觀點與方向，並非醫療、法律或投資的專業意見。若涉及健康、法律或財務的重要決定，仍建議諮詢專業人士。\n\n按「確定」儲存並納入分析。';
+  const CTX_MAX_LEN = 500;
+  let ctxSlotCount = 1;
+  let ctxData = {};
+  let ctxEditing = new Set();
 
-  // 讀訂閱狀態 → 決定 slot 數
   async function ctxLoadTier() {
     try {
       const { data } = await supabase
@@ -1777,7 +1820,6 @@
     } catch (_) { ctxSlotCount = 1; }
   }
 
-  // 讀現有 context（最多 3 列）
   async function ctxLoadData() {
     ctxData = {};
     try {
@@ -1791,7 +1833,6 @@
     } catch (_) {}
   }
 
-  // 哪些宮位已被別的 slot 佔用（用於 disable，避免重複選同一宮）
   function ctxUsedPalaces(exceptSlot) {
     const used = new Set();
     Object.entries(ctxData).forEach(([slot, v]) => {
@@ -1800,7 +1841,6 @@
     return used;
   }
 
- // 渲染所有 slot（有存檔資料的 slot 預設鎖定為唯讀，點「編輯」解鎖）
   function ctxRenderSlots() {
     const wrap = document.getElementById('ctx-slots');
     const upsell = document.getElementById('ctx-upsell');
@@ -1811,45 +1851,42 @@
       const cur = ctxData[n] || { palace_name: '', context_text: '' };
       const used = ctxUsedPalaces(n);
       const isSaved = !!ctxData[n];
-      const locked = isSaved && !ctxEditing.has(n);   // 已存且未在編輯 → 唯讀
+      const locked = isSaved && !ctxEditing.has(n);
 
       const slot = document.createElement('div');
       slot.className = 'ctx-slot';
       slot.dataset.slot = n;
 
-      // 宮位下拉：已被其他 slot 選走的 disable
-      const options = ['<option value="">— 選擇宮位 —</option>']
+      const options = [`<option value="">${escapeHtml(tx('mo.ctxSelectPlaceholder'))}</option>`]
         .concat(PALACE_ORDER.map(p => {
           const dis = used.has(p) && p !== cur.palace_name ? ' disabled' : '';
           const sel = p === cur.palace_name ? ' selected' : '';
-          return `<option value="${p}"${sel}${dis}>${p}　${PALACE_EN[p] || ''}</option>`;
+          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabel(p))}</option>`;
         }))
         .join('');
 
-      // 已選宮位 → 顯示該宮主題說明（複用 PALACE_EXPLAINER）
-      const explainerHtml = cur.palace_name ? (PALACE_EXPLAINER[cur.palace_name] || '') : '';
+      const explainerHtml = cur.palace_name ? (td('PALACE_EXPLAINER_MONTHLY', cur.palace_name) || '') : '';
 
       slot.innerHTML = `
         <div class="ctx-slot-top">
-          <span class="ctx-slot-no">Slot ${n}</span>
+          <span class="ctx-slot-no">${escapeHtml(tx('mo.ctxSlot').replace('{n}', n))}</span>
           <select class="ctx-select" data-slot="${n}"${locked ? ' disabled' : ''}>${options}</select>
         </div>
         <div class="ctx-slot-explainer${explainerHtml ? ' show' : ''}" data-slot="${n}">${explainerHtml}</div>
         <textarea class="ctx-textarea" data-slot="${n}" maxlength="${CTX_MAX_LEN}"${locked ? ' disabled' : ''}
-          placeholder="描述你目前在這個領域的處境，例如：我正在轉換跑道，想了解這個月適合主動出擊還是先沉澱。">${escapeHtml(cur.context_text || '')}</textarea>
+          placeholder="${escapeHtml(tx('mo.ctxPlaceholder'))}">${escapeHtml(cur.context_text || '')}</textarea>
         <div class="ctx-slot-actions">
           <span class="ctx-counter" data-slot="${n}">${(cur.context_text || '').length} / ${CTX_MAX_LEN}</span>
           <div class="ctx-btns">
-            <span class="ctx-slot-saved${locked ? ' show' : ''}" data-slot="${n}">✓ 已儲存</span>
+            <span class="ctx-slot-saved${locked ? ' show' : ''}" data-slot="${n}">${escapeHtml(tx('mo.ctxSaved'))}</span>
             ${locked
-              ? `<button class="ctx-btn edit" data-slot="${n}">編輯</button><button class="ctx-btn clear" data-slot="${n}">清除</button>`
-              : `<button class="ctx-btn clear" data-slot="${n}">清除</button><button class="ctx-btn save" data-slot="${n}">儲存</button>`}
+              ? `<button class="ctx-btn edit" data-slot="${n}">${escapeHtml(tx('mo.ctxEdit'))}</button><button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button>`
+              : `<button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button><button class="ctx-btn save" data-slot="${n}">${escapeHtml(tx('mo.ctxSave'))}</button>`}
           </div>
         </div>`;
       wrap.appendChild(slot);
     }
 
-    // upsell：未訂閱（只有 1 slot）時提示
     if (upsell) upsell.style.display = (ctxSlotCount < 3) ? 'block' : 'none';
 
     ctxBindSlotEvents();
@@ -1859,7 +1896,6 @@
     const wrap = document.getElementById('ctx-slots');
     if (!wrap) return;
 
-    // 字數計數
     wrap.querySelectorAll('.ctx-textarea').forEach(ta => {
       ta.addEventListener('input', () => {
         const n = ta.dataset.slot;
@@ -1871,34 +1907,29 @@
       });
     });
 
-    // 選宮位 → 即時更新下方主題說明
     wrap.querySelectorAll('.ctx-select').forEach(sel => {
       sel.addEventListener('change', () => {
         const n = sel.dataset.slot;
         const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${n}"]`);
         if (exp) {
-          const html = sel.value ? (PALACE_EXPLAINER[sel.value] || '') : '';
+          const html = sel.value ? (td('PALACE_EXPLAINER_MONTHLY', sel.value) || '') : '';
           exp.innerHTML = html;
           exp.classList.toggle('show', !!html);
         }
       });
     });
 
-    // 儲存
     wrap.querySelectorAll('.ctx-btn.save').forEach(btn => {
       btn.addEventListener('click', () => ctxSave(Number(btn.dataset.slot)));
     });
-    // 編輯（解鎖唯讀態）
     wrap.querySelectorAll('.ctx-btn.edit').forEach(btn => {
       btn.addEventListener('click', () => { ctxEditing.add(Number(btn.dataset.slot)); ctxRenderSlots(); });
     });
-    // 清除
     wrap.querySelectorAll('.ctx-btn.clear').forEach(btn => {
       btn.addEventListener('click', () => ctxClear(Number(btn.dataset.slot)));
     });
   }
 
-  // 儲存某 slot（upsert）；存前跳免責確認，存後鎖定為唯讀
   async function ctxSave(slotNo) {
     const wrap = document.getElementById('ctx-slots');
     const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
@@ -1906,11 +1937,10 @@
     const palace = sel.value || null;
     const text = (ta.value || '').trim();
 
-    if (!palace) { alert('請先選擇一個宮位。'); return; }
-    if (!text) { alert('請描述你的處境，或按「清除」移除此設定。'); return; }
+    if (!palace) { alert(tx('mo.ctxAlertNoPalace')); return; }
+    if (!text) { alert(tx('mo.ctxAlertNoText')); return; }
 
-    // 免責提醒（確認才寫入）
-    if (!confirm(CTX_DISCLAIMER)) return;
+    if (!confirm(tx('mo.ctxDisclaimer'))) return;
 
     const btn = wrap.querySelector(`.ctx-btn.save[data-slot="${slotNo}"]`);
     if (btn) btn.disabled = true;
@@ -1929,21 +1959,15 @@
 
     if (btn) btn.disabled = false;
 
-    if (error) {
-      // 可能撞 unique(user_email, palace_name)：同一宮已被別的 slot 用
-      alert('儲存失敗：' + error.message);
-      return;
-    }
+    if (error) { alert(tx('mo.ctxSaveFail') + error.message); return; }
 
     ctxData[slotNo] = { palace_name: palace, context_text: text };
-    ctxEditing.delete(slotNo);   // 存檔後鎖定
-    ctxRenderSlots();            // 重畫成唯讀態 + 更新其他 slot disable
+    ctxEditing.delete(slotNo);
+    ctxRenderSlots();
   }
 
-  // 清除某 slot（刪列）
   async function ctxClear(slotNo) {
     if (!ctxData[slotNo]) {
-      // 本來就空，清掉 UI 即可
       const wrap = document.getElementById('ctx-slots');
       const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
       const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
@@ -1952,65 +1976,105 @@
       if (exp) { exp.innerHTML = ''; exp.classList.remove('show'); }
       return;
     }
-    if (!confirm('確定要清除這個主題嗎？此動作無法復原。')) return;
+    if (!confirm(tx('mo.ctxClearConfirm'))) return;
     const { error } = await supabase
       .from(CTX_TABLE)
       .delete()
       .eq('user_email', userEmail)
       .eq('slot_no', slotNo);
-    if (error) { alert('清除失敗：' + error.message); return; }
+    if (error) { alert(tx('mo.ctxClearFail') + error.message); return; }
     delete ctxData[slotNo];
     ctxEditing.delete(slotNo);
     ctxRenderSlots();
   }
-  
-  // 初始化 panel（讀 tier + 資料 + 渲染）；intro 與 hub 共用，呼叫一次即可
+
   async function ctxInit() {
     await ctxLoadTier();
     await ctxLoadData();
     ctxRenderSlots();
   }
 
-  // hub 摺疊：把 panel 移進/移出 hub mount
   function ctxBindHubToggle() {
     const toggle = document.getElementById('ctx-toggle');
     const mount = document.getElementById('ctx-hub-mount');
     const panel = document.getElementById('context-panel');
     if (!toggle || !mount || !panel) return;
-
     toggle.addEventListener('click', () => {
       const open = mount.style.display !== 'none';
       if (open) {
         mount.style.display = 'none';
         toggle.classList.remove('open');
       } else {
-        mount.appendChild(panel);     // 把 panel 移到 hub
+        mount.appendChild(panel);
         panel.style.display = 'block';
         mount.style.display = 'block';
         toggle.classList.add('open');
       }
     });
   }
-  
-  
 
-  // 收報日下拉填充 1–15 + 選擇後啟用 CTA（必填 gate）
-  (function initReportDaySelect() {
+  // 是否有未儲存的 context 輸入(語言切換時避免覆蓋使用者輸入)
+  function ctxHasUnsaved() {
+    const wrap = document.getElementById('ctx-slots');
+    if (!wrap) return false;
+    for (const ta of wrap.querySelectorAll('.ctx-textarea')) {
+      const n = ta.dataset.slot;
+      const saved = (ctxData[n] && ctxData[n].context_text) || '';
+      if ((ta.value || '') !== saved) return true;
+      const sel = wrap.querySelector(`.ctx-select[data-slot="${n}"]`);
+      const savedPalace = (ctxData[n] && ctxData[n].palace_name) || '';
+      if (sel && !sel.disabled && (sel.value || '') !== savedPalace) return true;
+    }
+    return false;
+  }
+
+  // 收報日下拉：(重)填 1–15 選項(保留已選值)；語言切換時重填標籤
+  function fillReportDays() {
     const sel = document.getElementById('report-day-select');
-    const btn = document.getElementById('intro-subscribe-btn');
-    if (!sel || !btn) return;
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = `<option value="">${escapeHtml(tx('mo.rdSelectPlaceholder'))}</option>`;
     for (let d = 1; d <= 15; d++) {
       const opt = document.createElement('option');
       opt.value = String(d);
-      opt.textContent = d + ' 號';
+      opt.textContent = tx('mo.dayOption').replace('{d}', d);
       sel.appendChild(opt);
     }
+    sel.value = prev;
+    sel.classList.toggle('unset', sel.value === '');
+  }
+  function bindReportDay() {
+    const sel = document.getElementById('report-day-select');
+    const btn = document.getElementById('intro-subscribe-btn');
+    if (!sel || !btn) return;
     sel.addEventListener('change', () => {
       const ok = sel.value !== '';
       btn.disabled = !ok;
       sel.classList.toggle('unset', !ok);
     });
-  })();
+  }
+
+  // ── UI 語言切換(header 語言鈕)→ 以快取資料就地重繪 ──
+  function rerender() {
+    const view = currentView;
+    applyStaticI18n();
+    fillReportDays();
+    if (!ctxHasUnsaved()) ctxRenderSlots();
+    if (introMode === 'generating') renderGenerating(lastJobs);
+    if (lastYears && lastYears.length) renderYears(lastYears);
+    if (currentYear != null && currentMonth != null && Object.keys(reportsByPalace).length) {
+      setHubHeader(currentYear, currentMonth);
+      renderMonthTabs();
+      renderOverview();
+      renderHub();
+      if (currentPalace && reportsByPalace[currentPalace]) openDetail(currentPalace);
+    }
+    if (view) showView(view);
+  }
+  window.addEventListener('i18n:changed', () => { document.title = tx('mo.docTitle'); rerender(); });
+
+  bindReportDay();
+  fillReportDays();
 
   document.getElementById('intro-subscribe-btn').addEventListener('click', subscribeMonthly);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
