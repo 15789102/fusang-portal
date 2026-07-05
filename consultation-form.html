@@ -37,13 +37,25 @@
     mapCreateErr, mapCheckoutErr,
   } from './consultation-common.js';
 
-  document.title = pick('提交問事 - FuSang Vision', '提交问事 - FuSang Vision', 'Ask One Question - FuSang Vision');
-
-  document.getElementById('hero-eyebrow').textContent = pick('提交問事', '提交问事', 'Personal Consultation');
-  document.getElementById('hero-title').textContent   = pick('提交問事', '提交问事', 'Ask One Question');
-  document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
+  function applyStaticText() {
+    document.title = pick('提交問事 - FuSang Vision', '提交问事 - FuSang Vision', 'Ask One Question - FuSang Vision');
+    document.getElementById('hero-eyebrow').textContent = pick('提交問事', '提交问事', 'Personal Consultation');
+    document.getElementById('hero-title').textContent   = pick('提交問事', '提交问事', 'Ask One Question');
+    document.getElementById('hero-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
+  }
 
   let chartSessionId = null;
+  let formState = null;   // { kind:'nochart' } | { kind:'form', banner:bool, prefill:{subject,content,consent} }
+
+  function renderBody() {
+    const body = document.getElementById('cons-body');
+    body.innerHTML = '';
+    if (!formState) return;
+    if (formState.kind === 'nochart') { body.appendChild(cardNoChart()); return; }
+    body.appendChild(cardForm(formState.prefill, formState.banner));
+  }
+
+  applyStaticText();
 
   (async () => {
     const session = await initConsult('form');
@@ -53,23 +65,35 @@
     const tickets = await getMyTickets();
 
     document.getElementById('cons-loading').style.display = 'none';
-    const body = document.getElementById('cons-body');
 
     // 守門 1：無命盤
-    if (!chartSessionId) {
-      body.appendChild(cardNoChart());
-      return;
-    }
-    // 守門 2：已有進行中諮詢 → 不讓重複開，導去看那張
+    if (!chartSessionId) { formState = { kind: 'nochart' }; renderBody(); return; }
+    // 守門 2：已有進行中諮詢 → 導去看那張
     const active = findActive(tickets);
-    if (active) {
-      window.location.href = `consultation-detail.html?id=${active.id}`;
-      return;
-    }
+    if (active) { window.location.href = `consultation-detail.html?id=${active.id}`; return; }
     // 守門 3：有 pending 草稿 → 預填
     const draft = findPendingDraft(tickets);
-    body.appendChild(cardForm(draft));
+    formState = { kind: 'form', banner: !!draft, prefill: { subject: draft?.subject || null, content: draft?.content || '', consent: false } };
+    renderBody();
   })();
+
+  // 即時語言切換：重套標題 + 重繪 body（表單先擷取現場輸入回填，避免吃掉未送出內容）
+  window.addEventListener('i18n:changed', () => {
+    applyStaticText();
+    if (formState && formState.kind === 'form') {
+      const sel = document.querySelector('.subj-opt.sel');
+      const content = document.getElementById('content');
+      const consent = document.getElementById('consent');
+      if (content) {
+        formState.prefill = {
+          subject: sel ? sel.getAttribute('data-code') : formState.prefill.subject,
+          content: content.value,
+          consent: consent ? consent.checked : false,
+        };
+      }
+    }
+    renderBody();
+  });
 
   function cardNoChart() {
     const c = el('div', 'cons-card soft');
@@ -84,9 +108,9 @@
     return c;
   }
 
-  function cardForm(draft) {
+  function cardForm(prefill, showBanner) {
     const c = el('div', 'cons-card');
-    let selected = draft?.subject || null;
+    let selected = prefill?.subject || null;
 
     const subjButtons = SUBJECTS.map((s) =>
       `<button class="subj-opt${selected === s.code ? ' sel' : ''}" data-code="${s.code}">${pick(s.zh, s.cn, s.en)}<span class="en">${s.en}</span></button>`
@@ -94,7 +118,7 @@
 
     c.innerHTML =
       `<div class="card-kicker">${pick('提交問題', '提交问题', 'Submit a question')}</div>` +
-      (draft ? `<div class="banner">${pick(
+      (showBanner ? `<div class="banner">${pick(
         '你有一筆尚未完成付款的諮詢，已為你載入內容。完成付款後即進入回覆佇列。',
         '你有一笔尚未完成付款的咨询，已为你载入内容。完成付款后即进入回复队列。',
         'You have an unpaid consultation. Its details are loaded below — complete payment to enter the reply queue.'
@@ -107,10 +131,10 @@
         '描述越完整，回复越精准。尽量说明背景、目前的状况，以及你最想厘清的点。',
         'The more context you give, the more precise the reading. Include the background, where things stand now, and what you most want clarified.'
       )}</div>` +
-      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', '在这里写下你的问题与处境…', 'Write your question and situation here…')}">${draft?.content ? esc(draft.content) : ''}</textarea>` +
+      `<textarea class="cons-input" id="content" placeholder="${pick('在這裡寫下你的問題與處境…', '在这里写下你的问题与处境…', 'Write your question and situation here…')}">${prefill?.content ? esc(prefill.content) : ''}</textarea>` +
       `<div class="char-count" id="char-count">0</div>` +
       disclaimerHtml() +
-      `<label class="consent"><input type="checkbox" id="consent"><span>${pick(
+      `<label class="consent"><input type="checkbox" id="consent"${prefill?.consent ? ' checked' : ''}><span>${pick(
         '我了解這是不可退款的數位服務，並同意以上各項。',
         '我了解这是不可退款的数字服务，并同意以上各项。',
         'I understand this is a non-refundable digital service and agree to the above.'
