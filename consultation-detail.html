@@ -32,36 +32,76 @@
     mapFollowupErr, mapCloseErr, mapFeedbackErr, RATINGS,
   } from './consultation-common.js';
 
-  document.title = pick('諮詢細節 - FuSang Vision', '咨询细节 - FuSang Vision', 'Consultation - FuSang Vision');
+  function applyStaticText() {
+    document.title = pick('諮詢細節 - FuSang Vision', '咨询细节 - FuSang Vision', 'Consultation - FuSang Vision');
+  }
+  applyStaticText();
 
   const qs = new URLSearchParams(location.search);
   const ticketId = qs.get('id');
+
+  let lastTicket = undefined;   // undefined=未載入 / null=找不到 / object=票券
+
+  function renderDetail() {
+    const body = document.getElementById('cons-body');
+    document.getElementById('cons-loading').style.display = 'none';
+    body.innerHTML = '';
+    if (lastTicket === null) { body.appendChild(notFound()); return; }
+    if (lastTicket) body.appendChild(cardDetail(lastTicket));
+  }
+
+  // 語言切換重繪前，擷取使用者尚未送出的輸入
+  function captureDetailInput() {
+    const cap = {};
+    const fu = document.getElementById('fu-input');
+    if (fu) cap.fu = fu.value;
+    const fbSel = document.querySelector('.fb-opt.sel');
+    if (fbSel) cap.fbRating = fbSel.getAttribute('data-code');
+    const fbText = document.getElementById('fb-text');
+    if (fbText) cap.fbText = fbText.value;
+    const fbConsent = document.getElementById('fb-consent');
+    if (fbConsent) cap.fbConsent = fbConsent.checked;
+    return cap;
+  }
+  function restoreDetailInput(cap) {
+    if (cap.fu != null) {
+      const fu = document.getElementById('fu-input');
+      if (fu) { fu.value = cap.fu; fu.dispatchEvent(new Event('input')); }
+    }
+    if (cap.fbRating != null) {
+      const b = document.querySelector(`.fb-opt[data-code="${cap.fbRating}"]`);
+      if (b) b.click();   // 觸發選取態 + 啟用送出鈕 + 清 gate
+    }
+    if (cap.fbText != null) { const t = document.getElementById('fb-text'); if (t) t.value = cap.fbText; }
+    if (cap.fbConsent != null) { const cc = document.getElementById('fb-consent'); if (cc) cc.checked = cap.fbConsent; }
+  }
 
   (async () => {
     const session = await initConsult('detail');
     if (!session) return;
 
-    document.getElementById('cons-loading').style.display = 'none';
-    const body = document.getElementById('cons-body');
-
-    if (!ticketId) {
-      body.appendChild(notFound());
-      return;
-    }
+    if (!ticketId) { lastTicket = null; renderDetail(); return; }
 
     const t = await getTicketById(ticketId);
-    if (!t) {
-      body.appendChild(notFound());
-      return;
-    }
+    if (!t) { lastTicket = null; renderDetail(); return; }
     // pending 草稿不在此頁處理（尚未付款）→ 導去表單續付
     if (t.status === 'pending' && t.payment_status === 'pending') {
       window.location.href = 'consultation-form.html';
       return;
     }
 
-    body.appendChild(cardDetail(t));
+    lastTicket = t;
+    renderDetail();
   })();
+
+  // 即時語言切換：擷取未送出輸入 → 以快取票券重繪 → 回填輸入
+  window.addEventListener('i18n:changed', () => {
+    applyStaticText();
+    if (lastTicket === undefined) return;
+    const cap = captureDetailInput();
+    renderDetail();
+    restoreDetailInput(cap);
+  });
 
   function notFound() {
     const c = el('div', 'cons-card soft');
