@@ -38,8 +38,14 @@ export const LANG = (() => {
 })();
 export const isZh = LANG.startsWith('zh');
 export const isCN = LANG === 'zh-CN';
-// 三語挑選：繁中／简中／English（依 uiLang,於頁面載入時決定;切換語言需重載頁面）
-export const pick = (tw, cn, en) => (LANG === 'en' ? en : (LANG === 'zh-CN' ? cn : tw));
+// 動態讀取當前 uiLang（支援即時語言切換：切換後由各頁重繪即取到新值）
+export function getLang() {
+  try { const L = window.FSI18N && window.FSI18N.getUILang && window.FSI18N.getUILang(); if (L) return L; } catch (_) {}
+  try { const c = localStorage.getItem('fs_ui_lang'); if (c) return c; } catch (_) {}
+  return 'zh-TW';
+}
+// 三語挑選：繁中／简中／English（每次呼叫都讀當前 uiLang）
+export const pick = (tw, cn, en) => { const L = getLang(); return L === 'en' ? en : (L === 'zh-CN' ? cn : tw); };
 
 /* ── 標籤 ── */
 export const SUBJECTS = [
@@ -65,17 +71,21 @@ export const ratingLabel = (code) => {
   return r ? pick(r.zh, r.cn, r.en) : code;
 };
 
-export const STATUS_LABEL = {
-  pending:  pick('待付款', '待付款', 'Awaiting payment'),
-  paid:     pick('已付款・等待回覆', '已付款・等待回复', 'Paid · awaiting reply'),
-  answered: pick('已回覆', '已回复', 'Answered'),
-  followup: pick('追問中・等待回覆', '追问中・等待回复', 'Follow-up · awaiting reply'),
-  closed:   pick('已結案', '已结案', 'Closed'),
-};
+export function statusLabelMap() {
+  return {
+    pending:  pick('待付款', '待付款', 'Awaiting payment'),
+    paid:     pick('已付款・等待回覆', '已付款・等待回复', 'Paid · awaiting reply'),
+    answered: pick('已回覆', '已回复', 'Answered'),
+    followup: pick('追問中・等待回覆', '追问中・等待回复', 'Follow-up · awaiting reply'),
+    closed:   pick('已結案', '已结案', 'Closed'),
+  };
+}
+// Proxy：讓既有的 STATUS_LABEL[status] 取用維持動態(切換語言即時反映)
+export const STATUS_LABEL = new Proxy({}, { get: (_, k) => statusLabelMap()[k] });
 
 export const fmtDate = (iso) => {
   if (!iso) return '';
-  try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-US' : (LANG === 'zh-CN' ? 'zh-CN' : 'zh-TW'), { year:'numeric', month:'short', day:'numeric' }); }
+  try { const L = getLang(); return new Date(iso).toLocaleDateString(L === 'en' ? 'en-US' : (L === 'zh-CN' ? 'zh-CN' : 'zh-TW'), { year:'numeric', month:'short', day:'numeric' }); }
   catch (_) { return iso; }
 };
 
@@ -218,14 +228,19 @@ export function reloadSoon(ms = 2200) { setTimeout(() => window.location.reload(
 
 /* ── 頁內導覽 ── */
 // activePage: 'home' | 'form' | 'list' | 'detail'
-const NAV = {
-  form:   { label: pick('提交問事', '提交问事', 'New consultation'),   back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
-  list:   { label: pick('我的問事紀錄', '我的问事纪录', 'My consultations'), back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
-  detail: { label: pick('諮詢細節', '咨询细节', 'Consultation'),        back: 'consultation-list.html',  backLabel: pick('我的問事紀錄', '我的问事纪录', 'My consultations') },
-};
+function navConfig() {
+  return {
+    form:   { label: pick('提交問事', '提交问事', 'New consultation'),   back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
+    list:   { label: pick('我的問事紀錄', '我的问事纪录', 'My consultations'), back: 'consultation.html',       backLabel: pick('問事首頁', '问事首页', 'Consultation') },
+    detail: { label: pick('諮詢細節', '咨询细节', 'Consultation'),        back: 'consultation-list.html',  backLabel: pick('我的問事紀錄', '我的问事纪录', 'My consultations') },
+  };
+}
 
+let _consultActivePage = null;
 function injectConsultNav(activePage) {
+  _consultActivePage = activePage;
   const host = document.getElementById('consult-nav');
+  const NAV = navConfig();
   if (!host || activePage === 'home' || !NAV[activePage]) return;
   const n = NAV[activePage];
   host.innerHTML =
@@ -395,5 +410,6 @@ export async function initConsult(activePage = null) {
   const session = await requireAuth();
   if (!session) return null;
   injectConsultNav(activePage);
+  window.addEventListener('i18n:changed', () => injectConsultNav(_consultActivePage));
   return session;
 }
