@@ -962,11 +962,11 @@
 
   async function init() {
     try {
+      applyStaticI18n();                  // 先以 uiLang 套靜態文字,避免載入時閃現中文
       const session = await requireAuth();
       if (!session) return;
 
       await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary
-      applyStaticI18n();
 
       userEmail = session.user.email;
 
