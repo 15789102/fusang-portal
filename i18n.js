@@ -42,6 +42,8 @@
 //                              RT 新增 PALACE_EXPLAINER_DECADE / TRANSFORM_TOOLTIP_DECADE(大限語境,td 取)
 //   ‣ annual.html            → applyStaticI18n(id→key,共用 UI 在本檔)+ 頁內 addUI(an.*);
 //                              RT 新增 PALACE_EXPLAINER_ANNUAL / TRANSFORM_TOOLTIP_ANNUAL(流年語境,td 取)
+//   ‣ monthly.html           → applyStaticI18n(id→key,共用 UI 在本檔)+ 頁內 addUI(mo.*);
+//                              RT 新增 PALACE_EXPLAINER_MONTHLY / TRANSFORM_TOOLTIP_MONTHLY(流月語境,td 取)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
@@ -391,6 +393,26 @@
       "化科": {"title": "化科 · Stage (Ke)", "body": "名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象，是本年會發光、被欣賞的舞台。"},
       "化忌": {"title": "化忌 · Direction (Ji)", "body": "不滿足與執著。能量讓您在這個領域反覆投入、深耕。這不是缺憾，而是本年特別需要關注、用心的方向。"}
     },
+    "PALACE_EXPLAINER_MONTHLY": {
+      "命宮": "流月命宮代表您<span class=\"domain-keyword\">這個月整體的基調、心境與行動姿態</span>——本月您看待自己與處境的主軸，所有其他宮位的流月能量，都會在這裡匯流。",
+      "兄弟宮": "流月兄弟宮反映本月您與<span class=\"domain-keyword\">手足、同輩、密切夥伴</span>的互動與資源往來，以及團隊、同儕關係的流動。",
+      "夫妻宮": "流月夫妻宮反映本月您的<span class=\"domain-keyword\">親密關係、伴侶互動與情感狀態</span>——這個月感情的流向與課題。",
+      "子女宮": "流月子女宮反映本月您的<span class=\"domain-keyword\">子女、後輩、創造力與作品</span>——這個月您孕育、栽培之事的動向。",
+      "財帛宮": "流月財帛宮反映本月您的<span class=\"domain-keyword\">財富、現金流與用錢態度</span>——這個月金錢的進出與價值取捨。",
+      "疾厄宮": "流月疾厄宮反映本月您的<span class=\"domain-keyword\">身體、健康與情緒狀態</span>——這個月身心的感受與需要留意的節奏。",
+      "遷移宮": "流月遷移宮反映本月您的<span class=\"domain-keyword\">外在際遇、機運與社會形象</span>——這個月離開熟悉環境後的機會與人緣。",
+      "交友宮": "流月交友宮反映本月您的<span class=\"domain-keyword\">朋友、人脈、下屬與社交網絡</span>——這個月人際的助力與往來。",
+      "官祿宮": "流月官祿宮反映本月您的<span class=\"domain-keyword\">事業、志向與表現舞台</span>——這個月工作與成就的動向。",
+      "田宅宮": "流月田宅宮反映本月您的<span class=\"domain-keyword\">家庭、不動產與安身之所</span>——這個月居家、家族與根基的變化。",
+      "福德宮": "流月福德宮反映本月您的<span class=\"domain-keyword\">精神世界、興趣與內在感受</span>——這個月心靈的快樂來源與安頓。",
+      "父母宮": "流月父母宮反映本月您與<span class=\"domain-keyword\">父母、長輩、權威與庇蔭</span>的關係，以及學養與上位者的往來。"
+    },
+    "TRANSFORM_TOOLTIP_MONTHLY": {
+      "化祿": {"title": "化祿 · Resource (Lu)", "body": "喜悅與緣分增加。能量帶來資源、人脈、順流感與成就的喜悅，是本月容易順利展開的領域。"},
+      "化權": {"title": "化權 · Anchor (Quan)", "body": "權力與掌控。能量賦予主導感、決策力與影響力，是本月您想要「說了算」、想為事情負責的領域。"},
+      "化科": {"title": "化科 · Stage (Ke)", "body": "名望與被看見。能量讓您在這個領域容易獲得聲譽、肯定與優雅形象，是本月會發光、被欣賞的舞台。"},
+      "化忌": {"title": "化忌 · Direction (Ji)", "body": "不滿足與執著。能量讓您在這個領域反覆投入、深耕。這不是缺憾，而是本月特別需要關注、用心的方向。"}
+    },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
         "title": "化祿 · Resource (Lu)",
@@ -642,6 +664,26 @@
       "化科": {"title": "化科 · Stage (Ke)", "body": "名望与被看见。能量让您在这个领域容易获得声誉、肯定与优雅形象，是本年会发光、被欣赏的舞台。"},
       "化忌": {"title": "化忌 · Direction (Ji)", "body": "不满足与执着。能量让您在这个领域反复投入、深耕。这不是缺憾，而是本年特别需要关注、用心的方向。"}
     },
+    "PALACE_EXPLAINER_MONTHLY": {
+      "命宮": "流月命宫代表您<span class=\"domain-keyword\">这个月整体的基调、心境与行动姿态</span>——本月您看待自己与处境的主轴，所有其他宫位的流月能量，都会在这里汇流。",
+      "兄弟宮": "流月兄弟宫反映本月您与<span class=\"domain-keyword\">手足、同辈、密切伙伴</span>的互动与资源往来，以及团队、同侪关系的流动。",
+      "夫妻宮": "流月夫妻宫反映本月您的<span class=\"domain-keyword\">亲密关系、伴侣互动与情感状态</span>——这个月感情的流向与课题。",
+      "子女宮": "流月子女宫反映本月您的<span class=\"domain-keyword\">子女、后辈、创造力与作品</span>——这个月您孕育、栽培之事的动向。",
+      "財帛宮": "流月财帛宫反映本月您的<span class=\"domain-keyword\">财富、现金流与用钱态度</span>——这个月金钱的进出与价值取舍。",
+      "疾厄宮": "流月疾厄宫反映本月您的<span class=\"domain-keyword\">身体、健康与情绪状态</span>——这个月身心的感受与需要留意的节奏。",
+      "遷移宮": "流月迁移宫反映本月您的<span class=\"domain-keyword\">外在际遇、机运与社会形象</span>——这个月离开熟悉环境后的机会与人缘。",
+      "交友宮": "流月交友宫反映本月您的<span class=\"domain-keyword\">朋友、人脉、下属与社交网络</span>——这个月人际的助力与往来。",
+      "官祿宮": "流月官禄宫反映本月您的<span class=\"domain-keyword\">事业、志向与表现舞台</span>——这个月工作与成就的动向。",
+      "田宅宮": "流月田宅宫反映本月您的<span class=\"domain-keyword\">家庭、不动产与安身之所</span>——这个月居家、家族与根基的变化。",
+      "福德宮": "流月福德宫反映本月您的<span class=\"domain-keyword\">精神世界、兴趣与内在感受</span>——这个月心灵的快乐来源与安顿。",
+      "父母宮": "流月父母宫反映本月您与<span class=\"domain-keyword\">父母、长辈、权威与庇荫</span>的关系，以及学养与上位者的往来。"
+    },
+    "TRANSFORM_TOOLTIP_MONTHLY": {
+      "化祿": {"title": "化禄 · Resource (Lu)", "body": "喜悦与缘分增加。能量带来资源、人脉、顺流感与成就的喜悦，是本月容易顺利展开的领域。"},
+      "化權": {"title": "化权 · Anchor (Quan)", "body": "权力与掌控。能量赋予主导感、决策力与影响力，是本月您想要「说了算」、想为事情负责的领域。"},
+      "化科": {"title": "化科 · Stage (Ke)", "body": "名望与被看见。能量让您在这个领域容易获得声誉、肯定与优雅形象，是本月会发光、被欣赏的舞台。"},
+      "化忌": {"title": "化忌 · Direction (Ji)", "body": "不满足与执着。能量让您在这个领域反复投入、深耕。这不是缺憾，而是本月特别需要关注、用心的方向。"}
+    },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
         "title": "化禄 · Resource (Lu)",
@@ -892,6 +934,26 @@
       "化權": {"title": "Anchor (Quan)", "body": "Power and control. This energy gives you leadership, decisiveness, and influence — an area where, this year, you want the final say and to take responsibility."},
       "化科": {"title": "Stage (Ke)", "body": "Reputation and being seen. This energy brings recognition, esteem, and a graceful presence here — a stage where you shine and are appreciated this year."},
       "化忌": {"title": "Direction (Ji)", "body": "Yearning and devotion. This energy draws you to invest and deepen here again and again. Not a shortcoming, but the direction this year most asks you to attend to."}
+    },
+    "PALACE_EXPLAINER_MONTHLY": {
+      "命宮": "In this month’s chart, this palace sets your <span class=\"domain-keyword\">overall tone, mood, and stance for the month</span> — the axis through which you see yourself and your circumstances this month. The energy of every other palace this month ultimately converges here.",
+      "兄弟宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">exchanges with siblings, peers, and close partners</span>, and how team and collegial relationships flow this month.",
+      "夫妻宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">intimate relationship, partnership, and emotional state</span> — where love moves and what it asks of you this month.",
+      "子女宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">children, juniors, creativity, and creations</span> — how what you nurture and cultivate unfolds this month.",
+      "財帛宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">wealth, cash flow, and spending</span> — how money moves and the value choices of this month.",
+      "疾厄宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">body, health, and emotional state</span> — the felt sense of body and mind, and the rhythms worth minding this month.",
+      "遷移宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">outer circumstances, opportunities, and public image</span> — the chances and connections that arise once you step beyond the familiar this month.",
+      "交友宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">friends, network, subordinates, and social circles</span> — the support and exchange within your relationships this month.",
+      "官祿宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">career, ambition, and stage of expression</span> — how work and achievement move this month.",
+      "田宅宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">family, property, and place of belonging</span> — shifts in home, household, and foundations this month.",
+      "福德宮": "In this month’s chart, this palace reflects your <span class=\"domain-keyword\">inner world, interests, and felt experience</span> — where the mind finds joy and rest this month.",
+      "父母宮": "In this month’s chart, this palace reflects your relationship with <span class=\"domain-keyword\">parents, elders, authority, and shelter</span>, and your dealings with learning and those in positions above you this month."
+    },
+    "TRANSFORM_TOOLTIP_MONTHLY": {
+      "化祿": {"title": "Resource (Lu)", "body": "Joy and connection increase. This energy brings resources, people, flow, and the pleasure of achievement — an area where things tend to open up with ease this month."},
+      "化權": {"title": "Anchor (Quan)", "body": "Power and control. This energy gives you leadership, decisiveness, and influence — an area where, this month, you want the final say and to take responsibility."},
+      "化科": {"title": "Stage (Ke)", "body": "Reputation and being seen. This energy brings recognition, esteem, and a graceful presence here — a stage where you shine and are appreciated this month."},
+      "化忌": {"title": "Direction (Ji)", "body": "Yearning and devotion. This energy draws you to invest and deepen here again and again. Not a shortcoming, but the direction this month most asks you to attend to."}
     },
     "TRANSFORM_TOOLTIP": {
       "化祿": {
