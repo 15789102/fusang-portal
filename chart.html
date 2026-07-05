@@ -288,6 +288,15 @@
       <div style="text-align: center;">
         <h1 class="loading-title" id="loading-title">載入您的命盤</h1>
         <p class="loading-sub" id="loading-sub">正在為您展開本命十二宮…</p>
+        <script id="fs-preloading-i18n">
+          /* 零閃現:module(需先載入 components.js/SDK)執行前,先以 uiLang 套載入文字 */
+          (function () { try {
+            var F = window.FSI18N; if (!F) return;
+            var lt = document.getElementById('loading-title'); if (lt) lt.textContent = F.t('loadingTitle');
+            var ls = document.getElementById('loading-sub');   if (ls) ls.textContent = F.t('loadingSub');
+            document.title = F.t('chart.docTitle');
+          } catch (e) {} })();
+        </script>
       </div>
     </section>
 
