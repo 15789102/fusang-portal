@@ -54,6 +54,14 @@
        ════════════════════════════════════════════════════════ */
 
     /* ── 頁面：淺色晨曦底 ── */
+    /* login 本地：五行金水配色(先只在 login 試色,不動全站 DESIGN.md) */
+    .login-page {
+      --lp-blue-pale: #e3ecf3;   /* 水 · 淡藍(暈染) */
+      --lp-blue: #4f6b84;        /* 水 · 鋼藍(強調 / focus / 連結) */
+      --lp-water-ink: #16232c;   /* 水 · 藍黑(主標 / 按鈕深錨) */
+      --lp-gold-pale: #d9c39a;   /* 金 · 淡金(細飾) */
+    }
+
     .login-page {
       min-height: calc(100vh - 120px);
       display: flex;
@@ -69,8 +77,9 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 62% 55% at 16% 32%, var(--wash-teal) 0%, transparent 62%),
-        radial-gradient(ellipse 48% 42% at 90% 10%, rgba(224, 168, 120, 0.16) 0%, transparent 58%);
+        radial-gradient(ellipse 56% 52% at 12% 26%, var(--lp-blue-pale) 0%, transparent 60%),   /* 水 · 淡藍 */
+        radial-gradient(ellipse 52% 48% at 30% 78%, var(--wash-teal) 0%, transparent 62%),        /* 水 · 淡藍綠 */
+        radial-gradient(ellipse 46% 40% at 90% 10%, rgba(216, 178, 120, 0.18) 0%, transparent 56%); /* 金 · 暖金光 */
       pointer-events: none;
     }
 
@@ -134,10 +143,10 @@
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: 0.04em;
-      color: var(--ink-darkest);
+      color: var(--lp-water-ink);
     }
     .login-left-title .accent {
-      color: var(--accent-deep);
+      color: var(--lp-blue);
       font-weight: 500;
     }
     .login-left-divider {
@@ -206,7 +215,7 @@
       font-size: 30px;
       font-weight: 500;
       letter-spacing: 0.08em;
-      color: var(--ink-darkest);
+      color: var(--lp-water-ink);
       margin-bottom: 8px;
     }
     .login-right-sub {
@@ -286,11 +295,11 @@
       letter-spacing: 0.02em;
     }
     .login-field input::placeholder { color: var(--ink-faint); }
-    .login-field input:hover { border-color: var(--accent-pale); }
+    .login-field input:hover { border-color: var(--lp-blue); }
     .login-field input:focus {
       outline: none;
-      border-color: var(--accent-soft);
-      box-shadow: 0 0 0 3px rgba(58, 107, 112, 0.10);
+      border-color: var(--lp-blue);
+      box-shadow: 0 0 0 3px rgba(79, 107, 132, 0.16);
     }
 
     .login-forgot {
@@ -308,14 +317,14 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .login-forgot a:hover {
-      color: var(--accent-deep);
-      border-bottom-color: var(--accent-pale);
+      color: var(--lp-blue);
+      border-bottom-color: var(--lp-blue);
     }
 
     .login-btn {
       width: 100%;
       height: 52px;
-      background: var(--ink-darkest);
+      background: var(--lp-water-ink);
       color: var(--bg-primary);
       font-family: var(--font-sans);
       font-size: 12px;
@@ -331,9 +340,9 @@
       gap: 12px;
     }
     .login-btn:hover:not(:disabled) {
-      background: var(--accent-deep);
+      background: var(--lp-blue);
       transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(21, 54, 58, 0.12);
+      box-shadow: 0 6px 18px rgba(22, 35, 44, 0.16);
     }
     .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .login-btn-arrow {
@@ -355,7 +364,7 @@
       line-height: 1.9;
     }
     .login-altcta a {
-      color: var(--accent-deep);
+      color: var(--lp-blue);
       font-weight: 500;
       border-bottom: 1px solid var(--gold-soft);
       padding-bottom: 1px;
