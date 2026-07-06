@@ -51,362 +51,379 @@
     'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' }
   });
 </script>
-<style>
-  /* ── dashboard 專屬樣式（共用 tokens 由 components.js 注入）── */
-  :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
+  <style>
+    /* ════════════════════════════════════════════════════════
+       dashboard 視覺改版：bento 版型 + 冷調水感配色(五行金水)
+       dashboard 本地色(先只在此頁試,不動全站 DESIGN.md)
+       共用結構 tokens(字體等)仍由 components.js 提供
+       ════════════════════════════════════════════════════════ */
+    body.dash-page {
+      --dw-ink:        #001b3c;   /* 水 · 深藍黑(主文字/標題) */
+      --dw-ink-soft:   #41484d;   /* 次文字 */
+      --dw-ink-faint:  #8a97a5;   /* 淡文字 */
+      --dw-blue:       #296283;   /* 水 · 主藍(強調/CTA/連結) */
+      --dw-blue-deep:  #1d4e63;   /* 深藍(hover) */
+      --dw-blue-pale:  #c7e7ff;   /* 淡藍 */
+      --dw-blue-wash:  #e6eef7;   /* 淡藍容器底 */
+      --dw-gold:       #b8945c;   /* 金 */
+      --dw-card:       rgba(255, 255, 255, 0.82);
+      --dw-border:     #d7e0ea;
+      --dw-border-hover: rgba(41, 98, 131, 0.42);
+      background-color: #f4f7fb;
+      background-image:
+        radial-gradient(120% 62% at 88% -12%, rgba(199, 231, 255, 0.42) 0%, transparent 55%),
+        radial-gradient(rgba(41, 98, 131, 0.045) 1px, transparent 1.5px);
+      background-size: 100% 100%, 40px 40px;
+      background-repeat: no-repeat, repeat;
+      background-attachment: fixed, scroll;
+    }
 
-  .dash-wrap {
-    max-width: 920px;
-    margin: 0 auto;
-    padding: 64px 32px 80px;
-  }
+    .dash-wrap { max-width: 1180px; margin: 0 auto; padding: 56px 40px 80px; }
+    @media (max-width: 720px) { .dash-wrap { padding: 36px 20px 60px; } }
 
-  /* Welcome hero */
-  .dash-hero {
-    margin-bottom: 48px;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-  }
-  .dash-eyebrow {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-  }
-  .dash-title {
-    font-family: var(--font-serif-zh);
-    font-weight: 500;
-    font-size: clamp(30px, 5vw, 44px);
-    line-height: 1.25;
-    color: var(--ink-darkest);
-    letter-spacing: 0.01em;
-  }
-  .dash-title .name { color: var(--accent-soft); }
-  .dash-sub {
-    margin-top: 14px;
-    font-family: var(--font-serif-en);
-    font-style: italic;
-    font-size: 17px;
-    color: var(--ink-light);
-    letter-spacing: 0.02em;
-  }
-  .dash-rule {
-    margin-top: 28px;
-    width: 64px;
-    height: 1px;
-    background: var(--gold);
-    opacity: 0.6;
-  }
+    /* ── Hero ── */
+    .dash-hero {
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+    .dash-eyebrow {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--dw-blue);
+      margin-bottom: 14px;
+    }
+    .dash-title {
+      font-family: var(--font-serif-zh);
+      font-weight: 600;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.2;
+      color: var(--dw-ink);
+      letter-spacing: 0.01em;
+    }
+    .dash-title .name { color: var(--dw-blue); }
+    .dash-sub {
+      margin-top: 12px;
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 17px;
+      color: var(--dw-ink-faint);
+      letter-spacing: 0.02em;
+    }
+    .dash-rule { margin-top: 24px; width: 60px; height: 1px; background: var(--dw-gold); opacity: 0.7; }
 
-  /* ── 兩欄版面：左 2 / 右 1 ── */
-  .dash-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    align-items: stretch;
-  }
-  .dash-left {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  @media (max-width: 720px) {
-    .dash-grid { grid-template-columns: 1fr; }
-    .dash-wrap { padding: 44px 22px 64px; }
-  }
+    /* ── Bento grid ── */
+    .dash-bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+    .dash-card--natal   { grid-column: span 8; }
+    .dash-card--decade  { grid-column: span 4; }
+    .dash-card--annual  { grid-column: span 6; }
+    .dash-card--monthly { grid-column: span 6; }
+    @media (max-width: 900px) {
+      .dash-bento { grid-template-columns: repeat(2, 1fr); }
+      .dash-card--natal   { grid-column: span 2; }
+      .dash-card--decade  { grid-column: span 1; }
+      .dash-card--annual  { grid-column: span 1; }
+      .dash-card--monthly { grid-column: span 2; }
+    }
+    @media (max-width: 560px) {
+      .dash-bento { grid-template-columns: 1fr; gap: 16px; }
+      .dash-card--natal, .dash-card--decade,
+      .dash-card--annual, .dash-card--monthly { grid-column: span 1; }
+    }
 
-  .dash-card {
-    position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 30px 30px 28px;
-    overflow: hidden;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-  }
+    /* ── Card(glass) ── */
+    .dash-card {
+      position: relative;
+      background: var(--dw-card);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--dw-border);
+      border-radius: 14px;
+      padding: 28px 30px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, border-color 0.3s;
+    }
+    /* 金角點綴 */
+    .dash-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, transparent 50%, var(--dw-gold) 50%);
+      opacity: 0.5;
+      border-top-right-radius: 14px;
+    }
+    .dash-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -12px rgba(0, 27, 60, 0.18);
+      border-color: var(--dw-border-hover);
+    }
 
-  /* 角落金線裝飾 */
-  .dash-card::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 38px; height: 38px;
-    border-top: 1px solid var(--gold);
-    border-right: 1px solid var(--gold);
-    opacity: 0.4;
-    border-top-right-radius: 4px;
-  }
+    .card-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dw-ink-faint);
+    }
+    .card-now {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--dw-blue);
+      background: var(--dw-blue-wash);
+      border: 1px solid var(--dw-blue-pale);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .card-name {
+      font-family: var(--font-serif-zh);
+      font-weight: 600;
+      font-size: 24px;
+      color: var(--dw-ink);
+      letter-spacing: 0.02em;
+      margin-bottom: 5px;
+    }
+    .dash-card--natal .card-name { font-size: 30px; }
+    .card-name-en {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--dw-blue);
+      opacity: 0.72;
+      margin-bottom: 16px;
+    }
+    .card-desc {
+      font-family: var(--font-serif-zh);
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: var(--dw-ink-soft);
+      margin-bottom: 24px;
+    }
+    .dash-card--natal .card-desc { max-width: 44ch; }
 
-  .card-kicker {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-  }
-  /* 「現在」標記：流年 / 流月 */
-  .card-now {
-    margin-left: 10px;
-    font-family: var(--font-sans);
-    font-size: 9.5px;
-    letter-spacing: 0.18em;
-    color: var(--accent-deep);
-    border: 1px solid var(--accent-pale);
-    padding: 2px 9px;
-    border-radius: 999px;
-  }
-  .card-name {
-    font-family: var(--font-serif-zh);
-    font-weight: 500;
-    font-size: 25px;
-    color: var(--ink-darkest);
-    letter-spacing: 0.03em;
-    margin-bottom: 5px;
-  }
-  .card-name-en {
-    font-family: var(--font-serif-en);
-    font-style: italic;
-    font-size: 14px;
-    color: var(--ink-light);
-    margin-bottom: 18px;
-  }
-  .card-desc {
-    font-family: var(--font-serif-zh);
-    font-size: 14.5px;
-    line-height: 1.85;
-    color: var(--ink-mid);
-    margin-bottom: 26px;
-    min-height: 50px;
-  }
+    /* action 區沉底對齊 */
+    #card-natal-action, #card-decade-action,
+    #card-annual-action, #card-monthly-action { margin-top: auto; }
 
-  /* primary CTA（查閱更多 / 進入）*/
-  .card-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    letter-spacing: 0.06em;
-    color: var(--bg-card);
-    background: var(--accent-deep);
-    padding: 12px 24px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.25s, transform 0.25s;
-  }
-  .card-cta:hover { background: #1d4448; transform: translateY(-1px); }
-  .card-cta .arrow { transition: transform 0.25s; }
-  .card-cta:hover .arrow { transform: translateX(4px); }
+    /* primary CTA(查閱更多)— 文字連結式 */
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-serif-zh);
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      color: var(--dw-blue);
+      cursor: pointer;
+      transition: gap 0.25s, color 0.25s;
+    }
+    .card-cta:hover { gap: 14px; color: var(--dw-blue-deep); }
+    .card-cta .arrow { transition: transform 0.25s; }
+    .card-cta:hover .arrow { transform: translateX(3px); }
 
-  /* generating / muted state */
-  .dash-card.is-soon { background: var(--bg-soft-2); }
-  .card-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    color: var(--ink-mid);
-  }
-  .card-status .pulse {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--silver-deep);
-    animation: fsPulse 1.6s ease-in-out infinite;
-  }
-  .card-note {
-    margin-top: 14px;
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--ink-light);
-  }
-  .card-refresh {
-    margin-top: 18px;
-    display: inline-block;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    color: var(--accent-soft);
-    cursor: pointer;
-    border-bottom: 1px solid var(--accent-pale);
-    padding-bottom: 1px;
-  }
-  .card-refresh:hover { color: var(--accent-deep); }
+    /* generating / muted 狀態 */
+    .dash-card.is-soon { background: var(--dw-blue-wash); }
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-serif-zh);
+      font-size: 14px;
+      color: var(--dw-ink-soft);
+    }
+    .card-status .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--dw-blue);
+      animation: fsPulse 1.6s ease-in-out infinite;
+    }
+    .card-note {
+      margin-top: 12px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--dw-ink-faint);
+    }
+    .card-refresh {
+      margin-top: 16px;
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: var(--dw-blue);
+      cursor: pointer;
+      border-bottom: 1px solid var(--dw-blue-pale);
+      padding-bottom: 1px;
+    }
+    .card-refresh:hover { color: var(--dw-blue-deep); }
 
-  /* ── 第一層付費牆：本命/大限/流年 一次解鎖 ── */
-  .dash-unlock {
-    position: relative;
-    background: var(--bg-soft-2);
-    border: 1px solid var(--gold-soft);
-    border-radius: 4px;
-    padding: 24px 28px;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-  }
-  .u-title {
-    font-family: var(--font-serif-zh);
-    font-size: 17px;
-    color: var(--ink-darkest);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .u-icon { color: var(--gold); font-size: 16px; }
-  .u-note {
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--ink-light);
-    margin-bottom: 18px;
-  }
-  .u-btn, .sub-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    letter-spacing: 0.06em;
-    color: var(--accent-deep);
-    background: var(--bg-card);
-    border: 1px solid var(--gold-soft);
-    border-radius: 3px;
-    padding: 11px 22px;
-    cursor: pointer;
-    transition: background 0.25s, transform 0.25s;
-  }
-  .u-btn:hover, .sub-btn:hover { background: var(--accent-pale); transform: translateY(-1px); }
-  .u-btn[disabled], .sub-btn[disabled] { opacity: 0.92; }
+    /* ── 第一層付費牆 ── */
+    #unlock-transforms:empty { display: none; }
+    .dash-unlock {
+      position: relative;
+      margin-top: 20px;
+      background: linear-gradient(135deg, var(--dw-blue-wash), #ffffff 70%);
+      border: 1px solid var(--dw-gold);
+      border-radius: 14px;
+      padding: 24px 28px;
+      opacity: 0;
+      animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+    .u-title {
+      font-family: var(--font-serif-zh);
+      font-size: 17px;
+      color: var(--dw-ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .u-icon { color: var(--dw-gold); font-size: 16px; }
+    .u-note {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--dw-ink-soft);
+      margin-bottom: 18px;
+    }
+    .u-btn, .sub-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-serif-zh);
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      background: var(--dw-blue);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.25s;
+    }
+    .u-btn:hover, .sub-btn:hover { background: var(--dw-blue-deep); transform: translateY(-1px); }
+    .u-btn[disabled], .sub-btn[disabled] { opacity: 0.9; }
 
-  /* ── 單獨問事入口卡（全寬）── */
-  .dash-consult {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-top: 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 26px 30px;
-    overflow: hidden;
-    opacity: 0;
-    animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-  }
-  .dash-consult::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 38px; height: 38px;
-    border-top: 1px solid var(--gold);
-    border-right: 1px solid var(--gold);
-    opacity: 0.4;
-    border-top-right-radius: 4px;
-  }
-  .dc-kicker {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-  .dc-name {
-    font-family: var(--font-serif-zh);
-    font-weight: 500;
-    font-size: 21px;
-    color: var(--ink-darkest);
-    letter-spacing: 0.02em;
-    margin-bottom: 6px;
-  }
-  .dc-desc {
-    font-family: var(--font-serif-zh);
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--ink-mid);
-    max-width: 460px;
-  }
-  .dc-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-serif-zh);
-    font-size: 15px;
-    letter-spacing: 0.06em;
-    color: var(--bg-card);
-    background: var(--accent-deep);
-    padding: 12px 24px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.25s, transform 0.25s;
-    flex: 0 0 auto;
-  }
-  .dc-cta:hover { background: #1d4448; transform: translateY(-1px); }
-  .dc-cta .arrow { transition: transform 0.25s; }
-  .dc-cta:hover .arrow { transform: translateX(4px); }
+    /* ── 第二層付費牆(流月卡內) ── */
+    #sub-monthly:empty { display: none; }
+    .monthly-sub {
+      margin-top: 20px;
+      background: var(--dw-blue-wash);
+      border: 1px solid var(--dw-gold);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .monthly-sub .ms-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--dw-ink-soft);
+      margin-bottom: 12px;
+    }
+    .monthly-sub .ms-line .lock { color: var(--dw-gold); font-size: 14px; }
+    .monthly-sub .sub-btn { width: 100%; justify-content: center; }
 
-  /* ── 流月卡（右欄，撐滿高度）── */
-  .dash-card--monthly {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .dash-card--monthly .card-desc { flex: 1; }
+    /* ── 單獨問事入口 ── */
+    .dash-consult {
+      position: relative;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      background: var(--dw-blue-wash);
+      border: 1px solid rgba(41, 98, 131, 0.22);
+      border-radius: 14px;
+      padding: 28px 32px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+    .dc-kicker {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--dw-blue);
+      margin-bottom: 10px;
+    }
+    .dc-name {
+      font-family: var(--font-serif-zh);
+      font-weight: 600;
+      font-size: 21px;
+      color: var(--dw-ink);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .dc-desc {
+      font-family: var(--font-serif-zh);
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--dw-ink-soft);
+      max-width: 460px;
+    }
+    .dc-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-serif-zh);
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      background: var(--dw-blue);
+      padding: 13px 26px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex: 0 0 auto;
+      transition: background 0.25s, transform 0.25s;
+    }
+    .dc-cta:hover { background: var(--dw-blue-deep); transform: translateY(-1px); }
+    .dc-cta .arrow { transition: transform 0.25s; }
+    .dc-cta:hover .arrow { transform: translateX(4px); }
 
-  /* 第二層付費牆：流月訂閱 */
-  .monthly-sub {
-    margin-top: 20px;
-    background: var(--bg-soft-2);
-    border: 1px solid var(--gold-soft);
-    border-radius: 4px;
-    padding: 16px 18px;
-  }
-  .monthly-sub .ms-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: var(--ink-light);
-    margin-bottom: 12px;
-  }
-  .monthly-sub .ms-line .lock { color: var(--gold); font-size: 14px; }
-  .monthly-sub .sub-btn { width: 100%; justify-content: center; }
-
-  /* loading skeleton */
-  .dash-loading {
-    text-align: center;
-    padding: 90px 20px;
-    font-family: var(--font-serif-zh);
-    color: var(--ink-light);
-    font-size: 15px;
-    letter-spacing: 0.08em;
-  }
-
-  @keyframes fsRise {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fsPulse {
-    0%, 100% { opacity: 0.4; transform: scale(0.85); }
-    50%      { opacity: 1;   transform: scale(1.1); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .dash-hero, .dash-card, .dash-unlock { animation: none; opacity: 1; }
-    .card-status .pulse { animation: none; }
-  }
-</style>
+    /* ── loading + 動畫 ── */
+    .dash-loading {
+      text-align: center;
+      padding: 90px 20px;
+      font-family: var(--font-serif-zh);
+      color: var(--dw-ink-faint);
+      font-size: 15px;
+      letter-spacing: 0.08em;
+    }
+    @keyframes fsRise {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fsPulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50%      { opacity: 1;   transform: scale(1.1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dash-hero, .dash-card, .dash-unlock, .dash-consult { animation: none; opacity: 1; }
+      .card-status .pulse { animation: none; }
+      .dash-card:hover { transform: none; }
+    }
+  </style>
 </head>
-<body>
+<body class="dash-page">
 
 <div id="site-header"></div>
 
@@ -418,6 +435,7 @@
 
     <!-- content (hidden until ready) -->
     <div id="dash-content" style="display:none;">
+
       <div class="dash-hero">
         <div class="dash-eyebrow" data-i18n="dash.heroEyebrow">歡迎回來</div>
         <h1 class="dash-title" id="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
@@ -425,44 +443,36 @@
         <div class="dash-rule"></div>
       </div>
 
-      <div class="dash-grid">
+      <div class="dash-bento">
 
-        <!-- ── 左欄：本命 / 大限 / 流年 ── -->
-        <div class="dash-left">
-
-          <!-- 本命卡 -->
-          <div class="dash-card" id="card-natal" style="animation-delay:0.10s;">
-            <div class="card-kicker"><span data-i18n="dash.kNatal">本命</span></div>
-            <div class="card-name" data-i18n="dash.nNatal">你是誰</div>
-            <div class="card-name-en">Your Innate Blueprint</div>
-            <div class="card-desc" id="desc-natal" data-i18n="dash.dNatal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
-            <div id="card-natal-action"><!-- 動態填入 --></div>
-          </div>
-
-          <!-- 大限卡 -->
-          <div class="dash-card" id="card-decade" style="animation-delay:0.18s;">
-            <div class="card-kicker"><span data-i18n="dash.kDecade">大限</span></div>
-            <div class="card-name" data-i18n="dash.nDecade">你正在哪一段</div>
-            <div class="card-name-en">Your Ten-Year Cycle</div>
-            <div class="card-desc" id="desc-decade" data-i18n="dash.dDecade">人生十年一段，這是你目前的階段，以及它的整體基調。</div>
-            <div id="card-decade-action"><!-- 動態填入 --></div>
-          </div>
-
-          <!-- 流年卡 -->
-          <div class="dash-card" id="card-annual" style="animation-delay:0.26s;">
-            <div class="card-kicker"><span data-i18n="dash.kAnnual">流年</span><span class="card-now" data-i18n="dash.now">現在</span></div>
-            <div class="card-name" data-i18n="dash.nAnnual">今年的主軸</div>
-            <div class="card-name-en">This Year's Currents</div>
-            <div class="card-desc" id="desc-annual" data-i18n="dash.dAnnual">這一年的重心落在哪裡 — 什麼值得你把心力放上去。</div>
-            <div id="card-annual-action"><!-- 動態填入 --></div>
-          </div>
-
-          <!-- 第一層付費牆：一次解鎖完整解讀（未購買才出現）-->
-          <div id="unlock-transforms"></div>
-
+        <!-- 本命(大卡) -->
+        <div class="dash-card dash-card--natal" id="card-natal" style="animation-delay:0.10s;">
+          <div class="card-kicker"><span data-i18n="dash.kNatal">本命</span></div>
+          <div class="card-name" data-i18n="dash.nNatal">你是誰</div>
+          <div class="card-name-en">Your Innate Blueprint</div>
+          <div class="card-desc" id="desc-natal" data-i18n="dash.dNatal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
+          <div id="card-natal-action"><!-- 動態填入 --></div>
         </div>
 
-        <!-- ── 右欄：流月（撐滿高度）── -->
+        <!-- 大限 -->
+        <div class="dash-card dash-card--decade" id="card-decade" style="animation-delay:0.18s;">
+          <div class="card-kicker"><span data-i18n="dash.kDecade">大限</span></div>
+          <div class="card-name" data-i18n="dash.nDecade">你正在哪一段</div>
+          <div class="card-name-en">Your Ten-Year Cycle</div>
+          <div class="card-desc" id="desc-decade" data-i18n="dash.dDecade">人生十年一段，這是你目前的階段，以及它的整體基調。</div>
+          <div id="card-decade-action"><!-- 動態填入 --></div>
+        </div>
+
+        <!-- 流年 -->
+        <div class="dash-card dash-card--annual" id="card-annual" style="animation-delay:0.26s;">
+          <div class="card-kicker"><span data-i18n="dash.kAnnual">流年</span><span class="card-now" data-i18n="dash.now">現在</span></div>
+          <div class="card-name" data-i18n="dash.nAnnual">今年的主軸</div>
+          <div class="card-name-en">This Year's Currents</div>
+          <div class="card-desc" id="desc-annual" data-i18n="dash.dAnnual">這一年的重心落在哪裡 — 什麼值得你把心力放上去。</div>
+          <div id="card-annual-action"><!-- 動態填入 --></div>
+        </div>
+
+        <!-- 流月(含第二層付費牆) -->
         <div class="dash-card dash-card--monthly" id="card-monthly" style="animation-delay:0.34s;">
           <div class="card-kicker"><span data-i18n="dash.kMonthly">流月</span><span class="card-now" data-i18n="dash.now">現在</span></div>
           <div class="card-name" data-i18n="dash.nMonthly">這個月的提示</div>
@@ -475,6 +485,9 @@
 
       </div>
 
+      <!-- 第一層付費牆：一次解鎖完整解讀（未購買才出現）-->
+      <div id="unlock-transforms"></div>
+
       <!-- ── 單獨問事入口 ── -->
       <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
         <div class="dc-textwrap">
@@ -486,7 +499,6 @@
       </div>
 
     </div>
-
   </div>
 </div>
 
