@@ -216,47 +216,40 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── Footer ── */
 .fs-footer {
   margin-top: auto;
-  padding: 48px 32px 40px;
+  padding: 16px 32px;
   border-top: 1px solid var(--rule);
   text-align: center;
   background: var(--bg-soft-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 .fs-footer-brand {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 0;
 }
 .fs-footer-brand img {
-  height: 40px;
+  height: 26px;
   width: auto;
   display: block;
 }
 .fs-footer-brand-name {
   font-family: var(--font-serif-en);
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 500;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.12em;
   color: var(--ink-dark);
   line-height: 1;
-}
-.fs-footer-tagline {
-  font-family: var(--font-serif-zh);
-  font-size: 13px;
-  line-height: 1.9;
-  color: var(--ink-mid);
-  letter-spacing: 0.05em;
-  margin-bottom: 24px;
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
 }
 .fs-footer-links {
   display: flex;
   justify-content: center;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 0;
   flex-wrap: wrap;
 }
 .fs-footer-link {
@@ -378,7 +371,6 @@ function injectFooter() {
         <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
         <span class="fs-footer-brand-name">FuSang Vision</span>
       </div>
-      <div class="fs-footer-tagline" data-i18n-html="footerTagline"></div>
       <div class="fs-footer-links">
         <a href="#" class="fs-footer-link" data-i18n="footerPrivacy"></a>
         <a href="#" class="fs-footer-link" data-i18n="footerDisclaimer"></a>
