@@ -47,149 +47,113 @@
   <title>FuSang Vision — 登入</title>
 
   <style>
-    /* ── Local tokens(加古銅金作為點綴)── */
-    .login-page {
-      --gold: #b8945c;
-      --gold-soft: #d4b888;
-      --gold-pale: #f0e6d4;
-    }
+    /* ════════════════════════════════════════════════════════
+       login 視覺改版：現代東方禪意 + 療癒極簡
+       淺色晨曦底(青綠 wash + 一抹 dawn 暖光) / 左對齊通透表單 / 細框輸入
+       共用 tokens 由 components.js 注入(--wash-teal / --dawn / --gold …)
+       ════════════════════════════════════════════════════════ */
 
-    /* ── Layout ── */
+    /* ── 頁面：淺色晨曦底 ── */
     .login-page {
-      min-height: calc(100vh - 130px);
+      min-height: calc(100vh - 120px);
       display: flex;
       align-items: stretch;
       justify-content: center;
-      padding: 0;
       position: relative;
       background: var(--bg-primary);
+      overflow: hidden;
     }
-
-    /* 背景微紋路 */
+    /* 晨曦暈染：左側淡青綠 wash + 右上一抹旭日暖光(CSS 漸層,不放圖) */
     .login-page::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(circle at 20% 20%, rgba(184, 148, 92, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(21, 54, 58, 0.04) 0%, transparent 50%);
+      background:
+        radial-gradient(ellipse 62% 55% at 16% 32%, var(--wash-teal) 0%, transparent 62%),
+        radial-gradient(ellipse 48% 42% at 90% 10%, rgba(224, 168, 120, 0.16) 0%, transparent 58%);
       pointer-events: none;
     }
 
     .login-container {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      max-width: 1100px;
+      grid-template-columns: 1.05fr 0.95fr;
+      max-width: 1080px;
       width: 100%;
-      gap: 0;
       position: relative;
       z-index: 1;
     }
-
     @media (max-width: 900px) {
-      .login-container { grid-template-columns: 1fr; max-width: 480px; }
+      .login-container { grid-template-columns: 1fr; max-width: 460px; }
     }
 
     /* ───────────────────────────────────── */
-    /* LEFT — 品牌氛圍區                       */
+    /* LEFT — 品牌氛圍區(淺色)                */
     /* ───────────────────────────────────── */
     .login-left {
-      padding: 80px 56px;
-      background: linear-gradient(135deg, #1a3d40 0%, #15363a 50%, #0f2a2d 100%);
-      color: var(--bg-primary);
+      padding: 88px 56px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       position: relative;
-      overflow: hidden;
-      border-radius: 2px 0 0 2px;
     }
-
     @media (max-width: 900px) {
-      .login-left { display: none; }
+      /* 手機：收成頂部品牌帶,只留 eyebrow + craft,保住晨曦第一印象又不擠壓表單 */
+      .login-left {
+        padding: 36px 32px 4px;
+        justify-content: flex-start;
+      }
     }
 
-    /* 左側角落金線裝飾 */
-    .login-left::before,
-    .login-left::after {
-      content: '';
-      position: absolute;
-      width: 48px;
-      height: 48px;
-    }
-    .login-left::before {
-      top: 32px; left: 32px;
-      border-top: 1px solid var(--gold-soft);
-      border-left: 1px solid var(--gold-soft);
-    }
-    .login-left::after {
-      bottom: 32px; right: 32px;
-      border-bottom: 1px solid var(--gold-soft);
-      border-right: 1px solid var(--gold-soft);
-    }
+    .login-left-glow { display: none; } /* 舊金色光暈移除,改用頁面 wash */
 
-    /* 中央光暈 */
-    .login-left-glow {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 480px;
-      height: 480px;
-      background: radial-gradient(circle, rgba(184, 148, 92, 0.12) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    .login-left-top {
-      position: relative;
-      z-index: 1;
-    }
+    .login-left-top { position: relative; z-index: 1; }
     .login-left-eyebrow {
       font-family: var(--font-serif-en);
       font-style: italic;
       font-size: 13px;
-      letter-spacing: 0.2em;
-      color: var(--gold-soft);
-      margin-bottom: 16px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      margin-bottom: 14px;
     }
     .login-left-brand {
-      font-family: var(--font-serif-en);
-      font-size: 18px;
-      letter-spacing: 0.25em;
-      color: var(--bg-primary);
+      font-family: var(--font-serif-zh);
+      font-size: 17px;
+      letter-spacing: 0.3em;
+      color: var(--ink-dark);
       font-weight: 500;
     }
 
     .login-left-center {
       position: relative;
       z-index: 1;
-      margin: 64px 0;
+      margin: 58px 0;
     }
     .login-left-title {
       font-family: var(--font-serif-zh);
-      font-size: 44px;
+      font-size: clamp(30px, 3.4vw, 42px);
       font-weight: 400;
-      line-height: 1.45;
+      line-height: 1.5;
       letter-spacing: 0.04em;
-      color: var(--bg-primary);
-      margin-bottom: 24px;
+      color: var(--ink-darkest);
     }
     .login-left-title .accent {
-      color: var(--gold-soft);
+      color: var(--accent-deep);
       font-weight: 500;
     }
     .login-left-divider {
-      width: 48px;
+      width: 52px;
       height: 1px;
-      background: var(--gold-soft);
-      margin: 28px 0;
+      background: var(--gold);
+      opacity: 0.55;
+      margin: 30px 0;
     }
     .login-left-sub {
       font-family: var(--font-serif-zh);
       font-size: 15px;
-      line-height: 1.95;
-      color: rgba(250, 247, 241, 0.75);
+      line-height: 2;
+      color: var(--ink-mid);
       letter-spacing: 0.04em;
-      max-width: 360px;
+      max-width: 380px;
     }
 
     .login-left-bottom {
@@ -198,42 +162,35 @@
       font-family: var(--font-serif-en);
       font-style: italic;
       font-size: 12px;
-      letter-spacing: 0.15em;
-      color: rgba(250, 247, 241, 0.5);
+      letter-spacing: 0.18em;
+      color: var(--ink-light);
+    }
+    @media (max-width: 900px) {
+      .login-left-center, .login-left-bottom { display: none; }
     }
 
     /* ───────────────────────────────────── */
-    /* RIGHT — 登入表單                       */
+    /* RIGHT — 登入表單(左對齊,通透)          */
     /* ───────────────────────────────────── */
     .login-right {
-      padding: 80px 56px;
-      background: var(--bg-card);
+      padding: 88px 56px 88px 64px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
-      border-radius: 0 2px 2px 0;
-      border: 1px solid var(--rule);
-      border-left: none;
-      box-shadow: 0 4px 24px rgba(21, 54, 58, 0.06);
     }
-
     @media (max-width: 900px) {
-      .login-right {
-        padding: 56px 36px;
-        border-left: 1px solid var(--rule);
-        border-radius: 2px;
-      }
+      .login-right { padding: 6px 32px 48px; }
     }
-
-    /* 右側角落金線 */
-    .login-right::before {
-      content: '';
-      position: absolute;
-      top: 24px; right: 24px;
-      width: 32px; height: 32px;
-      border-top: 1px solid var(--gold-soft);
-      border-right: 1px solid var(--gold-soft);
+    /* 桌機：兩欄間細分隔線(漸層淡出,禪意細線) */
+    @media (min-width: 901px) {
+      .login-right::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 14%; bottom: 14%;
+        width: 1px;
+        background: linear-gradient(180deg, transparent, var(--rule) 22%, var(--rule) 78%, transparent);
+      }
     }
 
     .login-right-eyebrow {
@@ -242,15 +199,13 @@
       font-size: 14px;
       color: var(--gold);
       letter-spacing: 0.15em;
-      text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .login-right-title {
       font-family: var(--font-serif-zh);
-      font-size: 32px;
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      text-align: center;
+      font-size: 30px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
       color: var(--ink-darkest);
       margin-bottom: 8px;
     }
@@ -259,22 +214,20 @@
       font-size: 13px;
       color: var(--ink-mid);
       letter-spacing: 0.05em;
-      text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
     .login-mini-divider {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 12px;
-      margin: 20px 0 36px;
-      color: var(--gold-soft);
+      gap: 10px;
+      margin: 22px 0 34px;
     }
-    .login-mini-divider::before, .login-mini-divider::after {
+    .login-mini-divider::before {
       content: '';
-      width: 32px;
+      width: 34px;
       height: 1px;
-      background: var(--gold-soft);
+      background: var(--gold);
+      opacity: 0.55;
     }
     .login-mini-divider span {
       font-family: var(--font-serif-en);
@@ -289,15 +242,15 @@
       display: none;
       padding: 12px 14px;
       margin-bottom: 20px;
-      border-radius: 2px;
+      border-radius: 3px;
       font-size: 13px;
       font-family: var(--font-serif-zh);
       line-height: 1.6;
     }
     .login-error {
-      background: #fdecea;
-      border: 1px solid #f5c2be;
-      color: #c0392b;
+      background: #f6eae7;
+      border: 1px solid #e0b9b2;
+      color: var(--error);
     }
     .login-success {
       background: var(--t-lu-bg);
@@ -306,7 +259,7 @@
     }
     .login-error.active, .login-success.active { display: block; }
 
-    /* Form */
+    /* ── Form(細框白底,focus 青綠)── */
     .login-field {
       display: flex;
       flex-direction: column;
@@ -315,58 +268,30 @@
     .login-field label {
       font-family: var(--font-sans);
       font-size: 11px;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--ink-mid);
-      margin-bottom: 8px;
+      margin-bottom: 9px;
     }
     .login-field input {
-      height: 46px;
-      padding: 0 14px;
+      height: 48px;
+      padding: 0 15px;
       border: 1px solid var(--rule);
-      border-radius: 2px;
-      background: var(--bg-soft-2);
+      border-radius: 3px;
+      background: var(--bg-card);
       font-size: 15px;
       font-family: var(--font-serif-zh);
       color: var(--ink-darkest);
-      transition: all 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       letter-spacing: 0.02em;
     }
-    .login-field input:hover { border-color: var(--silver-deep); }
+    .login-field input::placeholder { color: var(--ink-faint); }
+    .login-field input:hover { border-color: var(--accent-pale); }
     .login-field input:focus {
       outline: none;
-      border-color: var(--gold);
-      background: var(--bg-card);
-      box-shadow: 0 0 0 3px rgba(184, 148, 92, 0.12);
+      border-color: var(--accent-soft);
+      box-shadow: 0 0 0 3px rgba(58, 107, 112, 0.10);
     }
-
-    .login-btn {
-      width: 100%;
-      height: 50px;
-      background: var(--ink-darkest);
-      color: var(--bg-primary);
-      font-family: var(--font-sans);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      border-radius: 2px;
-      transition: all 0.2s;
-      margin-top: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-    .login-btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(184, 148, 92, 0.2), transparent);
-      transition: left 0.6s;
-    }
-    .login-btn:hover:not(:disabled)::before { left: 100%; }
-    .login-btn:hover:not(:disabled) { background: var(--accent-soft); }
-    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .login-forgot {
       text-align: right;
@@ -379,32 +304,64 @@
       color: var(--ink-mid);
       letter-spacing: 0.05em;
       cursor: pointer;
-      border-bottom: 1px dashed transparent;
-      transition: all 0.2s;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
     }
     .login-forgot a:hover {
-      color: var(--gold);
-      border-bottom-color: var(--gold-soft);
+      color: var(--accent-deep);
+      border-bottom-color: var(--accent-pale);
     }
 
+    .login-btn {
+      width: 100%;
+      height: 52px;
+      background: var(--ink-darkest);
+      color: var(--bg-primary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .login-btn:hover:not(:disabled) {
+      background: var(--accent-deep);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(21, 54, 58, 0.12);
+    }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-btn-arrow {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1;
+      transition: transform 0.25s;
+    }
+    .login-btn:hover:not(:disabled) .login-btn-arrow { transform: translateX(4px); }
+
     .login-altcta {
-      margin-top: 36px;
-      padding-top: 28px;
-      border-top: 1px dashed var(--rule);
-      text-align: center;
+      margin-top: 34px;
+      padding-top: 26px;
+      border-top: 1px solid var(--rule);
+      text-align: left;
       font-family: var(--font-serif-zh);
       font-size: 13px;
       color: var(--ink-mid);
       line-height: 1.9;
     }
     .login-altcta a {
-      color: var(--ink-darkest);
+      color: var(--accent-deep);
       font-weight: 500;
-      border-bottom: 1px solid var(--gold);
+      border-bottom: 1px solid var(--gold-soft);
       padding-bottom: 1px;
-      transition: color 0.2s;
+      transition: color 0.2s, border-color 0.2s;
     }
-    .login-altcta a:hover { color: var(--gold); }
+    .login-altcta a:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
     /* ── 頁內語言切換(header 已移除,固定右上)── */
     .login-lang {
@@ -414,9 +371,10 @@
       display: inline-flex;
       align-items: center;
       border: 1px solid var(--rule);
-      border-radius: 2px;
+      border-radius: 3px;
       overflow: hidden;
-      background: var(--bg-primary);
+      background: rgba(250, 247, 241, 0.85);
+      backdrop-filter: blur(4px);
     }
     .login-lang-opt {
       font-family: var(--font-sans);
@@ -507,6 +465,7 @@
 
         <button type="submit" id="login-btn" class="login-btn">
           <span id="login-btn-text" data-i18n="login.submit">登入</span>
+          <span class="login-btn-arrow" aria-hidden="true">→</span>
         </button>
 
       </form>
