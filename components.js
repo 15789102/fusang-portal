@@ -125,14 +125,26 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 11px;
 }
 .fs-header-brand img {
-  height: 38px;
+  height: 34px;
   width: auto;
   display: block;
 }
+.fs-brand-name {
+  font-family: var(--font-serif-en);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  color: var(--ink-darkest);
+  line-height: 1;
+  white-space: nowrap;
+}
 @media (max-width: 560px) {
-  .fs-header-brand img { height: 32px; }
+  .fs-header-brand { gap: 9px; }
+  .fs-header-brand img { height: 30px; }
+  .fs-brand-name { font-size: 18px; letter-spacing: 0.1em; }
 }
 .fs-header-nav {
   display: flex;
@@ -212,12 +224,22 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .fs-footer-brand {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 20px;
 }
 .fs-footer-brand img {
-  height: 72px;
+  height: 40px;
   width: auto;
   display: block;
+}
+.fs-footer-brand-name {
+  font-family: var(--font-serif-en);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  color: var(--ink-dark);
+  line-height: 1;
 }
 .fs-footer-tagline {
   font-family: var(--font-serif-zh);
@@ -283,7 +305,8 @@ function injectHeader(activePage = null) {
   el.innerHTML = `
     <header class="fs-header">
       <div class="fs-header-brand" id="fs-brand">
-        <img src="assets/fusangvision_trans_graph_only_0706.png" alt="FuSang Vision" />
+        <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
+        <span class="fs-brand-name">FuSang Vision</span>
       </div>
       <nav class="fs-header-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
@@ -352,7 +375,8 @@ function injectFooter() {
   el.innerHTML = `
     <footer class="fs-footer">
       <div class="fs-footer-brand">
-        <img src="assets/fusangvision_trans_0706.png" alt="FuSang Vision" />
+        <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
+        <span class="fs-footer-brand-name">FuSang Vision</span>
       </div>
       <div class="fs-footer-tagline" data-i18n-html="footerTagline"></div>
       <div class="fs-footer-links">
