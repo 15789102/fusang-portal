@@ -53,25 +53,33 @@ window.fsSupabase = supabase;
 function tc(key) { return I18N.t(key); }
 
 // ─── Design tokens CSS(注入 head)────────────────────────────
+// 色彩對齊 DESIGN.md。--ink-darkest 維持 #15363a(最深墨綠);--accent-deep 已與其
+// 分離為 #1d4a4f(深青綠強調)。新增點綴:--gold/--gold-soft/--dawn、漸層用
+// --wash-teal、語意 --error。--silver-* / --t-*(四化色)非 DESIGN 範圍,保留原值。
 const SHARED_CSS = `
 :root {
   --bg-primary: #faf7f1;
   --bg-card: #ffffff;
-  --bg-soft: #f0ece3;
-  --bg-soft-2: #f5f1e8;
+  --bg-soft: #f4efe6;
+  --bg-soft-2: #f0ebe0;
+  --wash-teal: #e8f0ee;        /* 晨曦暈染漸層用(CSS 漸層模擬淡青綠) */
   --ink-darkest: #15363a;
-  --ink-dark: #2d4a4d;
-  --ink-mid: #5a7174;
-  --ink-light: #8fa2a4;
+  --ink-dark: #2b3d3f;
+  --ink-mid: #5e6f70;
+  --ink-light: #97a3a3;
   --ink-faint: #c4cfd0;
-  --accent-deep: #15363a;
-  --accent-soft: #4d7878;
-  --accent-pale: #d4dfde;
+  --accent-deep: #1d4a4f;
+  --accent-soft: #3a6b70;
+  --accent-pale: #cddad9;
   --silver-deep: #7d9596;
   --silver-soft: #b2c3c4;
   --silver-pale: #dde5e4;
-  --rule: #e0dbcf;
+  --gold: #b8945c;             /* 主點綴金,常規精緻細節 */
+  --gold-soft: #c9ab7d;        /* 淡金 */
+  --dawn: #e0a878;             /* 晨曦暖橘,僅溫暖時刻:歡迎/完成/慶祝 */
+  --rule: #e3dccf;
   --rule-soft-2: #efe9da;
+  --error: #a8453a;
   --t-lu: #3d7c5e;
   --t-quan: #5e4a82;
   --t-ke: #2a5784;
@@ -119,12 +127,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
 }
 .fs-header-brand img {
-  height: 36px;
+  height: 38px;
   width: auto;
   display: block;
 }
 @media (max-width: 560px) {
-  .fs-header-brand img { height: 30px; }
+  .fs-header-brand img { height: 32px; }
 }
 .fs-header-nav {
   display: flex;
@@ -207,7 +215,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-bottom: 20px;
 }
 .fs-footer-brand img {
-  height: 40px;
+  height: 72px;
   width: auto;
   display: block;
 }
@@ -275,7 +283,7 @@ function injectHeader(activePage = null) {
   el.innerHTML = `
     <header class="fs-header">
       <div class="fs-header-brand" id="fs-brand">
-        <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
+        <img src="assets/fusangvision_trans_graph_only_0706.png" alt="FuSang Vision" />
       </div>
       <nav class="fs-header-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
@@ -344,7 +352,7 @@ function injectFooter() {
   el.innerHTML = `
     <footer class="fs-footer">
       <div class="fs-footer-brand">
-        <img src="https://fusang-vision.com/cdn/shop/files/Fusang-3.png?v=1738277042&width=260" alt="FuSang Vision" />
+        <img src="assets/fusangvision_trans_0706.png" alt="FuSang Vision" />
       </div>
       <div class="fs-footer-tagline" data-i18n-html="footerTagline"></div>
       <div class="fs-footer-links">
