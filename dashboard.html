@@ -48,7 +48,8 @@
     'dash.consultKicker':{ 'zh-TW': '單獨問事', 'zh-CN': '单独问事', 'en': 'Personal Consultation' },
     'dash.consultName':{ 'zh-TW': '有一個真正重要的問題？', 'zh-CN': '有一个真正重要的问题？', 'en': 'Have a question that truly matters?' },
     'dash.consultDesc':{ 'zh-TW': '選定主題、說明處境，由真人為你解盤並書面回覆。', 'zh-CN': '选定主题、说明处境，由真人为你解盘并书面回复。', 'en': 'Choose a topic, describe your situation, and get a written reading from a real person.' },
-    'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' }
+    'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' },
+    'dash.quote':      { 'zh-TW': '「不是預知命運，而是穩健有意識地走向嚮往的生活」', 'zh-CN': '「不是预知命运，而是稳健有意识地走向向往的生活」', 'en': '“Not to foresee fate, but to move steadily and consciously toward the life you long for.”' }
   });
 </script>
   <style>
@@ -66,14 +67,14 @@
       --dw-blue-pale:  #c7e7ff;   /* 淡藍 */
       --dw-blue-wash:  #e6eef7;   /* 淡藍容器底 */
       --dw-gold:       #b8945c;   /* 金 */
-      --dw-card:       rgba(255, 255, 255, 0.82);
-      --dw-border:     #d7e0ea;
-      --dw-border-hover: rgba(41, 98, 131, 0.42);
-      background-color: #f4f7fb;
+      --dw-card:       rgba(255, 255, 255, 0.92);
+      --dw-border:     #c8d6e4;
+      --dw-border-hover: rgba(41, 98, 131, 0.5);
+      background-color: #eef3f9;
       background-image:
-        radial-gradient(120% 62% at 88% -12%, rgba(199, 231, 255, 0.42) 0%, transparent 55%),
-        radial-gradient(rgba(41, 98, 131, 0.045) 1px, transparent 1.5px);
-      background-size: 100% 100%, 40px 40px;
+        radial-gradient(120% 62% at 88% -12%, rgba(178, 216, 245, 0.55) 0%, transparent 58%),
+        radial-gradient(rgba(41, 98, 131, 0.09) 1.2px, transparent 1.6px);
+      background-size: 100% 100%, 26px 26px;
       background-repeat: no-repeat, repeat;
       background-attachment: fixed, scroll;
     }
@@ -151,6 +152,7 @@
       flex-direction: column;
       opacity: 0;
       animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      box-shadow: 0 2px 14px -9px rgba(0, 27, 60, 0.16);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, border-color 0.3s;
     }
     /* 金角點綴 */
@@ -158,9 +160,9 @@
       content: '';
       position: absolute;
       top: 0; right: 0;
-      width: 26px; height: 26px;
+      width: 30px; height: 30px;
       background: linear-gradient(135deg, transparent 50%, var(--dw-gold) 50%);
-      opacity: 0.5;
+      opacity: 0.7;
       border-top-right-radius: 14px;
     }
     .dash-card:hover {
@@ -399,6 +401,28 @@
     .dc-cta .arrow { transition: transform 0.25s; }
     .dc-cta:hover .arrow { transform: translateX(4px); }
 
+    /* ── 底部語錄 ── */
+    .dash-quote {
+      margin-top: 60px;
+      text-align: center;
+    }
+    .dash-quote-text {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      border-top: 1px solid var(--dw-border);
+      border-bottom: 1px solid var(--dw-border);
+      font-family: var(--font-serif-zh);
+      font-size: 20px;
+      line-height: 1.9;
+      letter-spacing: 0.05em;
+      color: var(--dw-blue);
+    }
+    @media (max-width: 560px) {
+      .dash-quote { margin-top: 44px; }
+      .dash-quote-text { font-size: 17px; padding: 24px 16px; }
+    }
+
     /* ── loading + 動畫 ── */
     .dash-loading {
       text-align: center;
@@ -496,6 +520,11 @@
           <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
         </div>
         <span class="dc-cta" data-go="consultation.html"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
+      </div>
+
+      <!-- 底部語錄 -->
+      <div class="dash-quote">
+        <p class="dash-quote-text" data-i18n="dash.quote">「不是預知命運，而是穩健有意識地走向嚮往的生活」</p>
       </div>
 
     </div>
