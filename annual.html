@@ -19,6 +19,7 @@
     // annual 專屬 UI 字典(策略 B):共用 chrome/報告術語走中央 UI/RT;此處僅本頁動態 UI 字串。
     // 星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流年語境 explainer/tooltip → td(...ANNUAL)。
     window.FSI18N.addUI({
+      'an.comingSoon': { 'zh-TW': '即將開放', 'zh-CN': '即将开放', 'en': 'Coming soon' },
       "an.docTitle":        { "zh-TW": "我的流年 - FuSang Vision", "zh-CN": "我的流年 - FuSang Vision", "en": "My Annual Chart - FuSang Vision" },
 
       "an.loadingTitle":    { "zh-TW": "載入您的流年", "zh-CN": "载入您的流年", "en": "Loading your annual chart" },
@@ -293,6 +294,22 @@
     .year-card-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--ink-light); }
     .year-card.active { border-color: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-soft); }
     .year-card.active .year-card-num { color: var(--accent-soft); }
+
+    /* 選流年：橫向時間軸（當年放大、隔年 coming soon）*/
+    .year-timeline { padding: 48px 0 24px; }
+    .yt-track { display: flex; align-items: flex-start; justify-content: center; gap: clamp(48px, 14vw, 160px); position: relative; }
+    .yt-track::before { content: ''; position: absolute; top: 62px; left: 8%; right: 8%; height: 1px; background: var(--rule); z-index: 0; }
+    .yt-point { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+    .yt-point.coming { cursor: default; }
+    .yt-year { height: 50px; display: flex; align-items: flex-end; justify-content: center; font-family: var(--font-serif-zh); font-size: 22px; color: var(--ink-light); letter-spacing: 0.04em; transition: color 0.3s, font-size 0.3s; }
+    .yt-point.current .yt-year { font-size: 40px; font-weight: 600; color: var(--accent-soft); }
+    .yt-point.coming .yt-year { color: var(--ink-faint); }
+    .yt-dotbox { height: 24px; display: flex; align-items: center; justify-content: center; }
+    .yt-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--silver-soft); background: #f8f9fa; transition: all 0.3s; }
+    .yt-point:not(.coming):hover .yt-dot { border-color: var(--accent-soft); }
+    .yt-point.current .yt-dot { width: 22px; height: 22px; background: var(--accent-soft); border-color: var(--accent-soft); box-shadow: 0 0 0 6px rgba(41, 98, 131, 0.12); }
+    .yt-point.coming .yt-dot { border-style: dashed; border-color: var(--gold-soft); }
+    .yt-label { margin-top: 10px; font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
 
     /* ── 選流年 + hub 放寬（margin 置中，不用 transform）── */
     @media (min-width: 761px) {
@@ -585,19 +602,40 @@
       empty.style.display = 'block';
       return;
     }
-    grid.style.display = 'grid';
     empty.style.display = 'none';
-    years.forEach((y) => {
-      const card = document.createElement('div');
-      card.className = 'year-card';
-      const num = document.createElement('div');
-      num.className = 'year-card-num'; num.textContent = y;
-      const label = document.createElement('div');
-      label.className = 'year-card-label'; label.textContent = 'Annual';
-      card.appendChild(num); card.appendChild(label);
-      card.addEventListener('click', () => loadYear(y));
-      grid.appendChild(card);
+    grid.style.display = 'block';
+
+    const cur = currentAnnualTargetYear();
+    const avail = [...years].sort((a, b) => a - b);
+    const nextYr = Math.max(cur, avail[avail.length - 1]) + 1;
+    const pts = avail.map((y) => ({ year: y, coming: false }));
+    if (!avail.includes(nextYr)) pts.push({ year: nextYr, coming: true });
+
+    const tl = document.createElement('div');
+    tl.className = 'year-timeline';
+    const track = document.createElement('div');
+    track.className = 'yt-track';
+    pts.forEach((p) => {
+      const el = document.createElement('div');
+      el.className = 'yt-point' + (p.coming ? ' coming' : '') + (p.year === cur ? ' current' : '');
+      const yr = document.createElement('div');
+      yr.className = 'yt-year'; yr.textContent = p.year;
+      const box = document.createElement('div');
+      box.className = 'yt-dotbox';
+      const dot = document.createElement('div');
+      dot.className = 'yt-dot'; box.appendChild(dot);
+      el.appendChild(yr); el.appendChild(box);
+      if (p.coming) {
+        const lb = document.createElement('div');
+        lb.className = 'yt-label'; lb.textContent = tx('an.comingSoon');
+        el.appendChild(lb);
+      } else {
+        el.addEventListener('click', () => loadYear(p.year));
+      }
+      track.appendChild(el);
     });
+    tl.appendChild(track);
+    grid.appendChild(tl);
   }
 
   async function loadYear(year) {
