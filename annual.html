@@ -20,6 +20,7 @@
     // 星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流年語境 explainer/tooltip → td(...ANNUAL)。
     window.FSI18N.addUI({
       'an.comingSoon': { 'zh-TW': '即將開放', 'zh-CN': '即将开放', 'en': 'Coming soon' },
+      'an.enterYear': { 'zh-TW': '進入 {year} 流年', 'zh-CN': '进入 {year} 流年', 'en': 'Open {year} reading' },
       "an.docTitle":        { "zh-TW": "我的流年 - FuSang Vision", "zh-CN": "我的流年 - FuSang Vision", "en": "My Annual Chart - FuSang Vision" },
 
       "an.loadingTitle":    { "zh-TW": "載入您的流年", "zh-CN": "载入您的流年", "en": "Loading your annual chart" },
@@ -309,7 +310,9 @@
     .yt-point:not(.coming):hover .yt-dot { border-color: var(--accent-soft); }
     .yt-point.current .yt-dot { width: 22px; height: 22px; background: var(--accent-soft); border-color: var(--accent-soft); box-shadow: 0 0 0 6px rgba(41, 98, 131, 0.12); }
     .yt-point.coming .yt-dot { border-style: dashed; border-color: var(--gold-soft); }
+    .yt-point.pending .yt-dot { background: transparent; border-style: dashed; border-color: var(--gold); }
     .yt-label { margin-top: 10px; font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+    .yt-cta { text-align: center; margin-top: 40px; }
 
     /* ── 選流年 + hub 放寬（margin 置中，不用 transform）── */
     @media (min-width: 761px) {
@@ -606,10 +609,15 @@
     grid.style.display = 'block';
 
     const cur = currentAnnualTargetYear();
+    const availSet = new Set(years);
     const avail = [...years].sort((a, b) => a - b);
     const nextYr = Math.max(cur, avail[avail.length - 1]) + 1;
-    const pts = avail.map((y) => ({ year: y, coming: false }));
-    if (!avail.includes(nextYr)) pts.push({ year: nextYr, coming: true });
+    // 顯示：已生成年份 ∪ 當年；再補隔年 coming soon
+    const shown = [...new Set([...avail, cur])].sort((a, b) => a - b);
+    const pts = shown.map((y) => ({ year: y, coming: false, has: availSet.has(y) }));
+    if (!shown.includes(nextYr)) pts.push({ year: nextYr, coming: true, has: false });
+
+    const genCur = () => { showView('view-intro'); subscribeAnnual(); };
 
     const tl = document.createElement('div');
     tl.className = 'year-timeline';
@@ -617,7 +625,10 @@
     track.className = 'yt-track';
     pts.forEach((p) => {
       const el = document.createElement('div');
-      el.className = 'yt-point' + (p.coming ? ' coming' : '') + (p.year === cur ? ' current' : '');
+      el.className = 'yt-point'
+        + (p.coming ? ' coming' : '')
+        + (p.year === cur ? ' current' : '')
+        + (!p.has && !p.coming ? ' pending' : '');
       const yr = document.createElement('div');
       yr.className = 'yt-year'; yr.textContent = p.year;
       const box = document.createElement('div');
@@ -629,13 +640,30 @@
         const lb = document.createElement('div');
         lb.className = 'yt-label'; lb.textContent = tx('an.comingSoon');
         el.appendChild(lb);
-      } else {
+      } else if (p.has) {
         el.addEventListener('click', () => loadYear(p.year));
+      } else if (p.year === cur) {
+        el.addEventListener('click', genCur);
       }
       track.appendChild(el);
     });
     tl.appendChild(track);
     grid.appendChild(tl);
+
+    // 當年動作按鈕：有報告→進入；沒報告→開始生成（切到生成中）
+    const cta = document.createElement('div');
+    cta.className = 'yt-cta';
+    const btn = document.createElement('button');
+    btn.className = 'btn-primary';
+    if (availSet.has(cur)) {
+      btn.textContent = tx('an.enterYear').replace('{year}', cur);
+      btn.addEventListener('click', () => loadYear(cur));
+    } else {
+      btn.textContent = tx('an.introGenerateBtn');
+      btn.addEventListener('click', genCur);
+    }
+    cta.appendChild(btn);
+    grid.appendChild(cta);
   }
 
   async function loadYear(year) {
