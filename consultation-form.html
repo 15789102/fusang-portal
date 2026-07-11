@@ -8,6 +8,8 @@
 <title>提交問事 - FuSang Vision</title>
 <style>
   /* 提交問事 — 兩欄版型（共用樣式由 consultation-common.js 注入、已冷藍）*/
+  /* 只放寬本頁（提高權重蓋過共用 .cons-wrap 760，不動 common.js）*/
+  .fs-page .cons-wrap { max-width: 1080px; }
   .form-2col { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: start; }
   @media (max-width: 860px) { .form-2col { grid-template-columns: 1fr; gap: 30px; } }
 
