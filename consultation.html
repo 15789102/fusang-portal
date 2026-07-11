@@ -7,82 +7,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>單獨問事 - FuSang Vision</title>
 <style>
-  /* Landing 專屬（共用樣式由 consultation-common.js 注入）*/
-  .lp-hero { text-align: center; padding: 24px 0 8px; }
-  .lp-eyebrow {
-    font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.32em;
-    text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
-  }
-  .lp-title {
-    font-family: var(--font-serif-zh); font-weight: 500;
-    font-size: clamp(30px, 6vw, 46px); line-height: 1.2; color: var(--ink-darkest);
-    letter-spacing: 0.01em; margin-bottom: 16px;
-  }
-  .lp-sub {
-    font-family: var(--font-serif-en); font-style: italic; font-size: 17px;
-    color: var(--ink-light); max-width: 460px; margin: 0 auto;
-  }
-  .lp-rule { margin: 28px auto 0; width: 64px; height: 1px; background: var(--gold); opacity: 0.6; }
+  /* ── Landing 專屬（共用樣式由 consultation-common.js 注入；顏色由 .cons-wrap 冷藍 token 覆寫）── */
 
-  .lp-section { margin: 44px 0; }
-  .lp-lead {
-    font-family: var(--font-serif-zh); font-size: 17px; line-height: 2;
-    color: var(--ink-dark); text-align: center; max-width: 560px; margin: 0 auto;
-  }
+  /* Hero */
+  .lp-hero { text-align: center; padding: 20px 0 8px; }
+  .lp-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 16px; }
+  .lp-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(32px, 6vw, 52px); line-height: 1.15; color: var(--ink-darkest); letter-spacing: 0.01em; margin-bottom: 16px; }
+  .lp-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 17px; color: var(--ink-light); margin-bottom: 22px; }
+  .lp-lead { max-width: 600px; margin: 0 auto 32px; font-family: var(--font-serif-zh); font-size: 16px; line-height: 1.95; color: var(--ink-mid); letter-spacing: 0.02em; }
+  .lp-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; max-width: 520px; margin: 0 auto; }
+  .lp-actions .cons-btn { width: auto; min-width: 200px; flex: 0 1 auto; }
+  .lp-note { text-align: center; font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-light); margin-top: 14px; }
 
-  .lp-features {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 40px 0;
-  }
-  @media (max-width: 640px) { .lp-features { grid-template-columns: 1fr; } }
-  .lp-feat {
-    position: relative; background: var(--bg-card); border: 1px solid var(--rule);
-    border-radius: 4px; padding: 24px 22px; overflow: hidden;
-  }
-  .lp-feat::before {
-    content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px;
-    border-top: 1px solid var(--gold); border-right: 1px solid var(--gold);
-    opacity: 0.4; border-top-right-radius: 4px;
-  }
-  .lp-feat-n {
-    font-family: var(--font-serif-en); font-style: italic; font-size: 15px;
-    color: var(--gold); margin-bottom: 10px;
-  }
-  .lp-feat-h {
-    font-family: var(--font-serif-zh); font-weight: 500; font-size: 17px;
-    color: var(--ink-darkest); margin-bottom: 8px;
-  }
-  .lp-feat-p {
-    font-family: var(--font-serif-zh); font-size: 13.5px; line-height: 1.8;
-    color: var(--ink-mid);
-  }
+  /* Section heading */
+  .lp-secthead { text-align: center; margin: 72px 0 32px; }
+  .lp-secthead .eb { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; display: block; margin-bottom: 10px; }
+  .lp-secthead .zh { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.05em; }
 
-  .lp-media {
-    width: 100%; border-radius: 6px; overflow: hidden; margin: 40px 0;
-    border: 1px solid var(--rule); background: var(--bg-soft-2);
-    aspect-ratio: 16 / 7; display: flex; align-items: center; justify-content: center;
-  }
-  .lp-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .lp-media-ph {
-    font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.1em;
-    color: var(--ink-faint); text-transform: uppercase;
-  }
+  /* Features */
+  .lp-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 720px) { .lp-features { grid-template-columns: 1fr; } }
+  .lp-feat { position: relative; background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; padding: 30px 26px; box-shadow: 0 2px 14px -10px rgba(0, 27, 60, 0.14); }
+  .lp-feat-n { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--gold); margin-bottom: 14px; }
+  .lp-feat-h { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 10px; }
+  .lp-feat-p { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.85; color: var(--ink-mid); }
 
-  .lp-price { text-align: center; margin: 40px 0 12px; }
-  .lp-price-tag { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-mid); }
-  .lp-price-tag strong {
-    font-family: var(--font-serif-en); font-size: 32px; color: var(--ink-darkest);
-    font-weight: 500; font-style: normal; margin: 0 4px;
-  }
+  /* Pricing */
+  .lp-price { text-align: center; margin: 72px 0 8px; padding: 44px 32px; background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 14px; }
+  .lp-price-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; }
+  .lp-price-tag { font-family: var(--font-serif-en); line-height: 1; }
+  .lp-price-tag .cur { font-size: 24px; color: var(--ink-mid); vertical-align: top; margin-right: 2px; }
+  .lp-price-tag .amt { font-size: 60px; font-weight: 600; color: var(--accent-soft); letter-spacing: -0.02em; }
 
-  .lp-actions {
-    display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin: 28px auto 0;
-  }
-  .lp-note {
-    font-family: var(--font-sans); font-size: 12px; color: var(--ink-light);
-    text-align: center; margin-top: 16px; line-height: 1.7;
-  }
+  /* Brand story */
+  .lp-story { margin: 76px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; position: relative; overflow: hidden; }
+  @media (max-width: 820px) { .lp-story { grid-template-columns: 1fr; gap: 28px; } }
+  .lp-story-media { position: relative; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 40px -18px rgba(0, 27, 60, 0.3); }
+  .lp-story-media img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; object-position: center; }
+  .lp-story-body { position: relative; z-index: 1; }
+  .lp-story-wm { position: absolute; right: -8px; bottom: -40px; font-family: var(--font-serif-zh); font-weight: 700; font-size: 150px; line-height: 1; color: rgba(41, 98, 131, 0.05); pointer-events: none; user-select: none; z-index: 0; }
+  .lp-story-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 14px; }
+  .lp-story-h2 { font-family: var(--font-serif-zh); font-size: clamp(26px, 4vw, 32px); font-weight: 700; color: var(--ink-darkest); letter-spacing: 0.02em; line-height: 1.3; margin-bottom: 12px; }
+  .lp-story-h3 { font-family: var(--font-serif-zh); font-style: italic; font-size: 18px; color: var(--accent-soft); line-height: 1.7; margin-bottom: 20px; }
+  .lp-story-founder { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-light); margin-bottom: 26px; }
+  .lp-values { display: flex; flex-wrap: wrap; gap: 12px; }
+  .lp-val { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-dark); }
+  .lp-val svg { width: 16px; height: 16px; stroke: var(--accent-soft); fill: none; stroke-width: 1.5; flex: 0 0 auto; }
 </style>
 </head>
+
 <body>
 
 <div id="site-header"></div>
@@ -90,33 +63,49 @@
 <div class="fs-page">
   <div class="cons-wrap">
 
+    <!-- Hero -->
     <div class="lp-hero">
-      <div class="lp-eyebrow" id="lp-eyebrow">Personal Consultation</div>
+      <div class="lp-eyebrow" id="lp-eyebrow">Individual Session</div>
       <h1 class="lp-title" id="lp-title">單獨問事</h1>
       <div class="lp-sub" id="lp-sub">A human reading of your chart, for one question that matters.</div>
-      <div class="lp-rule"></div>
+      <p class="lp-lead" id="lp-lead">當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。</p>
+
+      <div id="lp-loading" class="cons-loading" style="padding:20px;">載入中…</div>
+      <div class="lp-actions" id="lp-actions" style="display:none;"></div>
+      <div class="lp-note" id="lp-note" style="display:none;"></div>
     </div>
 
-    <div class="lp-section">
-      <p class="lp-lead" id="lp-lead">
-        當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。
-      </p>
+    <!-- Service features -->
+    <div class="lp-secthead">
+      <span class="zh" id="feat-heading">服務特色</span>
     </div>
-
-    <div class="lp-media">
-      <!-- <img src="你的素材圖.jpg" alt="FuSang Vision" /> -->
-      <span class="lp-media-ph" id="lp-media-ph">Your image here</span>
-    </div>
-
     <div class="lp-features" id="lp-features"></div>
 
+    <!-- Pricing -->
     <div class="lp-price">
-      <div class="lp-price-tag" id="lp-price"><strong>US$68</strong></div>
+      <div class="lp-price-label" id="price-label">Single inquiry fee</div>
+      <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">68</span></div>
     </div>
 
-    <div id="lp-loading" class="cons-loading" style="padding:40px 20px;">載入中…</div>
-    <div class="lp-actions" id="lp-actions" style="display:none;"></div>
-    <div class="lp-note" id="lp-note" style="display:none;"></div>
+    <!-- Brand story -->
+    <div class="lp-story">
+      <div class="lp-story-media">
+        <img src="assets/rs-fusang.webp" alt="R.S. Chen · FuSang Vision" />
+      </div>
+      <div class="lp-story-body">
+        <div class="lp-story-wm" aria-hidden="true">扶桑</div>
+        <div class="lp-story-eyebrow" id="story-eyebrow">Brand Story</div>
+        <h2 class="lp-story-h2" id="story-h2">探索你的內在天賦</h2>
+        <div class="lp-story-h3" id="story-h3">將東方智慧，帶入你真正嚮往的現代生活！</div>
+        <div class="lp-story-founder" id="story-founder">創辦人的話 — R.S. Chen</div>
+        <div class="lp-values">
+          <span class="lp-val"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="val-1">Self-exploration</span></span>
+          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 4 5 4 8.5A4 4 0 0 1 8 11.5c0-1.6.8-2.7 1.8-3.6.4 1.9 1.9 1.8 1.9-.4 0-1.4-.2-3-1.7-4.5z"/></svg><span id="val-2">Courage</span></span>
+          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="val-3">Clarity</span></span>
+          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.2-3 6.9-7 8-4-1.1-7-3.8-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg><span id="val-4">Integrity</span></span>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -132,28 +121,52 @@
   } from './consultation-common.js';
 
   const FEATURES = [
-    { n: '01', zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human', zh_p: '由 RS Chen 親自解讀你的命盤，針對你的處境書面回覆。', cn_p: '由 RS Chen 亲自解读你的命盘，针对你的处境书面回复。', en_p: 'RS Chen personally reads your chart and replies in writing to your situation.' },
-    { n: '02', zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you', zh_p: '每一則諮詢都是針對你的問題單獨準備，不是罐頭答案。', cn_p: '每一则咨询都是针对你的问题单独准备，不是罐头答案。', en_p: 'Each consultation is prepared individually for your question — never a template.' },
-    { n: '03', zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up', zh_p: '收到回覆後，7 天內可再追問一次，把想釐清的地方問清楚。', cn_p: '收到回复后，7 天内可再追问一次，把想厘清的地方问清楚。', en_p: 'After the reply, you may ask one follow-up within 7 days to clarify further.' },
+    { n: '01',
+      zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human',
+      zh_p: '由 R.S. Chen 親自解讀你的命盤，結合深厚的紫微斗數造詣與現代心理洞察，針對你的處境書面回覆。',
+      cn_p: '由 R.S. Chen 亲自解读你的命盘，结合深厚的紫微斗数造诣与现代心理洞察，针对你的处境书面回复。',
+      en_p: 'R.S. Chen personally reads your chart — pairing deep Zi Wei Dou Shu craft with modern psychological insight — and replies in writing to your situation.' },
+    { n: '02',
+      zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you alone',
+      zh_p: '每一則諮詢都是針對你的問題單獨準備。我們拒絕罐頭答案，每一字一句皆是基於你的能量流動所寫下。',
+      cn_p: '每一则咨询都是针对你的问题单独准备。我们拒绝罐头答案，每一字一句皆是基于你的能量流动所写下。',
+      en_p: 'Every consultation is prepared for your question alone — never a template. Each line is written from how your own energies move.' },
+    { n: '03',
+      zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up',
+      zh_p: '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。',
+      cn_p: '收到回复后，7 天内可再针对原议题追问一次。我们陪你把想厘清的地方问清楚，不留遗憾。',
+      en_p: 'After the reply, you may ask one follow-up on the same topic within 7 days — so nothing is left unclear.' },
   ];
 
   // 靜態文字(可重繪：語言切換時重套)
   function applyStaticText() {
-    document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Personal Consultation - FuSang Vision');
-    document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Personal Consultation');
-    document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Personal Consultation');
+    document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Individual Session - FuSang Vision');
+    document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Individual Session');
+    document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Individual Session');
     document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
     document.getElementById('lp-lead').textContent    = pick(
       '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
       '当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的一次解读。',
-      'When you have a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
+      'When you carry a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
     );
-    document.getElementById('lp-media-ph').textContent = pick('圖片素材（待放入）', '图片素材（待放入）', 'Your image here');
+
+    document.getElementById('feat-heading').textContent = pick('服務特色', '服务特色', 'What you get');
     document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
       `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
       `<div class="lp-feat-h">${pick(f.zh_h, f.cn_h, f.en_h)}</div>` +
       `<div class="lp-feat-p">${pick(f.zh_p, f.cn_p, f.en_p)}</div></div>`
     ).join('');
+
+    document.getElementById('price-label').textContent = pick('單次問事費用', '单次问事费用', 'Single inquiry fee');
+
+    document.getElementById('story-eyebrow').textContent = pick('品牌故事', '品牌故事', 'Brand Story');
+    document.getElementById('story-h2').textContent      = pick('探索你的內在天賦', '探索你的内在天赋', 'Discover your innate gifts');
+    document.getElementById('story-h3').textContent      = pick('將東方智慧，帶入你真正嚮往的現代生活。', '将东方智慧，带入你真正向往的现代生活。', 'Bringing Eastern wisdom into the modern life you long for.');
+    document.getElementById('story-founder').textContent = pick('創辦人的話 — R.S. Chen', '创办人的话 — R.S. Chen', 'A note from the founder — R.S. Chen');
+    document.getElementById('val-1').textContent = pick('自我探索', '自我探索', 'Self-exploration');
+    document.getElementById('val-2').textContent = pick('勇氣', '勇气', 'Courage');
+    document.getElementById('val-3').textContent = pick('清晰', '清晰', 'Clarity');
+    document.getElementById('val-4').textContent = pick('如實', '如实', 'Integrity');
   }
 
   // 動作區(依是否有進行中諮詢;快取 active 供語言切換重繪)
