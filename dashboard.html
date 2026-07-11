@@ -49,137 +49,182 @@
     'dash.consultName':{ 'zh-TW': '有一個真正重要的問題？', 'zh-CN': '有一个真正重要的问题？', 'en': 'Have a question that truly matters?' },
     'dash.consultDesc':{ 'zh-TW': '選定主題、說明處境，由真人為你解盤並書面回覆。', 'zh-CN': '选定主题、说明处境，由真人为你解盘并书面回复。', 'en': 'Choose a topic, describe your situation, and get a written reading from a real person.' },
     'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' },
-    'dash.quote':      { 'zh-TW': '「不是預知命運，而是穩健有意識地走向嚮往的生活」', 'zh-CN': '「不是预知命运，而是稳健有意识地走向向往的生活」', 'en': '“Not to foresee fate, but to move steadily and consciously toward the life you long for.”' }
+    'dash.quote':      { 'zh-TW': '你能給世界最大的禮物，就是你的快樂。', 'zh-CN': '你能给世界最大的礼物，就是你的快乐。', 'en': 'The greatest gift you can give the world is your own happiness.' },
+    'dash.broadcast':  { 'zh-TW': '歡迎回到 FuSang Vision', 'zh-CN': '欢迎回到 FuSang Vision', 'en': 'Welcome back to FuSang Vision' }
   });
 </script>
   <style>
     /* ════════════════════════════════════════════════════════
-       dashboard 視覺改版：bento 版型 + 冷調水感配色(五行金水)
-       dashboard 本地色(先只在此頁試,不動全站 DESIGN.md)
-       共用結構 tokens(字體等)仍由 components.js 提供
+       dashboard 視覺改版 v2：編輯式(borderless) + 冷藍水感(金水)
+       版型語彙取自設計稿(borderless 卡、本命全寬、01–04 編號、
+       brush 分隔、enso 環、展訊 bar、精選橫幅佔位、編輯式語錄)
+       文字全沿用現行 i18n；本地色 --dw-*，暫不全站生效
        ════════════════════════════════════════════════════════ */
     body.dash-page {
-      --dw-ink:        #001b3c;   /* 水 · 深藍黑(主文字/標題) */
-      --dw-ink-soft:   #41484d;   /* 次文字 */
-      --dw-ink-faint:  #8a97a5;   /* 淡文字 */
-      --dw-blue:       #296283;   /* 水 · 主藍(強調/CTA/連結) */
-      --dw-blue-deep:  #1d4e63;   /* 深藍(hover) */
-      --dw-blue-pale:  #c7e7ff;   /* 淡藍 */
-      --dw-blue-wash:  #e6eef7;   /* 淡藍容器底 */
-      --dw-gold:       #b8945c;   /* 金 */
-      --dw-card:       rgba(255, 255, 255, 0.92);
+      --dw-ink:        #001b3c;
+      --dw-ink-soft:   #41484d;
+      --dw-ink-faint:  #8a97a5;
+      --dw-blue:       #296283;
+      --dw-blue-deep:  #1d4e63;
+      --dw-blue-pale:  #c7e7ff;
+      --dw-blue-wash:  #e6eef7;
+      --dw-gold:       #b8945c;
+      --dw-rule:       #d9d2c5;   /* borderless 底線(暖灰) */
       --dw-border:     #c8d6e4;
-      --dw-border-hover: rgba(41, 98, 131, 0.5);
       background-color: #f8f9fa;
-      background-image:
-        radial-gradient(120% 62% at 88% -12%, rgba(178, 216, 245, 0.4) 0%, transparent 58%);
+      background-image: radial-gradient(120% 62% at 88% -12%, rgba(178, 216, 245, 0.35) 0%, transparent 58%);
       background-repeat: no-repeat;
       background-attachment: fixed;
     }
 
-    .dash-wrap { max-width: 1180px; margin: 0 auto; padding: 56px 40px 80px; }
-    @media (max-width: 720px) { .dash-wrap { padding: 36px 20px 60px; } }
+    .dash-wrap { max-width: 1180px; margin: 0 auto; padding: 56px 40px 40px; }
+    @media (max-width: 720px) { .dash-wrap { padding: 36px 20px 32px; } }
 
-    /* ── Hero ── */
+    /* brush 分隔 */
+    .brush-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(41, 98, 131, 0.22), transparent);
+      position: relative;
+      margin: 0 auto;
+    }
+    .brush-divider::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 1px;
+      background: var(--dw-blue);
+    }
+
+    /* ── Hero(置中編輯式)── */
     .dash-hero {
-      margin-bottom: 44px;
+      margin-bottom: 40px;
+      text-align: center;
       opacity: 0;
       animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
     .dash-eyebrow {
       font-family: var(--font-sans);
       font-size: 11px;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
       color: var(--dw-blue);
-      margin-bottom: 14px;
+      opacity: 0.7;
+      margin-bottom: 18px;
     }
+    .dash-hero .brush-divider { width: 96px; margin-bottom: 26px; }
     .dash-title {
       font-family: var(--font-serif-zh);
-      font-weight: 600;
-      font-size: clamp(30px, 5vw, 46px);
+      font-weight: 700;
+      font-size: clamp(30px, 5vw, 48px);
       line-height: 1.2;
       color: var(--dw-ink);
-      letter-spacing: 0.01em;
+      letter-spacing: -0.01em;
     }
     .dash-title .name { color: var(--dw-blue); }
     .dash-sub {
-      margin-top: 12px;
+      margin-top: 16px;
       font-family: var(--font-serif-en);
       font-style: italic;
       font-size: 17px;
       color: var(--dw-ink-faint);
-      letter-spacing: 0.02em;
-    }
-    .dash-rule { margin-top: 24px; width: 60px; height: 1px; background: var(--dw-gold); opacity: 0.7; }
-
-    /* ── Bento grid ── */
-    .dash-bento {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 20px;
-    }
-    .dash-card--natal   { grid-column: span 8; }
-    .dash-card--decade  { grid-column: span 4; }
-    .dash-card--annual  { grid-column: span 6; }
-    .dash-card--monthly { grid-column: span 6; }
-    @media (max-width: 900px) {
-      .dash-bento { grid-template-columns: repeat(2, 1fr); }
-      .dash-card--natal   { grid-column: span 2; }
-      .dash-card--decade  { grid-column: span 1; }
-      .dash-card--annual  { grid-column: span 1; }
-      .dash-card--monthly { grid-column: span 2; }
-    }
-    @media (max-width: 560px) {
-      .dash-bento { grid-template-columns: 1fr; gap: 16px; }
-      .dash-card--natal, .dash-card--decade,
-      .dash-card--annual, .dash-card--monthly { grid-column: span 1; }
     }
 
-    /* ── Card(glass) ── */
+    /* ── Broadcast Bar(展訊註記)── */
+    .dash-broadcast {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      padding: 14px 22px;
+      background: var(--dw-blue-wash);
+      border-left: 2px solid rgba(41, 98, 131, 0.45);
+      border-radius: 2px;
+      opacity: 0;
+      animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.05s forwards;
+    }
+    .dash-broadcast .bc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dw-blue); flex: 0 0 auto; }
+    .dash-broadcast .bc-text { font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.04em; color: var(--dw-ink-soft); }
+
+    /* ── Featured Banner(佔位漸層；美圖後補)── */
+    .dash-banner {
+      position: relative;
+      height: 300px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 60px;
+      background: linear-gradient(135deg, #1d3a52 0%, #296283 45%, #4d7d7f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: fsRise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s forwards;
+    }
+    .dash-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 72% 28%, rgba(255, 255, 255, 0.14), transparent 55%);
+    }
+    .dash-banner .enso {
+      width: 150px; height: 150px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      border-right-color: transparent;
+      transform: rotate(-28deg);
+    }
+    @media (max-width: 720px) { .dash-banner { height: 200px; margin-bottom: 44px; } }
+
+    /* ── 內容格線 ── */
+    .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 40px 24px; }
+    .dash-card--natal { grid-column: span 12; }
+    .dash-card--decade, .dash-card--annual, .dash-card--monthly, .dash-consult { grid-column: span 6; }
+    @media (max-width: 720px) {
+      .dash-grid { gap: 32px 16px; }
+      .dash-card--natal, .dash-card--decade, .dash-card--annual, .dash-card--monthly, .dash-consult { grid-column: span 12; }
+    }
+
+    /* ── borderless 卡片 ── */
     .dash-card {
       position: relative;
-      background: var(--dw-card);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--dw-border);
-      border-radius: 14px;
-      padding: 28px 30px;
-      overflow: hidden;
+      background: transparent;
+      border-bottom: 1px solid var(--dw-rule);
+      padding: 0 0 30px;
       display: flex;
       flex-direction: column;
       opacity: 0;
       animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-      box-shadow: 0 2px 14px -9px rgba(0, 27, 60, 0.16);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s, border-color 0.3s;
+      transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.5s;
     }
-    /* 金角點綴 */
-    .dash-card::after {
-      content: '';
-      position: absolute;
-      top: 0; right: 0;
-      width: 30px; height: 30px;
-      background: linear-gradient(135deg, transparent 50%, var(--dw-gold) 50%);
-      opacity: 0.7;
-      border-top-right-radius: 14px;
-    }
-    .dash-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 14px 28px -12px rgba(0, 27, 60, 0.18);
-      border-color: var(--dw-border-hover);
+    .dash-card:hover { transform: translateX(8px); border-bottom-color: var(--dw-blue); }
+    .dash-card--natal { flex-direction: row; justify-content: space-between; gap: 32px; align-items: flex-start; }
+    .dash-card--natal .nat-main { flex: 1; }
+    .dash-card--natal .nat-cta { padding-top: 10px; flex: 0 0 auto; }
+    @media (max-width: 720px) {
+      .dash-card--natal { flex-direction: column; gap: 16px; }
     }
 
     .card-kicker {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       font-family: var(--font-sans);
-      font-size: 10px;
-      letter-spacing: 0.2em;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--dw-ink-faint);
+      color: var(--dw-blue);
+      opacity: 0.75;
     }
+    .card-kicker::before {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+    .dash-card--natal   .card-kicker::before { content: '01'; }
+    .dash-card--decade  .card-kicker::before { content: '02'; }
+    .dash-card--annual  .card-kicker::before { content: '03'; }
+    .dash-card--monthly .card-kicker::before { content: '04'; }
     .card-now {
       font-family: var(--font-sans);
       font-size: 9px;
@@ -190,258 +235,144 @@
       padding: 2px 8px;
       border-radius: 999px;
     }
+
     .card-name {
       font-family: var(--font-serif-zh);
       font-weight: 600;
       font-size: 24px;
       color: var(--dw-ink);
       letter-spacing: 0.02em;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
-    .dash-card--natal .card-name { font-size: 30px; }
+    .dash-card--natal .card-name { font-size: 32px; }
     .card-name-en {
       font-family: var(--font-serif-en);
       font-style: italic;
       font-size: 14px;
       color: var(--dw-blue);
-      opacity: 0.72;
+      opacity: 0.7;
       margin-bottom: 16px;
     }
     .card-desc {
       font-family: var(--font-serif-zh);
-      font-size: 14.5px;
+      font-size: 15px;
       line-height: 1.85;
       color: var(--dw-ink-soft);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
-    .dash-card--natal .card-desc { max-width: 44ch; }
+    .dash-card--natal .card-desc { max-width: 52ch; margin-bottom: 0; }
 
-    /* action 區沉底對齊 */
-    #card-natal-action, #card-decade-action,
-    #card-annual-action, #card-monthly-action { margin-top: auto; }
+    #card-decade-action, #card-annual-action, #card-monthly-action { margin-top: auto; }
 
-    /* primary CTA(查閱更多)— 文字連結式 */
+    /* primary CTA(查閱更多)── 編輯式文字連結 */
     .card-cta {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      font-family: var(--font-serif-zh);
-      font-size: 15px;
-      letter-spacing: 0.05em;
+      gap: 10px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       color: var(--dw-blue);
       cursor: pointer;
-      transition: gap 0.25s, color 0.25s;
+      transition: gap 0.3s, color 0.3s;
     }
-    .card-cta:hover { gap: 14px; color: var(--dw-blue-deep); }
-    .card-cta .arrow { transition: transform 0.25s; }
+    .card-cta:hover { gap: 16px; color: var(--dw-blue-deep); }
+    .card-cta .arrow { font-size: 16px; transition: transform 0.3s; }
     .card-cta:hover .arrow { transform: translateX(3px); }
 
-    /* generating / muted 狀態 */
-    .dash-card.is-soon { background: var(--dw-blue-wash); }
-    .card-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      font-family: var(--font-serif-zh);
-      font-size: 14px;
-      color: var(--dw-ink-soft);
-    }
-    .card-status .pulse {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--dw-blue);
-      animation: fsPulse 1.6s ease-in-out infinite;
-    }
-    .card-note {
-      margin-top: 12px;
-      font-family: var(--font-sans);
-      font-size: 12.5px;
-      line-height: 1.7;
-      color: var(--dw-ink-faint);
-    }
-    .card-refresh {
-      margin-top: 16px;
-      display: inline-block;
-      font-family: var(--font-sans);
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      color: var(--dw-blue);
-      cursor: pointer;
-      border-bottom: 1px solid var(--dw-blue-pale);
-      padding-bottom: 1px;
-    }
+    /* generating 狀態 */
+    .dash-card.is-soon .card-name { color: var(--dw-ink-soft); }
+    .card-status { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--dw-ink-soft); }
+    .card-status .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--dw-blue); animation: fsPulse 1.6s ease-in-out infinite; }
+    .card-note { margin-top: 12px; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.7; color: var(--dw-ink-faint); }
+    .card-refresh { margin-top: 16px; display: inline-block; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.05em; color: var(--dw-blue); cursor: pointer; border-bottom: 1px solid var(--dw-blue-pale); padding-bottom: 1px; }
     .card-refresh:hover { color: var(--dw-blue-deep); }
 
     /* ── 第一層付費牆 ── */
     #unlock-transforms:empty { display: none; }
     .dash-unlock {
       position: relative;
-      margin-top: 20px;
+      margin-top: 40px;
       background: linear-gradient(135deg, var(--dw-blue-wash), #ffffff 70%);
       border: 1px solid var(--dw-gold);
-      border-radius: 14px;
+      border-radius: 8px;
       padding: 24px 28px;
       opacity: 0;
       animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
-    .u-title {
-      font-family: var(--font-serif-zh);
-      font-size: 17px;
-      color: var(--dw-ink);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
+    .u-title { font-family: var(--font-serif-zh); font-size: 17px; color: var(--dw-ink); display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .u-icon { color: var(--dw-gold); font-size: 16px; }
-    .u-note {
-      font-family: var(--font-sans);
-      font-size: 12.5px;
-      line-height: 1.7;
-      color: var(--dw-ink-soft);
-      margin-bottom: 18px;
-    }
+    .u-note { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.7; color: var(--dw-ink-soft); margin-bottom: 18px; }
     .u-btn, .sub-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-serif-zh);
-      font-size: 14px;
-      letter-spacing: 0.05em;
-      color: #ffffff;
-      background: var(--dw-blue);
-      border: none;
-      border-radius: 8px;
-      padding: 12px 24px;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #ffffff; background: var(--dw-blue);
+      border: none; border-radius: 2px; padding: 12px 26px; cursor: pointer;
       transition: background 0.25s, transform 0.25s;
     }
     .u-btn:hover, .sub-btn:hover { background: var(--dw-blue-deep); transform: translateY(-1px); }
-    .u-btn[disabled], .sub-btn[disabled] { opacity: 0.9; }
 
-    /* ── 第二層付費牆(流月卡內) ── */
+    /* ── 第二層付費牆(流月內)── */
     #sub-monthly:empty { display: none; }
-    .monthly-sub {
-      margin-top: 20px;
-      background: var(--dw-blue-wash);
-      border: 1px solid var(--dw-gold);
-      border-radius: 10px;
-      padding: 16px 18px;
-    }
-    .monthly-sub .ms-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-sans);
-      font-size: 12.5px;
-      line-height: 1.5;
-      color: var(--dw-ink-soft);
-      margin-bottom: 12px;
-    }
+    .monthly-sub { margin-top: 20px; background: var(--dw-blue-wash); border: 1px solid var(--dw-gold); border-radius: 6px; padding: 16px 18px; }
+    .monthly-sub .ms-line { display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.5; color: var(--dw-ink-soft); margin-bottom: 12px; }
     .monthly-sub .ms-line .lock { color: var(--dw-gold); font-size: 14px; }
     .monthly-sub .sub-btn { width: 100%; justify-content: center; }
 
-    /* ── 單獨問事入口 ── */
+    /* ── 單獨問事(高階 callout,實底)── */
     .dash-consult {
       position: relative;
-      margin-top: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      flex-wrap: wrap;
       background: var(--dw-blue-wash);
-      border: 1px solid rgba(41, 98, 131, 0.22);
-      border-radius: 14px;
-      padding: 28px 32px;
+      padding: 32px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       opacity: 0;
       animation: fsRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      transition: transform 0.4s;
     }
-    .dc-kicker {
-      font-family: var(--font-sans);
-      font-size: 10px;
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: var(--dw-blue);
-      margin-bottom: 10px;
-    }
-    .dc-name {
-      font-family: var(--font-serif-zh);
-      font-weight: 600;
-      font-size: 21px;
-      color: var(--dw-ink);
-      letter-spacing: 0.02em;
-      margin-bottom: 6px;
-    }
-    .dc-desc {
-      font-family: var(--font-serif-zh);
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--dw-ink-soft);
-      max-width: 460px;
-    }
+    .dash-consult:hover { transform: translateY(-3px); }
+    .dc-brush { width: 48px; height: 2px; background: linear-gradient(90deg, var(--dw-blue), transparent); margin-bottom: 16px; opacity: 0.6; }
+    .dc-kicker { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--dw-blue); margin-bottom: 10px; }
+    .dc-name { font-family: var(--font-serif-zh); font-weight: 600; font-size: 22px; color: var(--dw-ink); letter-spacing: 0.02em; margin-bottom: 8px; }
+    .dc-desc { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8; color: var(--dw-ink-soft); margin-bottom: 24px; }
     .dc-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-serif-zh);
-      font-size: 15px;
-      letter-spacing: 0.05em;
-      color: #ffffff;
-      background: var(--dw-blue);
-      padding: 13px 26px;
-      border-radius: 8px;
-      cursor: pointer;
-      flex: 0 0 auto;
-      transition: background 0.25s, transform 0.25s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%;
+      font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #ffffff; background: var(--dw-ink);
+      padding: 16px; cursor: pointer;
+      transition: background 0.4s;
     }
-    .dc-cta:hover { background: var(--dw-blue-deep); transform: translateY(-1px); }
-    .dc-cta .arrow { transition: transform 0.25s; }
+    .dc-cta:hover { background: var(--dw-blue); }
+    .dc-cta .arrow { transition: transform 0.3s; }
     .dc-cta:hover .arrow { transform: translateX(4px); }
 
-    /* ── 底部語錄 ── */
-    .dash-quote {
-      margin-top: 60px;
-      text-align: center;
-    }
+    /* ── 底部語錄(編輯式大標)── */
+    .dash-quote { margin-top: 80px; text-align: center; }
+    .dash-quote .brush-divider { width: 96px; margin-bottom: 40px; }
     .dash-quote-text {
-      max-width: 640px;
+      max-width: 760px;
       margin: 0 auto;
-      padding: 30px 20px;
-      border-top: 1px solid var(--dw-border);
-      border-bottom: 1px solid var(--dw-border);
       font-family: var(--font-serif-zh);
-      font-size: 20px;
-      line-height: 1.9;
-      letter-spacing: 0.05em;
+      font-weight: 700;
+      font-size: clamp(24px, 3.4vw, 40px);
+      line-height: 1.5;
+      letter-spacing: 0.14em;
       color: var(--dw-blue);
     }
-    @media (max-width: 560px) {
-      .dash-quote { margin-top: 44px; }
-      .dash-quote-text { font-size: 17px; padding: 24px 16px; }
-    }
+    @media (max-width: 560px) { .dash-quote { margin-top: 56px; } .dash-quote-text { letter-spacing: 0.06em; } }
 
     /* ── loading + 動畫 ── */
-    .dash-loading {
-      text-align: center;
-      padding: 90px 20px;
-      font-family: var(--font-serif-zh);
-      color: var(--dw-ink-faint);
-      font-size: 15px;
-      letter-spacing: 0.08em;
-    }
-    @keyframes fsRise {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fsPulse {
-      0%, 100% { opacity: 0.4; transform: scale(0.85); }
-      50%      { opacity: 1;   transform: scale(1.1); }
-    }
+    .dash-loading { text-align: center; padding: 90px 20px; font-family: var(--font-serif-zh); color: var(--dw-ink-faint); font-size: 15px; letter-spacing: 0.08em; }
+    @keyframes fsRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fsPulse { 0%, 100% { opacity: 0.4; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.1); } }
     @media (prefers-reduced-motion: reduce) {
-      .dash-hero, .dash-card, .dash-unlock, .dash-consult { animation: none; opacity: 1; }
+      .dash-hero, .dash-card, .dash-unlock, .dash-consult, .dash-broadcast, .dash-banner { animation: none; opacity: 1; }
       .card-status .pulse { animation: none; }
-      .dash-card:hover { transform: none; }
+      .dash-card:hover, .dash-consult:hover { transform: none; }
     }
   </style>
 </head>
@@ -458,22 +389,35 @@
     <!-- content (hidden until ready) -->
     <div id="dash-content" style="display:none;">
 
+      <!-- Hero -->
       <div class="dash-hero">
         <div class="dash-eyebrow" data-i18n="dash.heroEyebrow">歡迎回來</div>
+        <div class="brush-divider"></div>
         <h1 class="dash-title" id="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
         <div class="dash-sub">Your celestial map awaits.</div>
-        <div class="dash-rule"></div>
       </div>
 
-      <div class="dash-bento">
+      <!-- Broadcast Bar -->
+      <div class="dash-broadcast">
+        <span class="bc-dot"></span>
+        <span class="bc-text" data-i18n="dash.broadcast">歡迎回到 FuSang Vision</span>
+      </div>
 
-        <!-- 本命(大卡) -->
+      <!-- Featured Banner：佔位漸層，美圖後補 -->
+      <div class="dash-banner"><div class="enso"></div></div>
+
+      <!-- 內容格線 -->
+      <div class="dash-grid">
+
+        <!-- 本命(全寬,橫向) -->
         <div class="dash-card dash-card--natal" id="card-natal" style="animation-delay:0.10s;">
-          <div class="card-kicker"><span data-i18n="dash.kNatal">本命</span></div>
-          <div class="card-name" data-i18n="dash.nNatal">你是誰</div>
-          <div class="card-name-en">Your Innate Blueprint</div>
-          <div class="card-desc" id="desc-natal" data-i18n="dash.dNatal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
-          <div id="card-natal-action"><!-- 動態填入 --></div>
+          <div class="nat-main">
+            <div class="card-kicker"><span data-i18n="dash.kNatal">本命</span></div>
+            <div class="card-name" data-i18n="dash.nNatal">你是誰</div>
+            <div class="card-name-en">Your Innate Blueprint</div>
+            <div class="card-desc" id="desc-natal" data-i18n="dash.dNatal">與生俱來的傾向 — 你的性格、天賦，與這輩子自然會走向的方向。</div>
+          </div>
+          <div class="nat-cta" id="card-natal-action"><!-- 動態填入 --></div>
         </div>
 
         <!-- 大限 -->
@@ -501,8 +445,18 @@
           <div class="card-name-en">Your Monthly Currents</div>
           <div class="card-desc" id="desc-monthly" data-i18n="dash.dMonthly">鏡頭拉到最近，這個月特別值得留意或把握的事。</div>
           <div id="card-monthly-action"><!-- 動態填入 --></div>
-          <!-- 第二層付費牆：流月訂閱（未訂閱才出現）-->
           <div id="sub-monthly"></div>
+        </div>
+
+        <!-- 單獨問事(高階 callout) -->
+        <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
+          <div>
+            <div class="dc-brush"></div>
+            <div class="dc-kicker" data-i18n="dash.consultKicker">單獨問事</div>
+            <div class="dc-name" data-i18n="dash.consultName">有一個真正重要的問題？</div>
+            <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
+          </div>
+          <span class="dc-cta" data-go="consultation.html"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
         </div>
 
       </div>
@@ -510,19 +464,10 @@
       <!-- 第一層付費牆：一次解鎖完整解讀（未購買才出現）-->
       <div id="unlock-transforms"></div>
 
-      <!-- ── 單獨問事入口 ── -->
-      <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
-        <div class="dc-textwrap">
-          <div class="dc-kicker" data-i18n="dash.consultKicker">單獨問事</div>
-          <div class="dc-name" data-i18n="dash.consultName">有一個真正重要的問題？</div>
-          <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
-        </div>
-        <span class="dc-cta" data-go="consultation.html"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
-      </div>
-
       <!-- 底部語錄 -->
       <div class="dash-quote">
-        <p class="dash-quote-text" data-i18n="dash.quote">「不是預知命運，而是穩健有意識地走向嚮往的生活」</p>
+        <div class="brush-divider"></div>
+        <p class="dash-quote-text" data-i18n="dash.quote">你能給世界最大的禮物，就是你的快樂。</p>
       </div>
 
     </div>
