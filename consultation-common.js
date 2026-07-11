@@ -255,7 +255,13 @@ function injectConsultNav(activePage) {
 
 /* ── 共用 CSS ── */
 const CONSULT_CSS = `
-  :root { --gold: #b8945c; --gold-soft: #c9ab7d; }
+  /* 冷藍改版：consultation 內容範圍覆寫 shared token（header/footer 在此範圍外，維持全站色）*/
+  .cons-wrap, .consult-nav, .cons-loading {
+    --ink-darkest: #001b3c; --ink-dark: #16323f; --ink-mid: #41484d; --ink-light: #8a97a5; --ink-faint: #b6c2cd;
+    --accent-deep: #1d4e63; --accent-soft: #296283; --accent-pale: #c7e7ff;
+    --rule: #dbe2ea; --rule-soft-2: #e6ecf2; --bg-primary: #f8f9fa; --bg-soft: #eef3f9; --bg-soft-2: #e9eff7; --bg-card: #ffffff;
+    --gold: #b8945c; --gold-soft: #c9ab7d;
+  }
 
   .cons-wrap { max-width: 760px; margin: 0 auto; padding: 40px 32px 80px; }
   @media (max-width: 720px) { .cons-wrap { padding: 28px 22px 64px; } }
@@ -316,7 +322,7 @@ const CONSULT_CSS = `
 
   /* ── Buttons ── */
   .cons-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-family: var(--font-serif-zh); font-size: 16px; letter-spacing: 0.04em; color: var(--bg-card); background: var(--accent-deep); padding: 15px 24px; border-radius: 3px; cursor: pointer; transition: background 0.25s, transform 0.25s, opacity 0.25s; border: none; }
-  .cons-btn:hover:not([disabled]) { background: #1d4448; transform: translateY(-1px); }
+  .cons-btn:hover:not([disabled]) { background: #143a4a; transform: translateY(-1px); }
   .cons-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
   .cons-btn.ghost { color: var(--accent-deep); background: var(--bg-card); border: 1px solid var(--gold-soft); }
   .cons-btn.ghost:hover:not([disabled]) { background: var(--accent-pale); }
@@ -372,7 +378,7 @@ const CONSULT_CSS = `
   .confirm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .btn-sm { font-family: var(--font-serif-zh); font-size: 14px; padding: 9px 18px; border-radius: 3px; cursor: pointer; transition: background 0.2s, transform 0.2s; border: none; }
   .btn-sm.confirm { color: var(--bg-card); background: var(--accent-deep); }
-  .btn-sm.confirm:hover { background: #1d4448; }
+  .btn-sm.confirm:hover { background: #143a4a; }
   .btn-sm.cancel { color: var(--ink-mid); background: var(--bg-card); border: 1px solid var(--rule); }
   .btn-sm.cancel:hover { border-color: var(--ink-light); }
 
