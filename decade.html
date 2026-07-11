@@ -312,7 +312,7 @@
     .palace-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0 44px; }
     @media (max-width: 900px) { .palace-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 640px) { .palace-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
-    .palace-card { background: linear-gradient(135deg, #ffffff 0%, rgba(249,249,255,0.85) 100%); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 18px; min-height: 132px; }
+    .palace-card { position: relative; background: linear-gradient(135deg, #ffffff 0%, rgba(249,249,255,0.85) 100%); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 18px; min-height: 132px; }
     .palace-card:hover { transform: translateY(-4px); border-color: var(--accent-soft); box-shadow: 0 10px 30px -10px rgba(41,98,131,0.16); }
     .palace-card-index { color: var(--ink-light); }
     .palace-card-name { color: var(--ink-darkest); font-weight: 600; }
@@ -374,8 +374,13 @@
     .modal-btn.confirm:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
 
     /* ── 選大限 + hub 放寬（detail 維持 760 窄欄）── */
+    /* 用 margin 置中放寬，不用 transform（transform/translate 會建立新定位環境，與卡片 hover 位移及絕對定位金角打架）*/
     @media (min-width: 761px) {
-      #view-years, #view-hub { width: min(1120px, calc(100vw - 80px)); margin-left: 50%; transform: translateX(-50%); }
+      #view-years, #view-hub {
+        width: min(1120px, calc(100vw - 80px));
+        max-width: none;
+        margin-left: calc(50% - min(560px, (100vw - 80px) / 2));
+      }
     }
 
   </style>
