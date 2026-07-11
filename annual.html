@@ -3,137 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>我的流月 - FuSang Vision</title>
-  <meta name="description" content="View your personalized Zi Wei Dou Shu monthly chart." />
+  <title>我的流年 - FuSang Vision</title>
+  <meta name="description" content="View your personalized Zi Wei Dou Shu annual chart." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- 標記當前導航頁(供 components.js header 高亮)，須在 module 載入前設定 -->
-  <script>window.FS_ACTIVE_PAGE = 'monthly';</script>
+  <script>window.FS_ACTIVE_PAGE = 'annual';</script>
 
   <!-- 設定來源:須先於 components.js module 載入(classic,設定 window.CFG) -->
   <script src="config.js"></script>
   <script src="i18n.js"></script>
   <script>
-    // monthly 專屬 UI 字典(策略 B);共用 chrome/報告術語走中央 UI/RT。
-    //   星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流月語境 explainer/tooltip → td(...MONTHLY)。
+    // annual 專屬 UI 字典(策略 B):共用 chrome/報告術語走中央 UI/RT;此處僅本頁動態 UI 字串。
+    // 星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流年語境 explainer/tooltip → td(...ANNUAL)。
     window.FSI18N.addUI({
-      "mo.docTitle": {"zh-TW": "我的流月 - FuSang Vision", "zh-CN": "我的流月 - FuSang Vision", "en": "My Monthly Chart - FuSang Vision"},
-      "mo.loadingTitle": {"zh-TW": "載入您的流月", "zh-CN": "载入您的流月", "en": "Loading your monthly chart"},
-      "mo.loadingSub": {"zh-TW": "正在查找您的流月運勢…", "zh-CN": "正在查找您的流月运势…", "en": "Retrieving your monthly readings…"},
-      "mo.loadingYearTitle": {"zh-TW": "載入 {year} 流月", "zh-CN": "载入 {year} 流月", "en": "Loading {year} monthly"},
-      "mo.loadingYearSub": {"zh-TW": "正在展開可閱讀的月份…", "zh-CN": "正在展开可阅读的月份…", "en": "Unfolding the months you can read…"},
-      "mo.introTitle": {"zh-TW": "流月運勢", "zh-CN": "流月运势", "en": "Monthly Fortune"},
-      "mo.introBody1": {"zh-TW": "流年看的是這一整年的方向，流月則把時間拉近到每一個月。", "zh-CN": "流年看的是这一整年的方向，流月则把时间拉近到每一个月。", "en": "An annual reading shows the direction of a whole year; a monthly reading brings time closer, to each individual month."},
-      "mo.introBody2": {"zh-TW": "同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。", "zh-CN": "同一张命盘，十二个领域的能量在不同月份各有消长——这个月哪一块正被推动、哪一块需要多花心思、哪些人与事会进到你的生活里。流月把这些一个月一个月摊开，让你不必用一整年的尺度去猜眼前的日子。", "en": "Within the same chart, the energy of your twelve areas rises and falls from month to month — which area is being driven this month, which needs more care, and which people and events are entering your life. A monthly reading lays this out one month at a time, so you needn't guess at the days in front of you on the scale of a whole year."},
-      "mo.introBody3": {"zh-TW": "它不替你判斷好壞，而是讓你更清楚這個月的重心落在哪裡——知道力氣該往哪放，就能把這段日子，好好地過成自己的。", "zh-CN": "它不替你判断好坏，而是让你更清楚这个月的重心落在哪里——知道力气该往哪放，就能把这段日子，好好地过成自己的。", "en": "It doesn't judge good or bad for you; it simply makes clearer where this month's center of gravity falls — and knowing where to put your energy, you can live these days well, as your own."},
-      "mo.introOfferLabel": {"zh-TW": "開始後你會收到", "zh-CN": "开始后你会收到", "en": "What you'll receive"},
-      "mo.introOfferBody": {"zh-TW": "我們會為你生成 <strong>下個月</strong> 的完整流月（本月不另生成）；往後每個月，新的流月會自動為你展開。", "zh-CN": "我们会为你生成 <strong>下个月</strong> 的完整流月（本月不另生成）；往后每个月，新的流月会自动为你展开。", "en": "We'll generate your complete reading for <strong>next month</strong> (this month isn't generated separately); from then on, each new month unfolds for you automatically."},
-      "mo.introOfferItem1": {"zh-TW": "十二宮的逐宮解讀，看清每個領域這個月的狀態", "zh-CN": "十二宫的逐宫解读，看清每个领域这个月的状态", "en": "A palace-by-palace reading of all twelve areas, so you can see the state of each this month"},
-      "mo.introOfferItem2": {"zh-TW": "能量的流入與流出，知道哪些方面正在牽動你", "zh-CN": "能量的流入与流出，知道哪些方面正在牵动你", "en": "The inflow and outflow of energy, so you know which areas are moving you"},
-      "mo.introOfferItem3": {"zh-TW": "順著本月建議，協助您把日子過得自在", "zh-CN": "顺着本月建议，协助您把日子过得自在", "en": "Guidance for the month, to help you live these days with ease"},
-      "mo.ctxLabel": {"zh-TW": "個人化你的流月建議（選填）", "zh-CN": "个人化你的流月建议（选填）", "en": "Personalize your monthly guidance (optional)"},
-      "mo.ctxDesc": {"zh-TW": "選擇你最在意的領域，描述你目前的處境。<br>我們會在該宮位的「本月建議」中，把你的情況納入考量。<span class='ctx-desc-note'>您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>", "zh-CN": "选择你最在意的领域，描述你目前的处境。<br>我们会在该宫位的「本月建议」中，把你的情况纳入考量。<span class='ctx-desc-note'>您设定或调整的主题，会纳入下一期的流月分析；若分析已进入生成阶段，调整将于再下一期生效。</span>", "en": "Choose the area you care about most and describe your current situation.<br>We'll take it into account within that palace's guidance for the month.<span class='ctx-desc-note'>Topics you set or change are included in the next monthly reading; if a reading is already being generated, changes take effect the month after.</span>"},
-      "mo.ctxUpsell": {"zh-TW": "目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。", "zh-CN": "目前可设定 <strong>1 个</strong> 主题；后续付费订阅后开放 <strong>3 个</strong>。", "en": "You can set <strong>1</strong> topic for now; a paid subscription unlocks <strong>3</strong>."},
-      "mo.rdLabel": {"zh-TW": "收報日設定", "zh-CN": "收报日设定", "en": "Delivery day"},
-      "mo.rdEvery": {"zh-TW": "每月", "zh-CN": "每月", "en": "On day"},
-      "mo.rdReceive": {"zh-TW": "號收到下一期流月", "zh-CN": "号收到下一期流月", "en": "of each month, receive your next reading"},
-      "mo.rdSelectPlaceholder": {"zh-TW": "— 選擇日期 —", "zh-CN": "— 选择日期 —", "en": "— Select a day —"},
-      "mo.rdNote": {"zh-TW": "開通後立即為你生成<strong>下個月</strong>的流月；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。<span class='rd-utc'>日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>", "zh-CN": "开通后立即为你生成<strong>下个月</strong>的流月；往后每个月，新的流月会在你选择的日期自动展开、寄至你的信箱。<span class='rd-utc'>日期以世界标准时间（UTC）计算，与你当地日期可能相差数小时。建议选择月初日期，让你有充裕时间为下个月做准备。日后可于「帐户」页随时调整或取消。</span>", "en": "Once enabled, we generate <strong>next month's</strong> reading right away; from then on, each new month unfolds on the day you chose and is sent to your inbox.<span class='rd-utc'>Dates are calculated in UTC and may differ from your local date by a few hours. An early-month day gives you time to prepare for the month ahead. You can adjust or cancel any time on the Account page.</span>"},
-      "mo.introSubscribeBtn": {"zh-TW": "開始閱讀我的流月", "zh-CN": "开始阅读我的流月", "en": "Start reading my monthly chart"},
-      "mo.introCtaNote": {"zh-TW": "為你生成下個月的流月，約需數分鐘", "zh-CN": "为你生成下个月的流月，约需数分钟", "en": "Generating next month's reading takes a few minutes"},
-      "mo.subscribing": {"zh-TW": "正在為你開始…", "zh-CN": "正在为你开始…", "en": "Starting…"},
-      "mo.dayOption": {"zh-TW": "{d} 號", "zh-CN": "{d} 号", "en": "Day {d}"},
-      "mo.alertPickDay": {"zh-TW": "請先選擇每月收到流月的日期。", "zh-CN": "请先选择每月收到流月的日期。", "en": "Please choose the day of the month to receive your reading."},
-      "mo.subscribeFailDay": {"zh-TW": "開通失敗：無法儲存收報日（{msg}），請稍後再試。", "zh-CN": "开通失败：无法储存收报日（{msg}），请稍后再试。", "en": "Couldn't enable: failed to save your delivery day ({msg}). Please try again later."},
-      "mo.genHeadTitle": {"zh-TW": "正在為你展開流月", "zh-CN": "正在为你展开流月", "en": "Unfolding your monthly reading"},
-      "mo.genHeadSub": {"zh-TW": "我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。", "zh-CN": "我们正在逐宫解读你的命盘。<br>这需要几分钟，你可以先离开，稍后再回来查看。", "en": "We're reading your chart palace by palace.<br>This takes a few minutes — you can leave and come back later."},
-      "mo.genCardDone": {"zh-TW": "已完成 · 點擊閱讀", "zh-CN": "已完成 · 点击阅读", "en": "Complete · Tap to read"},
-      "mo.genCardGenerating": {"zh-TW": "正在生成十二宮…", "zh-CN": "正在生成十二宫…", "en": "Generating the twelve palaces…"},
-      "mo.yearsTitle": {"zh-TW": "我的流月運勢", "zh-CN": "我的流月运势", "en": "My Monthly Charts"},
-      "mo.yearsSub": {"zh-TW": "選擇一個年份，再選擇月份閱讀當月的十二宮運勢", "zh-CN": "选择一个年份，再选择月份阅读当月的十二宫运势", "en": "Choose a year, then a month, to read its twelve palaces"},
-      "mo.yearsEmptyTitle": {"zh-TW": "尚無流月資料", "zh-CN": "尚无流月资料", "en": "No monthly data yet"},
-      "mo.yearsEmptyBody": {"zh-TW": "您目前還沒有任何月份的流月運勢報告。<br>當流月報告生成完成後，可閱讀的月份會出現在這裡。", "zh-CN": "您目前还没有任何月份的流月运势报告。<br>当流月报告生成完成后，可阅读的月份会出现在这里。", "en": "You don't have any monthly readings yet.<br>Once a monthly report is generated, the months you can read will appear here."},
-      "mo.hubToYears": {"zh-TW": "← 選擇年份", "zh-CN": "← 选择年份", "en": "← Choose a year"},
-      "mo.hubSub": {"zh-TW": "選擇月份，點選一宮以閱讀完整內容", "zh-CN": "选择月份，点选一宫以阅读完整内容", "en": "Pick a month, then a palace to read in full"},
-      "mo.hubEyebrow": {"zh-TW": "{ym} 流月", "zh-CN": "{ym} 流月", "en": "Your {ym} Monthly Chart"},
-      "mo.hubTitle": {"zh-TW": "{ymLabel} 流月十二宮", "zh-CN": "{ymLabel} 流月十二宫", "en": "The {ymLabel} Twelve Palaces"},
-      "mo.ctxToggle": {"zh-TW": "⚙ 個人化設定", "zh-CN": "⚙ 个人化设定", "en": "⚙ Personalize"},
-      "mo.relPrev": {"zh-TW": "上月", "zh-CN": "上月", "en": "Last month"},
-      "mo.relCurr": {"zh-TW": "本月", "zh-CN": "本月", "en": "This month"},
-      "mo.relNext": {"zh-TW": "下月", "zh-CN": "下月", "en": "Next month"},
-      "mo.monthSuffix": {"zh-TW": "{m}月", "zh-CN": "{m}月", "en": "Month {m}"},
-      "mo.tabLockUpgrade": {"zh-TW": "🔒 升級可見", "zh-CN": "🔒 升级可见", "en": "🔒 Upgrade to view"},
-      "mo.ymLabel": {"zh-TW": "{y} 年 {m} 月", "zh-CN": "{y} 年 {m} 月", "en": "{m}/{y}"},
-      "mo.trackBadge": {"zh-TW": "✦ 追蹤", "zh-CN": "✦ 追踪", "en": "✦ Tracked"},
-      "mo.ovEyebrow": {"zh-TW": "本月能量一覽 · Energy Overview", "zh-CN": "本月能量一览 · Energy Overview", "en": "Energy Overview"},
-      "mo.ovTitle": {"zh-TW": "本月十二領域的能量分布", "zh-CN": "本月十二领域的能量分布", "en": "How energy is distributed across your twelve areas this month"},
-      "mo.ovhTitle": {"zh-TW": "本月亮點 · Bright Spots", "zh-CN": "本月亮点 · Bright Spots", "en": "Bright Spots this month"},
-      "mo.ovLegend": {"zh-TW": "每一條的右側（綠）代表這個月該領域的助力與順流，左側（紅）代表能量張力與需要用心之處——兩者並存、不互相抵銷，因為人生本就是好壞交織。長度是相對於您本月其他領域而言，並非絕對的吉凶評分。這不是要評斷好壞，而是幫您看見：這個月，把心力放在哪裡最值得。", "zh-CN": "每一条的右侧（绿）代表这个月该领域的助力与顺流，左侧（红）代表能量张力与需要用心之处——两者并存、不互相抵销，因为人生本就是好坏交织。长度是相对于您本月其他领域而言，并非绝对的吉凶评分。这不是要评断好坏，而是帮您看见：这个月，把心力放在哪里最值得。", "en": "On each bar, the right side (green) reflects support and flow in that area this month, and the left side (red) reflects tension and where care is needed — they coexist and don't cancel out, because life weaves the two together. Length is relative to your other areas this month, not an absolute score. This isn't about judging good or bad, but about seeing where your energy is best placed this month."},
-      "mo.ovSubFocus": {"zh-TW": "這個月，以下領域的能量張力相對突出，值得多放一點心：", "zh-CN": "这个月，以下领域的能量张力相对突出，值得多放一点心：", "en": "This month, the following areas carry more tension and are worth a little extra care:"},
-      "mo.ovSubCalm": {"zh-TW": "這個月十二宮能量相對平穩，沒有特別需要費心的領域。", "zh-CN": "这个月十二宫能量相对平稳，没有特别需要费心的领域。", "en": "This month your twelve areas are relatively steady, with nothing that especially needs attention."},
-      "mo.tagSha": {"zh-TW": "煞", "zh-CN": "煞", "en": "Malefic"},
-      "mo.tagAus": {"zh-TW": "貴人", "zh-CN": "贵人", "en": "Benefactor"},
-      "mo.tagLuan": {"zh-TW": "紅鸞", "zh-CN": "红鸾", "en": "Hong Luan"},
-      "mo.hlLuanDesc": {"zh-TW": "人緣與情感的契機", "zh-CN": "人缘与情感的契机", "en": "an opening for connection and affection"},
-      "mo.hlLuDesc": {"zh-TW": "資源與順流", "zh-CN": "资源与顺流", "en": "resources and flow"},
-      "mo.hlQuanDesc": {"zh-TW": "主導與承擔", "zh-CN": "主导与承担", "en": "leadership and responsibility"},
-      "mo.hlKeDesc": {"zh-TW": "被看見的舞台", "zh-CN": "被看见的舞台", "en": "a stage to be seen on"},
-      "mo.popAusStar": {"zh-TW": "貴人星：", "zh-CN": "贵人星：", "en": "Benefactor stars: "},
-      "mo.popShaStar": {"zh-TW": "煞星：", "zh-CN": "煞星：", "en": "Malefic stars: "},
-      "mo.popSihua": {"zh-TW": "四化：", "zh-CN": "四化：", "en": "Transformations: "},
-      "mo.popPeach": {"zh-TW": "桃花：", "zh-CN": "桃花：", "en": "Romance: "},
-      "mo.popCountUnit": {"zh-TW": " 顆", "zh-CN": " 颗", "en": " stars"},
-      "mo.popCalm": {"zh-TW": "這個月此宮星曜平和，無特別強烈的能量訊號。", "zh-CN": "这个月此宫星曜平和，无特别强烈的能量讯号。", "en": "This month this area is calm, with no especially strong energy signals."},
-      "mo.popDescNeg": {"zh-TW": "這個月這個領域的能量張力較高，適合放慢腳步、多給自己一些餘裕，把心力溫柔地放在這裡。", "zh-CN": "这个月这个领域的能量张力较高，适合放慢脚步、多给自己一些余裕，把心力温柔地放在这里。", "en": "This area carries more tension this month — a good time to slow down, give yourself some room, and place your attention here gently."},
-      "mo.popDescPos": {"zh-TW": "這個月這個領域相對順流、有助力，是可以放心投入、順勢而為的方向。", "zh-CN": "这个月这个领域相对顺流、有助力，是可以放心投入、顺势而为的方向。", "en": "This area flows relatively well this month, with support — a direction you can invest in and move with confidently."},
-      "mo.popDescNeutral": {"zh-TW": "這個月這個領域大致平穩，依您的節奏自然推進即可。", "zh-CN": "这个月这个领域大致平稳，依您的节奏自然推进即可。", "en": "This area is fairly steady this month; simply proceed at your own pace."},
-      "mo.backAllPalaces": {"zh-TW": "← 全部十二宮", "zh-CN": "← 全部十二宫", "en": "← All Twelve Palaces"},
-      "mo.allPalaces": {"zh-TW": "全部十二宮", "zh-CN": "全部十二宫", "en": "All Twelve Palaces"},
-      "mo.secSuggestTitle": {"zh-TW": "本月建議", "zh-CN": "本月建议", "en": "Guidance for the Month"},
-      "mo.secInflowDesc": {"zh-TW": "<strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本月哪些方面<strong>滋養、推動或牽引</strong>。", "zh-CN": "<strong>能量飞入</strong>——其他宫位的星曜，以四化的形式流入本宫。代表您的这个领域，正被本月哪些方面<strong>滋养、推动或牵引</strong>。", "en": "<strong>Inflowing energy</strong> — stars from other palaces flow into this one as transformations. They show which parts of this month are <strong>nourishing, driving, or pulling on</strong> this area of your life."},
-      "mo.secOutflowDesc": {"zh-TW": "<strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。", "zh-CN": "<strong>能量飞出</strong>——本宫的能量，以四化的形式飞入其他宫位。代表您的这个领域，正在<strong>影响、贡献或牵引</strong>哪些方面。", "en": "<strong>Outflowing energy</strong> — this palace's energy flows into other palaces as transformations. It shows which parts of your life this area is <strong>influencing, contributing to, or pulling on</strong> this month."},
-      "mo.personalTitle": {"zh-TW": "追蹤議題解析", "zh-CN": "追踪议题解析", "en": "Your Tracked Focus"},
-      "mo.personalDesc": {"zh-TW": "<strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。", "zh-CN": "<strong>追踪议题解析</strong>——这是针对您为本宫设定的个人处境，结合本月运势量身提供的建议。", "en": "<strong>Your Tracked Focus</strong> — guidance tailored to the personal situation you set for this palace, combined with this month's reading."},
-      "mo.paywallTitle": {"zh-TW": "解鎖完整分析", "zh-CN": "解锁完整分析", "en": "Unlock the full reading"},
-      "mo.paywallItem1": {"zh-TW": "<b>能量飛入</b>　哪些資源正在幫助你、推動你。", "zh-CN": "<b>能量飞入</b>　哪些资源正在帮助你、推动你。", "en": "<b>Inflowing energy</b> — which resources are helping and driving you."},
-      "mo.paywallItem2": {"zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving."},
-      "mo.paywallItem3": {"zh-TW": "<b>本月專屬建議</b>", "zh-CN": "<b>本月专属建议</b>", "en": "<b>Guidance for the month</b>"},
-      "mo.paywallCta": {"zh-TW": "查看方案", "zh-CN": "查看方案", "en": "View plans"},
-      "mo.paywallNote": {"zh-TW": "已訂閱？回此頁重新整理即可顯示", "zh-CN": "已订阅？回此页刷新即可显示", "en": "Already subscribed? Refresh this page to display it."},
-      "mo.secLock": {"zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view"},
-      "mo.noContent": {"zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)"},
-      "mo.ctxSelectPlaceholder": {"zh-TW": "— 選擇宮位 —", "zh-CN": "— 选择宫位 —", "en": "— Select a palace —"},
-      "mo.ctxSlot": {"zh-TW": "Slot {n}", "zh-CN": "Slot {n}", "en": "Slot {n}"},
-      "mo.ctxPlaceholder": {"zh-TW": "描述你目前在這個領域的處境，例如：我正在轉換跑道，想了解這個月適合主動出擊還是先沉澱。", "zh-CN": "描述你目前在这个领域的处境，例如：我正在转换跑道，想了解这个月适合主动出击还是先沉淀。", "en": "Describe your current situation in this area — e.g. I'm changing careers and want to know whether this month favors making a move or settling first."},
-      "mo.ctxSaved": {"zh-TW": "✓ 已儲存", "zh-CN": "✓ 已储存", "en": "✓ Saved"},
-      "mo.ctxEdit": {"zh-TW": "編輯", "zh-CN": "编辑", "en": "Edit"},
-      "mo.ctxClear": {"zh-TW": "清除", "zh-CN": "清除", "en": "Clear"},
-      "mo.ctxSave": {"zh-TW": "儲存", "zh-CN": "储存", "en": "Save"},
-      "mo.ctxAlertNoPalace": {"zh-TW": "請先選擇一個宮位。", "zh-CN": "请先选择一个宫位。", "en": "Please choose a palace first."},
-      "mo.ctxAlertNoText": {"zh-TW": "請描述你的處境，或按「清除」移除此設定。", "zh-CN": "请描述你的处境，或按「清除」移除此设定。", "en": "Please describe your situation, or press Clear to remove this topic."},
-      "mo.ctxDisclaimer": {"zh-TW": "提醒您：流月的個人化建議是依命盤能量提供的觀點與方向，並非醫療、法律或投資的專業意見。若涉及健康、法律或財務的重要決定，仍建議諮詢專業人士。\n\n按「確定」儲存並納入分析。", "zh-CN": "提醒您：流月的个人化建议是依命盘能量提供的观点与方向，并非医疗、法律或投资的专业意见。若涉及健康、法律或财务的重要决定，仍建议咨询专业人士。\n\n按「确定」储存并纳入分析。", "en": "Please note: monthly personalized guidance offers perspective and direction based on chart energy, not professional medical, legal, or financial advice. For important health, legal, or financial decisions, please consult a professional.\n\nPress OK to save and include this in the analysis."},
-      "mo.ctxSaveFail": {"zh-TW": "儲存失敗：", "zh-CN": "储存失败：", "en": "Save failed: "},
-      "mo.ctxClearConfirm": {"zh-TW": "確定要清除這個主題嗎？此動作無法復原。", "zh-CN": "确定要清除这个主题吗？此动作无法复原。", "en": "Remove this topic? This can't be undone."},
-      "mo.ctxClearFail": {"zh-TW": "清除失敗：", "zh-CN": "清除失败：", "en": "Clear failed: "},
-      "mo.errTitle": {"zh-TW": "無法載入流月", "zh-CN": "无法载入流月", "en": "Couldn't load your monthly chart"},
-      "mo.errDefault": {"zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later."},
-      "mo.errMonthsFail": {"zh-TW": "無法載入 {year} 流月月份：", "zh-CN": "无法载入 {year} 流月月份：", "en": "Couldn't load months for {year}: "},
-      "mo.errNoYearData": {"zh-TW": "找不到 {year} 的流月資料。", "zh-CN": "找不到 {year} 的流月资料。", "en": "No monthly data found for {year}."},
-      "mo.errReportsFail": {"zh-TW": "無法載入 {ym} 流月內容：", "zh-CN": "无法载入 {ym} 流月内容：", "en": "Couldn't load {ym} monthly content: "},
-      "mo.errNoContent": {"zh-TW": "找不到 {ym} 的流月宮位內容。", "zh-CN": "找不到 {ym} 的流月宫位内容。", "en": "No palace content found for {ym}."}
+      "an.docTitle":        { "zh-TW": "我的流年 - FuSang Vision", "zh-CN": "我的流年 - FuSang Vision", "en": "My Annual Chart - FuSang Vision" },
+
+      "an.loadingTitle":    { "zh-TW": "載入您的流年", "zh-CN": "载入您的流年", "en": "Loading your annual chart" },
+      "an.loadingSub":      { "zh-TW": "正在查找您的流年運勢…", "zh-CN": "正在查找您的流年运势…", "en": "Retrieving your annual readings…" },
+      "an.loadingYearTitle":{ "zh-TW": "載入 {year} 流年", "zh-CN": "载入 {year} 流年", "en": "Loading the {year} annual chart" },
+      "an.loadingYearSub":  { "zh-TW": "正在展開當年的十二宮…", "zh-CN": "正在展开当年的十二宫…", "en": "Unfolding the twelve palaces for this year…" },
+
+      "an.introPitchTitle": { "zh-TW": "產生您的流年運勢", "zh-CN": "产生您的流年运势", "en": "Generate your annual reading" },
+      "an.introPitchSub":   { "zh-TW": "為您生成今年（{year}）的十二宮流年解讀", "zh-CN": "为您生成今年（{year}）的十二宫流年解读", "en": "A twelve-palace annual reading for this year ({year})" },
+      "an.introGenerateBtn":{ "zh-TW": "開始生成今年流年", "zh-CN": "开始生成今年流年", "en": "Generate this year's reading" },
+      "an.introGenerating": { "zh-TW": "正在為您開始…", "zh-CN": "正在为您开始…", "en": "Starting…" },
+      "an.genTitle":        { "zh-TW": "正在為您生成流年", "zh-CN": "正在为您生成流年", "en": "Generating your annual reading" },
+      "an.genSub":          { "zh-TW": "生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信", "zh-CN": "生成需要几分钟，完成后可在此阅读，也会寄送通知信", "en": "This takes a few minutes. You can read it here when it's done, and we'll email you too." },
+      "an.genCardDone":     { "zh-TW": "已完成 · 點擊閱讀", "zh-CN": "已完成 · 点击阅读", "en": "Complete · Tap to read" },
+      "an.genCardGenerating":{ "zh-TW": "生成中…", "zh-CN": "生成中…", "en": "Generating…" },
+
+      "an.yearsTitle":      { "zh-TW": "我的流年運勢", "zh-CN": "我的流年运势", "en": "My Annual Charts" },
+      "an.yearsSub":        { "zh-TW": "選擇一個年份，閱讀當年的十二宮運勢", "zh-CN": "选择一个年份，阅读当年的十二宫运势", "en": "Choose a year to read its twelve palaces" },
+      "an.yearsEmptyTitle": { "zh-TW": "尚無流年資料", "zh-CN": "尚无流年资料", "en": "No annual data yet" },
+      "an.yearsEmptyBody":  { "zh-TW": "您目前還沒有任何年份的流年運勢報告。<br>當流年報告生成完成後，可閱讀的年份會出現在這裡。", "zh-CN": "您目前还没有任何年份的流年运势报告。<br>当流年报告生成完成后，可阅读的年份会出现在这里。", "en": "You don't have any annual readings yet.<br>Once an annual report is generated, the years you can read will appear here." },
+
+      "an.hubToYears":      { "zh-TW": "← 選擇年份", "zh-CN": "← 选择年份", "en": "← Choose a year" },
+      "an.hubEyebrow":      { "zh-TW": "{year} 流年", "zh-CN": "{year} 流年", "en": "Your {year} Annual Chart" },
+      "an.hubTitle":        { "zh-TW": "{year} 流年十二宮", "zh-CN": "{year} 流年十二宫", "en": "The {year} Twelve Palaces" },
+
+      "an.backAllPalaces":  { "zh-TW": "← 全部十二宮", "zh-CN": "← 全部十二宫", "en": "← All Twelve Palaces" },
+      "an.allPalaces":      { "zh-TW": "全部十二宮", "zh-CN": "全部十二宫", "en": "All Twelve Palaces" },
+      "an.secInflowDesc":   { "zh-TW": "<strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本年哪些方面<strong>滋養、推動或牽引</strong>。", "zh-CN": "<strong>能量飞入</strong>——其他宫位的星曜，以四化的形式流入本宫。代表您的这个领域，正被本年哪些方面<strong>滋养、推动或牵引</strong>。", "en": "<strong>Inflowing energy</strong> — stars from other palaces flow into this one as transformations. They show which parts of this year are <strong>nourishing, driving, or pulling on</strong> this area of your life." },
+      "an.secOutflowDesc":  { "zh-TW": "<strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。", "zh-CN": "<strong>能量飞出</strong>——本宫的能量，以四化的形式飞入其他宫位。代表您的这个领域，正在<strong>影响、贡献或牵引</strong>哪些方面。", "en": "<strong>Outflowing energy</strong> — this palace's energy flows into other palaces as transformations. It shows which parts of your life this area is <strong>influencing, contributing to, or pulling on</strong> this year." },
+
+      "an.paywallTitle":    { "zh-TW": "解鎖完整分析", "zh-CN": "解锁完整分析", "en": "Unlock the full reading" },
+      "an.paywallItem1":    { "zh-TW": "<b>能量飛入</b>　哪些資源正在幫助你、推動你。", "zh-CN": "<b>能量飞入</b>　哪些资源正在帮助你、推动你。", "en": "<b>Inflowing energy</b> — which resources are helping and driving you." },
+      "an.paywallItem2":    { "zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving." },
+      "an.paywallItem3":    { "zh-TW": "<b>專屬行動建議</b>", "zh-CN": "<b>专属行动建议</b>", "en": "<b>Tailored guidance</b>" },
+      "an.paywallCta":      { "zh-TW": "查看方案", "zh-CN": "查看方案", "en": "View plans" },
+      "an.paywallNote":     { "zh-TW": "已購買？回此頁重新整理即可顯示", "zh-CN": "已购买？回此页刷新即可显示", "en": "Already purchased? Refresh this page to display it." },
+      "an.secLock":         { "zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view" },
+      "an.noContent":       { "zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)" },
+
+      "an.errTitle":        { "zh-TW": "無法載入流年", "zh-CN": "无法载入流年", "en": "Couldn't load your annual chart" },
+      "an.errDefault":      { "zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later." },
+      "an.errReportsFail":  { "zh-TW": "無法載入 {year} 流年內容：", "zh-CN": "无法载入 {year} 流年内容：", "en": "Couldn't load the {year} annual content: " },
+      "an.errNoContent":    { "zh-TW": "找不到 {year} 的流年宮位內容。", "zh-CN": "找不到 {year} 的流年宫位内容。", "en": "No palace content found for the {year} annual chart." }
     });
   </script>
 
   <style>
-    /* ── monthly 專屬樣式（design tokens / base / header / footer 由 components.js 注入）── */
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* Loading / Error */
     #view-loading { text-align: center; padding: 80px 32px; }
     .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
     .loading-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
@@ -152,7 +88,6 @@
     }
     .btn-primary:hover { background: var(--accent-soft); }
 
-    /* YEARS 年份選擇 */
     .years-head { text-align: center; margin-bottom: 48px; }
     .years-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .years-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -171,78 +106,6 @@
     .years-empty-title { font-family: var(--font-serif-zh); font-size: 20px; font-weight: 400; color: var(--ink-dark); margin-bottom: 12px; letter-spacing: 0.05em; }
     .years-empty-body { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); line-height: 1.8; letter-spacing: 0.02em; }
 
-    /* MONTH TABS（hub 上方月份切換）*/
-    .month-tabs { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; }
-    .month-tab {
-      font-family: var(--font-serif-zh); font-size: 14px; letter-spacing: 0.05em;
-      padding: 10px 18px; border: 1px solid var(--rule); border-radius: 2px; cursor: pointer;
-      background: var(--bg-card); color: var(--ink-mid); transition: all 0.2s; display: flex; flex-direction: column;
-      align-items: center; gap: 3px; min-width: 92px;
-    }
-    .month-tab:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
-    .month-tab.active { background: var(--accent-deep); color: var(--bg-primary); border-color: var(--accent-deep); }
-    .month-tab-label { font-family: var(--font-serif-en); font-style: italic; font-size: 11px; opacity: 0.75; letter-spacing: 0.08em; }
-    .month-tab-ym { font-weight: 500; }
-    .month-tab.locked { opacity: 0.5; cursor: not-allowed; position: relative; }
-    .month-tab.locked:hover { border-color: var(--rule); color: var(--ink-mid); }
-    .month-tab-lock { font-size: 10px; letter-spacing: 0.1em; color: var(--gold, #b8945c); }
-
-    /* OVERVIEW 能量張力一覽 */
-    .overview { margin: 0 0 48px; padding: 28px 32px 30px; background: var(--bg-soft-2); border-radius: 2px; position: relative; }
-    .overview::before { content: ''; position: absolute; top: 0; left: 32px; width: 24px; height: 1px; background: var(--accent-soft); }
-    .overview-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--accent-soft); letter-spacing: 0.05em; margin-bottom: 6px; }
-    .overview-title { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.06em; margin-bottom: 4px; }
-    .overview-sub { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); line-height: 1.7; letter-spacing: 0.02em; margin-bottom: 20px; }
-    .overview-focus { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
-    .overview-focus-chip {
-      display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card);
-      border: 1px solid var(--rule); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px;
-      color: var(--ink-darkest); letter-spacing: 0.04em; cursor: pointer; transition: all 0.2s;
-    }
-    .overview-focus-chip:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
-    .overview-focus-chip .fc-label { font-family: var(--font-serif-en); font-style: italic; font-size: 11px; color: var(--ink-light); }
-    .overview-bars { display: flex; flex-direction: column; gap: 8px; }
-    .overview-bar-row { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; cursor: pointer; }
-    .overview-bar-row:hover .ovb-name { color: var(--accent-deep); }
-    .ovb-name { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-dark); letter-spacing: 0.04em; transition: color 0.2s; }
-    .ovb-track { position: relative; height: 18px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
-    .ovb-mid { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--ink-faint); }
-    .ovb-fill { position: absolute; top: 0; bottom: 0; transition: width 0.4s ease; }
-    .ovb-fill.pos { left: 50%; background: var(--t-lu); opacity: 0.55; }
-    .ovb-fill.neg { right: 50%; background: var(--t-ji); opacity: 0.55; }
-    .ovb-zero { font-family: var(--font-sans); font-size: 11px; color: var(--ink-light); }
-    .overview-legend { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule); font-family: var(--font-sans); font-size: 11px; color: var(--ink-light); letter-spacing: 0.03em; line-height: 1.7; }
-
-    /* 本月亮點 */
-    .overview-highlights { margin: 4px 0 22px; padding: 16px 18px; background: var(--t-lu-bg); border-radius: 2px; }
-    .ovh-title { font-family: var(--font-serif-zh); font-size: 13px; color: var(--t-lu); letter-spacing: 0.06em; margin-bottom: 10px; font-weight: 500; }
-    .ovh-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .ovh-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--accent-pale); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-dark); letter-spacing: 0.03em; cursor: pointer; transition: all 0.2s; }
-    .ovh-chip:hover { border-color: var(--t-lu); transform: translateY(-1px); }
-    .ovh-chip .ovh-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.05em; color: var(--t-lu); }
-
-    /* bar 旁能量標籤 */
-    .ovb-row-wrap { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
-    .ovb-tags { display: flex; flex-wrap: wrap; gap: 5px; padding-left: 76px; }
-    .ovb-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 2px; line-height: 1.5; }
-    .ovb-tag.sha  { background: var(--t-ji-bg); color: var(--t-ji); }
-    .ovb-tag.ji   { background: var(--t-ji-bg); color: var(--t-ji); font-weight: 600; }
-    .ovb-tag.lu   { background: var(--t-lu-bg); color: var(--t-lu); }
-    .ovb-tag.quan { background: var(--t-quan-bg); color: var(--t-quan); }
-    .ovb-tag.ke   { background: var(--t-ke-bg); color: var(--t-ke); }
-    .ovb-tag.aus  { background: #f3ecdd; color: var(--gold, #b8945c); }
-    .ovb-tag.luan { background: #f0e3e6; color: #a14b63; }
-
-    /* overview tooltip（點擊/hover 浮出宮位細節）*/
-    .ovb-pop { position: fixed; z-index: 200; max-width: 280px; background: var(--ink-darkest); color: var(--bg-primary); padding: 14px 16px; border-radius: 4px; box-shadow: 0 8px 28px rgba(21,54,58,0.28); font-family: var(--font-serif-zh); opacity: 0; pointer-events: none; transition: opacity 0.18s; }
-    .ovb-pop.show { opacity: 1; pointer-events: auto; }
-    .ovb-pop-name { font-size: 15px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .ovb-pop-items { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
-    .ovb-pop-item { font-size: 12.5px; line-height: 1.5; color: var(--silver-pale); }
-    .ovb-pop-item b { color: var(--bg-primary); font-weight: 500; }
-    .ovb-pop-desc { font-size: 12px; line-height: 1.7; color: var(--silver-soft); border-top: 1px solid rgba(255,255,255,0.15); padding-top: 9px; letter-spacing: 0.02em; }
-
-    /* HUB */
     .hub-head { text-align: center; margin-bottom: 48px; }
     .hub-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 12px; }
     .hub-title { font-family: var(--font-serif-zh); font-size: 36px; font-weight: 400; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -261,7 +124,6 @@
     .hub-meta { padding: 24px 28px; background: var(--bg-soft-2); border-radius: 2px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-mid); letter-spacing: 0.05em; line-height: 1.7; text-align: center; }
     .hub-meta code { font-family: 'Courier New', monospace; color: var(--ink-dark); font-size: 11px; }
 
-    /* DETAIL */
     .detail-back-top { margin-bottom: 32px; }
     .back-link { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-mid); cursor: pointer; transition: color 0.2s; }
     .back-link:hover { color: var(--accent-deep); }
@@ -273,7 +135,6 @@
     .palace-head-right { text-align: right; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); line-height: 1.5; }
     .palace-index { font-family: var(--font-serif-en); font-size: 13px; letter-spacing: 0.2em; color: var(--ink-light); font-style: normal; }
 
-    /* 宮位說明 */
     .palace-explainer { margin-top: 24px; padding: 20px 24px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; }
     .palace-explainer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--accent-soft); letter-spacing: 0.1em; margin-bottom: 8px; }
     .palace-explainer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-dark); letter-spacing: 0.02em; }
@@ -289,7 +150,7 @@
     .transform-tag.化科 { color: var(--t-ke); }
     .transform-tag.化忌 { color: var(--t-ji); }
 
-    /* Section */
+
     .section { margin-top: 80px; }
     .section-head { display: flex; align-items: baseline; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
     .section-num { font-family: var(--font-serif-en); font-size: 40px; font-weight: 300; font-style: italic; line-height: 1; color: var(--silver-deep); }
@@ -300,7 +161,6 @@
     .section-explainer-icon { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; color: var(--accent-soft); font-size: 16px; line-height: 1.4; }
     .section-explainer strong { color: var(--ink-darkest); font-weight: 500; }
 
-    /* A 段 prose */
     .prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 32px; }
     .prose p { margin-bottom: 1.6em; }
     .prose p:last-child { margin-bottom: 0; }
@@ -309,7 +169,6 @@
     .pull-quote { margin: 48px 0; padding: 32px 36px 32px 48px; border-left: 3px solid var(--accent-soft); background: var(--bg-soft-2); font-family: var(--font-serif-zh); font-size: 19px; line-height: 1.8; color: var(--ink-darkest); letter-spacing: 0.04em; position: relative; font-weight: 500; }
     .pull-quote::before { content: '"'; position: absolute; top: 0; left: 16px; font-family: var(--font-serif-en); font-size: 80px; line-height: 1; color: var(--silver-soft); font-style: italic; }
 
-    /* B/C transform cards */
     .transform-blocks { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
     .transform-card { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
     .transform-card-head { padding: 18px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
@@ -349,7 +208,23 @@
     .transform-card-content p:last-child { margin-bottom: 0; }
     .transform-empty { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); font-style: italic; padding: 24px; text-align: center; background: var(--bg-soft-2); border-radius: 2px; }
 
-    /* D 段 epilogue */
+    /* 付費牆 */
+    .paywall { margin-top: 32px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border: 1px solid var(--gold-soft, #c9ab7d); border-radius: 3px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden; }
+    .paywall-lock { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 20px; background: var(--bg-card); border: 1px solid var(--gold-soft, #c9ab7d); display: flex; align-items: center; justify-content: center; color: var(--gold, #b8945c); font-size: 24px; }
+    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-soft); margin-bottom: 10px; }
+    .paywall-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 24px; }
+    .paywall-list { display: flex; flex-direction: column; gap: 13px; max-width: 360px; margin: 0 auto 30px; text-align: left; }
+    .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.6; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
+    .paywall-item b { font-weight: 600; color: var(--ink-darkest); }
+    .paywall-cta { display: inline-block; padding: 14px 40px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 2px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--ink-darkest); }
+    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.16); }
+    .paywall-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.02em; }
+
+    /* 各段輕量鎖佔位 */
+    .sec-lock { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 22px 24px; background: var(--bg-soft-2); border: 1px dashed var(--gold-soft, #c9ab7d); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); letter-spacing: 0.04em; }
+    .sec-lock-icon { font-size: 16px; color: var(--gold, #b8945c); }
+
     .epilogue { margin-top: 32px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; position: relative; }
     .epilogue::before, .epilogue::after { content: ''; position: absolute; width: 32px; height: 1px; background: var(--silver-deep); }
     .epilogue::before { top: 0; left: 40px; }
@@ -360,7 +235,6 @@
     .epilogue-prose p:last-child { margin-bottom: 0; }
     .epilogue-prose p.closing { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--ink-darkest); font-size: 17px; letter-spacing: 0.05em; }
 
-    /* Detail nav */
     .detail-nav { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
     .nav-link { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-dark); letter-spacing: 0.1em; cursor: pointer; transition: color 0.2s; }
     .nav-link:hover { color: var(--accent-deep); }
@@ -369,181 +243,6 @@
     .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
-
-    /* ============ INTRO（未訂閱介紹 / 生成中）============ */
-    .intro-wrap { max-width: 640px; margin: 0 auto; padding: 24px 0 40px; }
-    .intro-ornament { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 28px; }
-    .intro-ornament .line { height: 1px; width: 48px; background: linear-gradient(90deg, transparent, var(--gold, #b8945c)); }
-    .intro-ornament .line.right { background: linear-gradient(90deg, var(--gold, #b8945c), transparent); }
-    .intro-ornament .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold, #b8945c); opacity: 0.8; }
-    .intro-eyebrow { text-align: center; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.18em; color: var(--accent-soft); margin-bottom: 14px; }
-    .intro-title { text-align: center; font-family: var(--font-serif-zh); font-size: 42px; font-weight: 400; letter-spacing: 0.1em; color: var(--ink-darkest); margin-bottom: 36px; line-height: 1.2; }
-    @media (max-width: 560px) { .intro-title { font-size: 34px; } }
-    .intro-body { font-family: var(--font-serif-zh); font-size: 16.5px; line-height: 2.05; color: var(--ink-dark); letter-spacing: 0.025em; }
-    .intro-body p { margin-bottom: 1.5em; }
-    .intro-body p:last-child { margin-bottom: 0; }
-    .intro-body .lead-first::first-letter { font-family: var(--font-serif-en); font-size: 3.4em; line-height: 0.8; float: left; padding: 0.08em 0.14em 0 0; color: var(--accent-deep); font-weight: 400; }
-
-    /* 訂閱好處卡片（左側銅金飾線，呼應 composition/section 風格）*/
-    .intro-offer { margin: 44px 0 40px; padding: 30px 34px; background: var(--bg-soft-2); border-radius: 2px; position: relative; overflow: hidden; }
-    .intro-offer::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
-    .intro-offer-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 16px; }
-    .intro-offer-body { font-family: var(--font-serif-zh); font-size: 15.5px; line-height: 1.95; color: var(--ink-dark); letter-spacing: 0.02em; }
-    .intro-offer-body strong { color: var(--ink-darkest); font-weight: 600; letter-spacing: 0.04em; }
-    .intro-offer-list { margin-top: 18px; display: flex; flex-direction: column; gap: 11px; }
-    .intro-offer-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; color: var(--ink-dark); letter-spacing: 0.02em; line-height: 1.6; }
-    .intro-offer-item .marker { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold, #b8945c); }
-
-    .intro-cta-wrap { text-align: center; margin-top: 40px; }
-    .intro-cta {
-      display: inline-block; padding: 17px 52px; background: var(--ink-darkest); color: var(--bg-primary);
-      font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: 0.28em;
-      text-transform: uppercase; border: none; cursor: pointer; transition: all 0.25s; border-radius: 2px;
-    }
-    .intro-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
-    .intro-cta:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-    .intro-cta-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.04em; }
-
-    /* 生成中：兩個 pulse 區塊 */
-    .intro-generating { margin-top: 8px; }
-    .intro-gen-head { text-align: center; margin-bottom: 32px; }
-    .intro-gen-head .g-title { font-family: var(--font-serif-zh); font-size: 22px; font-weight: 400; letter-spacing: 0.06em; color: var(--ink-darkest); margin-bottom: 10px; }
-    .intro-gen-head .g-sub { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); letter-spacing: 0.03em; line-height: 1.7; }
-    .gen-cards { display: flex; flex-direction: column; gap: 16px; }
-    .gen-card { display: flex; align-items: center; gap: 20px; padding: 24px 28px; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; position: relative; overflow: hidden; }
-    .gen-card.done { border-color: var(--accent-pale); cursor: pointer; transition: all 0.2s; }
-    .gen-card.done:hover { border-color: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(21,54,58,0.06); }
-    .gen-card-spinner { flex-shrink: 0; display: flex; gap: 5px; }
-    .gen-card-spinner span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-soft); animation: pulse 1.4s ease-in-out infinite; }
-    .gen-card-spinner span:nth-child(2) { animation-delay: 0.2s; }
-    .gen-card-spinner span:nth-child(3) { animation-delay: 0.4s; }
-    .gen-card-check { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-deep); color: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-size: 13px; }
-    .gen-card-info { flex: 1; }
-    .gen-card-month { font-family: var(--font-serif-zh); font-size: 17px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.05em; margin-bottom: 3px; }
-    .gen-card-month .rel { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--ink-light); margin-left: 8px; letter-spacing: 0.08em; }
-    .gen-card-status { font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.03em; }
-    .gen-card.done .gen-card-status { color: var(--accent-deep); }
-    .gen-card-arrow { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); opacity: 0; transition: opacity 0.2s; }
-    .gen-card.done:hover .gen-card-arrow { opacity: 1; }
-
-    /* ============ Context 個人化面板 ============ */
-    .ctx-panel { margin: 40px 0; padding: 28px 30px; background: var(--bg-soft-2); border-radius: 2px; position: relative; overflow: hidden; }
-    .ctx-panel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
-    .ctx-head { margin-bottom: 20px; }
-    .ctx-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 10px; }
-    .ctx-desc { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
-
-    .ctx-slots { display: flex; flex-direction: column; gap: 18px; }
-    .ctx-slot { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; padding: 18px 20px; }
-    .ctx-slot-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .ctx-slot-no { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; min-width: 56px; }
-    .ctx-select {
-      flex: 1; font-family: var(--font-serif-zh); font-size: 14.5px; color: var(--ink-darkest);
-      padding: 9px 12px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
-      letter-spacing: 0.04em; cursor: pointer; transition: border-color 0.2s;
-    }
-    .ctx-select:focus { outline: none; border-color: var(--accent-soft); }
-    .ctx-textarea {
-      width: 100%; min-height: 76px; resize: vertical; font-family: var(--font-serif-zh); font-size: 14px;
-      line-height: 1.7; color: var(--ink-dark); padding: 11px 13px; border: 1px solid var(--rule);
-      border-radius: 2px; background: var(--bg-primary); letter-spacing: 0.02em; transition: border-color 0.2s;
-    }
-    .ctx-textarea:focus { outline: none; border-color: var(--accent-soft); }
-    .ctx-textarea:disabled, .ctx-select:disabled { opacity: 0.5; cursor: not-allowed; }
-    .ctx-textarea::placeholder { color: var(--ink-light); font-style: italic; }
-
-    .ctx-slot-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
-    .ctx-counter { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.04em; color: var(--ink-light); }
-    .ctx-counter.over { color: var(--t-ji); }
-    .ctx-btns { display: flex; gap: 8px; }
-    .ctx-btn {
-      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 8px 16px; border-radius: 2px; cursor: pointer; border: 1px solid var(--rule); transition: all 0.2s;
-    }
-    .ctx-btn.save { background: var(--ink-darkest); color: var(--bg-primary); border-color: var(--ink-darkest); }
-    .ctx-btn.save:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
-    .ctx-btn.save:disabled { opacity: 0.45; cursor: not-allowed; }
-    .ctx-btn.clear { background: transparent; color: var(--ink-mid); }
-    .ctx-btn.clear:hover { border-color: var(--ink-mid); }
-    .ctx-slot-saved { font-family: var(--font-serif-zh); font-size: 12px; color: var(--accent-soft); letter-spacing: 0.05em; opacity: 0; transition: opacity 0.2s; }
-    .ctx-slot-saved.show { opacity: 1; }
-
-    .ctx-upsell { margin-top: 16px; padding: 12px 16px; background: var(--t-lu-bg); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.03em; line-height: 1.6; text-align: center; }
-    .ctx-upsell strong { color: var(--accent-deep); font-weight: 600; }
-
-    /* hub 摺疊入口 */
-    .ctx-hub-entry { margin-bottom: 28px; }
-    .ctx-toggle {
-      display: flex; align-items: center; gap: 10px; margin: 0 auto; padding: 10px 20px;
-      font-family: var(--font-serif-zh); font-size: 13.5px; letter-spacing: 0.06em; color: var(--ink-mid);
-      background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; cursor: pointer; transition: all 0.2s;
-    }
-    .ctx-toggle:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
-    .ctx-toggle-caret { font-size: 11px; transition: transform 0.2s; }
-    .ctx-toggle.open .ctx-toggle-caret { transform: rotate(180deg); }
-    .ctx-hub-mount { margin-top: 4px; }
-    /* panel 被掛進 hub 時，移除上方多餘間距 */
-    .ctx-hub-mount .ctx-panel { margin-top: 8px; margin-bottom: 0; }
-
-    /* slot 內主題說明（選宮後顯示，複用 PALACE_EXPLAINER） */
-    .ctx-slot-explainer { display: none; margin: 0 0 12px; padding: 10px 12px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; color: var(--ink-mid); letter-spacing: 0.02em; }
-    .ctx-slot-explainer.show { display: block; }
-    .ctx-slot-explainer .domain-keyword { color: var(--ink-darkest); font-weight: 500; }
-
-    /* ctx 排程說明小字 */
-    .ctx-desc-note { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.6; }
-
-    /* edit 解鎖按鈕 */
-    .ctx-btn.edit { background: transparent; color: var(--accent-deep); border-color: var(--accent-soft); }
-    .ctx-btn.edit:hover { background: var(--accent-soft); color: var(--bg-primary); }
-
-    /* hub palace-card 追蹤標記 */
-    .palace-card { position: relative; }
-    .palace-card.has-personal { border-color: var(--accent-pale); }
-    .palace-card-track { position: absolute; top: 8px; right: 8px; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 2px; background: var(--t-lu-bg); color: var(--gold, #b8945c); }
-
-    /* detail 追蹤議題解析區塊 */
-    #detail-personal-section .section-num { color: var(--gold, #b8945c); }
-    #detail-personal-section .section-explainer-icon { color: var(--gold, #b8945c); }
-    .personal-prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2.05; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 8px; padding: 28px 32px; background: linear-gradient(180deg, var(--t-lu-bg) 0%, var(--bg-soft) 100%); border-radius: 2px; border-left: 2px solid var(--gold, #b8945c); }
-    .personal-prose p { margin-bottom: 1.5em; }
-    .personal-prose p:last-child { margin-bottom: 0; }
-
-    /* ============ 付費牆（未解鎖時取代 02/03/04 三段）============ */
-    .paywall { margin-top: 8px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; text-align: center; position: relative; overflow: hidden; }
-    .paywall::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 48px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold, #b8945c), transparent); }
-    .paywall-lock { font-size: 30px; line-height: 1; margin-bottom: 18px; opacity: 0.85; }
-    .paywall-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 10px; }
-    .paywall-title { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-darkest); margin-bottom: 28px; }
-    .paywall-list { display: flex; flex-direction: column; gap: 14px; max-width: 420px; margin: 0 auto 32px; text-align: left; }
-    .paywall-item { display: flex; align-items: baseline; gap: 14px; font-family: var(--font-serif-zh); font-size: 15px; line-height: 1.7; color: var(--ink-dark); letter-spacing: 0.02em; }
-    .paywall-item .mk { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--gold, #b8945c); min-width: 24px; }
-    .paywall-item b { color: var(--ink-darkest); font-weight: 600; }
-    .paywall-cta { display: inline-block; padding: 16px 48px; background: var(--ink-darkest); color: var(--bg-primary); font-family: var(--font-sans); font-size: 12.5px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.25s; border-radius: 2px; }
-    .paywall-cta:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
-    .paywall-note { margin-top: 18px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.04em; }
-    /* 各段輕量鎖佔位 */
-    .sec-lock { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 22px 24px; background: var(--bg-soft-2); border: 1px dashed var(--gold-soft, #c9ab7d); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-light); letter-spacing: 0.04em; }
-    .sec-lock-icon { font-size: 16px; color: var(--gold, #b8945c); }
-
-    /* ── 收報日選擇（開通流程必填，視覺與「選填」個人化 panel 區隔）── */
-    .report-day-panel { margin: 32px 0 8px; padding: 26px 30px 28px; background: var(--bg-card); border: 1.5px solid var(--accent-deep); border-radius: 2px; position: relative; overflow: hidden; box-shadow: 0 2px 12px rgba(21,54,58,0.06); }
-    .report-day-panel::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--accent-deep); }
-    .report-day-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-deep); margin-bottom: 14px; font-weight: 500; }
-    .report-day-label::after { content: ' · 必填'; font-family: var(--font-serif-zh); font-style: normal; font-size: 11px; color: var(--t-ji); letter-spacing: 0.1em; }
-    .report-day-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .report-day-row .rd-pretext { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-dark); letter-spacing: 0.03em; }
-    .report-day-select {
-      font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest);
-      padding: 10px 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
-      letter-spacing: 0.04em; cursor: pointer; transition: border-color 0.2s; min-width: 96px;
-    }
-    .report-day-select:focus { outline: none; border-color: var(--accent-soft); }
-    .report-day-select.unset { color: var(--ink-light); font-style: italic; }
-    .report-day-note { margin-top: 16px; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
-    .report-day-note .rd-utc { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.6; }
-    .report-day-note strong { color: var(--ink-darkest); font-weight: 600; }
-
   </style>
 </head>
 <body>
@@ -556,149 +255,61 @@
     <section id="view-loading" class="view active">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       <div style="text-align: center;">
-        <h1 class="loading-title" id="loading-title">載入您的流月</h1>
-        <p class="loading-sub" id="loading-sub">正在查找您的流月運勢…</p>
+        <h1 class="loading-title" id="loading-title">載入您的流年</h1>
+        <p class="loading-sub" id="loading-sub">正在查找您的流年運勢…</p>
         <script id="fs-preloading-i18n">
           /* 零閃現:module(需先載入 components.js/SDK)執行前,先以 uiLang 套載入文字 */
           (function () { try {
             var F = window.FSI18N; if (!F) return;
-            var lt = document.getElementById('loading-title'); if (lt) lt.textContent = F.t('mo.loadingTitle');
-            var ls = document.getElementById('loading-sub');   if (ls) ls.textContent = F.t('mo.loadingSub');
-            document.title = F.t('mo.docTitle');
+            var lt = document.getElementById('loading-title'); if (lt) lt.textContent = F.t('an.loadingTitle');
+            var ls = document.getElementById('loading-sub');   if (ls) ls.textContent = F.t('an.loadingSub');
+            document.title = F.t('an.docTitle');
           } catch (e) {} })();
         </script>
       </div>
     </section>
 
-    <!-- 未訂閱介紹 / 生成中 -->
     <section id="view-intro" class="view">
-      <div class="intro-wrap">
-        <!-- 未訂閱：介紹 + 訂閱 -->
-        <div id="intro-pitch">
-          <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
-          <div class="intro-eyebrow">Monthly Fortune · 流月</div>
-          <h1 class="intro-title" id="intro-title">流月運勢</h1>
-
-          <div class="intro-body">
-            <p class="lead-first" id="intro-body-1">流年看的是這一整年的方向，流月則把時間拉近到每一個月。</p>
-            <p id="intro-body-2">同一張命盤，十二個領域的能量在不同月份各有消長——這個月哪一塊正被推動、哪一塊需要多花心思、哪些人與事會進到你的生活裡。流月把這些一個月一個月攤開，讓你不必用一整年的尺度去猜眼前的日子。</p>
-            <p id="intro-body-3">它不替你判斷好壞，而是讓你更清楚這個月的重心落在哪裡——知道力氣該往哪放，就能把這段日子，好好地過成自己的。</p>
-          </div>
-
-          <div class="intro-offer">
-            <div class="intro-offer-label" id="intro-offer-label">What you'll receive · 開始後</div>
-            <div class="intro-offer-body" id="intro-offer-body">
-              我們會為你生成 <strong>下個月</strong> 的完整流月（本月不另生成）；往後每個月，新的流月會自動為你展開。
-            </div>
-            <div class="intro-offer-list">
-              <div class="intro-offer-item"><span class="marker">I</span><span id="intro-offer-item-1">十二宮的逐宮解讀，看清每個領域這個月的狀態</span></div>
-              <div class="intro-offer-item"><span class="marker">II</span><span id="intro-offer-item-2">能量的流入與流出，知道哪些方面正在牽動你</span></div>
-              <div class="intro-offer-item"><span class="marker">III</span><span id="intro-offer-item-3">順著本月建議，協助您把日子過得自在</span></div>
-            </div>
-          </div>
-
-          <!-- ── 個人化 context 設定（訂閱前後共用，JS 控制 slot 數）── -->
-          <div id="context-panel" class="ctx-panel">
-            <div class="ctx-head">
-              <div class="ctx-label" id="ctx-label">Personalize · 個人化你的流月建議（選填）</div>
-              <div class="ctx-desc" id="ctx-desc">
-                選擇你最在意的領域，描述你目前的處境。<br>
-                我們會在該宮位的「本月建議」中，把你的情況納入考量。
-                <span class="ctx-desc-note">您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>
-              </div>
-            </div>
-            <div id="ctx-slots" class="ctx-slots"><!-- JS 動態填入 slot --></div>
-            <div id="ctx-upsell" class="ctx-upsell" style="display:none;">
-              目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。
-            </div>
-          </div>
-          
-          <!-- 收報日選擇（必填，開通時寫入 preferred_report_day）-->
-          <div class="report-day-panel">
-            <div class="report-day-label" id="rd-label">Delivery Day · 收報日設定</div>
-            <div class="report-day-row">
-              <span class="rd-pretext" id="rd-pretext-1">每月</span>
-              <select id="report-day-select" class="report-day-select unset">
-                <option value="">— 選擇日期 —</option>
-              </select>
-              <span class="rd-pretext" id="rd-pretext-2">號收到下一期流月</span>
-            </div>
-            <div class="report-day-note" id="rd-note">
-              開通後立即為你生成<strong>下個月</strong>的流月；往後每個月，新的流月會在你選擇的日期自動展開、寄至你的信箱。
-              <span class="rd-utc">日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。建議選擇月初日期，讓你有充裕時間為下個月做準備。日後可於「帳戶」頁隨時調整或取消。</span>
-            </div>
-          </div>
-
-          <div class="intro-cta-wrap">
-            <button id="intro-subscribe-btn" class="intro-cta" disabled>開始閱讀我的流月</button>
-            <div class="intro-cta-note" id="intro-cta-note">為你生成下個月的流月，約需數分鐘</div>
-          </div>
+      <div id="intro-pitch">
+        <div class="years-head">
+          <div class="years-eyebrow">Annual Fortune · 流年</div>
+          <h1 class="years-title" id="intro-pitch-title">產生您的流年運勢</h1>
+          <p class="years-sub" id="intro-pitch-sub"></p>
         </div>
-
-        <!-- 生成中：每份 job 一張卡片 -->
-        <div id="intro-generating" class="intro-generating" style="display:none;">
-          <div class="intro-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
-          <div class="intro-gen-head">
-            <div class="g-title" id="gen-head-title">正在為你展開流月</div>
-            <div class="g-sub" id="gen-head-sub">我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。</div>
-          </div>
-          <div id="gen-cards" class="gen-cards"></div>
+        <div style="text-align:center; margin-top:32px;">
+          <button id="intro-generate-btn" class="btn-primary">開始生成今年流年</button>
         </div>
+      </div>
+      <div id="intro-generating" style="display:none;">
+        <div class="years-head">
+          <div class="years-eyebrow">Generating · 生成中</div>
+          <h1 class="years-title" id="intro-gen-title">正在為您生成流年</h1>
+          <p class="years-sub" id="intro-gen-sub">生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信</p>
+        </div>
+        <div id="gen-cards" class="years-grid"></div>
       </div>
     </section>
 
-    <!-- 年份選擇 -->
     <section id="view-years" class="view">
       <div class="years-head">
-        <div class="years-eyebrow">Monthly Fortune · 流月</div>
-        <h1 class="years-title" id="years-title">我的流月運勢</h1>
-        <p class="years-sub" id="years-sub">選擇一個年份，再選擇月份閱讀當月的十二宮運勢</p>
+        <div class="years-eyebrow">Annual Fortune · 流年</div>
+        <h1 class="years-title" id="years-title">我的流年運勢</h1>
+        <p class="years-sub" id="years-sub">選擇一個年份，閱讀當年的十二宮運勢</p>
       </div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
-        <div class="years-empty-title" id="years-empty-title">尚無流月資料</div>
-        <div class="years-empty-body" id="years-empty-body">您目前還沒有任何月份的流月運勢報告。<br>當流月報告生成完成後，可閱讀的月份會出現在這裡。</div>
+        <div class="years-empty-title" id="years-empty-title">尚無流年資料</div>
+        <div class="years-empty-body" id="years-empty-body">您目前還沒有任何年份的流年運勢報告。<br>當流年報告生成完成後，可閱讀的年份會出現在這裡。</div>
       </div>
     </section>
 
-    <!-- 十二宮 Hub -->
     <section id="view-hub" class="view">
       <div class="detail-back-top"><span class="back-link" id="hub-to-years">← 選擇年份 Choose a year</span></div>
       <div class="hub-head">
-        <div class="hub-eyebrow" id="hub-eyebrow">Monthly Chart</div>
-        <h1 class="hub-title" id="hub-title">流月十二宮</h1>
-        <p class="hub-sub" id="hub-sub">選擇月份，點選一宮以閱讀完整內容</p>
+        <div class="hub-eyebrow" id="hub-eyebrow">Annual Chart</div>
+        <h1 class="hub-title" id="hub-title">流年十二宮</h1>
+        <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
-      
-      <!-- 個人化設定摺疊入口（已訂閱者在此隨時調整 context）-->
-      <div class="ctx-hub-entry">
-        <button id="ctx-toggle" class="ctx-toggle">
-          <span class="ctx-toggle-label" id="ctx-toggle-label">⚙ 個人化設定</span>
-          <span class="ctx-toggle-caret" id="ctx-toggle-caret">▾</span>
-        </button>
-        <div id="ctx-hub-mount" class="ctx-hub-mount" style="display:none;"><!-- JS 把 panel 移進來 --></div>
-      </div>
-
-      
-      <!-- 月份切換 tab -->
-      <div id="month-tabs" class="month-tabs"></div>
-
-      <!-- 能量張力一覽 overview -->
-      <div id="overview" class="overview" style="display:none;">
-        <div class="overview-eyebrow" id="overview-eyebrow">Energy Overview · 本月能量一覽</div>
-        <div class="overview-title" id="overview-title">本月十二領域的能量分布</div>
-        <div class="overview-sub" id="overview-sub"></div>
-        <div id="overview-focus" class="overview-focus"></div>
-        <div id="overview-highlights" class="overview-highlights" style="display:none;">
-          <div class="ovh-title" id="ovh-title">本月亮點 · Bright Spots</div>
-          <div id="overview-highlights-chips" class="ovh-chips"></div>
-        </div>
-        <div id="overview-bars" class="overview-bars"></div>
-        <div class="overview-legend" id="overview-legend">
-          每一條的右側（綠）代表這個月該領域的助力與順流，左側（紅）代表能量張力與需要用心之處——兩者並存、不互相抵銷，因為人生本就是好壞交織。長度是相對於您本月其他領域而言，並非絕對的吉凶評分。這不是要評斷好壞，而是幫您看見：這個月，把心力放在哪裡最值得。
-        </div>
-      </div>
-
       <div id="palace-grid" class="palace-grid"></div>
       <div class="hub-meta">
         <div style="margin-bottom: 8px;">Chart Session</div>
@@ -706,7 +317,6 @@
       </div>
     </section>
 
-    <!-- 單宮詳情 -->
     <section id="view-detail" class="view">
       <div class="detail-back-top">
         <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
@@ -739,7 +349,6 @@
         <div id="detail-analysis" class="prose"></div>
       </section>
 
-      <!-- 付費牆掛載點（未解鎖時取代 02/03/04）-->
 
       <section class="section" id="sec-02">
         <div class="section-head">
@@ -777,32 +386,16 @@
         <div class="section-head">
           <div class="section-num">04</div>
           <div class="section-titles">
-            <div class="section-title-zh" id="sec4-title">本月建議</div>
-            <div class="section-title-en">Guidance for the Month</div>
+            <div class="section-title-zh" id="sec4-title">我們的建議</div>
+            <div class="section-title-en">Our Suggestions</div>
           </div>
         </div>
         <div id="detail-suggestion-wrap"></div>
         <div id="lock-04" class="seclock" style="display:none;"></div>
       </section>
 
-      <!-- 底部單一 CTA（在追蹤議題之前，維持免費內容在最後）-->
+      <!-- 底部單一 CTA -->
       <div id="detail-paywall-cta"></div>
-
-    
-      <section class="section" id="detail-personal-section" style="display:none;">
-        <div class="section-head">
-          <div class="section-num">✦</div>
-          <div class="section-titles">
-            <div class="section-title-zh" id="personal-title">追蹤議題解析</div>
-            <div class="section-title-en">Your Tracked Focus</div>
-          </div>
-        </div>
-        <div class="section-explainer">
-          <div class="section-explainer-icon">✦</div>
-          <div id="personal-desc"><strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。</div>
-        </div>
-        <div id="detail-personal" class="personal-prose"></div>
-      </section>
 
       <nav class="detail-nav">
         <span class="nav-link left" id="nav-prev"></span>
@@ -812,7 +405,7 @@
     </section>
 
     <section id="view-error" class="view">
-      <h1 class="error-title" id="error-title">無法載入流月</h1>
+      <h1 class="error-title" id="error-title">無法載入流年</h1>
       <p id="error-detail" class="error-detail">發生了一點問題，請稍後再試。</p>
       <div style="text-align: center;"><a href="dashboard.html" class="btn-primary" id="btn-back-dashboard">返回儀表板</a></div>
     </section>
@@ -829,86 +422,32 @@
   // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel=報告內容(reportLang,鎖定)。
   const { t: tx, td, palaceLabel, starLabel, transformLabel } = window.FSI18N;
 
-  // ── 可調整常數：流月報告表名 ──
-  const MONTHLY_TABLE = 'monthly_palace_reports_gated';
-  const INTERP_TABLE = 'palace_interpretations';
-  const MONTHLY_JOBS_TABLE = 'monthly_generation_jobs';
-  const MONTHLY_TRIGGER_URL = window.CFG.WEBHOOK_MONTHLY;
-  const POLL_INTERVAL_MS = 15000;
-
-  // 'free'：可看 上月 / 本月 / 下月；'paid'：上月 / 本月 / 未來三月
-  const userTier = 'paid';
-
-  let isUnlocked = false;
   const PRICING_PAGE = 'pricing.html';
-  function goPricing() { window.location.href = PRICING_PAGE; }
 
-  const SCORE_WEIGHT = { auspicious: 1, hua_lu: 1, hua_quan: 0.5, hua_ke: 0.5, sha_ji: -1, hua_ji: -1.5 };
+  const ANNUAL_TABLE = 'annual_palace_reports_gated';
+  const ANNUAL_JOBS_TABLE = 'annual_generation_jobs';
+  const ANNUAL_TRIGGER_URL = window.CFG.WEBHOOK_ANNUAL;
+  const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   const TRANSFORM_ORDER = ['化祿','化權','化科','化忌'];
-  // 裝飾性英文副標(靜態);短名/tooltip 走 transformLabel/td。
+  // 裝飾性英文副標(靜態,不隨語言切換);短名/tooltip 走 transformLabel/td。
   const TRANSFORM_EN = { '化祿':'Resource — Lu','化權':'Anchor — Quan','化科':'Stage — Ke','化忌':'Direction — Ji' };
-
-  // 月份相對標籤(相對於現在)：走 i18n;+2/+3 維持字面
-  function relLabel(rel) {
-    if (rel === -1) return tx('mo.relPrev');
-    if (rel === 0)  return tx('mo.relCurr');
-    if (rel === 1)  return tx('mo.relNext');
-    if (rel === 2)  return '+2';
-    if (rel === 3)  return '+3';
-    return '';
-  }
-
-  // ===================================================================
-  // 國曆 / 農曆 對應轉換（固定位移，不做真農曆換算、不處理閏月）
-  // ===================================================================
-  function lunarToSolarDisplay(lunarYear, lunarMonth) {
-    lunarYear = Number(lunarYear); lunarMonth = Number(lunarMonth);
-    let y, m;
-    if (lunarMonth === 12) { y = lunarYear + 1; m = 1; }
-    else { y = lunarYear; m = lunarMonth + 1; }
-    const label = tx('mo.ymLabel').replace('{y}', y).replace('{m}', m);
-    return { year: y, month: m, label };
-  }
-  function lunarToSolarYM(lunarYear, lunarMonth) {
-    const d = lunarToSolarDisplay(lunarYear, lunarMonth);
-    return `${d.year}/${String(d.month).padStart(2, '0')}`;
-  }
-  function nowAsLunarBase() {
-    const now = new Date();
-    const sy = now.getFullYear(), sm = now.getMonth() + 1;
-    if (sm === 1) return { year: sy - 1, month: 12 };
-    return { year: sy, month: sm - 1 };
-  }
-  function solarToLunarTarget(solarYear, solarMonth, which = 'current') {
-    solarYear = Number(solarYear); solarMonth = Number(solarMonth);
-    let ly, lm;
-    if (solarMonth === 1) { ly = solarYear - 1; lm = 12; }
-    else { ly = solarYear; lm = solarMonth - 1; }
-    if (which === 'next') {
-      if (lm === 12) { ly += 1; lm = 1; }
-      else { lm += 1; }
-    }
-    return { target_year: ly, target_month: lm };
-  }
 
   let reportsByPalace = {};
   let chartSessionId = null;
   let currentYear = null;
-  let currentMonth = null;
-  let availableMonths = [];
-  let visibleMonths = [];
-  let metaByPalace = {};
   let userEmail = null;
   let pollTimer = null;
-  let preferredReportDay = null;
+  let isUnlocked = false;   // sihua_unlocked
   let currentView = 'view-loading';
   let currentPalace = null;
-  let introMode = null;       // 'pitch' | 'generating' | null
-  let lastJobs = [];
+  let introMode = null;     // 'pitch' | 'generating' | null
   let lastYears = [];
+  let lastJobs = [];
+
+  function currentAnnualTargetYear() { return new Date().getFullYear(); }
 
   function showView(id) {
     currentView = id;
@@ -925,83 +464,56 @@
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function goPricing() { window.location.href = PRICING_PAGE; }
 
   // ── 靜態 UI 字串套用(id→key);document.title 一併更新 ──
   function applyStaticI18n() {
-    document.title = tx('mo.docTitle');
+    document.title = tx('an.docTitle');
     const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
     const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
-    // loading
-    setText('loading-title', 'mo.loadingTitle');
-    setText('loading-sub', 'mo.loadingSub');
-    // intro pitch
-    setText('intro-title', 'mo.introTitle');
-    setText('intro-body-1', 'mo.introBody1');
-    setText('intro-body-2', 'mo.introBody2');
-    setText('intro-body-3', 'mo.introBody3');
-    setText('intro-offer-label', 'mo.introOfferLabel');
-    setHtml('intro-offer-body', 'mo.introOfferBody');
-    setHtml('intro-offer-item-1', 'mo.introOfferItem1');
-    setHtml('intro-offer-item-2', 'mo.introOfferItem2');
-    setHtml('intro-offer-item-3', 'mo.introOfferItem3');
-    setText('ctx-label', 'mo.ctxLabel');
-    setHtml('ctx-desc', 'mo.ctxDesc');
-    setHtml('ctx-upsell', 'mo.ctxUpsell');
-    setText('rd-label', 'mo.rdLabel');
-    setText('rd-pretext-1', 'mo.rdEvery');
-    setText('rd-pretext-2', 'mo.rdReceive');
-    setHtml('rd-note', 'mo.rdNote');
-    setText('intro-subscribe-btn', 'mo.introSubscribeBtn');
-    setText('intro-cta-note', 'mo.introCtaNote');
-    // intro generating
-    setText('gen-head-title', 'mo.genHeadTitle');
-    setHtml('gen-head-sub', 'mo.genHeadSub');
+    // loading(預設,未選年份時)
+    setText('loading-title', 'an.loadingTitle');
+    setText('loading-sub', 'an.loadingSub');
+    // intro — pitch
+    setText('intro-pitch-title', 'an.introPitchTitle');
+    const ipSub = document.getElementById('intro-pitch-sub');
+    if (ipSub) ipSub.textContent = tx('an.introPitchSub').replace('{year}', currentAnnualTargetYear());
+    setText('intro-generate-btn', 'an.introGenerateBtn');
+    // intro — generating
+    setText('intro-gen-title', 'an.genTitle');
+    setText('intro-gen-sub', 'an.genSub');
     // years
-    setText('years-title', 'mo.yearsTitle');
-    setText('years-sub', 'mo.yearsSub');
-    setText('years-empty-title', 'mo.yearsEmptyTitle');
-    setHtml('years-empty-body', 'mo.yearsEmptyBody');
+    setText('years-title', 'an.yearsTitle');
+    setText('years-sub', 'an.yearsSub');
+    setText('years-empty-title', 'an.yearsEmptyTitle');
+    setHtml('years-empty-body', 'an.yearsEmptyBody');
     // hub
-    setText('hub-to-years', 'mo.hubToYears');
-    setText('hub-sub', 'mo.hubSub');
-    setText('ctx-toggle-label', 'mo.ctxToggle');
-    // overview
-    setText('overview-eyebrow', 'mo.ovEyebrow');
-    setText('overview-title', 'mo.ovTitle');
-    setText('ovh-title', 'mo.ovhTitle');
-    setText('overview-legend', 'mo.ovLegend');
-    // detail static
-    setText('back-to-hub-top', 'mo.backAllPalaces');
-    setText('back-to-hub-bottom', 'mo.allPalaces');
+    setText('hub-to-years', 'an.hubToYears');
+    setText('hub-sub', 'hubSub');
+    // detail 靜態
+    setText('back-to-hub-top', 'an.backAllPalaces');
+    setText('back-to-hub-bottom', 'an.allPalaces');
     setText('detail-explainer-label', 'palaceExplainerLabel');
     setText('palace-subtitle', 'palaceSubtitle');
     setText('sec1-title', 'sectionPalaceAnalysis');
     setText('sec2-title', 'secInflowTitle');
     setText('sec3-title', 'secOutflowTitle');
-    setText('sec4-title', 'mo.secSuggestTitle');
-    setHtml('sec2-desc', 'mo.secInflowDesc');
-    setHtml('sec3-desc', 'mo.secOutflowDesc');
-    setText('personal-title', 'mo.personalTitle');
-    setHtml('personal-desc', 'mo.personalDesc');
+    setText('sec4-title', 'secSuggestTitle');
+    setHtml('sec2-desc', 'an.secInflowDesc');
+    setHtml('sec3-desc', 'an.secOutflowDesc');
     // error
-    setText('error-title', 'mo.errTitle');
-    setText('error-detail', 'mo.errDefault');
+    setText('error-title', 'an.errTitle');
+    setText('error-detail', 'an.errDefault');
     setText('btn-back-dashboard', 'btnBackDashboard');
-    // report-day 下拉的 placeholder option
-    const rdPlaceholder = document.querySelector('#report-day-select option[value=""]');
-    if (rdPlaceholder) rdPlaceholder.textContent = tx('mo.rdSelectPlaceholder');
   }
 
-  function setHubHeader(year, month) {
-    const disp = lunarToSolarDisplay(year, month);
-    const ymShort = `${disp.year}/${String(disp.month).padStart(2,'0')}`;
+  function setHubHeader(year) {
     const eb = document.getElementById('hub-eyebrow');
     const ti = document.getElementById('hub-title');
-    if (eb) eb.textContent = tx('mo.hubEyebrow').replace('{ym}', ymShort);
-    if (ti) ti.textContent = tx('mo.hubTitle').replace('{ymLabel}', disp.label);
+    if (eb) eb.textContent = tx('an.hubEyebrow').replace('{year}', year);
+    if (ti) ti.textContent = tx('an.hubTitle').replace('{year}', year);
   }
 
-  // ── 年份選擇 ──
   function renderYears(years) {
     introMode = null;
     lastYears = years || [];
@@ -1021,7 +533,7 @@
       const num = document.createElement('div');
       num.className = 'year-card-num'; num.textContent = y;
       const label = document.createElement('div');
-      label.className = 'year-card-label'; label.textContent = 'Monthly';
+      label.className = 'year-card-label'; label.textContent = 'Annual';
       card.appendChild(num); card.appendChild(label);
       card.addEventListener('click', () => loadYear(y));
       grid.appendChild(card);
@@ -1031,304 +543,26 @@
   async function loadYear(year) {
     currentYear = year;
     showView('view-loading');
-    document.getElementById('loading-title').textContent = tx('mo.loadingYearTitle').replace('{year}', year);
-    document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
+    document.getElementById('loading-title').textContent = tx('an.loadingYearTitle').replace('{year}', year);
+    document.getElementById('loading-sub').textContent = tx('an.loadingYearSub');
 
-    const { data: rows, error } = await supabase
-      .from(MONTHLY_TABLE)
-      .select('valid_month_start')
+    const { data: reports, error } = await supabase
+      .from(ANNUAL_TABLE)
+      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start')
       .eq('chart_session_id', chartSessionId)
-      .eq('chart_layer', 'monthly')
+      .eq('chart_layer', 'annual')
       .eq('language', 'zh-TW')
       .eq('valid_year_start', year);
 
-    if (error) { showError(tx('mo.errMonthsFail').replace('{year}', year) + error.message); return; }
-
-    const months = [...new Set((rows || []).map(r => r.valid_month_start).filter(m => m != null))].sort((a, b) => a - b);
-    if (months.length === 0) { showError(tx('mo.errNoYearData').replace('{year}', year)); return; }
-
-    availableMonths = months.map(m => ({ year, month: m }));
-    visibleMonths = computeVisibleMonths(availableMonths);
-
-    const base = nowAsLunarBase();
-    let defaultPick = visibleMonths.find(v => v.year === base.year && v.month === base.month)
-      || visibleMonths.find(v => v.unlocked) || visibleMonths[0];
-
-    renderMonthTabs();
-    await loadMonth(defaultPick.year, defaultPick.month);
-    showView('view-hub');
-  }
-
-  function computeVisibleMonths(all) {
-    const base = nowAsLunarBase();
-    const baseIdx = base.year * 12 + base.month;
-    const maxAhead = userTier === 'paid' ? 3 : 1;
-    return all
-      .map(({ year, month }) => {
-        const idx = year * 12 + month;
-        const rel = idx - baseIdx;
-        return { year, month, rel };
-      })
-      .filter(v => v.rel >= -1 && v.rel <= 3)
-      .map(v => ({ ...v, unlocked: v.rel >= -1 && v.rel <= maxAhead }))
-      .sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
-  }
-
-  function renderMonthTabs() {
-    const wrap = document.getElementById('month-tabs');
-    wrap.innerHTML = '';
-    visibleMonths.forEach(v => {
-      const tab = document.createElement('div');
-      tab.className = 'month-tab' + (v.unlocked ? '' : ' locked') + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
-      const rl = relLabel(v.rel) || tx('mo.monthSuffix').replace('{m}', v.month);
-      tab.innerHTML = `
-        <span class="month-tab-ym">${lunarToSolarYM(v.year, v.month)}</span>
-        <span class="month-tab-label">${escapeHtml(rl)}</span>
-        ${v.unlocked ? '' : `<span class="month-tab-lock">${escapeHtml(tx('mo.tabLockUpgrade'))}</span>`}`;
-      if (v.unlocked) {
-        tab.addEventListener('click', () => loadMonth(v.year, v.month));
-      }
-      wrap.appendChild(tab);
-    });
-  }
-
-  async function loadMonth(year, month) {
-    currentYear = year;
-    currentMonth = month;
-
-    const { data: reports, error } = await supabase
-      .from(MONTHLY_TABLE)
-      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, suggestion_personal, transforms_in_meta, transforms_out_meta, valid_year_start, valid_month_start')
-      .eq('chart_session_id', chartSessionId)
-      .eq('chart_layer', 'monthly')
-      .eq('language', 'zh-TW')
-      .eq('valid_year_start', year)
-      .eq('valid_month_start', month);
-
-    if (error) { showError(tx('mo.errReportsFail').replace('{ym}', year + '/' + month) + error.message); return; }
-    if (!reports || reports.length === 0) { showError(tx('mo.errNoContent').replace('{ym}', year + '/' + month)); return; }
+    if (error) { showError(tx('an.errReportsFail').replace('{year}', year) + error.message); return; }
+    if (!reports || reports.length === 0) { showError(tx('an.errNoContent').replace('{year}', year)); return; }
 
     reportsByPalace = {};
     for (const row of reports) reportsByPalace[row.palace_name] = row;
 
-    await loadOverviewMeta(year, month);
-
-    setHubHeader(year, month);
-    renderMonthTabs();
-    renderOverview();
+    setHubHeader(year);
     renderHub();
-  }
-
-  async function loadOverviewMeta(year, month) {
-    metaByPalace = {};
-    try {
-      const { data, error } = await supabase
-        .from(INTERP_TABLE)
-        .select('palace_name, metadata, star_list, valid_year_start, valid_month_start')
-        .eq('chart_session_id', chartSessionId)
-        .eq('chart_layer', 'monthly')
-        .eq('language', 'zh-TW')
-        .eq('interpretation_type', 'main')
-        .eq('valid_year_start', year)
-        .eq('valid_month_start', month);
-      if (error) { console.warn('[monthly] overview metadata 查詢失敗：', error.message); return; }
-      (data || []).forEach(row => {
-        let m = row.metadata;
-        if (typeof m === 'string') { try { m = JSON.parse(m); } catch (_) { m = null; } }
-        if (!m) return;
-        let sl = row.star_list;
-        if (typeof sl === 'string') { try { sl = JSON.parse(sl); } catch (_) { sl = []; } }
-        m.__star_list = Array.isArray(sl) ? sl : [];
-        metaByPalace[row.palace_name] = m;
-      });
-    } catch (e) {
-      console.warn('[monthly] overview metadata 例外：', e);
-    }
-  }
-
-  function palaceScore(m) { if (!m) return null; return palacePosScore(m) - palaceNegScore(m); }
-  function palacePosScore(m) {
-    if (!m) return 0;
-    const n = (k) => Number(m[k]) || 0;
-    return SCORE_WEIGHT.auspicious * n('auspicious_count')
-         + SCORE_WEIGHT.hua_lu     * n('hua_lu_count')
-         + SCORE_WEIGHT.hua_quan   * n('hua_quan_count')
-         + SCORE_WEIGHT.hua_ke     * n('hua_ke_count');
-  }
-  function palaceNegScore(m) {
-    if (!m) return 0;
-    const n = (k) => Number(m[k]) || 0;
-    return Math.abs(SCORE_WEIGHT.sha_ji) * n('sha_ji_count')
-         + Math.abs(SCORE_WEIGHT.hua_ji) * n('hua_ji_count');
-  }
-
-  function palaceTags(m) {
-    if (!m) return [];
-    const n = (k) => Number(m[k]) || 0;
-    const mult = (x) => x > 1 ? ` ×${x}` : '';
-    const tags = [];
-    if (n('sha_ji_count') > 0) tags.push({ cls: 'sha',  text: `${tx('mo.tagSha')} ×${n('sha_ji_count')}` });
-    if (n('hua_ji_count') > 0) tags.push({ cls: 'ji',   text: `${transformLabel('化忌')}${mult(n('hua_ji_count'))}` });
-    if (n('hua_lu_count') > 0) tags.push({ cls: 'lu',   text: `${transformLabel('化祿')}${mult(n('hua_lu_count'))}` });
-    if (n('hua_quan_count') > 0) tags.push({ cls: 'quan', text: `${transformLabel('化權')}${mult(n('hua_quan_count'))}` });
-    if (n('hua_ke_count') > 0) tags.push({ cls: 'ke',   text: `${transformLabel('化科')}${mult(n('hua_ke_count'))}` });
-    if (n('auspicious_count') > 0) tags.push({ cls: 'aus', text: `${tx('mo.tagAus')} ×${n('auspicious_count')}` });
-    if (m.hong_luan_detected === true) tags.push({ cls: 'luan', text: tx('mo.tagLuan') });
-    return tags;
-  }
-
-  function palaceHighlight(palace, m) {
-    if (!m) return null;
-    const n = (k) => Number(m[k]) || 0;
-    const parts = [];
-    if (n('auspicious_count') > 0) {
-      const names = Array.isArray(m.auspicious_list) ? m.auspicious_list.map(starLabel).join('、') : '';
-      parts.push({ tag: tx('mo.tagAus'), text: names || `${tx('mo.tagAus')} ×${n('auspicious_count')}` });
-    }
-    if (m.hong_luan_detected === true) parts.push({ tag: tx('mo.tagLuan'), text: tx('mo.hlLuanDesc') });
-    if (n('hua_lu_count') > 0) parts.push({ tag: transformLabel('化祿'), text: tx('mo.hlLuDesc') });
-    if (n('hua_quan_count') > 0) parts.push({ tag: transformLabel('化權'), text: tx('mo.hlQuanDesc') });
-    if (n('hua_ke_count') > 0) parts.push({ tag: transformLabel('化科'), text: tx('mo.hlKeDesc') });
-    return parts.length ? parts : null;
-  }
-
-  function palacePopHtml(palace, m, score) {
-    const n = (k) => Number(m[k]) || 0;
-    const items = [];
-    const aus = Array.isArray(m.auspicious_list) ? m.auspicious_list : [];
-    if (aus.length) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popAusStar'))}<b>${escapeHtml(aus.map(starLabel).join('、'))}</b></div>`);
-    if (n('sha_ji_count') > 0) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popShaStar'))}<b>${n('sha_ji_count')}${escapeHtml(tx('mo.popCountUnit'))}</b></div>`);
-    const huaParts = [];
-    if (n('hua_lu_count') > 0)  huaParts.push(transformLabel('化祿'));
-    if (n('hua_quan_count') > 0) huaParts.push(transformLabel('化權'));
-    if (n('hua_ke_count') > 0)  huaParts.push(transformLabel('化科'));
-    if (n('hua_ji_count') > 0)  huaParts.push(transformLabel('化忌'));
-    if (huaParts.length) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popSihua'))}<b>${escapeHtml(huaParts.join('、'))}</b></div>`);
-    if (m.hong_luan_detected === true) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popPeach'))}<b>${escapeHtml(tx('mo.tagLuan'))}</b></div>`);
-    if (items.length === 0) items.push(`<div class="ovb-pop-item">${escapeHtml(tx('mo.popCalm'))}</div>`);
-
-    let desc;
-    if (score < 0) desc = tx('mo.popDescNeg');
-    else if (score > 0) desc = tx('mo.popDescPos');
-    else desc = tx('mo.popDescNeutral');
-
-    return `
-      <div class="ovb-pop-name">${escapeHtml(palaceLabel(palace))}</div>
-      <div class="ovb-pop-items">${items.join('')}</div>
-      <div class="ovb-pop-desc">${escapeHtml(desc)}</div>`;
-  }
-
-  let _ovbPop = null;
-  function getPop() {
-    if (!_ovbPop) {
-      _ovbPop = document.createElement('div');
-      _ovbPop.className = 'ovb-pop';
-      document.body.appendChild(_ovbPop);
-    }
-    return _ovbPop;
-  }
-  function showPop(html, x, y) {
-    const pop = getPop();
-    pop.innerHTML = html;
-    pop.classList.add('show');
-    pop.style.left = '0px'; pop.style.top = '0px';
-    const rect = pop.getBoundingClientRect();
-    let left = x + 14, top = y + 14;
-    if (left + rect.width > window.innerWidth - 12) left = x - rect.width - 14;
-    if (top + rect.height > window.innerHeight - 12) top = window.innerHeight - rect.height - 12;
-    pop.style.left = Math.max(12, left) + 'px';
-    pop.style.top = Math.max(12, top) + 'px';
-  }
-  function hidePop() { if (_ovbPop) _ovbPop.classList.remove('show'); }
-
-  function renderOverview() {
-    const box = document.getElementById('overview');
-    const focusEl = document.getElementById('overview-focus');
-    const barsEl = document.getElementById('overview-bars');
-    const subEl = document.getElementById('overview-sub');
-
-    const scored = PALACE_ORDER
-      .map(p => {
-        const m = metaByPalace[p];
-        if (!m) return null;
-        return { palace: p, pos: palacePosScore(m), neg: palaceNegScore(m), m };
-      })
-      .filter(Boolean);
-
-    if (scored.length === 0) { box.style.display = 'none'; return; }
-    box.style.display = 'block';
-
-    const maxPos = Math.max(1, ...scored.map(x => x.pos));
-    const maxNeg = Math.max(1, ...scored.map(x => x.neg));
-
-    const focus = [...scored].filter(x => x.neg > 0).sort((a, b) => b.neg - a.neg).slice(0, 2);
-
-    subEl.textContent = focus.length ? tx('mo.ovSubFocus') : tx('mo.ovSubCalm');
-
-    focusEl.innerHTML = focus.map(f => `
-      <span class="overview-focus-chip" data-palace="${f.palace}">${escapeHtml(palaceLabel(f.palace))}</span>`).join('');
-    focusEl.querySelectorAll('.overview-focus-chip').forEach(chip => {
-      chip.addEventListener('click', () => openDetail(chip.dataset.palace));
-    });
-
-    const hlBox = document.getElementById('overview-highlights');
-    const hlChips = document.getElementById('overview-highlights-chips');
-    const highlights = [];
-    PALACE_ORDER.forEach(p => {
-      const parts = palaceHighlight(p, metaByPalace[p]);
-      if (parts) parts.forEach(part => highlights.push({ palace: p, ...part }));
-    });
-    if (highlights.length) {
-      hlBox.style.display = 'block';
-      hlChips.innerHTML = highlights.map(h => `
-        <span class="ovh-chip" data-palace="${h.palace}">
-          <span class="ovh-tag">${escapeHtml(h.tag)}</span>${escapeHtml(palaceLabel(h.palace))}・${escapeHtml(h.text)}
-        </span>`).join('');
-      hlChips.querySelectorAll('.ovh-chip').forEach(chip => {
-        chip.addEventListener('click', () => openDetail(chip.dataset.palace));
-      });
-    } else {
-      hlBox.style.display = 'none';
-    }
-
-    barsEl.innerHTML = PALACE_ORDER.map(p => {
-      const item = scored.find(x => x.palace === p);
-      const m = metaByPalace[p];
-      const tags = palaceTags(m);
-      const tagsHtml = tags.length
-        ? `<div class="ovb-tags">${tags.map(t => `<span class="ovb-tag ${t.cls}">${escapeHtml(t.text)}</span>`).join('')}</div>`
-        : '';
-      let barInner;
-      if (!item) {
-        barInner = `<div class="ovb-track"><div class="ovb-mid"></div></div>`;
-      } else {
-        const posPct = Math.round(item.pos / maxPos * 50);
-        const negPct = Math.round(item.neg / maxNeg * 50);
-        const posFill = item.pos > 0 ? `<div class="ovb-fill pos" style="width:${posPct}%;"></div>` : '';
-        const negFill = item.neg > 0 ? `<div class="ovb-fill neg" style="width:${negPct}%;"></div>` : '';
-        barInner = `<div class="ovb-track"><div class="ovb-mid"></div>${posFill}${negFill}</div>`;
-      }
-      return `<div class="ovb-row-wrap" data-palace="${p}">
-        <div class="overview-bar-row">
-          <span class="ovb-name">${escapeHtml(palaceLabel(p))}</span>
-          ${barInner}
-        </div>
-        ${tagsHtml}
-      </div>`;
-    }).join('');
-
-    barsEl.querySelectorAll('.ovb-row-wrap').forEach(row => {
-      const p = row.dataset.palace;
-      const m = metaByPalace[p];
-      const item = scored.find(x => x.palace === p);
-      const popHtml = m ? palacePopHtml(p, m, item ? (item.pos - item.neg) : 0) : null;
-      row.addEventListener('click', () => openDetail(p));
-      if (popHtml) {
-        row.addEventListener('mouseenter', (e) => showPop(popHtml, e.clientX, e.clientY));
-        row.addEventListener('mousemove', (e) => showPop(popHtml, e.clientX, e.clientY));
-        row.addEventListener('mouseleave', hidePop);
-      }
-    });
+    showView('view-hub');
   }
 
   function renderHub() {
@@ -1350,13 +584,6 @@
         ? row.composition.main_stars.map(s => starLabel((typeof s === 'string') ? s : s?.star)).join(' · ')
         : tx('emptyNoMainStar');
       card.appendChild(starsEl);
-      if (row && row.suggestion_personal) {
-        card.classList.add('has-personal');
-        const mk = document.createElement('div');
-        mk.className = 'palace-card-track';
-        mk.textContent = tx('mo.trackBadge');
-        card.appendChild(mk);
-      }
       if (row) card.addEventListener('click', () => openDetail(palaceName));
       else card.style.opacity = '0.45';
       grid.appendChild(card);
@@ -1364,8 +591,9 @@
     document.getElementById('session-id').textContent = chartSessionId || '—';
   }
 
+  // 各段輕量鎖（未解鎖時放在 02/03/04 內容區位置）
   function secLockHtml() {
-    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> ${escapeHtml(tx('mo.secLock'))}</div>`;
+    return `<div class="sec-lock"><span class="sec-lock-icon" aria-hidden="true">&#128274;</span> ${escapeHtml(tx('an.secLock'))}</div>`;
   }
 
   function paywallCtaHtml() {
@@ -1373,14 +601,14 @@
       <div class="paywall">
         <div class="paywall-lock" aria-hidden="true">&#128274;</div>
         <div class="paywall-eyebrow">Unlock Full Reading</div>
-        <div class="paywall-title">${tx('mo.paywallTitle')}</div>
+        <div class="paywall-title">${tx('an.paywallTitle')}</div>
         <div class="paywall-list">
-          <div class="paywall-item"><span class="mk">I</span><span>${tx('mo.paywallItem1')}</span></div>
-          <div class="paywall-item"><span class="mk">II</span><span>${tx('mo.paywallItem2')}</span></div>
-          <div class="paywall-item"><span class="mk">III</span><span>${tx('mo.paywallItem3')}</span></div>
+          <div class="paywall-item"><span class="mk">I</span><span>${tx('an.paywallItem1')}</span></div>
+          <div class="paywall-item"><span class="mk">II</span><span>${tx('an.paywallItem2')}</span></div>
+          <div class="paywall-item"><span class="mk">III</span><span>${tx('an.paywallItem3')}</span></div>
         </div>
-        <span class="paywall-cta" id="paywall-cta">${tx('mo.paywallCta')}</span>
-        <div class="paywall-note">${tx('mo.paywallNote')}</div>
+        <span class="paywall-cta" id="paywall-cta">${tx('an.paywallCta')}</span>
+        <div class="paywall-note">${tx('an.paywallNote')}</div>
       </div>`;
   }
 
@@ -1390,17 +618,17 @@
     currentPalace = palaceName;
     const idx = PALACE_ORDER.indexOf(palaceName);
 
-    const ymLabel = (currentYear && currentMonth) ? lunarToSolarYM(currentYear, currentMonth) : '';
-    document.getElementById('detail-eyebrow').textContent = ymLabel;
+    document.getElementById('detail-eyebrow').textContent = currentYear ? String(currentYear) : '';
     document.getElementById('detail-title-zh').textContent = palaceLabel(palaceName);
     document.getElementById('detail-index').textContent = `${ROMAN[idx]} / XII`;
     document.getElementById('detail-tagline').innerHTML = td('PALACE_TAGLINE', palaceName);
     document.getElementById('detail-explainer-label').textContent = tx('palaceExplainerLabel');
-    document.getElementById('detail-explainer').innerHTML = td('PALACE_EXPLAINER_MONTHLY', palaceName);
+    document.getElementById('detail-explainer').innerHTML = td('PALACE_EXPLAINER_ANNUAL', palaceName);
 
     renderStarsLine(row.composition);
     renderAnalysis(row.palace_analysis);
 
+    // ── 付費牆（丙方案）：02/03/04 標題+explainer 保留；未解鎖時內容換輕量鎖、底部放單一 CTA ──
     const ctaHost = document.getElementById('detail-paywall-cta');
     const locks = ['02','03','04'].map(n => document.getElementById('lock-' + n));
     const contents = [
@@ -1425,9 +653,6 @@
         if (cta) cta.addEventListener('click', goPricing);
       }
     }
-
-    // 追蹤議題解析為免費，無論解鎖與否都呼叫：
-    renderPersonalSuggestion(row.suggestion_personal);
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -1467,7 +692,7 @@
 
   function renderAnalysis(text) {
     const el = document.getElementById('detail-analysis');
-    if (!text) { el.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('mo.noContent'))}</p>`; return; }
+    if (!text) { el.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('an.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let html = '';
     paras.forEach((p, i) => {
@@ -1506,7 +731,7 @@
       if (!t || (!t.title && !t.content)) continue;
       hasAny = true;
 
-      const tip = td('TRANSFORM_TOOLTIP_MONTHLY', tt) || {};
+      const tip = td('TRANSFORM_TOOLTIP_ANNUAL', tt) || {};
       const metaItems = metaByTransform[tt] || [];
 
       let chipsHtml = '';
@@ -1555,7 +780,7 @@
 
   function renderSuggestion(text) {
     const wrap = document.getElementById('detail-suggestion-wrap');
-    if (!text) { wrap.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('mo.noContent'))}</p>`; return; }
+    if (!text) { wrap.innerHTML = `<p style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('an.noContent'))}</p>`; return; }
     const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
     let inner = '<div class="epilogue-eyebrow">— Epilogue —</div><div class="epilogue-prose">';
     paras.forEach((p, i) => {
@@ -1564,21 +789,6 @@
     });
     inner += '</div>';
     wrap.innerHTML = `<div class="epilogue">${inner}</div>`;
-  }
-
-  function renderPersonalSuggestion(text) {
-    const sec = document.getElementById('detail-personal-section');
-    const el = document.getElementById('detail-personal');
-    if (!sec || !el) return;
-    if (!text) { sec.style.display = 'none'; el.innerHTML = ''; return; }
-    sec.style.display = 'block';
-    let paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-    if (paras.length <= 1) {
-      paras = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
-    }
-    el.innerHTML = paras.length
-      ? paras.map(p => `<p>${escapeHtml(p)}</p>`).join('')
-      : `<p>${escapeHtml(text)}</p>`;
   }
 
   function bindTooltips(scope) {
@@ -1591,17 +801,34 @@
     });
   }
 
-  // ===================================================================
-  // 訂閱機制（無訂閱表，以 monthly_generation_jobs 有無 job 判斷訂閱狀態）
-  // ===================================================================
+  async function fetchYears() {
+    let years = [];
+    try {
+      const { data: rows, error } = await supabase
+        .from(ANNUAL_TABLE)
+        .select('valid_year_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_layer', 'annual')
+        .eq('language', 'zh-TW');
+      if (error) {
+        console.warn('[annual] 流年查詢失敗（可能表尚未建立）：', error.message);
+      } else if (rows) {
+        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y !== null && y !== undefined))]
+          .sort((a, b) => b - a);
+      }
+    } catch (e) {
+      console.warn('[annual] 流年查詢例外：', e);
+    }
+    return years;
+  }
+
   async function fetchJobs() {
     const { data, error } = await supabase
-      .from(MONTHLY_JOBS_TABLE)
-      .select('target_year, target_month, materials_status, report_status')
+      .from(ANNUAL_JOBS_TABLE)
+      .select('target_year, materials_status, report_status')
       .eq('user_email', userEmail)
-      .order('target_year', { ascending: false })
-      .order('target_month', { ascending: false });
-    if (error) { console.warn('[monthly] job 查詢失敗：', error.message); return []; }
+      .order('target_year', { ascending: false });
+    if (error) { console.warn('[annual] job 查詢失敗：', error.message); return []; }
     return data || [];
   }
   function jobDone(j) { return j.report_status === 'done'; }
@@ -1611,115 +838,36 @@
     lastJobs = jobs || [];
     document.getElementById('intro-pitch').style.display = 'none';
     document.getElementById('intro-generating').style.display = 'block';
-
     const wrap = document.getElementById('gen-cards');
-    const base = nowAsLunarBase();
-    const sorted = [...(jobs || [])].sort((a, b) =>
-      (a.target_year * 12 + a.target_month) - (b.target_year * 12 + b.target_month));
-
+    const list = (jobs && jobs.length) ? jobs : [{ target_year: currentAnnualTargetYear(), report_status: 'pending' }];
+    const sorted = [...list].sort((a, b) => b.target_year - a.target_year);
     wrap.innerHTML = sorted.map(j => {
       const done = jobDone(j);
-      const rel = (j.target_year * 12 + j.target_month) - (base.year * 12 + base.month);
-      const rl = (rel === 0 || rel === 1 || rel === -1) ? relLabel(rel) : '';
-      const disp = lunarToSolarDisplay(j.target_year, j.target_month);
-      const left = done
-        ? '<div class="gen-card-check">✓</div>'
-        : '<div class="gen-card-spinner"><span></span><span></span><span></span></div>';
-      const statusText = done ? tx('mo.genCardDone') : tx('mo.genCardGenerating');
-      return `<div class="gen-card ${done ? 'done' : ''}" data-year="${j.target_year}" data-month="${j.target_month}" data-done="${done}">
-        ${left}
-        <div class="gen-card-info">
-          <div class="gen-card-month">${escapeHtml(disp.label)}${rl ? `<span class="rel">${escapeHtml(rl)}</span>` : ''}</div>
-          <div class="gen-card-status">${escapeHtml(statusText)}</div>
-        </div>
-        <div class="gen-card-arrow">→ Read</div>
+      return `<div class="year-card" data-year="${j.target_year}" data-done="${done}" style="cursor:${done ? 'pointer' : 'default'};">
+        <div class="year-card-num">${j.target_year}</div>
+        <div class="year-card-label">${done ? escapeHtml(tx('an.genCardDone')) : escapeHtml(tx('an.genCardGenerating'))}</div>
       </div>`;
     }).join('');
-
-    wrap.querySelectorAll('.gen-card.done').forEach(card => {
-      card.addEventListener('click', () => { enterReading(Number(card.dataset.year)); });
+    wrap.querySelectorAll('.year-card[data-done="true"]').forEach(card => {
+      card.addEventListener('click', () => loadYear(Number(card.dataset.year)));
     });
-
     return sorted.length > 0 && sorted.every(jobDone);
   }
 
-  async function enterReading(preferLunarYear) {
-    stopPolling();
-    showView('view-loading');
-    document.getElementById('loading-title').textContent = tx('mo.loadingTitle');
-    document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
-
-    const years = await fetchAvailableYears();
-    renderYears(years);
-    if (preferLunarYear && years.includes(preferLunarYear)) {
-      await loadYear(preferLunarYear);
-    } else {
-      showView('view-years');
-    }
-  }
-
-  async function fetchAvailableYears() {
-    let years = [];
+  async function subscribeAnnual() {
+    const btn = document.getElementById('intro-generate-btn');
+    btn.disabled = true;
+    btn.textContent = tx('an.introGenerating');
+    const targetYear = currentAnnualTargetYear();
     try {
-      const { data: rows, error } = await supabase
-        .from(MONTHLY_TABLE)
-        .select('valid_year_start')
-        .eq('chart_session_id', chartSessionId)
-        .eq('chart_layer', 'monthly')
-        .eq('language', 'zh-TW');
-      if (error) {
-        console.warn('[monthly] 流月年份查詢失敗：', error.message);
-      } else if (rows) {
-        years = [...new Set(rows.map(r => r.valid_year_start).filter(y => y != null))].sort((a, b) => b - a);
-      }
-    } catch (e) {
-      console.warn('[monthly] 流月年份查詢例外：', e);
-    }
-    return years;
-  }
-
-  async function fireTarget(t) {
-    try {
-      await fetch(MONTHLY_TRIGGER_URL, {
+      await fetch(ANNUAL_TRIGGER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_email: userEmail, target_year: t.target_year, target_month: t.target_month }),
+        body: JSON.stringify({ user_email: userEmail, target_year: targetYear }),
       });
     } catch (e) {
-      console.warn('[monthly] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+      console.warn('[annual] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
     }
-  }
-
-  async function subscribeMonthly() {
-    const btn = document.getElementById('intro-subscribe-btn');
-    const sel = document.getElementById('report-day-select');
-    const day = sel ? Number(sel.value) : NaN;
-
-    if (!day || day < 1 || day > 15) { alert(tx('mo.alertPickDay')); return; }
-
-    btn.disabled = true;
-    btn.textContent = tx('mo.subscribing');
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const { error: dayErr } = await supabase
-      .from('user_profiles')
-      .update({ preferred_report_day: day, preferred_report_day_pending: null })
-      .eq('id', session.user.id);
-
-    if (dayErr) {
-      alert(tx('mo.subscribeFailDay').replace('{msg}', dayErr.message));
-      btn.disabled = false;
-      btn.textContent = tx('mo.introSubscribeBtn');
-      return;
-    }
-    preferredReportDay = day;
-
-    const now = new Date();
-    const sy = now.getFullYear(), sm = now.getMonth() + 1;
-    const nextTarget = solarToLunarTarget(sy, sm, 'next');
-
-    await fireTarget(nextTarget);
-
     const jobs = await fetchJobs();
     renderGenerating(jobs);
     startPolling();
@@ -1729,17 +877,19 @@
     stopPolling();
     pollTimer = setInterval(async () => {
       const jobs = await fetchJobs();
-      if (jobs.length) renderGenerating(jobs);
       if (jobs.length === 0) return;
-      if (jobs.every(jobDone)) {
+      const allDone = renderGenerating(jobs);
+      if (allDone) {
         stopPolling();
-        const latest = jobs.filter(jobDone)
-          .reduce((a, b) => (b.target_year * 12 + b.target_month) > (a.target_year * 12 + a.target_month) ? b : a);
-        await enterReading(latest.target_year);
+        const years = await fetchYears();
+        renderYears(years);
+        showView('view-years');
       }
     }, POLL_INTERVAL_MS);
   }
-  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
 
   async function init() {
     try {
@@ -1750,6 +900,15 @@
       await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary
 
       userEmail = session.user.email;
+
+      try {
+        const { data: prof } = await supabase
+          .from('user_profiles')
+          .select('sihua_unlocked')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        isUnlocked = !!(prof && prof.sihua_unlocked === true);
+      } catch (_) { isUnlocked = false; }
 
       const { data: jobData, error: jobError } = await supabase
         .from('chart_generation_jobs')
@@ -1765,327 +924,47 @@
 
       chartSessionId = jobData.chart_session_id;
 
-      try {
-        const { data: prof } = await supabase
-          .from('user_profiles').select('monthly_subscribed, preferred_report_day')
-          .eq('id', session.user.id).maybeSingle();
-        isUnlocked = !!(prof && prof.monthly_subscribed === true);
-        preferredReportDay = (prof && prof.preferred_report_day != null) ? prof.preferred_report_day : null;
-      } catch (_) { isUnlocked = false; preferredReportDay = null; }
-
-      await ctxInit();
-      ctxBindHubToggle();
-
       const jobs = await fetchJobs();
-
-      if (preferredReportDay == null) {
-        introMode = 'pitch';
-        document.getElementById('intro-pitch').style.display = 'block';
-        document.getElementById('intro-generating').style.display = 'none';
-        showView('view-intro');
-        return;
-      }
-
-      if (jobs.length === 0) {
-        introMode = 'pitch';
-        document.getElementById('intro-pitch').style.display = 'block';
-        document.getElementById('intro-generating').style.display = 'none';
-        showView('view-intro');
-        return;
-      }
-
-      const allDone = jobs.every(jobDone);
-      if (allDone) {
-        const years = await fetchAvailableYears();
-        renderYears(years);
-        showView('view-years');
-      } else {
+      const generating = jobs.some(j => !jobDone(j));
+      if (generating) {
         showView('view-intro');
         renderGenerating(jobs);
         startPolling();
+        return;
+      }
+
+      const years = await fetchYears();
+      if (years.length > 0) {
+        renderYears(years);
+        showView('view-years');
+      } else {
+        introMode = 'pitch';
+        document.getElementById('intro-pitch').style.display = 'block';
+        document.getElementById('intro-generating').style.display = 'none';
+        showView('view-intro');
       }
     } catch (err) {
       showError(err.message || tx('errLoad'));
     }
   }
 
-  // ===================================================================
-  // Context 個人化面板（訂閱前後共用；slot 數依 monthly_subscribed）
-  // ===================================================================
-  const CTX_TABLE = 'monthly_palace_context';
-  const CTX_MAX_LEN = 500;
-  let ctxSlotCount = 1;
-  let ctxData = {};
-  let ctxEditing = new Set();
-
-  async function ctxLoadTier() {
-    try {
-      const { data } = await supabase
-        .from('user_profiles')
-        .select('monthly_subscribed')
-        .eq('id', (await supabase.auth.getSession()).data.session.user.id)
-        .maybeSingle();
-      ctxSlotCount = (data && data.monthly_subscribed === true) ? 3 : 1;
-    } catch (_) { ctxSlotCount = 1; }
-  }
-
-  async function ctxLoadData() {
-    ctxData = {};
-    try {
-      const { data, error } = await supabase
-        .from(CTX_TABLE)
-        .select('slot_no, palace_name, context_text')
-        .eq('user_email', userEmail);
-      if (!error && data) {
-        data.forEach(r => { ctxData[r.slot_no] = { palace_name: r.palace_name, context_text: r.context_text }; });
-      }
-    } catch (_) {}
-  }
-
-  function ctxUsedPalaces(exceptSlot) {
-    const used = new Set();
-    Object.entries(ctxData).forEach(([slot, v]) => {
-      if (Number(slot) !== Number(exceptSlot) && v && v.palace_name) used.add(v.palace_name);
-    });
-    return used;
-  }
-
-  function ctxRenderSlots() {
-    const wrap = document.getElementById('ctx-slots');
-    const upsell = document.getElementById('ctx-upsell');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-
-    for (let n = 1; n <= ctxSlotCount; n++) {
-      const cur = ctxData[n] || { palace_name: '', context_text: '' };
-      const used = ctxUsedPalaces(n);
-      const isSaved = !!ctxData[n];
-      const locked = isSaved && !ctxEditing.has(n);
-
-      const slot = document.createElement('div');
-      slot.className = 'ctx-slot';
-      slot.dataset.slot = n;
-
-      const options = [`<option value="">${escapeHtml(tx('mo.ctxSelectPlaceholder'))}</option>`]
-        .concat(PALACE_ORDER.map(p => {
-          const dis = used.has(p) && p !== cur.palace_name ? ' disabled' : '';
-          const sel = p === cur.palace_name ? ' selected' : '';
-          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabel(p))}</option>`;
-        }))
-        .join('');
-
-      const explainerHtml = cur.palace_name ? (td('PALACE_EXPLAINER_MONTHLY', cur.palace_name) || '') : '';
-
-      slot.innerHTML = `
-        <div class="ctx-slot-top">
-          <span class="ctx-slot-no">${escapeHtml(tx('mo.ctxSlot').replace('{n}', n))}</span>
-          <select class="ctx-select" data-slot="${n}"${locked ? ' disabled' : ''}>${options}</select>
-        </div>
-        <div class="ctx-slot-explainer${explainerHtml ? ' show' : ''}" data-slot="${n}">${explainerHtml}</div>
-        <textarea class="ctx-textarea" data-slot="${n}" maxlength="${CTX_MAX_LEN}"${locked ? ' disabled' : ''}
-          placeholder="${escapeHtml(tx('mo.ctxPlaceholder'))}">${escapeHtml(cur.context_text || '')}</textarea>
-        <div class="ctx-slot-actions">
-          <span class="ctx-counter" data-slot="${n}">${(cur.context_text || '').length} / ${CTX_MAX_LEN}</span>
-          <div class="ctx-btns">
-            <span class="ctx-slot-saved${locked ? ' show' : ''}" data-slot="${n}">${escapeHtml(tx('mo.ctxSaved'))}</span>
-            ${locked
-              ? `<button class="ctx-btn edit" data-slot="${n}">${escapeHtml(tx('mo.ctxEdit'))}</button><button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button>`
-              : `<button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button><button class="ctx-btn save" data-slot="${n}">${escapeHtml(tx('mo.ctxSave'))}</button>`}
-          </div>
-        </div>`;
-      wrap.appendChild(slot);
-    }
-
-    if (upsell) upsell.style.display = (ctxSlotCount < 3) ? 'block' : 'none';
-
-    ctxBindSlotEvents();
-  }
-
-  function ctxBindSlotEvents() {
-    const wrap = document.getElementById('ctx-slots');
-    if (!wrap) return;
-
-    wrap.querySelectorAll('.ctx-textarea').forEach(ta => {
-      ta.addEventListener('input', () => {
-        const n = ta.dataset.slot;
-        const c = wrap.querySelector(`.ctx-counter[data-slot="${n}"]`);
-        if (c) {
-          c.textContent = `${ta.value.length} / ${CTX_MAX_LEN}`;
-          c.classList.toggle('over', ta.value.length >= CTX_MAX_LEN);
-        }
-      });
-    });
-
-    wrap.querySelectorAll('.ctx-select').forEach(sel => {
-      sel.addEventListener('change', () => {
-        const n = sel.dataset.slot;
-        const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${n}"]`);
-        if (exp) {
-          const html = sel.value ? (td('PALACE_EXPLAINER_MONTHLY', sel.value) || '') : '';
-          exp.innerHTML = html;
-          exp.classList.toggle('show', !!html);
-        }
-      });
-    });
-
-    wrap.querySelectorAll('.ctx-btn.save').forEach(btn => {
-      btn.addEventListener('click', () => ctxSave(Number(btn.dataset.slot)));
-    });
-    wrap.querySelectorAll('.ctx-btn.edit').forEach(btn => {
-      btn.addEventListener('click', () => { ctxEditing.add(Number(btn.dataset.slot)); ctxRenderSlots(); });
-    });
-    wrap.querySelectorAll('.ctx-btn.clear').forEach(btn => {
-      btn.addEventListener('click', () => ctxClear(Number(btn.dataset.slot)));
-    });
-  }
-
-  async function ctxSave(slotNo) {
-    const wrap = document.getElementById('ctx-slots');
-    const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
-    const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
-    const palace = sel.value || null;
-    const text = (ta.value || '').trim();
-
-    if (!palace) { alert(tx('mo.ctxAlertNoPalace')); return; }
-    if (!text) { alert(tx('mo.ctxAlertNoText')); return; }
-
-    if (!confirm(tx('mo.ctxDisclaimer'))) return;
-
-    const btn = wrap.querySelector(`.ctx-btn.save[data-slot="${slotNo}"]`);
-    if (btn) btn.disabled = true;
-
-    const payload = {
-      user_email: userEmail,
-      chart_session_id: chartSessionId,
-      slot_no: slotNo,
-      palace_name: palace,
-      context_text: text,
-    };
-
-    const { error } = await supabase
-      .from(CTX_TABLE)
-      .upsert(payload, { onConflict: 'user_email,slot_no' });
-
-    if (btn) btn.disabled = false;
-
-    if (error) { alert(tx('mo.ctxSaveFail') + error.message); return; }
-
-    ctxData[slotNo] = { palace_name: palace, context_text: text };
-    ctxEditing.delete(slotNo);
-    ctxRenderSlots();
-  }
-
-  async function ctxClear(slotNo) {
-    if (!ctxData[slotNo]) {
-      const wrap = document.getElementById('ctx-slots');
-      const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
-      const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
-      if (sel) sel.value = ''; if (ta) ta.value = '';
-      const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${slotNo}"]`);
-      if (exp) { exp.innerHTML = ''; exp.classList.remove('show'); }
-      return;
-    }
-    if (!confirm(tx('mo.ctxClearConfirm'))) return;
-    const { error } = await supabase
-      .from(CTX_TABLE)
-      .delete()
-      .eq('user_email', userEmail)
-      .eq('slot_no', slotNo);
-    if (error) { alert(tx('mo.ctxClearFail') + error.message); return; }
-    delete ctxData[slotNo];
-    ctxEditing.delete(slotNo);
-    ctxRenderSlots();
-  }
-
-  async function ctxInit() {
-    await ctxLoadTier();
-    await ctxLoadData();
-    ctxRenderSlots();
-  }
-
-  function ctxBindHubToggle() {
-    const toggle = document.getElementById('ctx-toggle');
-    const mount = document.getElementById('ctx-hub-mount');
-    const panel = document.getElementById('context-panel');
-    if (!toggle || !mount || !panel) return;
-    toggle.addEventListener('click', () => {
-      const open = mount.style.display !== 'none';
-      if (open) {
-        mount.style.display = 'none';
-        toggle.classList.remove('open');
-      } else {
-        mount.appendChild(panel);
-        panel.style.display = 'block';
-        mount.style.display = 'block';
-        toggle.classList.add('open');
-      }
-    });
-  }
-
-  // 是否有未儲存的 context 輸入(語言切換時避免覆蓋使用者輸入)
-  function ctxHasUnsaved() {
-    const wrap = document.getElementById('ctx-slots');
-    if (!wrap) return false;
-    for (const ta of wrap.querySelectorAll('.ctx-textarea')) {
-      const n = ta.dataset.slot;
-      const saved = (ctxData[n] && ctxData[n].context_text) || '';
-      if ((ta.value || '') !== saved) return true;
-      const sel = wrap.querySelector(`.ctx-select[data-slot="${n}"]`);
-      const savedPalace = (ctxData[n] && ctxData[n].palace_name) || '';
-      if (sel && !sel.disabled && (sel.value || '') !== savedPalace) return true;
-    }
-    return false;
-  }
-
-  // 收報日下拉：(重)填 1–15 選項(保留已選值)；語言切換時重填標籤
-  function fillReportDays() {
-    const sel = document.getElementById('report-day-select');
-    if (!sel) return;
-    const prev = sel.value;
-    sel.innerHTML = `<option value="">${escapeHtml(tx('mo.rdSelectPlaceholder'))}</option>`;
-    for (let d = 1; d <= 15; d++) {
-      const opt = document.createElement('option');
-      opt.value = String(d);
-      opt.textContent = tx('mo.dayOption').replace('{d}', d);
-      sel.appendChild(opt);
-    }
-    sel.value = prev;
-    sel.classList.toggle('unset', sel.value === '');
-  }
-  function bindReportDay() {
-    const sel = document.getElementById('report-day-select');
-    const btn = document.getElementById('intro-subscribe-btn');
-    if (!sel || !btn) return;
-    sel.addEventListener('change', () => {
-      const ok = sel.value !== '';
-      btn.disabled = !ok;
-      sel.classList.toggle('unset', !ok);
-    });
-  }
-
   // ── UI 語言切換(header 語言鈕)→ 以快取資料就地重繪 ──
+  //   UI 字串(tx)換新語言;報告內容(td/palaceLabel…)維持鎖定語言不變。
   function rerender() {
     const view = currentView;
     applyStaticI18n();
-    fillReportDays();
-    if (!ctxHasUnsaved()) ctxRenderSlots();
     if (introMode === 'generating') renderGenerating(lastJobs);
     if (lastYears && lastYears.length) renderYears(lastYears);
-    if (currentYear != null && currentMonth != null && Object.keys(reportsByPalace).length) {
-      setHubHeader(currentYear, currentMonth);
-      renderMonthTabs();
-      renderOverview();
+    if (currentYear != null && Object.keys(reportsByPalace).length) {
+      setHubHeader(currentYear);
       renderHub();
       if (currentPalace && reportsByPalace[currentPalace]) openDetail(currentPalace);
     }
     if (view) showView(view);
   }
-  window.addEventListener('i18n:changed', () => { document.title = tx('mo.docTitle'); rerender(); });
+  window.addEventListener('i18n:changed', () => { document.title = tx('an.docTitle'); rerender(); });
 
-  bindReportDay();
-  fillReportDays();
-
-  document.getElementById('intro-subscribe-btn').addEventListener('click', subscribeMonthly);
+  document.getElementById('intro-generate-btn').addEventListener('click', subscribeAnnual);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
