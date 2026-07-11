@@ -288,9 +288,99 @@
     .modal-btn.cancel:hover { border-color: var(--ink-mid, #5a6b67); }
     .modal-btn.confirm { background: var(--ink-darkest, #15363a); color: var(--bg-primary, #faf7f1); border-color: var(--ink-darkest, #15363a); }
     .modal-btn.confirm:hover { background: var(--accent-deep, #b8945c); border-color: var(--accent-deep, #b8945c); }
+  
+    /* ════════════════════════════════════════════════════════
+       decade 冷藍改版（附加覆寫；JS / i18n / detail 版型不動）
+       .shell 覆寫 shared token → 全頁(含 detail)轉冷藍、版型保留。
+       hub 沿用 chart 冷藍；選大限 years/decade/confirm 重繪冷藍編輯式。
+       四化色 --t-* 不變。header/footer 在 .shell 外維持暖色。
+       ════════════════════════════════════════════════════════ */
+    body.decade-page { background: #f8f9fa; }
+    .shell {
+      --ink-darkest: #001b3c; --ink-dark: #16323f; --ink-mid: #41484d; --ink-light: #8a97a5; --ink-faint: #b6c2cd;
+      --accent-deep: #1d4e63; --accent-soft: #296283; --accent-pale: #c7e7ff;
+      --rule: #dbe2ea; --bg-primary: #f8f9fa; --bg-soft: #eef3f9; --bg-soft-2: #e9eff7; --bg-card: #ffffff;
+      --silver-deep: #6f8698; --silver-soft: #a9bccb; --silver-pale: #d3dde6;
+      --gold: #b8945c; --gold-soft: #c9ab7d; --paper: #ffffff;
+    }
+
+    /* ── hub（沿用 chart 冷藍）── */
+    .hub-head { text-align: left; margin-bottom: 8px; }
+    .hub-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; }
+    .hub-title { font-family: var(--font-serif-zh); font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: 0.04em; color: var(--accent-soft); margin-bottom: 10px; }
+    .hub-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--ink-mid); }
+    .palace-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0 44px; }
+    @media (max-width: 900px) { .palace-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .palace-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+    .palace-card { background: linear-gradient(135deg, #ffffff 0%, rgba(249,249,255,0.85) 100%); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 18px; min-height: 132px; }
+    .palace-card:hover { transform: translateY(-4px); border-color: var(--accent-soft); box-shadow: 0 10px 30px -10px rgba(41,98,131,0.16); }
+    .palace-card-index { color: var(--ink-light); }
+    .palace-card-name { color: var(--ink-darkest); font-weight: 600; }
+    .palace-grid .palace-card:first-child { border-color: var(--accent-pale); }
+    .palace-grid .palace-card:first-child .palace-card-name { color: var(--accent-soft); font-size: 26px; }
+    .palace-grid .palace-card:first-child::after { content: ''; position: absolute; top: 0; right: 0; width: 26px; height: 26px; background: linear-gradient(135deg, transparent 50%, var(--gold) 50%); opacity: 0.6; border-top-right-radius: 8px; }
+    @media (min-width: 641px) { .palace-grid .palace-card:first-child { grid-column: span 2; } }
+    .hub-meta { display: none; }
+
+    /* ── 選大限（years / decade）冷藍編輯式 ── */
+    .years-head { text-align: left; margin-bottom: 8px; }
+    .years-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; font-style: normal; }
+    .years-title { font-family: var(--font-serif-zh); font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: 0.04em; color: var(--ink-darkest); margin-bottom: 10px; }
+    .years-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--ink-mid); }
+
+    .decade-intro { display: flex; gap: 12px; margin: 24px 0 28px; padding: 18px 22px; background: var(--bg-soft-2); border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8; color: var(--ink-mid); }
+    .decade-intro-icon { color: var(--accent-soft); }
+    .decade-intro strong { color: var(--ink-darkest); font-weight: 600; }
+
+    /* 2 欄（!important 蓋過 JS inline flex-column） */
+    #years-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; flex-direction: initial !important; }
+    @media (max-width: 640px) { #years-grid { grid-template-columns: 1fr !important; } }
+
+    .decade-bar { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 14px; padding: 24px; border: 1px solid var(--rule); background: #ffffff; border-radius: 8px; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .decade-bar.actionable { cursor: pointer; }
+    .decade-bar.actionable:hover { border-color: var(--accent-soft); transform: translateY(-3px); box-shadow: 0 10px 26px -12px rgba(41,98,131,0.18); }
+    .decade-bar.current { border-color: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-soft); }
+    .decade-bar.preview { opacity: 0.5; cursor: default; }
+    .decade-bar.done { border-left: 3px solid var(--accent-soft); }
+    .decade-bar-left { display: flex; flex-direction: column; gap: 4px; }
+    .decade-bar-years { font-family: var(--font-serif-zh); font-size: 24px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; }
+    .decade-bar-age { font-family: var(--font-sans); font-size: 12px; color: var(--ink-light); letter-spacing: 0.06em; }
+    .decade-bar-right { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid var(--bg-soft-2); }
+    .decade-tag { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); }
+    .decade-bar.current .decade-tag, .decade-bar.current .decade-bar-right { color: var(--accent-soft); }
+    .decade-status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; }
+    .decade-status.done { color: var(--accent-soft); }
+    .decade-status.generating { color: var(--ink-mid); }
+    .decade-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .decade-dot.done { background: var(--accent-soft); }
+    .decade-dot.generating { background: var(--accent-pale); animation: pulse 1.4s ease-in-out infinite; }
+    .decade-cta { display: inline-block; padding: 9px 20px; background: var(--accent-soft); color: #ffffff; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.12em; border-radius: 4px; transition: background 0.2s; }
+    .decade-bar.idle:hover .decade-cta { background: var(--accent-deep); }
+
+    .years-empty { background: var(--bg-soft-2); border-radius: 8px; }
+    .years-empty-title { color: var(--ink-dark); }
+    .years-empty-body { color: var(--ink-mid); }
+
+    /* ── confirm 對話框冷藍 ── */
+    .modal-overlay { background: rgba(0,27,60,0.45); }
+    .modal-box { background: #ffffff; border-radius: 10px; box-shadow: 0 12px 48px rgba(0,27,60,0.22); }
+    .modal-title { color: var(--ink-darkest); }
+    .modal-body { color: var(--ink-dark); }
+    .modal-body strong { color: var(--accent-soft); }
+    .modal-btn { border: 1px solid var(--rule); border-radius: 4px; }
+    .modal-btn.cancel { color: var(--ink-mid); }
+    .modal-btn.cancel:hover { border-color: var(--ink-mid); }
+    .modal-btn.confirm { background: var(--accent-soft); color: #ffffff; border-color: var(--accent-soft); }
+    .modal-btn.confirm:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+
+    /* ── 選大限 + hub 放寬（detail 維持 760 窄欄）── */
+    @media (min-width: 761px) {
+      #view-years, #view-hub { width: min(1120px, calc(100vw - 80px)); margin-left: 50%; transform: translateX(-50%); }
+    }
+
   </style>
 </head>
-<body>
+<body class="decade-page">
 
 <div id="site-header"></div>
 
