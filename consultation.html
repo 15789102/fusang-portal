@@ -9,50 +9,63 @@
 <style>
   /* ── Landing 專屬（共用樣式由 consultation-common.js 注入；顏色由 .cons-wrap 冷藍 token 覆寫）── */
 
+  /* 全寬色塊 section（突破 cons-wrap 760，內容再收回讀寬）*/
+  .lp-band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding: 76px 0; }
+  .lp-band-in { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 720px) { .lp-band { padding: 56px 0; } .lp-band-in { padding: 0 24px; } }
+  .lp-band.features { background: var(--bg-soft); }
+  .lp-band.story { background: var(--bg-soft-2); }
+
   /* Hero */
-  .lp-hero { text-align: center; padding: 20px 0 8px; }
-  .lp-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 16px; }
-  .lp-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(32px, 6vw, 52px); line-height: 1.15; color: var(--ink-darkest); letter-spacing: 0.01em; margin-bottom: 16px; }
+  .lp-hero { text-align: center; padding: 32px 0 64px; }
+  .lp-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 18px; }
+  .lp-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(34px, 6.5vw, 56px); line-height: 1.12; color: var(--ink-darkest); letter-spacing: 0.01em; margin-bottom: 18px; }
   .lp-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 17px; color: var(--ink-light); margin-bottom: 22px; }
-  .lp-lead { max-width: 600px; margin: 0 auto 32px; font-family: var(--font-serif-zh); font-size: 16px; line-height: 1.95; color: var(--ink-mid); letter-spacing: 0.02em; }
-  .lp-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; max-width: 520px; margin: 0 auto; }
-  .lp-actions .cons-btn { width: auto; min-width: 200px; flex: 0 1 auto; }
-  .lp-note { text-align: center; font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-light); margin-top: 14px; }
+  .lp-lead { max-width: 580px; margin: 0 auto 34px; font-family: var(--font-serif-zh); font-size: 16px; line-height: 1.95; color: var(--ink-mid); letter-spacing: 0.02em; }
+
+  /* Actions (hero + pricing 共用) */
+  .lp-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .lp-actions .cons-btn { width: auto; min-width: 190px; flex: 0 1 auto; }
+  .btn-arrow { transition: transform 0.25s; display: inline-block; }
+  .cons-btn:hover .btn-arrow { transform: translateX(3px); }
+  .lp-note { text-align: center; font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-light); margin-top: 16px; }
 
   /* Section heading */
-  .lp-secthead { text-align: center; margin: 72px 0 32px; }
-  .lp-secthead .eb { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; display: block; margin-bottom: 10px; }
-  .lp-secthead .zh { font-family: var(--font-serif-zh); font-size: 26px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.05em; }
+  .lp-secthead { text-align: center; margin-bottom: 44px; }
+  .lp-secthead .eb { display: block; font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 10px; }
+  .lp-secthead .zh { font-family: var(--font-serif-zh); font-size: 28px; font-weight: 700; color: var(--ink-darkest); letter-spacing: 0.05em; }
 
   /* Features */
-  .lp-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .lp-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
   @media (max-width: 720px) { .lp-features { grid-template-columns: 1fr; } }
-  .lp-feat { position: relative; background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; padding: 30px 26px; box-shadow: 0 2px 14px -10px rgba(0, 27, 60, 0.14); }
-  .lp-feat-n { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--gold); margin-bottom: 14px; }
-  .lp-feat-h { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 10px; }
+  .lp-feat { background: #ffffff; border: 1px solid var(--rule); border-radius: 14px; padding: 34px 28px; }
+  .lp-feat-ic { width: 46px; height: 46px; border-radius: 12px; background: var(--accent-pale); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .lp-feat-ic svg { width: 24px; height: 24px; stroke: var(--accent-deep); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .lp-feat-n { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 10px; }
+  .lp-feat-h { font-family: var(--font-serif-zh); font-size: 20px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 12px; }
   .lp-feat-p { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.85; color: var(--ink-mid); }
 
   /* Pricing */
-  .lp-price { text-align: center; margin: 72px 0 8px; padding: 44px 32px; background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 14px; }
-  .lp-price-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; }
-  .lp-price-tag { font-family: var(--font-serif-en); line-height: 1; }
-  .lp-price-tag .cur { font-size: 24px; color: var(--ink-mid); vertical-align: top; margin-right: 2px; }
-  .lp-price-tag .amt { font-size: 60px; font-weight: 600; color: var(--accent-soft); letter-spacing: -0.02em; }
+  .lp-pricing { text-align: center; }
+  .lp-price-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 14px; }
+  .lp-price-tag { font-family: var(--font-serif-en); line-height: 1; margin-bottom: 34px; }
+  .lp-price-tag .cur { font-size: 26px; color: var(--ink-mid); vertical-align: top; margin-right: 3px; }
+  .lp-price-tag .amt { font-size: 66px; font-weight: 600; color: var(--accent-soft); letter-spacing: -0.02em; }
 
   /* Brand story */
-  .lp-story { margin: 76px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; position: relative; overflow: hidden; }
-  @media (max-width: 820px) { .lp-story { grid-template-columns: 1fr; gap: 28px; } }
-  .lp-story-media { position: relative; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 40px -18px rgba(0, 27, 60, 0.3); }
+  .lp-story { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; position: relative; }
+  @media (max-width: 820px) { .lp-story { grid-template-columns: 1fr; gap: 32px; } }
+  .lp-story-media { position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 16px 48px -20px rgba(0, 27, 60, 0.35); }
   .lp-story-media img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; object-position: center; }
   .lp-story-body { position: relative; z-index: 1; }
-  .lp-story-wm { position: absolute; right: -8px; bottom: -40px; font-family: var(--font-serif-zh); font-weight: 700; font-size: 150px; line-height: 1; color: rgba(41, 98, 131, 0.05); pointer-events: none; user-select: none; z-index: 0; }
+  .lp-story-wm { position: absolute; right: -6px; bottom: -54px; font-family: var(--font-serif-zh); font-weight: 700; font-size: 160px; line-height: 1; color: rgba(41, 98, 131, 0.05); pointer-events: none; user-select: none; z-index: 0; }
   .lp-story-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 14px; }
-  .lp-story-h2 { font-family: var(--font-serif-zh); font-size: clamp(26px, 4vw, 32px); font-weight: 700; color: var(--ink-darkest); letter-spacing: 0.02em; line-height: 1.3; margin-bottom: 12px; }
-  .lp-story-h3 { font-family: var(--font-serif-zh); font-style: italic; font-size: 18px; color: var(--accent-soft); line-height: 1.7; margin-bottom: 20px; }
-  .lp-story-founder { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-light); margin-bottom: 26px; }
+  .lp-story-h2 { font-family: var(--font-serif-zh); font-size: clamp(26px, 4vw, 34px); font-weight: 700; color: var(--ink-darkest); letter-spacing: 0.02em; line-height: 1.3; margin-bottom: 12px; }
+  .lp-story-h3 { font-family: var(--font-serif-zh); font-style: italic; font-size: 18px; color: var(--accent-soft); line-height: 1.7; margin-bottom: 22px; }
+  .lp-story-founder { font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--ink-light); margin-bottom: 28px; }
   .lp-values { display: flex; flex-wrap: wrap; gap: 12px; }
-  .lp-val { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-dark); }
-  .lp-val svg { width: 16px; height: 16px; stroke: var(--accent-soft); fill: none; stroke-width: 1.5; flex: 0 0 auto; }
+  .lp-val { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-dark); }
+  .lp-val svg { width: 16px; height: 16px; stroke: var(--accent-soft); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
 </style>
 </head>
 
@@ -71,38 +84,49 @@
       <p class="lp-lead" id="lp-lead">當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。</p>
 
       <div id="lp-loading" class="cons-loading" style="padding:20px;">載入中…</div>
-      <div class="lp-actions" id="lp-actions" style="display:none;"></div>
+      <div class="lp-actions" id="lp-actions-hero" style="display:none;"></div>
       <div class="lp-note" id="lp-note" style="display:none;"></div>
     </div>
 
-    <!-- Service features -->
-    <div class="lp-secthead">
-      <span class="zh" id="feat-heading">服務特色</span>
+    <!-- Service features (full-width band) -->
+    <div class="lp-band features">
+      <div class="lp-band-in">
+        <div class="lp-secthead">
+          <span class="zh" id="feat-heading">服務特色</span>
+        </div>
+        <div class="lp-features" id="lp-features"></div>
+      </div>
     </div>
-    <div class="lp-features" id="lp-features"></div>
 
     <!-- Pricing -->
-    <div class="lp-price">
-      <div class="lp-price-label" id="price-label">Single inquiry fee</div>
-      <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">68</span></div>
+    <div class="lp-band pricing">
+      <div class="lp-band-in lp-pricing">
+        <div class="lp-price-label" id="price-label">Single inquiry fee</div>
+        <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">68</span></div>
+        <div class="lp-actions" id="lp-actions-price" style="display:none;"></div>
+      </div>
     </div>
 
-    <!-- Brand story -->
-    <div class="lp-story">
-      <div class="lp-story-media">
-        <img src="assets/rs-fusang.webp" alt="R.S. Chen · FuSang Vision" />
-      </div>
-      <div class="lp-story-body">
-        <div class="lp-story-wm" aria-hidden="true">扶桑</div>
-        <div class="lp-story-eyebrow" id="story-eyebrow">Brand Story</div>
-        <h2 class="lp-story-h2" id="story-h2">探索你的內在天賦</h2>
-        <div class="lp-story-h3" id="story-h3">將東方智慧，帶入你真正嚮往的現代生活！</div>
-        <div class="lp-story-founder" id="story-founder">創辦人的話 — R.S. Chen</div>
-        <div class="lp-values">
-          <span class="lp-val"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="val-1">Self-exploration</span></span>
-          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 4 5 4 8.5A4 4 0 0 1 8 11.5c0-1.6.8-2.7 1.8-3.6.4 1.9 1.9 1.8 1.9-.4 0-1.4-.2-3-1.7-4.5z"/></svg><span id="val-2">Courage</span></span>
-          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="val-3">Clarity</span></span>
-          <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.2-3 6.9-7 8-4-1.1-7-3.8-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg><span id="val-4">Integrity</span></span>
+    <!-- Brand story (full-width band) -->
+    <div class="lp-band story">
+      <div class="lp-band-in">
+        <div class="lp-story">
+          <div class="lp-story-media">
+            <img src="assets/rs-fusang.webp" alt="R.S. Chen · FuSang Vision" />
+          </div>
+          <div class="lp-story-body">
+            <div class="lp-story-wm" aria-hidden="true">扶桑</div>
+            <div class="lp-story-eyebrow" id="story-eyebrow">Brand Story</div>
+            <h2 class="lp-story-h2" id="story-h2">探索你的內在天賦</h2>
+            <div class="lp-story-h3" id="story-h3">將東方智慧，帶入你真正嚮往的現代生活。</div>
+            <div class="lp-story-founder" id="story-founder">創辦人的話 — R.S. Chen</div>
+            <div class="lp-values">
+              <span class="lp-val"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="val-1">Self-exploration</span></span>
+              <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 4 5 4 8.5A4 4 0 0 1 8 11.5c0-1.6.8-2.7 1.8-3.6.4 1.9 1.9 1.8 1.9-.4 0-1.4-.2-3-1.7-4.5z"/></svg><span id="val-2">Courage</span></span>
+              <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="val-3">Clarity</span></span>
+              <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.2-3 6.9-7 8-4-1.1-7-3.8-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg><span id="val-4">Integrity</span></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -120,18 +144,24 @@
     el,
   } from './consultation-common.js';
 
+  const ICON = {
+    human: '<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>',
+    write: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2 2 0 0 0-3-3L5 17v3z"/><path d="M14 6l3 3"/></svg>',
+    ask:   '<svg viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-8 8H5l-2 2v-10a8 8 0 1 1 18 0z"/><path d="M9 10h6M9 13.5h4"/></svg>',
+  };
+
   const FEATURES = [
-    { n: '01',
+    { n: '01', ic: ICON.human,
       zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human',
       zh_p: '由 R.S. Chen 親自解讀你的命盤，結合深厚的紫微斗數造詣與現代心理洞察，針對你的處境書面回覆。',
       cn_p: '由 R.S. Chen 亲自解读你的命盘，结合深厚的紫微斗数造诣与现代心理洞察，针对你的处境书面回复。',
       en_p: 'R.S. Chen personally reads your chart — pairing deep Zi Wei Dou Shu craft with modern psychological insight — and replies in writing to your situation.' },
-    { n: '02',
+    { n: '02', ic: ICON.write,
       zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you alone',
       zh_p: '每一則諮詢都是針對你的問題單獨準備。我們拒絕罐頭答案，每一字一句皆是基於你的能量流動所寫下。',
       cn_p: '每一则咨询都是针对你的问题单独准备。我们拒绝罐头答案，每一字一句皆是基于你的能量流动所写下。',
       en_p: 'Every consultation is prepared for your question alone — never a template. Each line is written from how your own energies move.' },
-    { n: '03',
+    { n: '03', ic: ICON.ask,
       zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up',
       zh_p: '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。',
       cn_p: '收到回复后，7 天内可再针对原议题追问一次。我们陪你把想厘清的地方问清楚，不留遗憾。',
@@ -152,7 +182,7 @@
 
     document.getElementById('feat-heading').textContent = pick('服務特色', '服务特色', 'What you get');
     document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
-      `<div class="lp-feat"><div class="lp-feat-n">${f.n}</div>` +
+      `<div class="lp-feat"><div class="lp-feat-ic">${f.ic}</div><div class="lp-feat-n">${f.n}</div>` +
       `<div class="lp-feat-h">${pick(f.zh_h, f.cn_h, f.en_h)}</div>` +
       `<div class="lp-feat-p">${pick(f.zh_p, f.cn_p, f.en_p)}</div></div>`
     ).join('');
@@ -169,31 +199,39 @@
     document.getElementById('val-4').textContent = pick('如實', '如实', 'Integrity');
   }
 
-  // 動作區(依是否有進行中諮詢;快取 active 供語言切換重繪)
+  // 動作區：hero + 定價區兩處都填（動態，依是否有進行中諮詢）
   let lastActive = undefined;
+  function fillActions(c, active) {
+    if (active) {
+      c.innerHTML =
+        `<button class="cons-btn act-view">${pick('查看進行中的諮詢', '查看进行中的咨询', 'View your active consultation')} <span class="btn-arrow">→</span></button>` +
+        `<button class="cons-btn ghost act-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
+      c.querySelector('.act-view').addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${active.id}`; });
+    } else {
+      c.innerHTML =
+        `<button class="cons-btn act-new">${pick('提交新的問事', '提交新的问事', 'New consultation')} <span class="btn-arrow">→</span></button>` +
+        `<button class="cons-btn ghost act-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
+      c.querySelector('.act-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
+    }
+    c.querySelector('.act-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
+  }
+
   function renderActions(active) {
     lastActive = active;
     document.getElementById('lp-loading').style.display = 'none';
-    const actions = document.getElementById('lp-actions');
+    ['lp-actions-hero', 'lp-actions-price'].forEach((id) => {
+      const c = document.getElementById(id);
+      c.style.display = 'flex';
+      fillActions(c, active);
+    });
     const note = document.getElementById('lp-note');
-    actions.style.display = 'flex';
-    note.style.display = 'none';
-    note.textContent = '';
-
     if (active) {
-      actions.innerHTML =
-        `<button class="cons-btn" id="btn-active">${pick('查看進行中的諮詢', '查看进行中的咨询', 'View your active consultation')}</button>` +
-        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
-      actions.querySelector('#btn-active').addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${active.id}`; });
       note.style.display = 'block';
       note.textContent = pick('你目前有一則進行中的諮詢。同一時間僅能進行一則。', '你目前有一则进行中的咨询。同一时间仅能进行一则。', 'You have one consultation in progress. Only one at a time.');
     } else {
-      actions.innerHTML =
-        `<button class="cons-btn" id="btn-new">${pick('提交新的問事', '提交新的问事', 'New consultation')}</button>` +
-        `<button class="cons-btn ghost" id="btn-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
-      actions.querySelector('#btn-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
+      note.style.display = 'none';
+      note.textContent = '';
     }
-    actions.querySelector('#btn-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
   }
 
   applyStaticText();
