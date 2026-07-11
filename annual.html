@@ -243,9 +243,69 @@
     .nav-link .arrow { font-family: var(--font-serif-en); font-style: italic; color: var(--ink-light); margin: 0 6px; }
     .nav-center { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; cursor: pointer; text-align: center; transition: color 0.2s; }
     .nav-center:hover { color: var(--accent-deep); }
+  
+    /* ════════════════════════════════════════════════════════
+       annual 冷藍改版（附加覆寫；JS / i18n / detail 版型不動）
+       .shell 覆寫 shared token → 全頁(含 intro/detail)轉冷藍、版型保留。
+       hub 沿用 chart 冷藍；選流年 years/year-card 冷藍編輯式。四化色 --t-* 不變。
+       ════════════════════════════════════════════════════════ */
+    body.annual-page { background: #f8f9fa; }
+    .shell {
+      --ink-darkest: #001b3c; --ink-dark: #16323f; --ink-mid: #41484d; --ink-light: #8a97a5; --ink-faint: #b6c2cd;
+      --accent-deep: #1d4e63; --accent-soft: #296283; --accent-pale: #c7e7ff;
+      --rule: #dbe2ea; --bg-primary: #f8f9fa; --bg-soft: #eef3f9; --bg-soft-2: #e9eff7; --bg-card: #ffffff;
+      --silver-deep: #6f8698; --silver-soft: #a9bccb; --silver-pale: #d3dde6;
+      --gold: #b8945c; --gold-soft: #c9ab7d;
+    }
+
+    /* ── hub（沿用 chart 冷藍）── */
+    .hub-head { text-align: left; margin-bottom: 8px; }
+    .hub-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; font-style: normal; }
+    .hub-title { font-family: var(--font-serif-zh); font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: 0.04em; color: var(--accent-soft); margin-bottom: 10px; }
+    .hub-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--ink-mid); }
+    .palace-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0 44px; }
+    @media (max-width: 900px) { .palace-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .palace-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+    .palace-card { position: relative; background: linear-gradient(135deg, #ffffff 0%, rgba(249,249,255,0.85) 100%); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 18px; min-height: 132px; }
+    .palace-card:hover { transform: translateY(-4px); border-color: var(--accent-soft); box-shadow: 0 10px 30px -10px rgba(41,98,131,0.16); }
+    .palace-card-index { color: var(--ink-light); }
+    .palace-card-name { color: var(--ink-darkest); font-weight: 600; }
+    .palace-grid .palace-card:first-child { border-color: var(--accent-pale); }
+    .palace-grid .palace-card:first-child .palace-card-name { color: var(--accent-soft); font-size: 26px; }
+    .palace-grid .palace-card:first-child::after { content: ''; position: absolute; top: 0; right: 0; width: 26px; height: 26px; background: linear-gradient(135deg, transparent 50%, var(--gold) 50%); opacity: 0.6; border-top-right-radius: 8px; }
+    @media (min-width: 641px) { .palace-grid .palace-card:first-child { grid-column: span 2; } }
+    .hub-meta { display: none; }
+
+    /* ── 選流年 + intro 共用標題（years-*）冷藍編輯式 ── */
+    .years-head { text-align: left; margin-bottom: 8px; }
+    .years-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 12px; font-style: normal; }
+    .years-title { font-family: var(--font-serif-zh); font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: 0.04em; color: var(--ink-darkest); margin-bottom: 10px; }
+    .years-sub { font-family: var(--font-serif-en); font-style: italic; font-size: 15px; color: var(--ink-mid); }
+    .years-empty { background: var(--bg-soft-2); border-radius: 8px; }
+    .years-empty-title { color: var(--ink-dark); }
+    .years-empty-body { color: var(--ink-mid); }
+
+    /* 年卡：冷藍卡 */
+    .years-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin: 32px 0 16px; }
+    .year-card { background: linear-gradient(135deg, #ffffff 0%, rgba(249,249,255,0.85) 100%); border: 1px solid var(--rule); border-radius: 8px; padding: 30px 16px; gap: 8px; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .year-card:hover { border-color: var(--accent-soft); transform: translateY(-4px); box-shadow: 0 10px 26px -12px rgba(41,98,131,0.18); }
+    .year-card-num { font-family: var(--font-serif-zh); font-size: 32px; font-weight: 600; color: var(--ink-darkest); }
+    .year-card-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--ink-light); }
+    .year-card.active { border-color: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-soft); }
+    .year-card.active .year-card-num { color: var(--accent-soft); }
+
+    /* ── 選流年 + hub 放寬（margin 置中，不用 transform）── */
+    @media (min-width: 761px) {
+      #view-years, #view-hub, #view-intro {
+        width: min(1120px, calc(100vw - 80px));
+        max-width: none;
+        margin-left: calc(50% - min(560px, (100vw - 80px) / 2));
+      }
+    }
+
   </style>
 </head>
-<body>
+<body class="annual-page">
 
 <div id="site-header"></div>
 
