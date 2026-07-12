@@ -148,7 +148,8 @@ export function signatureHtml() {
 }
 
 export function disclaimerHtml() {
-  if (LANG === 'zh-CN') {
+  const L = getLang();
+  if (L === 'zh-CN') {
     return `<div class="disclaim"><div class="disclaim-h">提交前请确认</div><ul>` +
       `<li>这是由真人解盘的个人化紫微斗数咨询。提供的背景越完整，回复越精准。</li>` +
       `<li>回复将以你设定的报告语言（繁体中文／简体中文／English）为主，与你的报告内容一致。</li>` +
@@ -158,7 +159,7 @@ export function disclaimerHtml() {
       `<li><strong>数字服务，提交后恕不退款。</strong>每则咨询皆为你个别撰写，付款送出后不予退费。</li>` +
       `</ul></div>`;
   }
-  if (isZh) {
+  if (L.startsWith('zh')) {
     return `<div class="disclaim"><div class="disclaim-h">提交前請確認</div><ul>` +
       `<li>這是由真人解盤的個人化紫微斗數諮詢。提供的背景越完整，回覆越精準。</li>` +
       `<li>回覆將以你設定的報告語言（繁體中文／简体中文／English）為主，與你的報告內容一致。</li>` +
