@@ -58,27 +58,27 @@ function tc(key) { return I18N.t(key); }
 // --wash-teal、語意 --error。--silver-* / --t-*(四化色)非 DESIGN 範圍,保留原值。
 const SHARED_CSS = `
 :root {
-  --bg-primary: #faf7f1;
+  --bg-primary: #f8f9fa;
   --bg-card: #ffffff;
-  --bg-soft: #f4efe6;
-  --bg-soft-2: #f0ebe0;
-  --wash-teal: #e8f0ee;        /* 晨曦暈染漸層用(CSS 漸層模擬淡青綠) */
-  --ink-darkest: #15363a;
-  --ink-dark: #2b3d3f;
-  --ink-mid: #5e6f70;
-  --ink-light: #97a3a3;
-  --ink-faint: #c4cfd0;
-  --accent-deep: #1d4a4f;
-  --accent-soft: #3a6b70;
-  --accent-pale: #cddad9;
-  --silver-deep: #7d9596;
-  --silver-soft: #b2c3c4;
-  --silver-pale: #dde5e4;
+  --bg-soft: #eef3f9;
+  --bg-soft-2: #e9eff7;
+  --wash-teal: #eef3f9;        /* 晨曦暈染漸層用(CSS 漸層模擬淡青綠) */
+  --ink-darkest: #001b3c;
+  --ink-dark: #16323f;
+  --ink-mid: #41484d;
+  --ink-light: #8a97a5;
+  --ink-faint: #b6c2cd;
+  --accent-deep: #1d4e63;
+  --accent-soft: #296283;
+  --accent-pale: #c7e7ff;
+  --silver-deep: #6f8698;
+  --silver-soft: #a9bccb;
+  --silver-pale: #d3dde6;
   --gold: #b8945c;             /* 主點綴金,常規精緻細節 */
   --gold-soft: #c9ab7d;        /* 淡金 */
   --dawn: #e0a878;             /* 晨曦暖橘,僅溫暖時刻:歡迎/完成/慶祝 */
-  --rule: #e3dccf;
-  --rule-soft-2: #efe9da;
+  --rule: #dbe2ea;
+  --rule-soft-2: #e6ecf2;
   --error: #a8453a;
   --t-lu: #3d7c5e;
   --t-quan: #5e4a82;
@@ -206,11 +206,37 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .fs-lang-opt:hover { color: var(--accent-deep); }
 .fs-lang-opt.active { background: var(--accent-deep); color: var(--bg-primary); }
 
+.fs-nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--ink-dark); }
+.fs-nav-toggle svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; display: block; }
+
 @media (max-width: 560px) {
   .fs-header { padding: 16px 20px; }
-  .fs-header-nav { gap: 16px; }
   .fs-nav-link { font-size: 13px; }
   .fs-lang-opt { padding: 5px 8px; font-size: 10px; }
+}
+
+/* ── nav RWD：≤900px 漢堡下拉 ── */
+@media (max-width: 900px) {
+  .fs-header { flex-wrap: nowrap; }
+  .fs-nav-toggle { display: flex; align-items: center; }
+  .fs-header-nav {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: 0 14px 28px -14px rgba(0, 27, 60, 0.2);
+    padding: 6px 20px 18px;
+  }
+  .fs-header-nav.open { display: flex; }
+  .fs-header-nav .fs-nav-link { font-size: 15px; padding: 14px 2px; border-bottom: 1px solid var(--rule-soft-2); }
+  .fs-header-nav .fs-nav-link.active::after { display: none; }
+  .fs-header-nav .fs-nav-link.active { color: var(--accent-soft); }
+  .fs-nav-signout { margin-top: 14px; text-align: center; }
+  .fs-lang-switch { margin-top: 14px; align-self: flex-start; }
 }
 
 /* ── Footer ── */
@@ -301,7 +327,8 @@ function injectHeader(activePage = null) {
         <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
         <span class="fs-brand-name">FuSang Vision</span>
       </div>
-      <nav class="fs-header-nav">
+      <button class="fs-nav-toggle" id="fs-nav-toggle" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <nav class="fs-header-nav" id="fs-nav">
         <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
         <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade" data-i18n="navDecade"></span>
         <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual" data-i18n="navAnnual"></span>
@@ -355,6 +382,23 @@ function injectHeader(activePage = null) {
   el.querySelectorAll('.fs-lang-opt').forEach((b) => {
     b.addEventListener('click', () => I18N.setUILang(b.getAttribute('data-lang')));
   });
+  // 漢堡選單(RWD)：≤900px 收起,點漢堡展開;點連結/外部自動收起
+  const _navToggle = document.getElementById('fs-nav-toggle');
+  const _nav = document.getElementById('fs-nav');
+  if (_navToggle && _nav) {
+    _navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = _nav.classList.toggle('open');
+      _navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    _nav.querySelectorAll('.fs-nav-link, .fs-nav-signout').forEach((x) => {
+      x.addEventListener('click', () => { _nav.classList.remove('open'); _navToggle.setAttribute('aria-expanded', 'false'); });
+    });
+    document.addEventListener('click', (e) => {
+      if (!_nav.contains(e.target) && !_navToggle.contains(e.target)) { _nav.classList.remove('open'); _navToggle.setAttribute('aria-expanded', 'false'); }
+    });
+  }
+
   markActiveLang();
   // UI 語言變動(含 header 切換、profile 採用)→ 更新 active 標記
   window.addEventListener('i18n:changed', markActiveLang);
