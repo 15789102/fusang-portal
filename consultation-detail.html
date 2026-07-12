@@ -6,6 +6,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>諮詢細節 - FuSang Vision</title>
+<style>
+  /* 諮詢細節 — 往來時間軸（共用樣式由 consultation-common.js 注入、已冷藍）*/
+  .dt-head { margin-bottom: 28px; }
+  .dt-head-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .tl { position: relative; }
+  .tl::before { content: ''; position: absolute; left: 19px; top: 12px; bottom: 12px; width: 2px; background: var(--rule); }
+  .tl-node { position: relative; display: flex; gap: 18px; margin-bottom: 20px; }
+  .tl-node:last-child { margin-bottom: 0; }
+  .tl-ic { position: relative; z-index: 1; width: 40px; height: 40px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid var(--accent-pale); }
+  .tl-ic svg { width: 19px; height: 19px; stroke: var(--accent-soft); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .tl-card { flex: 1; min-width: 0; background: #ffffff; border: 1px solid var(--rule); border-radius: 14px; padding: 20px 22px; }
+  .tl-card .qa-label { margin-top: 0; }
+  .tl-card .qa-meta { margin-bottom: 0; }
+  .tl-card .followup-note { margin: 0; }
+  /* 角色色調 */
+  .tl-node.expert .tl-ic { border-color: var(--gold-soft); }
+  .tl-node.expert .tl-ic svg { stroke: var(--gold); }
+  .tl-node.expert .tl-card { background: var(--bg-soft-2); }
+  .tl-node.note .tl-card, .tl-node.action .tl-card { background: var(--bg-soft); }
+  .tl-node.closed .tl-ic { border-color: #e4ccd1; }
+  .tl-node.closed .tl-ic svg { stroke: #b06a72; }
+  .tl-node.feedback .tl-ic { border-color: var(--gold-soft); }
+  .tl-node.feedback .tl-ic svg { stroke: var(--gold); }
+</style>
 </head>
 <body>
 
@@ -118,63 +142,78 @@
 
   function cardDetail(t) {
     const c = el('div', 'cons-card');
+    const ICON = {
+      you: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>',
+      expert: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2 2 0 0 0-3-3L5 17v3z"/><path d="M14 6l3 3"/></svg>',
+      note: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5l3 2"/></svg>',
+      closed: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+      feedback: '<svg viewBox="0 0 24 24"><path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.7l5.4-.8z"/></svg>',
+    };
+    const node = (role, icon, inner) => `<div class="tl-node ${role}"><div class="tl-ic">${icon}</div><div class="tl-card">${inner}</div></div>`;
     const waitState = (t.status === 'paid' || t.status === 'followup');
     const pillClass = waitState ? 'status-pill wait' : 'status-pill done';
 
     let html =
-      `<div class="card-kicker">${pick('諮詢細節', '咨询细节', 'Consultation')} · ${pick('編號', '编号', 'Ref')} ${refCode(t.id)}</div>` +
-      `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">` +
-        `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
-        `<span class="${pillClass}"><span class="dot"></span>${statusText(t)}</span>` +
+      `<div class="dt-head">` +
+        `<div class="card-kicker">${pick('諮詢細節', '咨询细节', 'Consultation')} · ${pick('編號', '编号', 'Ref')} ${refCode(t.id)}</div>` +
+        `<div class="dt-head-row">` +
+          `<div class="card-h" style="margin:0;">${subjLabel(t.subject)}</div>` +
+          `<span class="${pillClass}"><span class="dot"></span>${statusText(t)}</span>` +
+        `</div>` +
       `</div>` +
-      `<div class="qa-block"><div class="qa-label">${pick('你的問題', '你的问题', 'Your question')}</div>` +
+      `<div class="tl">`;
+
+    // 提問
+    html += node('you', ICON.you,
+      `<div class="qa-label">${pick('你的問題', '你的问题', 'Your question')}</div>` +
       `<div class="qa-text">${esc(t.content)}</div>` +
-      `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.created_at)}</div></div>`;
+      `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.created_at)}</div>`);
 
     // 待回覆（paid）
     if (t.status === 'paid') {
-      html += `<div class="qa-divider"></div>` +
-        `<div class="followup-note">${pick(
-          '已收到付款，你的問題已進入回覆佇列。我們會在付款後 <strong>7 天內</strong>以書面回覆，並寄送 Email 通知你。',
-          '已收到付款，你的问题已进入回复队列。我们会在付款后 <strong>7 天内</strong>以书面回复，并寄送 Email 通知你。',
-          'Payment received — your question is in the reply queue. You\'ll get a written reply within <strong>7 days</strong>, with an email notification.'
-        )}</div>`;
+      html += node('note', ICON.note, `<div class="followup-note">${pick(
+        '已收到付款，你的問題已進入回覆佇列。我們會在付款後 <strong>7 天內</strong>以書面回覆，並寄送 Email 通知你。',
+        '已收到付款，你的问题已进入回复队列。我们会在付款后 <strong>7 天内</strong>以书面回复，并寄送 Email 通知你。',
+        'Payment received — your question is in the reply queue. You\'ll get a written reply within <strong>7 days</strong>, with an email notification.'
+      )}</div>`);
     }
 
     // 首覆內容
     if (t.answer) {
-      html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('回覆', '回复', 'Reply')}</div>` +
+      html += node('expert', ICON.expert,
+        `<div class="qa-label">${pick('回覆', '回复', 'Reply')}</div>` +
         `<div class="answer-box"><div class="qa-text">${esc(t.answer)}</div></div>` +
         `<div class="qa-meta">${pick('回覆於', '回复于', 'Replied')} ${fmtDate(t.answered_at)}</div>` +
-        signatureHtml() + `</div>`;
+        signatureHtml());
     }
 
     // 追問已提交（followup）
     if (t.status === 'followup' && t.followup_question) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('你的追問', '你的追问', 'Your follow-up')}</div>` +
+      html += node('you', ICON.you,
+        `<div class="qa-label">${pick('你的追問', '你的追问', 'Your follow-up')}</div>` +
         `<div class="qa-text">${esc(t.followup_question)}</div>` +
-        `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.followup_at)}</div></div>` +
-        `<div class="followup-note">${pick(
-          '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。',
-          '已送出追问，等待再次回复。回复完成后本咨询即结案。',
-          'Your follow-up is in. Awaiting the final reply — the consultation closes after that.'
-        )}</div>`;
+        `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.followup_at)}</div>`);
+      html += node('note', ICON.note, `<div class="followup-note">${pick(
+        '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。',
+        '已送出追问，等待再次回复。回复完成后本咨询即结案。',
+        'Your follow-up is in. Awaiting the final reply — the consultation closes after that.'
+      )}</div>`);
     }
 
     // 再覆（closed 且有 followup_answer）
     if (t.followup_answer) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('再次回覆', '再次回复', 'Final reply')}</div>` +
+      html += node('expert', ICON.expert,
+        `<div class="qa-label">${pick('再次回覆', '再次回复', 'Final reply')}</div>` +
         `<div class="answer-box"><div class="qa-text">${esc(t.followup_answer)}</div></div>` +
         `<div class="qa-meta">${pick('回覆於', '回复于', 'Replied')} ${fmtDate(t.followup_answered_at)}</div>` +
-        signatureHtml() + `</div>`;
+        signatureHtml());
     }
 
     // 可追問（answered 且窗未過）→ 追問框 + 主動結案
     if (t.status === 'answered' && inFollowupWindow(t)) {
       const deadline = fmtDate(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5).toISOString());
-      html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('追問一次', '追问一次', 'One follow-up')}</div>` +
+      html += node('action', ICON.note,
+        `<div class="qa-label">${pick('追問一次', '追问一次', 'One follow-up')}</div>` +
         `<div class="followup-note">${pick(
           `回覆後可追問 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期諮詢自動結案。`,
           `回复后可追问 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期咨询自动结案。`,
@@ -187,28 +226,29 @@
         `<div class="close-row">` +
           `<span class="close-link" id="close-link">${pick('我沒有其他問題了，結束諮詢', '我没有其他问题了，结束咨询', 'No other questions — close this consultation')}</span>` +
           `<div id="close-host"></div>` +
-        `</div>` +
-        `</div>`;
+        `</div>`);
     }
 
     // admin 關閉 → 顯示關閉原因（不出回饋）
     if (isAdminClosed(t)) {
-      html += `<div class="qa-divider"></div>` +
-        `<div class="qa-block"><div class="qa-label">${pick('諮詢已關閉', '咨询已关闭', 'Consultation closed')}</div>` +
+      html += node('closed', ICON.closed,
+        `<div class="qa-label">${pick('諮詢已關閉', '咨询已关闭', 'Consultation closed')}</div>` +
         `<div class="answer-box" style="background:var(--t-ji-bg);border-color:#e4ccd1;"><div class="qa-text">${esc(t.close_reason || '')}</div></div>` +
-        `<div class="qa-meta">${pick('關閉於', '关闭于', 'Closed')} ${fmtDate(t.closed_at)}</div></div>`;
+        `<div class="qa-meta">${pick('關閉於', '关闭于', 'Closed')} ${fmtDate(t.closed_at)}</div>`);
     }
 
-    // 已結案且未回饋（非 admin 關閉）→ 回饋表單
+    // 已結案且未回饋（非 admin 關閉）→ 回饋表單（fb-host 為 tl-card）
     if (t.status === 'closed' && !t.rating && !t.closed_by_admin) {
-      html += `<div class="qa-divider"></div><div id="fb-host"></div>`;
+      html += `<div class="tl-node feedback"><div class="tl-ic">${ICON.feedback}</div><div class="tl-card" id="fb-host"></div></div>`;
     }
     // 已回饋 → 顯示
     if (t.rating) {
-      html += `<div class="qa-block"><div class="qa-label">${pick('你的回饋', '你的反馈', 'Your feedback')}</div>` +
-        `<div class="qa-text">${esc(ratingLabel(t.rating))}${t.followup_answer || t.answer ? '' : ''}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div></div>`;
+      html += node('feedback', ICON.feedback,
+        `<div class="qa-label">${pick('你的回饋', '你的反馈', 'Your feedback')}</div>` +
+        `<div class="qa-text">${esc(ratingLabel(t.rating))}${t.feedback ? '　·　' + esc(t.feedback) : ''}</div>`);
     }
 
+    html += `</div>`;
     c.innerHTML = html;
 
     // 追問互動
