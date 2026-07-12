@@ -327,7 +327,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(135deg, #e6edf5 0%, #f8f9fa 55%, #eef2f7 100%);
+  background-image: url('assets/bg-desktop.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -339,7 +339,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: rgba(248, 249, 250, var(--bg-veil, 0.72));
 }
 @media (max-width: 640px) {
-  /* 手機直式圖(之後啟用): #fs-bg { background-image: url('assets/bg-mobile.webp'); } */
+  #fs-bg { background-image: url('assets/bg-mobile.webp'); }
 }
 `;
 
