@@ -371,6 +371,27 @@
       .card-status .pulse { animation: none; }
       .dash-card:hover, .dash-consult:hover { transform: none; }
     }
+    /* ═══ 背景圖可讀性：本頁遮罩加濃(圖更淡) + 內容半透明白卡 ═══ */
+    /* #fs-bg 為 body 首個子元素,繼承此 --bg-veil → 只加濃 dashboard 的遮罩 */
+    body.dash-page { --bg-veil: 0.62; }
+
+    .dash-card {
+      background: rgba(255, 255, 255, 0.80);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-bottom: 1px solid rgba(41, 98, 131, 0.14);
+      border-radius: 14px;
+      padding: 26px 28px;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 24px -14px rgba(0, 27, 60, 0.16);
+    }
+    .dash-card--natal { padding: 30px 34px; }
+    .dash-card:hover { transform: translateY(-3px); border-bottom-color: var(--dw-blue); }
+
+    .dash-broadcast { background: rgba(230, 238, 247, 0.86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .dash-consult { background: rgba(230, 238, 247, 0.90); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+    .dash-unlock { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .dash-quote-text { text-shadow: 0 1px 14px rgba(248, 249, 250, 0.92); }
   </style>
 </head>
 <body class="dash-page">
