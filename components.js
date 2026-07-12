@@ -184,6 +184,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .fs-nav-signout:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
 
+/* ── Charts 下拉 ── */
+.fs-nav-group { position: relative; display: inline-flex; align-items: center; }
+.fs-nav-parent { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-serif-zh); font-size: 14px; letter-spacing: 0.08em; color: var(--ink-mid); cursor: pointer; padding: 4px 0; transition: color 0.2s; }
+.fs-nav-parent:hover, .fs-nav-parent.active { color: var(--accent-deep); }
+.fs-nav-caret { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s; }
+.fs-nav-group:hover .fs-nav-caret, .fs-nav-group.open .fs-nav-caret { transform: rotate(180deg); }
+.fs-nav-dropdown { position: absolute; top: calc(100% + 8px); left: 0; display: none; flex-direction: column; background: var(--bg-primary); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 0; min-width: 148px; box-shadow: 0 14px 30px -14px rgba(0, 27, 60, 0.22); z-index: 60; }
+.fs-nav-group:hover .fs-nav-dropdown, .fs-nav-group.open .fs-nav-dropdown { display: flex; }
+.fs-nav-dropdown .fs-nav-link { padding: 10px 20px; white-space: nowrap; }
+.fs-nav-dropdown .fs-nav-link.active { color: var(--accent-soft); }
+.fs-nav-dropdown .fs-nav-link.active::after { display: none; }
+.fs-nav-dropdown-r { left: auto; right: 0; }
+.fs-nav-dropdown .fs-nav-signout { border: none; border-radius: 0; text-transform: none; letter-spacing: 0.05em; font-size: 13px; font-family: var(--font-serif-zh); color: var(--ink-mid); padding: 10px 20px; margin-top: 4px; border-top: 1px solid var(--rule-soft-2); width: 100%; text-align: left; }
+.fs-nav-dropdown .fs-nav-signout:hover { color: var(--accent-deep); border-color: var(--rule-soft-2); }
+
 /* ── 語言切換(segmented)── */
 .fs-lang-switch {
   display: inline-flex;
@@ -232,6 +247,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     padding: 6px 20px 18px;
   }
   .fs-header-nav.open { display: flex; }
+  .fs-nav-group { display: block; width: 100%; }
+  .fs-nav-parent { justify-content: space-between; padding: 14px 2px; border-bottom: 1px solid var(--rule-soft-2); font-size: 15px; }
+  .fs-nav-caret { display: none; }
+  .fs-nav-dropdown { position: static; display: flex; background: transparent; border: none; box-shadow: none; border-radius: 0; padding: 0 0 0 16px; min-width: 0; }
+  .fs-nav-dropdown .fs-nav-link { padding: 13px 2px; border-bottom: 1px solid var(--rule-soft-2); }
+  .fs-nav-dropdown .fs-nav-signout { padding: 13px 2px; border-top: none; border-bottom: 1px solid var(--rule-soft-2); margin-top: 0; }
   .fs-header-nav .fs-nav-link { font-size: 15px; padding: 14px 2px; border-bottom: 1px solid var(--rule-soft-2); }
   .fs-header-nav .fs-nav-link.active::after { display: none; }
   .fs-header-nav .fs-nav-link.active { color: var(--accent-soft); }
@@ -329,13 +350,25 @@ function injectHeader(activePage = null) {
       </div>
       <button class="fs-nav-toggle" id="fs-nav-toggle" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <nav class="fs-header-nav" id="fs-nav">
-        <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
-        <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade" data-i18n="navDecade"></span>
-        <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual" data-i18n="navAnnual"></span>
-        <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly" data-i18n="navMonthly"></span>
+        <div class="fs-nav-group" id="fs-charts-group">
+          <span class="fs-nav-parent ${['chart','decade','annual','monthly'].includes(activePage) ? 'active' : ''}" id="fs-charts-parent"><span data-i18n="navCharts"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+          <div class="fs-nav-dropdown">
+            <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
+            <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade" data-i18n="navDecade"></span>
+            <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual" data-i18n="navAnnual"></span>
+            <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly" data-i18n="navMonthly"></span>
+          </div>
+        </div>
         <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation" data-i18n="navConsultation"></span>
-        <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account" data-i18n="navAccount"></span>
-        <span class="fs-nav-signout" id="fs-signout" data-i18n="navSignOut"></span>
+        <span class="fs-nav-link ${activePage === 'pricing' ? 'active' : ''}" data-nav="pricing" data-i18n="navPricing"></span>
+        <div class="fs-nav-group" id="fs-account-group">
+          <span class="fs-nav-parent ${['account','support'].includes(activePage) ? 'active' : ''}" id="fs-account-parent"><span data-i18n="navAccount"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+          <div class="fs-nav-dropdown fs-nav-dropdown-r">
+            <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account" data-i18n="navAccount"></span>
+            <span class="fs-nav-link ${activePage === 'support' ? 'active' : ''}" data-nav="support" data-i18n="navSupport"></span>
+            <span class="fs-nav-signout" id="fs-signout" data-i18n="navSignOut"></span>
+          </div>
+        </div>
         <span class="fs-lang-switch" id="fs-lang-switch">
           <button class="fs-lang-opt" data-lang="zh-TW">繁中</button>
           <button class="fs-lang-opt" data-lang="zh-CN">简中</button>
@@ -370,6 +403,23 @@ function injectHeader(activePage = null) {
   el.querySelector('[data-nav="account"]').addEventListener('click', () => {
     window.location.href = 'account.html';
   });
+  el.querySelector('[data-nav="pricing"]').addEventListener('click', () => {
+    window.location.href = 'pricing.html';
+  });
+  // Charts 下拉：點父項展開/收起(觸控/桌機皆可);點外部收起
+  const _chartsGroup = document.getElementById('fs-charts-group');
+  const _chartsParent = document.getElementById('fs-charts-parent');
+  if (_chartsGroup && _chartsParent) {
+    _chartsParent.addEventListener('click', (e) => { e.stopPropagation(); _chartsGroup.classList.toggle('open'); });
+    document.addEventListener('click', (e) => { if (!_chartsGroup.contains(e.target)) _chartsGroup.classList.remove('open'); });
+  }
+  el.querySelector('[data-nav="support"]').addEventListener('click', () => { window.location.href = 'support.html'; });
+  const _accountGroup = document.getElementById('fs-account-group');
+  const _accountParent = document.getElementById('fs-account-parent');
+  if (_accountGroup && _accountParent) {
+    _accountParent.addEventListener('click', (e) => { e.stopPropagation(); _accountGroup.classList.toggle('open'); });
+    document.addEventListener('click', (e) => { if (!_accountGroup.contains(e.target)) _accountGroup.classList.remove('open'); });
+  }
   document.getElementById('fs-signout').addEventListener('click', signOut);
 
   // 語言切換:點選 → setUILang(只動 UI,不碰報告 / glossary)
