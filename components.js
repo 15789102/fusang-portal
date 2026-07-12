@@ -59,6 +59,7 @@ function tc(key) { return I18N.t(key); }
 const SHARED_CSS = `
 :root {
   --bg-primary: #f8f9fa;
+  --bg-veil: 0.72;            /* 全站背景遮罩淡度:越大圖越淡(0=全見圖,1=全遮) */
   --bg-card: #ffffff;
   --bg-soft: #eef3f9;
   --bg-soft-2: #e9eff7;
@@ -319,6 +320,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   flex: 1;
   width: 100%;
 }
+/* ── 全站固定背景層（避開 iOS Safari background-attachment 坑）── */
+/* 圖出好後把 background-image 換成 url('assets/bg-desktop.webp') 即可;淡度改 --bg-veil */
+#fs-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(135deg, #e6edf5 0%, #f8f9fa 55%, #eef2f7 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#fs-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 249, 250, var(--bg-veil, 0.72));
+}
+@media (max-width: 640px) {
+  /* 手機直式圖(之後啟用): #fs-bg { background-image: url('assets/bg-mobile.webp'); } */
+}
 `;
 
 function injectCss() {
@@ -333,6 +355,14 @@ function injectCss() {
   style.id = 'fs-shared-css';
   style.textContent = SHARED_CSS;
   document.head.appendChild(style);
+}
+
+// ─── 全站固定背景層 ──────────────────────────────────────────
+function injectBg() {
+  if (document.getElementById('fs-bg')) return;
+  const bg = document.createElement('div');
+  bg.id = 'fs-bg';
+  document.body.insertBefore(bg, document.body.firstChild);
 }
 
 // ─── Header ──────────────────────────────────────────────────
@@ -596,6 +626,7 @@ export async function startCheckout(productType, extra = {}) {
 // documentElement.lang 由 i18n.js 管理(初始 uiLang;報告頁 setReportLang 後更新)。
 function initComponents() {
   injectCss();
+  injectBg();
   injectHeader(window.FS_ACTIVE_PAGE || null);
   injectFooter();
 }
