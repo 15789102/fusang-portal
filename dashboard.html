@@ -392,6 +392,19 @@
     .dash-consult { background: rgba(230, 238, 247, 0.90); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
     .dash-unlock { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
     .dash-quote-text { text-shadow: 0 1px 14px rgba(248, 249, 250, 0.92); }
+
+    /* Banner：換上圖片 + 可點連結(開新視窗)；框比例配合圖 1300:560,避免裁切 */
+    a.dash-banner {
+      display: block;
+      height: auto;
+      aspect-ratio: 1300 / 560;
+      background: url('/fusang-portal/assets/portal-banner-2026.png') center / cover no-repeat;
+      text-decoration: none;
+      transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.4s;
+    }
+    a.dash-banner:hover { transform: translateY(-2px); box-shadow: 0 16px 44px -20px rgba(0, 27, 60, 0.32); }
+    .dash-banner::before { display: none; }
+    .dash-banner .enso { display: none; }
   </style>
 </head>
 <body class="dash-page">
@@ -422,7 +435,7 @@
       </div>
 
       <!-- Featured Banner：佔位漸層，美圖後補 -->
-      <div class="dash-banner"><div class="enso"></div></div>
+      <a class="dash-banner" href="https://fusang-vision.com/blogs/ziwei-knowledge/zi-wei-dou-shu-2026-forecast" target="_blank" rel="noopener noreferrer" aria-label="2026 流年運勢"></a>
 
       <!-- 內容格線 -->
       <div class="dash-grid">
