@@ -105,6 +105,8 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+/* body 底色透明,讓 #fs-bg 背景層透出(html 保留 --bg-primary 當 canvas/fallback) */
+body { background: transparent; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
