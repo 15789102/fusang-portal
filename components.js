@@ -59,7 +59,7 @@ function tc(key) { return I18N.t(key); }
 const SHARED_CSS = `
 :root {
   --bg-primary: #f8f9fa;
-  --bg-veil: 0.72;            /* 全站背景遮罩淡度:越大圖越淡(0=全見圖,1=全遮) */
+  --bg-veil: 0.4;            /* 全站背景遮罩淡度:越大圖越淡(0=全見圖,1=全遮) */
   --bg-card: #ffffff;
   --bg-soft: #eef3f9;
   --bg-soft-2: #e9eff7;
