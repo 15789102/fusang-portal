@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>支援 - FuSang Vision</title>
+<style>
+  .sup-wrap { max-width: 760px; margin: 0 auto; padding: 44px 32px 64px; }
+  @media (max-width: 640px) { .sup-wrap { padding: 32px 20px 48px; } }
+  .sup-hero { text-align: center; margin-bottom: 48px; }
+  .sup-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 14px; }
+  .sup-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(30px, 5vw, 44px); color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 14px; }
+  .sup-sub { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-mid); line-height: 1.8; max-width: 500px; margin: 0 auto; }
+
+  .sup-faq { display: flex; flex-direction: column; gap: 14px; }
+  .faq-item { background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; transition: border-color 0.25s; }
+  .faq-item.open { border-color: var(--accent-pale); }
+  .faq-q { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; cursor: pointer; font-family: var(--font-serif-zh); font-size: 16px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; }
+  .faq-q .faq-ic { width: 18px; height: 18px; stroke: var(--accent-soft); fill: none; stroke-width: 1.8; stroke-linecap: round; flex: 0 0 auto; transition: transform 0.3s; }
+  .faq-item.open .faq-q .faq-ic { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .faq-item.open .faq-a { max-height: 480px; }
+  .faq-a-inner { padding: 0 24px 22px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-mid); }
+
+  .sup-contact { margin-top: 44px; text-align: center; padding: 34px; background: var(--bg-soft-2); border-radius: 14px; }
+  .sup-contact-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.8; margin-bottom: 12px; }
+  .sup-contact-mail { font-family: var(--font-serif-en); font-size: 20px; color: var(--accent-deep); text-decoration: none; border-bottom: 1px solid var(--accent-pale); padding-bottom: 2px; transition: border-color 0.2s; }
+  .sup-contact-mail:hover { border-color: var(--accent-soft); }
+
+  .sup-loading { text-align: center; padding: 60px 20px; font-family: var(--font-serif-zh); color: var(--ink-light); }
+</style>
+</head>
+
+<body>
+
+<script>window.FS_ACTIVE_PAGE = 'support';</script>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="sup-wrap">
+    <div class="sup-hero">
+      <div class="sup-eyebrow" id="sup-eyebrow">Support</div>
+      <h1 class="sup-title" id="sup-title">支援中心</h1>
+      <div class="sup-sub" id="sup-sub">常見問題與聯絡方式。</div>
+    </div>
+
+    <div class="sup-faq" id="sup-faq"></div>
+
+    <div class="sup-contact">
+      <div class="sup-contact-label" id="sup-contact-label">聯絡我們</div>
+      <a class="sup-contact-mail" href="mailto:support@fusang-vision.com">support@fusang-vision.com</a>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { requireAuth } from './components.js';
+
+  const pick = (tw, cn, en) => {
+    const L = (window.FSI18N && window.FSI18N.getUILang && window.FSI18N.getUILang()) || 'zh-TW';
+    return L === 'en' ? en : (L === 'zh-CN' ? cn : tw);
+  };
+
+  const FAQS = [
+    {
+      q_tw: '付款失敗或無法完成付款怎麼辦？',
+      q_cn: '付款失败或无法完成付款怎么办？',
+      q_en: 'What if my payment fails or won\'t go through?',
+      a_tw: '若付款沒有成功，你的問事不會送出、也不會被扣款。請確認卡片資訊與額度後再試一次；若仍無法完成，來信 support@fusang-vision.com，我們會協助你。另提醒：單獨問事為數位定製服務，付款成功後恕不退款。',
+      a_cn: '若付款没有成功，你的问事不会送出、也不会被扣款。请确认卡片信息与额度后再试一次；若仍无法完成，来信 support@fusang-vision.com，我们会协助你。另提醒：单独问事为数字定制服务，付款成功后恕不退款。',
+      a_en: 'If a payment doesn\'t go through, your question isn\'t submitted and you aren\'t charged. Check your card details and limit, then try again. If it still won\'t complete, email support@fusang-vision.com and we\'ll help. Note: a consultation is a bespoke digital service and is non-refundable once payment succeeds.',
+    },
+    {
+      q_tw: '這項服務能取代專業意見嗎？',
+      q_cn: '这项服务能取代专业意见吗？',
+      q_en: 'Can this service replace professional advice?',
+      a_tw: '不能。本服務僅提供紫微斗數命理解讀，不構成、也不能取代醫療、法律、財務或投資等專業建議。涉及專業判斷的事項，請諮詢相關領域的合格專業人士。我們陪你看見自己的天生特質與傾向，最終的決定與行動仍在你自己手上。',
+      a_cn: '不能。本服务仅提供紫微斗数命理解读，不构成、也不能取代医疗、法律、财务或投资等专业建议。涉及专业判断的事项，请咨询相关领域的合格专业人士。我们陪你看见自己的天生特质与倾向，最终的决定与行动仍在你自己手上。',
+      a_en: 'No. This service offers Zi Wei Dou Shu interpretation only. It does not constitute, and cannot replace, medical, legal, financial, or investment advice. For anything requiring professional judgement, please consult a qualified professional in that field. We help you see your innate tendencies — the decisions and actions remain yours.',
+    },
+    {
+      q_tw: '回覆需要多久？可以追問嗎？',
+      q_cn: '回复需要多久？可以追问吗？',
+      q_en: 'How long until I get a reply? Can I follow up?',
+      a_tw: '付款後 7 天內，你會收到書面回覆並收到 Email 通知。收到回覆後，7 天內可針對原議題追問一次；追問回覆完成後，該諮詢即結案。',
+      a_cn: '付款后 7 天内，你会收到书面回复并收到 Email 通知。收到回复后，7 天内可针对原议题追问一次；追问回复完成后，该咨询即结案。',
+      a_en: 'You\'ll receive a written reply within 7 days of payment, with an email notification. After the reply, you may ask one follow-up on the same topic within 7 days; once that follow-up is answered, the consultation closes.',
+    },
+  ];
+
+  function apply() {
+    document.title = pick('支援 - FuSang Vision', '支持 - FuSang Vision', 'Support - FuSang Vision');
+    document.getElementById('sup-eyebrow').textContent = pick('支援', '支持', 'Support');
+    document.getElementById('sup-title').textContent = pick('支援中心', '支持中心', 'Support Center');
+    document.getElementById('sup-sub').textContent = pick('常見問題與聯絡方式。', '常见问题与联系方式。', 'Frequently asked questions and how to reach us.');
+    document.getElementById('sup-contact-label').textContent = pick('聯絡我們', '联系我们', 'Contact us');
+
+    const faq = document.getElementById('sup-faq');
+    const openIdx = [...faq.querySelectorAll('.faq-item')].reduce((acc, it, i) => (it.classList.contains('open') ? i : acc), -1);
+    faq.innerHTML = FAQS.map((f, i) =>
+      `<div class="faq-item${i === openIdx ? ' open' : ''}" data-i="${i}">` +
+        `<div class="faq-q"><span>${pick(f.q_tw, f.q_cn, f.q_en)}</span>` +
+        `<svg class="faq-ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>` +
+        `<div class="faq-a"><div class="faq-a-inner">${pick(f.a_tw, f.a_cn, f.a_en)}</div></div>` +
+      `</div>`
+    ).join('');
+    faq.querySelectorAll('.faq-item').forEach((it) => {
+      it.querySelector('.faq-q').addEventListener('click', () => it.classList.toggle('open'));
+    });
+  }
+
+  apply();
+  window.addEventListener('i18n:changed', apply);
+
+  (async () => { try { await requireAuth(); } catch (_) {} })();
+</script>
+
+</body>
+</html>
