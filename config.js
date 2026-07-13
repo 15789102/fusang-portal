@@ -17,11 +17,19 @@
 // 安全:
 //   SUPABASE_ANON_KEY 是公開值(設計上放前端,靠 RLS 保護)→ 放這裡沒問題。
 //   ⚠ service_role key 絕不可進本檔 / 任何前端。只在後端 EF / n8n。
+//   ⚠ Google Maps「前端 key」放這裡沒問題(靠 HTTP referrer 限制保護);
+//      但 Google「後端 Time Zone key」絕不可進本檔 —— 那把只放 Supabase secret。
 // ============================================================
 
 (function () {
   // ─── 唯一切換點 ──────────────────────────────────────────
   const ENV = 'production';   // 'production' | 'staging'
+
+  // ─── Google Maps 前端(瀏覽器)key ────────────────────────
+  //   不分環境:同一把 key 兩環境共用,安全性靠「HTTP referrer 限制」而非藏 key。
+  //   ⚠ 只可放「前端 key」(API 限定 Places API (New) + Maps JavaScript API、
+  //     Application 限定 Websites=你的網域)。後端 Time Zone key 絕不進此檔。
+  const GOOGLE_MAPS_BROWSER_KEY = 'PASTE_YOUR_FRONTEND_KEY_HERE';
 
   const CONFIGS = {
     // ── 正式環境 ──
@@ -54,5 +62,6 @@
     throw new Error('[config] 未知的 ENV: ' + ENV);
   }
   cfg.ENV = ENV;          // 方便除錯時確認當前環境
+  cfg.GOOGLE_MAPS_BROWSER_KEY = AIzaSyD4JeUMZyJATgoSaMNcKmeCR05W44OJhVc;   // 前端 key 併入(不分環境)
   window.CFG = cfg;
 })();
