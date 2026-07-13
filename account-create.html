@@ -32,8 +32,37 @@
       'ac.year':            { 'zh-TW': '年', 'zh-CN': '年', 'en': 'Year' },
       'ac.month':           { 'zh-TW': '月', 'zh-CN': '月', 'en': 'Month' },
       'ac.day':             { 'zh-TW': '日', 'zh-CN': '日', 'en': 'Day' },
-      'ac.birthHour':       { 'zh-TW': '出生時辰', 'zh-CN': '出生时辰', 'en': 'Birth Hour' },
-      'ac.birthHourPh':     { 'zh-TW': '選擇出生時辰', 'zh-CN': '选择出生时辰', 'en': 'Select birth hour' },
+
+      // ── 出生時間(改:時+分,24 小時制)───────────────────────────
+      'ac.birthTimeLabel':  { 'zh-TW': '出生時間（24 小時制）', 'zh-CN': '出生时间（24 小时制）', 'en': 'Birth Time (24-hour)' },
+      'ac.hourPh':          { 'zh-TW': '時', 'zh-CN': '时', 'en': 'Hour' },
+      'ac.minutePh':        { 'zh-TW': '分', 'zh-CN': '分', 'en': 'Minute' },
+
+      // ── 三段文字(PM 拍板)──────────────────────────────────────
+      //   (a) 精確時間重要性告知 —— zh-TW 為 PM 逐字版；zh-CN/en 為草擬「待 PM 批准」
+      'ac.noticePrecision': {
+        'zh-TW': '出生時間越精確，命盤越準確。真太陽時計算依你填寫的時、分推算，些微時間差可能影響時辰判定。',
+        'zh-CN': '出生时间越精确，命盘越准确。真太阳时计算依你填写的时、分推算，些微时间差可能影响时辰判定。', /* 草擬待批准 */
+        'en': 'The more precise your birth time, the more accurate your chart. True solar time is derived from the hour and minute you enter — even a small difference can shift which shichen (two-hour period) applies.' /* 草擬待批准 */
+      },
+      //   (b) 填最接近時間的風險告知 —— zh-TW 為 PM 逐字版；zh-CN/en 為草擬「待 PM 批准」
+      'ac.noticeApprox': {
+        'zh-TW': '若不確定精確出生分鐘，請填最接近的時間。請注意：概略時間可能導致時辰判定落在相鄰時辰，進而影響命盤結果。',
+        'zh-CN': '若不确定精确出生分钟，请填最接近的时间。请注意：概略时间可能导致时辰判定落在相邻时辰，进而影响命盘结果。', /* 草擬待批准 */
+        'en': "If you're unsure of the exact minute, enter the closest time you know. Please note: an approximate time may place the shichen in an adjacent period, which can change your chart." /* 草擬待批准 */
+      },
+      //   (c) 送出前必勾同意聲明 —— PM 三語逐字版
+      'ac.subjectConsent': {
+        'zh-TW': '我了解命盤涉及個人隱私，並確認當事人為本人，或我已取得當事人同意，進行此命盤解讀。',
+        'zh-CN': '我了解命盘涉及个人隐私，并确认当事人为本人，或我已取得当事人同意，进行此命盘解读。',
+        'en': "I understand that a natal chart involves personal privacy, and I confirm that I am the subject, or have obtained the subject's consent, to proceed with this chart reading."
+      },
+
+      // ── 出生地點 ──────────────────────────────────────────────
+      'ac.birthPlaceLabel': { 'zh-TW': '出生地點（非現居地）', 'zh-CN': '出生地点（非现居地）', 'en': 'Birthplace (not your current residence)' },
+      'ac.birthPlacePh':    { 'zh-TW': '輸入出生城市', 'zh-CN': '输入出生城市', 'en': 'Enter your birth city' },
+      'ac.placeLoadFail':   { 'zh-TW': '地點輸入載入失敗，請重新整理頁面再試。', 'zh-CN': '地点输入加载失败，请刷新页面再试。', 'en': 'The place input failed to load. Please refresh the page and try again.' },
+
       'ac.gender':          { 'zh-TW': '性別', 'zh-CN': '性别', 'en': 'Gender' },
       'ac.female':          { 'zh-TW': '女', 'zh-CN': '女', 'en': 'Female' },
       'ac.male':            { 'zh-TW': '男', 'zh-CN': '男', 'en': 'Male' },
@@ -41,6 +70,7 @@
       'ac.consentSub':      { 'zh-TW': '為寄送你的個人化報告所需', 'zh-CN': '为发送你的个人化报告所需', 'en': 'Required to receive your personalized report' },
       'ac.submit':          { 'zh-TW': '生成我的命盤', 'zh-CN': '生成我的命盘', 'en': 'Generate My Chart' },
       'ac.submitting':      { 'zh-TW': '提交中…', 'zh-CN': '提交中…', 'en': 'Submitting…' },
+
       'ac.errName':         { 'zh-TW': '請輸入你的姓名。', 'zh-CN': '请输入你的姓名。', 'en': 'Please enter your name.' },
       'ac.errEmail':        { 'zh-TW': '請輸入你的電子郵件。', 'zh-CN': '请输入你的电子邮件。', 'en': 'Please enter your email.' },
       'ac.errEmailInvalid': { 'zh-TW': '請輸入有效的電子郵件。', 'zh-CN': '请输入有效的电子邮件。', 'en': 'Please enter a valid email.' },
@@ -49,13 +79,43 @@
       'ac.errYear':         { 'zh-TW': '請選擇出生年份。', 'zh-CN': '请选择出生年份。', 'en': 'Please select your birth year.' },
       'ac.errMonth':        { 'zh-TW': '請選擇出生月份。', 'zh-CN': '请选择出生月份。', 'en': 'Please select your birth month.' },
       'ac.errDay':          { 'zh-TW': '請選擇出生日。', 'zh-CN': '请选择出生日。', 'en': 'Please select your birth day.' },
-      'ac.errHour':         { 'zh-TW': '請選擇出生時辰。', 'zh-CN': '请选择出生时辰。', 'en': 'Please select your birth hour.' },
+      'ac.errHour':         { 'zh-TW': '請選擇出生小時。', 'zh-CN': '请选择出生小时。', 'en': 'Please select your birth hour.' },
+      'ac.errMinute':       { 'zh-TW': '請選擇出生分鐘。', 'zh-CN': '请选择出生分钟。', 'en': 'Please select your birth minute.' },
+      'ac.errPlace':        { 'zh-TW': '請從建議清單選擇出生地點。', 'zh-CN': '请从建议清单选择出生地点。', 'en': 'Please select your birthplace from the suggestions.' },
       'ac.errGender':       { 'zh-TW': '請選擇性別。', 'zh-CN': '请选择性别。', 'en': 'Please select your gender.' },
       'ac.errLang':         { 'zh-TW': '請選擇語言。', 'zh-CN': '请选择语言。', 'en': 'Please select a language.' },
       'ac.errDate':         { 'zh-TW': '請輸入有效的日期。', 'zh-CN': '请输入有效的日期。', 'en': 'Please enter a valid date.' },
       'ac.errPwMismatch':   { 'zh-TW': '兩次輸入的密碼不一致。', 'zh-CN': '两次输入的密码不一致。', 'en': 'Passwords do not match.' },
       'ac.errConsent':      { 'zh-TW': '請確認你同意接收電子郵件。', 'zh-CN': '请确认你同意接收电子邮件。', 'en': 'Please confirm you agree to receive emails.' },
+      'ac.errSubjectConsent':{ 'zh-TW': '請勾選同意聲明後再送出。', 'zh-CN': '请勾选同意声明后再送出。', 'en': 'Please check the consent statement before submitting.' },
+      'ac.errTimezone':     { 'zh-TW': '無法取得該地點的時區資訊。請稍後再試，或確認出生地點是否正確；未取得前無法生成命盤。', 'zh-CN': '无法取得该地点的时区信息。请稍后再试，或确认出生地点是否正确；未取得前无法生成命盘。', 'en': "We couldn't resolve the time zone for this location. Please try again shortly or check that the birthplace is correct — the chart can't be generated until this succeeds." },
       'ac.errGeneric':      { 'zh-TW': '發生錯誤，請再試一次。', 'zh-CN': '发生错误，请再试一次。', 'en': 'Something went wrong. Please try again.' }
+    });
+  </script>
+
+  <!-- ── Google Maps JS(Places 新版元件)bootstrap loader ──────────────
+       key 為前端「瀏覽器 key」,以 HTTP referrer 限制保護(非藏 key)。
+       實際 import 在首次 importLibrary('places') 時才觸發。 -->
+  <script>
+    (g => {
+      var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary",
+          q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {});
+      var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams(),
+          u = () => h || (h = new Promise(async (f, n) => {
+            await (a = m.createElement("script"));
+            e.set("libraries", [...r] + "");
+            for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+            e.set("callback", c + ".maps." + q);
+            a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+            d[q] = f; a.onerror = () => h = n(Error(p + " could not load."));
+            a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a);
+          }));
+      d[l] ? console.warn(p + " only loads once. Ignoring:", g) :
+        d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n));
+    })({
+      key: (window.CFG && window.CFG.GOOGLE_MAPS_BROWSER_KEY) || "",
+      v: "weekly",
+      // 顯示語言改由元件的 requestedLanguage 控制(可隨 UI 語言即時切換),故此處不鎖 language
     });
   </script>
 
@@ -94,6 +154,18 @@
     }
     input:focus, select:focus { outline: none; border-color: var(--accent-soft); }
     .row-three { display: grid; grid-template-columns: 1.1fr 1fr 0.8fr; gap: 10px; }
+    /* 新增:時+分兩欄,比照 .row-three 的既有樣式語言 */
+    .row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* 新增:欄位下方告知文字(沿用既有 ink-mid,非視覺改版)*/
+    .field-note { font-size: 12px; color: var(--ink-mid); margin-top: 8px; line-height: 1.55; }
+
+    /* 新增:地點輸入容器。Google 元件有 shadow DOM、可調樣式有限,
+       這裡讓它撐滿寬度並繼承字體,盡量貼近既有 input 外觀;
+       像素級對齊可再用 Google 提供的 CSS parts 微調。 */
+    .place-wrap { width: 100%; }
+    .place-wrap gmp-place-autocomplete { width: 100%; font-family: var(--font-sans); }
+    .place-fallback { font-size: 13px; color: var(--error); padding: 10px 14px; background: #f9e8e5; border-radius: 4px; }
 
     /* 語言選擇 */
     .lang-field { padding: 18px; background: var(--bg-soft); border-radius: 4px; border-left: 3px solid var(--gold); margin-bottom: 24px; }
@@ -213,24 +285,23 @@
         </div>
       </div>
 
+      <!-- 出生時間:改收「時:分」,24 小時制。真太陽時計算需精確時刻。 -->
       <div class="field">
-        <label for="birth_hour" data-i18n="ac.birthHour">Birth Hour</label>
-        <select id="birth_hour" name="birth_hour" required>
-          <option value="" data-i18n="ac.birthHourPh">Select birth hour</option>
-          <option value="0">子 Zi · 00:00 – 00:59</option>
-          <option value="1">丑 Chou · 01:00 – 02:59</option>
-          <option value="3">寅 Yin · 03:00 – 04:59</option>
-          <option value="5">卯 Mao · 05:00 – 06:59</option>
-          <option value="7">辰 Chen · 07:00 – 08:59</option>
-          <option value="9">巳 Si · 09:00 – 10:59</option>
-          <option value="11">午 Wu · 11:00 – 12:59</option>
-          <option value="13">未 Wei · 13:00 – 14:59</option>
-          <option value="15">申 Shen · 15:00 – 16:59</option>
-          <option value="17">酉 You · 17:00 – 18:59</option>
-          <option value="19">戌 Xu · 19:00 – 20:59</option>
-          <option value="21">亥 Hai · 21:00 – 22:59</option>
-          <option value="23">晚子 Late Zi · 23:00 – 23:59</option>
-        </select>
+        <label data-i18n="ac.birthTimeLabel">Birth Time (24-hour)</label>
+        <div class="row-two">
+          <select id="birth_hour" name="birth_hour" required><option value="" data-i18n="ac.hourPh">Hour</option></select>
+          <select id="birth_minute" name="birth_minute" required><option value="" data-i18n="ac.minutePh">Minute</option></select>
+        </div>
+        <!-- (a) 精確時間重要性告知 -->
+        <p class="field-note" data-i18n="ac.noticePrecision">The more precise your birth time, the more accurate your chart.</p>
+        <!-- (b) 填最接近時間的風險告知 -->
+        <p class="field-note" data-i18n="ac.noticeApprox">If you're unsure of the exact minute, enter the closest time you know.</p>
+      </div>
+
+      <!-- 出生地點:Google Places Autocomplete(城市級)。明確標示「非現居地」。 -->
+      <div class="field">
+        <label data-i18n="ac.birthPlaceLabel">Birthplace (not your current residence)</label>
+        <div id="place-container" class="place-wrap"></div>
       </div>
 
       <div class="field">
@@ -242,6 +313,15 @@
         <input type="hidden" id="gender" name="gender" required />
       </div>
 
+      <!-- (c) 同意聲明:新增必勾項,與下方 newsletter 各自獨立判斷 -->
+      <div class="consent-box">
+        <input type="checkbox" id="subject_consent" name="subject_consent" required />
+        <label for="subject_consent">
+          <span data-i18n="ac.subjectConsent">I understand that a natal chart involves personal privacy…</span> <span class="required-mark">*</span>
+        </label>
+      </div>
+
+      <!-- newsletter 同意:既有必勾項,與上方同意聲明各自獨立判斷 -->
       <div class="consent-box">
         <input type="checkbox" id="newsletter_consent" name="newsletter_consent" required />
         <label for="newsletter_consent">
@@ -252,7 +332,7 @@
 
       <div id="error-message" class="error-message" role="alert" aria-live="polite"></div>
 
-      <button type="submit" id="submit-btn" class="btn-primary">
+      <button type="submit" id="submit-btn" class="btn-primary" disabled>
         <span class="btn-text" data-i18n="ac.submit">Generate My Chart</span>
         <span class="btn-arrow">→</span>
       </button>
@@ -262,29 +342,37 @@
 
   <script>
     // ============================================================
-    // 建帳號頁邏輯 — 提交至 Supabase Edge Function submit_birth_data
-    // 成功 → 跳轉 submitted.html；含多語系（language 鎖定）
+    // 建帳號頁邏輯 — 真太陽時版
+    //   流程:地點選定 → resolve-timezone EF 取 offset → 前端算真太陽時
+    //        → 產出「真太陽時日期 + 時辰編碼(0,1,3…23)」+ original_input
+    //        → POST submit_birth_data → 跳轉 submitted.html
+    //   三段分工:前端算真太陽時 → process_chart 直傳日期/轉編碼 → 引擎做晚子+1
+    //            前端只做「真太陽時實際換日」,不對晚子做 ±1(避免雙重位移)。
     // ============================================================
     const SUPABASE_URL = window.CFG.SUPABASE_URL;
     const SUPABASE_ANON_KEY = window.CFG.SUPABASE_ANON_KEY;
     const EF_SUBMIT_URL = `${SUPABASE_URL}/functions/v1/submit_birth_data`;
+    const EF_RESOLVE_TZ_URL = `${SUPABASE_URL}/functions/v1/resolve-timezone`;
+    const GOOGLE_KEY = (window.CFG && window.CFG.GOOGLE_MAPS_BROWSER_KEY) || "";
     const F = window.FSI18N;
 
-    const DEFAULTS = {
-      birth_minute: 0,
-      birth_country: 'Taiwan',
-      birth_city: 'Taipei',
-      birth_timezone: 'Asia/Taipei',
-    };
+    // 已選定地點(未選 → 送出鈕 disabled)。{ place_id, lat, lng, name_display }
+    let selectedPlace = null;
+    let placeEl = null;
+    let submitting = false;
 
     document.addEventListener('DOMContentLoaded', () => {
       bindUiLang();
       initYearOptions();
       initMonthOptions();
       initDayOptions();
+      initHourOptions();
+      initMinuteOptions();
       bindLangOptions();
       bindToggleGroups();
       bindForm();
+      initPlaceAutocomplete();
+      refreshReadiness();
     });
 
     // 頁內 UI 語言切換(只動介面文字;不碰表單裡「報告語言」單選)
@@ -328,6 +416,24 @@
         daySelect.appendChild(opt);
       }
     }
+    // 時(00–23,24 小時制)
+    function initHourOptions() {
+      const s = document.getElementById('birth_hour');
+      for (let h = 0; h <= 23; h++) {
+        const opt = document.createElement('option');
+        opt.value = h; opt.textContent = String(h).padStart(2, '0');
+        s.appendChild(opt);
+      }
+    }
+    // 分(00–59)
+    function initMinuteOptions() {
+      const s = document.getElementById('birth_minute');
+      for (let mi = 0; mi <= 59; mi++) {
+        const opt = document.createElement('option');
+        opt.value = mi; opt.textContent = String(mi).padStart(2, '0');
+        s.appendChild(opt);
+      }
+    }
 
     // 語言選擇（單選按鈕組 → 寫進 hidden input）
     function bindLangOptions() {
@@ -355,43 +461,251 @@
       });
     }
 
+    // ────────────────────────────────────────────────────────────
+    // Google Places 地點輸入(新版 PlaceAutocompleteElement)
+    //   ⚠ Places API(New)近年有 API 變動,以下事件名/欄位名(gmp-select /
+    //     placePrediction / toPlace / fetchFields 欄位)請對照當前官方文件並在瀏覽器實測。
+    // ────────────────────────────────────────────────────────────
+    async function initPlaceAutocomplete() {
+      const container = document.getElementById('place-container');
+      if (!GOOGLE_KEY) {
+        console.error('[places] GOOGLE_MAPS_BROWSER_KEY 未設定(config.js)');
+        container.innerHTML = `<div class="place-fallback">${F.t('ac.placeLoadFail')}</div>`;
+        return;
+      }
+      try {
+        const { PlaceAutocompleteElement } = await google.maps.importLibrary('places');
+        placeEl = new PlaceAutocompleteElement({
+          includedPrimaryTypes: ['(cities)'], // 城市級
+        });
+        placeEl.requestedLanguage = F.getUILang(); // 顯示語言 = 當前 UI 語言(與報告 preferred_language 無關)
+        placeEl.style.width = '100%';
+        try { placeEl.placeholder = F.t('ac.birthPlacePh'); } catch (_) {}
+        container.appendChild(placeEl);
+
+        // 選定地點 → 取 place_id + 經緯度 + 顯示名
+        placeEl.addEventListener('gmp-select', async (ev) => {
+          try {
+            const prediction = ev.placePrediction;
+            const place = prediction.toPlace();
+            await place.fetchFields({ fields: ['location', 'displayName', 'id'] });
+            const lat = numFrom(place.location && place.location.lat);
+            const lng = numFrom(place.location && place.location.lng);
+            if (typeof lat !== 'number' || typeof lng !== 'number' || Number.isNaN(lat) || Number.isNaN(lng)) {
+              throw new Error('no location on selected place');
+            }
+            selectedPlace = {
+              place_id: place.id,
+              lat, lng,
+              name_display: (typeof place.displayName === 'string' ? place.displayName : '') || '',
+            };
+            clearError();
+          } catch (e) {
+            console.error('[places] select error', e);
+            selectedPlace = null;
+          }
+          refreshReadiness();
+        });
+
+        // 使用者重新編輯 → 作廢已選地點(避免用舊座標送出)
+        placeEl.addEventListener('input', () => { selectedPlace = null; refreshReadiness(); });
+
+        // UI 語言切換 → 同步 widget 顯示語言
+        window.addEventListener('i18n:changed', () => {
+          if (placeEl) {
+            try { placeEl.requestedLanguage = F.getUILang(); } catch (_) {}
+            try { placeEl.placeholder = F.t('ac.birthPlacePh'); } catch (_) {}
+          }
+        });
+      } catch (e) {
+        console.error('[places] load failed', e);
+        container.innerHTML = `<div class="place-fallback">${F.t('ac.placeLoadFail')}</div>`;
+      }
+      refreshReadiness();
+    }
+
+    function numFrom(v) { return typeof v === 'function' ? v() : v; }
+
+    // 取英文標準地名(language=en);前端 Places Details(New),用瀏覽器 key。
+    //   best-effort:失敗不擋提交(名稱僅供顯示/稽核,不進排盤);回退用顯示名。
+    async function fetchEnglishPlace(placeId) {
+      const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=en`;
+      const res = await fetch(url, {
+        headers: {
+          'X-Goog-Api-Key': GOOGLE_KEY,
+          'X-Goog-FieldMask': 'displayName,formattedAddress,addressComponents',
+        },
+      });
+      if (!res.ok) throw new Error(`places details ${res.status}`);
+      const data = await res.json();
+      const nameEn = (data.displayName && data.displayName.text) || data.formattedAddress || '';
+      const country = (data.addressComponents || [])
+        .find(c => (c.types || []).includes('country'));
+      return {
+        nameEn,
+        country: (country && country.longText) || '',
+        formattedEn: data.formattedAddress || '',
+      };
+    }
+
+    // ────────────────────────────────────────────────────────────
+    // 真太陽時計算(純函式,可單測)
+    //   local(當地牆鐘) --offset--> UTC --經度--> 地方平時 LMT --均時差--> 真太陽時
+    //   輸出:真太陽時的「日期 + 時辰編碼」。編碼與現行 birth_hour 一致(早子=0、晚子=23)。
+    //   E2E 四案(吉隆坡1982 / Taipei基準 / 午夜邊界 / 經度正負號)可在 console 用
+    //   window.__trueSolar 直接驗。
+    // ────────────────────────────────────────────────────────────
+    function localToTrueSolar(local, lng, totalOffsetSeconds) {
+      // 1) 當地牆鐘 → UTC。把當地時間當成 UTC 秒數,再扣掉 offset(含 DST)。
+      const localAsUTC = Date.UTC(local.year, local.month - 1, local.day, local.hour, local.minute);
+      const utcMs = localAsUTC - totalOffsetSeconds * 1000;
+      // 2) 經度修正 → 地方平時(東經正,每 1° = 4 分 = 240 秒)。
+      //    走 UTC + lng/15,標準經線已被 offset 吸收,不再減標準經線(避免 DST 重複計)。
+      const lmtMs = utcMs + lng * 240 * 1000;
+      // 3) 均時差(NOAA)→ 真太陽時。
+      const lmt = new Date(lmtMs);
+      const eotMin = equationOfTimeMinutes(lmt.getUTCFullYear(), lmt.getUTCMonth() + 1, lmt.getUTCDate(), lmt.getUTCHours());
+      const trueMs = lmtMs + eotMin * 60 * 1000;
+      const t = new Date(trueMs);
+      const H = t.getUTCHours();
+      return {
+        year: t.getUTCFullYear(),
+        month: t.getUTCMonth() + 1,
+        day: t.getUTCDate(),          // 真太陽時實際日期(如實換日)
+        hour: H,
+        minute: t.getUTCMinutes(),
+        code: hourToShichenCode(H),   // 時辰編碼(送 birth_hour)
+      };
+    }
+
+    // 真太陽時「時」→ 時辰編碼(0,1,3,…,21,23)。晚子=23、早子=0、其餘取時辰起始時。
+    function hourToShichenCode(H) {
+      if (H === 23) return 23; // 晚子(23:00–23:59)→ 引擎會做 +1
+      if (H === 0) return 0;   // 早子(00:00–00:59)→ 引擎維持當日
+      return (H % 2 === 1) ? H : H - 1;
+    }
+
+    function dayOfYear(y, m, d) {
+      const isLeap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+      const days = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      let n = d;
+      for (let i = 0; i < m - 1; i++) n += days[i];
+      return n;
+    }
+
+    // NOAA 均時差(分鐘)。標準 NOAA solar 公式。
+    function equationOfTimeMinutes(y, m, d, hour) {
+      const doy = dayOfYear(y, m, d);
+      const gamma = (2 * Math.PI / 365) * (doy - 1 + (hour - 12) / 24);
+      const eot = 229.18 * (
+        0.000075
+        + 0.001868 * Math.cos(gamma)
+        - 0.032077 * Math.sin(gamma)
+        - 0.014615 * Math.cos(2 * gamma)
+        - 0.040849 * Math.sin(2 * gamma)
+      );
+      return eot; // 分鐘
+    }
+
+    // 暴露純函式供 E2E 手動驗證
+    window.__trueSolar = { localToTrueSolar, equationOfTimeMinutes, hourToShichenCode, dayOfYear };
+
+    // ────────────────────────────────────────────────────────────
+    // 送出流程
+    // ────────────────────────────────────────────────────────────
     function bindForm() {
       const form = document.getElementById('chart-form');
-      const submitBtn = document.getElementById('submit-btn');
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        clearResult();
+        clearError();
 
-        const payload = {
+        const local = {
+          year:   parseInt(document.getElementById('birth_year').value, 10),
+          month:  parseInt(document.getElementById('birth_month').value, 10),
+          day:    parseInt(document.getElementById('birth_day').value, 10),
+          hour:   parseInt(document.getElementById('birth_hour').value, 10),
+          minute: parseInt(document.getElementById('birth_minute').value, 10),
+        };
+        const base = {
           email: document.getElementById('email').value.trim(),
           password: document.getElementById('password').value,
           display_name: document.getElementById('display_name').value.trim(),
-          birth_year: parseInt(document.getElementById('birth_year').value, 10),
-          birth_month: parseInt(document.getElementById('birth_month').value, 10),
-          birth_day: parseInt(document.getElementById('birth_day').value, 10),
-          birth_hour: parseInt(document.getElementById('birth_hour').value, 10),
-          birth_minute: DEFAULTS.birth_minute,
-          birth_country: DEFAULTS.birth_country,
-          birth_city: DEFAULTS.birth_city,
-          birth_timezone: DEFAULTS.birth_timezone,
           gender: document.getElementById('gender').value,
-          language: document.getElementById('language').value, // ← 新增
+          language: document.getElementById('language').value,
         };
 
-        const error = validatePayload(payload);
+        // 基本驗證
+        const error = validateInputs(base, local);
         if (error) { showError(error); return; }
-
-        const passwordConfirm = document.getElementById('password_confirm').value;
-        if (payload.password !== passwordConfirm) { showError(F.t('ac.errPwMismatch')); return; }
-
+        if (base.password !== document.getElementById('password_confirm').value) {
+          showError(F.t('ac.errPwMismatch')); return;
+        }
+        // (c) 同意聲明 與 newsletter 各自獨立判斷
+        if (!document.getElementById('subject_consent').checked) {
+          showError(F.t('ac.errSubjectConsent')); return;
+        }
         if (!document.getElementById('newsletter_consent').checked) {
           showError(F.t('ac.errConsent')); return;
         }
+        // 地點必須已選定(理論上未選時鈕已 disabled,這是雙保險)
+        if (!selectedPlace) { showError(F.t('ac.errPlace')); return; }
 
-        setSubmitting(submitBtn, true);
-
+        setSubmitting(true);
         try {
+          // 1) 取時區 offset(fail-closed)
+          const tz = await resolveTimezone(selectedPlace.lat, selectedPlace.lng, local);
+
+          // 2) 算真太陽時 → 時辰編碼 + 真太陽時日期
+          const ts = localToTrueSolar(local, selectedPlace.lng, tz.totalOffsetSeconds);
+
+          // 3) 英文標準地名(best-effort,失敗不擋)
+          let nameEn = selectedPlace.name_display, country = '';
+          try {
+            const en = await fetchEnglishPlace(selectedPlace.place_id);
+            nameEn = en.nameEn || nameEn;
+            country = en.country || '';
+          } catch (enErr) {
+            console.warn('[places] english name fallback:', enErr);
+          }
+
+          // 4) original_input(完整原始輸入 + 換算稽核)
+          const original_input = {
+            local: { year: local.year, month: local.month, day: local.day, hour: local.hour, minute: local.minute },
+            place: {
+              place_id: selectedPlace.place_id,
+              lat: selectedPlace.lat,
+              lng: selectedPlace.lng,
+              name_en: nameEn,
+              name_display: selectedPlace.name_display,
+            },
+            iana_timezone: tz.timeZoneId,
+            utc_offset_minutes: Math.round(tz.totalOffsetSeconds / 60),
+            true_solar: {
+              year: ts.year, month: ts.month, day: ts.day,
+              hour: ts.hour, minute: ts.minute,
+              birth_hour_code: ts.code,
+            },
+          };
+
+          // 5) payload:排盤三欄 = 真太陽時日期;birth_hour = 時辰編碼
+          const payload = {
+            email: base.email,
+            password: base.password,
+            display_name: base.display_name,
+            birth_year: ts.year,
+            birth_month: ts.month,
+            birth_day: ts.day,
+            birth_hour: ts.code,
+            birth_minute: local.minute,          // 原始輸入分鐘(引擎不讀,存查)
+            birth_country: country || nameEn || 'Unknown',
+            birth_city: nameEn || selectedPlace.name_display || 'Unknown',
+            birth_timezone: tz.timeZoneId,
+            gender: base.gender,
+            language: base.language,
+            original_input,
+          };
+
           const res = await fetch(EF_SUBMIT_URL, {
             method: 'POST',
             headers: {
@@ -403,49 +717,85 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
-          // 成功 → 跳轉 submitted 頁
-          const params = new URLSearchParams({
-            job_id: data.job_id,
-            email: payload.email,
-          });
+          const params = new URLSearchParams({ job_id: data.job_id, email: base.email });
           window.location.href = `submitted.html?${params.toString()}`;
         } catch (err) {
           console.error('Submit error:', err);
-          showError(err.message || F.t('ac.errGeneric'));
-          setSubmitting(submitBtn, false);
+          // fail-closed:時區解析失敗 → 明確「怎麼辦」訊息
+          const msg = err && err.__timezone ? F.t('ac.errTimezone') : (err.message || F.t('ac.errGeneric'));
+          showError(msg);
+          setSubmitting(false);
         }
       });
     }
 
-    function validatePayload(p) {
-      if (!p.display_name) return F.t('ac.errName');
-      if (!p.email) return F.t('ac.errEmail');
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return F.t('ac.errEmailInvalid');
-      if (!p.password) return F.t('ac.errPwEmpty');
-      if (p.password.length < 8) return F.t('ac.errPwShort');
-      if (!p.birth_year) return F.t('ac.errYear');
-      if (!p.birth_month) return F.t('ac.errMonth');
-      if (!p.birth_day) return F.t('ac.errDay');
-      if (isNaN(p.birth_hour)) return F.t('ac.errHour');
-      if (!p.gender) return F.t('ac.errGender');
-      if (!['zh-TW','zh-CN','en'].includes(p.language)) return F.t('ac.errLang');
-      const date = new Date(p.birth_year, p.birth_month - 1, p.birth_day);
-      if (date.getFullYear() !== p.birth_year || date.getMonth() !== p.birth_month - 1 || date.getDate() !== p.birth_day) {
+    // 時區解析(fail-closed:失敗一律拋錯、標記 __timezone,不猜 offset)
+    async function resolveTimezone(lat, lng, local) {
+      let res;
+      try {
+        res = await fetch(EF_RESOLVE_TZ_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lat, lng,
+            year: local.year, month: local.month, day: local.day,
+            hour: local.hour, minute: local.minute,
+          }),
+        });
+      } catch (netErr) {
+        const e = new Error('timezone network error'); e.__timezone = true; throw e;
+      }
+      if (!res.ok) {
+        const e = new Error('timezone resolution failed'); e.__timezone = true; throw e;
+      }
+      const data = await res.json();
+      if (typeof data.totalOffsetSeconds !== 'number') {
+        const e = new Error('timezone bad response'); e.__timezone = true; throw e;
+      }
+      return data;
+    }
+
+    function validateInputs(base, local) {
+      if (!base.display_name) return F.t('ac.errName');
+      if (!base.email) return F.t('ac.errEmail');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(base.email)) return F.t('ac.errEmailInvalid');
+      if (!base.password) return F.t('ac.errPwEmpty');
+      if (base.password.length < 8) return F.t('ac.errPwShort');
+      if (!local.year) return F.t('ac.errYear');
+      if (!local.month) return F.t('ac.errMonth');
+      if (!local.day) return F.t('ac.errDay');
+      if (Number.isNaN(local.hour)) return F.t('ac.errHour');
+      if (Number.isNaN(local.minute)) return F.t('ac.errMinute');
+      if (!base.gender) return F.t('ac.errGender');
+      if (!['zh-TW','zh-CN','en'].includes(base.language)) return F.t('ac.errLang');
+      const date = new Date(local.year, local.month - 1, local.day);
+      if (date.getFullYear() !== local.year || date.getMonth() !== local.month - 1 || date.getDate() !== local.day) {
         return F.t('ac.errDate');
       }
       return null;
     }
 
-    function setSubmitting(btn, on) {
+    // 送出鈕就緒判斷:必須已選定地點、且非提交中(fail-closed:未就緒 disabled)
+    function refreshReadiness() {
+      const btn = document.getElementById('submit-btn');
+      if (!btn) return;
+      btn.disabled = submitting || !selectedPlace;
+    }
+
+    function setSubmitting(on) {
+      submitting = on;
+      const btn = document.getElementById('submit-btn');
       if (on) {
-        btn.disabled = true;
         btn.querySelector('.btn-text').textContent = F.t('ac.submitting');
         btn.querySelector('.btn-arrow').textContent = '...';
       } else {
-        btn.disabled = false;
         btn.querySelector('.btn-text').textContent = F.t('ac.submit');
         btn.querySelector('.btn-arrow').textContent = '→';
       }
+      refreshReadiness();
     }
 
     function showError(msg) {
@@ -453,7 +803,7 @@
       box.textContent = msg;
       box.style.display = 'block';
     }
-    function clearResult() {
+    function clearError() {
       document.getElementById('error-message').style.display = 'none';
     }
   </script>
