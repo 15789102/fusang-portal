@@ -62,6 +62,6 @@
     throw new Error('[config] 未知的 ENV: ' + ENV);
   }
   cfg.ENV = ENV;          // 方便除錯時確認當前環境
-  cfg.GOOGLE_MAPS_BROWSER_KEY = AIzaSyD4JeUMZyJATgoSaMNcKmeCR05W44OJhVc;   // 前端 key 併入(不分環境)
+  cfg.GOOGLE_MAPS_BROWSER_KEY = 'AIzaSyD4JeUMZyJATgoSaMNcKmeCR05W44OJhVc';   // 前端 key 併入(不分環境)
   window.CFG = cfg;
 })();
