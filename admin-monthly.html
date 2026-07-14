@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 月報投放</title>
+<style>
+  /* ── 月報控制台專屬（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+
+  /* 手動模式橫幅 */
+  .mode-banner{
+    display:flex;align-items:center;gap:10px;
+    background:var(--gold-soft);border:1px solid #E9D6A8;border-radius:var(--radius);
+    padding:11px 16px;margin-bottom:20px;font-size:12.5px;color:#8A6414;
+  }
+  .mode-banner b{color:var(--gold);font-weight:700;}
+  .mode-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex:0 0 auto;}
+
+  /* 彙總 pills */
+  .sum-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .sum-pill{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    padding:12px 18px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:10px;
+  }
+  .sum-pill.alert{border-color:var(--fail);background:var(--fail-soft);}
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:22px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-pill.alert .sum-num{color:var(--fail);}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+  /* 工具列 */
+  .toolbar{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .toolbar .spacer{flex:1 1 auto;}
+  .tb-date{font-size:13px;color:var(--muted);}
+  .tb-date b{color:var(--ink);font-weight:600;}
+  .btn-ghost{
+    background:var(--surface);border:1px solid var(--hair-strong);color:var(--muted);
+    font-weight:500;font-size:12.5px;padding:7px 14px;border-radius:var(--radius-sm);transition:all .15s ease;
+  }
+  .btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
+  .toggle-test{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .toggle-test input{width:15px;height:15px;accent-color:var(--dawn);}
+
+  /* 名單表 */
+  .list-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  table.roster{width:100%;border-collapse:collapse;font-size:13px;}
+  table.roster th{
+    text-align:left;font-size:11px;font-weight:600;color:var(--faint);
+    letter-spacing:.06em;text-transform:uppercase;
+    padding:11px 14px;border-bottom:1px solid var(--hair);background:#FBFBFC;white-space:nowrap;
+  }
+  table.roster td{padding:12px 14px;border-bottom:1px solid var(--hair);vertical-align:middle;}
+  table.roster tr:last-child td{border-bottom:none;}
+  table.roster tr.is-alert td{background:var(--fail-soft);}
+  table.roster tr.is-alert{box-shadow:inset 3px 0 0 var(--fail);}
+  .col-chk{width:38px;text-align:center;}
+  .col-chk input{width:16px;height:16px;accent-color:var(--dawn);cursor:pointer;}
+  .r-email{font-weight:600;color:var(--ink);}
+  .r-email .test-tag{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);background:#EEF0F2;border-radius:4px;padding:2px 6px;margin-left:7px;}
+  .r-day{font-feature-settings:"tnum" 1;color:var(--ink);}
+  .r-pending{font-size:11.5px;color:var(--wait);margin-top:2px;}
+
+  /* 狀態旗標 badge */
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap;}
+  .badge .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .badge.ok{background:var(--ok-soft);color:var(--ok);}
+  .badge.ok .dot{background:var(--ok);}
+  .badge.gen{background:var(--wait-soft);color:var(--wait);}
+  .badge.gen .dot{background:var(--wait);}
+  .badge.alert{background:var(--fail-soft);color:var(--fail);}
+  .badge.alert .dot{background:var(--fail);}
+  .badge.none{background:#EEF0F2;color:var(--muted);}
+  .badge.none .dot{background:var(--faint);}
+  .badge-sub{font-size:11px;color:var(--faint);margin-left:8px;font-feature-settings:"tnum" 1;}
+
+  /* 底部動作列（step 1：投放鈕停用，step 2 接入）*/
+  .action-bar{
+    display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;
+  }
+  .btn-fire{background:var(--dawn);color:#fff;border:none;font-weight:600;font-size:13.5px;padding:11px 26px;border-radius:var(--radius-sm);transition:filter .15s ease;}
+  .btn-fire:hover:not(:disabled){filter:brightness(.94);}
+  .btn-fire:disabled{opacity:.4;cursor:not-allowed;}
+  .action-note{font-size:12px;color:var(--faint);}
+  .sel-count b{color:var(--dawn);font-weight:700;font-feature-settings:"tnum" 1;}
+
+  .empty-hint{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">月報投放</h1>
+      <p class="fa-page-sub">手動控制台 · 今日投放名單（step 1：可視名單）</p>
+    </div>
+
+    <!-- 手動模式橫幅 -->
+    <div class="mode-banner">
+      <span class="mode-dot"></span>
+      <span>目前為 <b>手動投放模式</b> — scheduler 自動排程已停用，每日名單由 Admin 進站確認後手動投放。</span>
+    </div>
+
+    <!-- 載入 / 錯誤態 -->
+    <div id="bootLoad" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">載入今日名單…</div>
+    </div>
+    <div id="bootErr" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">載入失敗</div>
+      <div id="bootErrMsg"></div>
+    </div>
+
+    <!-- 主體 -->
+    <div id="main" class="fa-hidden">
+
+      <div class="sum-row" id="sumRow"></div>
+
+      <div class="toolbar">
+        <span class="tb-date">今日 UTC：<b id="tbDate">—</b></span>
+        <label class="toggle-test">
+          <input type="checkbox" id="hideTest" />
+          隱藏測試帳號
+        </label>
+        <span class="spacer"></span>
+        <button class="btn-ghost" id="selAll" type="button">全選</button>
+        <button class="btn-ghost" id="selNone" type="button">全不選</button>
+        <button class="btn-ghost" id="refreshBtn" type="button">↻ 重新整理</button>
+      </div>
+
+      <div class="list-card">
+        <table class="roster">
+          <thead>
+            <tr>
+              <th class="col-chk"><input type="checkbox" id="chkHead" title="全選/全不選" /></th>
+              <th>帳號</th>
+              <th>投放日</th>
+              <th>最新一筆 job</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+        <div id="emptyHint" class="empty-hint fa-hidden">今日（UTC）無排定投放的帳號。</div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-fire" id="fireBtn" type="button" disabled>投放選中</button>
+        <span class="sel-count">已選 <b id="selCount">0</b> / <span id="totCount">0</span></span>
+        <span class="action-note">投放觸發於 step 2 接入（做法 B：後端複用 scheduler 的 target/dedup/settle 邏輯，建成 SoT）。</span>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+    // 測試帳號 local-part（memory：go-live 前清 session 後自然消失）
+    const TEST_ACCOUNTS = ['ben880153', 'fusangvision'];
+    const isTest = email => TEST_ACCOUNTS.some(t => String(email || '').toLowerCase().startsWith(t + '@') ||
+                                                    String(email || '').toLowerCase().includes(t));
+
+    let rows = [];   // RPC 回傳的原始名單
+
+    /* ── 時間距離：判斷卡住多久（純顯示，卡住門檻 6h 由後端旗標決定）── */
+    function fmtAge(ts){
+      if (!ts) return '';
+      const diffMs = Date.now() - new Date(ts).getTime();
+      const h = diffMs / 36e5;
+      if (h < 1)  return `${Math.max(0, Math.round(h*60))} 分鐘前`;
+      if (h < 24) return `${Math.floor(h)} 小時前`;
+      return `${Math.floor(h/24)} 天前`;
+    }
+
+    /* ── 狀態旗標 → badge ── */
+    function statusBadge(r){
+      const period = (r.target_year && r.target_month)
+        ? `${r.target_year}/${String(r.target_month).padStart(2,'0')}` : '';
+      switch (r.status_flag){
+        case 'ok':
+          return `<span class="badge ok"><span class="dot"></span>完成</span>` +
+                 (period ? `<span class="badge-sub">${period}</span>` : '');
+        case 'generating':
+          return `<span class="badge gen"><span class="dot"></span>生成中</span>` +
+                 `<span class="badge-sub">${esc(fmtAge(r.job_updated_at))}${period ? ' · '+period : ''}</span>`;
+        case 'alert':
+          return `<span class="badge alert"><span class="dot"></span>⚠ 異常</span>` +
+                 `<span class="badge-sub">停滯 ${esc(fmtAge(r.job_updated_at))}${period ? ' · '+period : ''}</span>`;
+        default: // 'none'
+          return `<span class="badge none"><span class="dot"></span>待投</span>` +
+                 `<span class="badge-sub">今日尚無 job</span>`;
+      }
+    }
+
+    /* ── 彙總 pills ── */
+    function renderSummary(visible){
+      const total  = visible.length;
+      const alerts = visible.filter(r => r.status_flag === 'alert').length;
+      const todo   = visible.filter(r => r.status_flag === 'none').length;
+      $('sumRow').innerHTML = `
+        <div class="sum-pill"><span class="sum-num">${total}</span><span class="sum-label">今日名單</span></div>
+        <div class="sum-pill${alerts ? ' alert' : ''}"><span class="sum-num">${alerts}</span><span class="sum-label">⚠ 異常需查</span></div>
+        <div class="sum-pill"><span class="sum-num">${todo}</span><span class="sum-label">待投（無 job）</span></div>`;
+    }
+
+    /* ── 渲染名單 ── */
+    function render(){
+      const hideTest = $('hideTest').checked;
+      const visible = rows.filter(r => !(hideTest && isTest(r.email)));
+
+      renderSummary(visible);
+
+      if (!visible.length){
+        $('rosterBody').innerHTML = '';
+        $('emptyHint').classList.remove('fa-hidden');
+        updateSelCount();
+        return;
+      }
+      $('emptyHint').classList.add('fa-hidden');
+
+      $('rosterBody').innerHTML = visible.map(r => {
+        const alertCls = r.status_flag === 'alert' ? ' is-alert' : '';
+        const testTag  = isTest(r.email) ? `<span class="test-tag">測試</span>` : '';
+        // pending 變更（改日期寫 pending、觸發日=結算日）
+        const pend = (r.preferred_report_day_pending != null &&
+                      r.preferred_report_day_pending !== r.preferred_report_day)
+          ? `<div class="r-pending">→ 待改為 ${r.preferred_report_day_pending} 日（觸發時結算）</div>` : '';
+        return `<tr data-email="${esc(r.email)}"${alertCls ? ' class="'+alertCls.trim()+'"' : ''}>
+          <td class="col-chk"><input type="checkbox" class="row-chk" data-email="${esc(r.email)}" checked /></td>
+          <td>
+            <div class="r-email">${esc(r.email)}${testTag}</div>
+            ${pend}
+          </td>
+          <td class="r-day">${r.preferred_report_day ?? '—'} 日</td>
+          <td>${statusBadge(r)}</td>
+        </tr>`;
+      }).join('');
+
+      $('rosterBody').querySelectorAll('.row-chk').forEach(c =>
+        c.addEventListener('change', updateSelCount));
+      updateSelCount();
+    }
+
+    /* ── 勾選計數 ── */
+    function updateSelCount(){
+      const boxes = [...document.querySelectorAll('.row-chk')];
+      const sel = boxes.filter(b => b.checked).length;
+      $('selCount').textContent = sel;
+      $('totCount').textContent = boxes.length;
+      $('chkHead').checked = boxes.length > 0 && sel === boxes.length;
+      $('chkHead').indeterminate = sel > 0 && sel < boxes.length;
+      // step 2 才啟用投放；step 1 恆停用
+      // $('fireBtn').disabled = sel === 0;
+    }
+
+    /* ── 載入名單 ── */
+    async function load(){
+      $('bootErr').classList.add('fa-hidden');
+      $('main').classList.add('fa-hidden');
+      $('bootLoad').classList.remove('fa-hidden');
+
+      const { data, error } = await supabase.rpc('admin_monthly_today_list');
+
+      $('bootLoad').classList.add('fa-hidden');
+      if (error){
+        $('bootErrMsg').textContent = error.message || String(error);
+        $('bootErr').classList.remove('fa-hidden');
+        return;
+      }
+      rows = Array.isArray(data) ? data : [];
+      const now = new Date();
+      $('tbDate').textContent =
+        `${now.getUTCFullYear()}/${String(now.getUTCMonth()+1).padStart(2,'0')}/${String(now.getUTCDate()).padStart(2,'0')}`;
+      render();
+      $('main').classList.remove('fa-hidden');
+    }
+
+    /* ── 事件 ── */
+    $('refreshBtn').addEventListener('click', load);
+    $('hideTest').addEventListener('change', render);
+    $('selAll').addEventListener('click', () => {
+      document.querySelectorAll('.row-chk').forEach(c => c.checked = true); updateSelCount();
+    });
+    $('selNone').addEventListener('click', () => {
+      document.querySelectorAll('.row-chk').forEach(c => c.checked = false); updateSelCount();
+    });
+    $('chkHead').addEventListener('change', () => {
+      const on = $('chkHead').checked;
+      document.querySelectorAll('.row-chk').forEach(c => c.checked = on); updateSelCount();
+    });
+
+    /* ── 啟動 ── */
+    (async function init(){
+      const ok = await initAdmin('monthly');
+      if (!ok) return;
+      await load();
+    })();
+  </script>
+</body>
+</html>
