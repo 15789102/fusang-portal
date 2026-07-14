@@ -43,6 +43,7 @@
     font-weight:500;font-size:12.5px;padding:7px 14px;border-radius:var(--radius-sm);transition:all .15s ease;
   }
   .btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
+  .btn-ghost:disabled{opacity:.45;cursor:not-allowed;}
   .toggle-test{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
   .toggle-test input{width:15px;height:15px;accent-color:var(--dawn);}
 
@@ -78,7 +79,23 @@
   .badge.none .dot{background:var(--faint);}
   .badge-sub{font-size:11px;color:var(--faint);margin-left:8px;font-feature-settings:"tnum" 1;}
 
-  /* 底部動作列（step 1：投放鈕停用，step 2 接入）*/
+  /* 投放即時結果欄（EF 回報後填入）*/
+  .col-fire{width:190px;}
+  .fire-cell{font-size:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .fire-badge{display:inline-flex;align-items:center;gap:6px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap;}
+  .fire-badge.fired{background:var(--wait-soft);color:var(--wait);}
+  .fire-badge.skip{background:#EEF0F2;color:var(--muted);}
+  .fire-badge.err{background:var(--fail-soft);color:var(--fail);}
+  .fire-badge.run{background:var(--dawn-soft);color:var(--dawn);}
+  .fire-detail{font-size:11px;color:var(--faint);max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+  .btn-retry{
+    background:var(--surface);border:1px solid var(--fail);color:var(--fail);
+    font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;transition:all .15s ease;
+  }
+  .btn-retry:hover:not(:disabled){background:var(--fail-soft);}
+  .btn-retry:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* 底部動作列 */
   .action-bar{
     display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;
   }
@@ -87,8 +104,29 @@
   .btn-fire:disabled{opacity:.4;cursor:not-allowed;}
   .action-note{font-size:12px;color:var(--faint);}
   .sel-count b{color:var(--dawn);font-weight:700;font-feature-settings:"tnum" 1;}
+  .dispatch-summary{font-size:12.5px;color:var(--muted);margin-top:10px;font-feature-settings:"tnum" 1;}
+  .dispatch-summary b{color:var(--ink);}
 
   .empty-hint{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+
+  /* 二次確認遮罩 */
+  .confirm-mask{
+    position:fixed;inset:0;z-index:80;background:rgba(27,30,39,.42);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .confirm-box{
+    background:var(--surface);border-radius:var(--radius);box-shadow:0 12px 40px rgba(27,30,39,.22);
+    max-width:440px;width:100%;padding:24px;
+  }
+  .confirm-title{font-family:"Fraunces",serif;font-weight:600;font-size:18px;margin:0 0 10px;}
+  .confirm-body{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
+  .confirm-body b{color:var(--ink);}
+  .confirm-warn{font-size:12.5px;color:var(--fail);background:var(--fail-soft);border-radius:var(--radius-sm);padding:9px 12px;margin:12px 0;}
+  .confirm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+  .btn-cancel{background:var(--surface);border:1px solid var(--hair-strong);color:var(--muted);font-weight:500;font-size:13px;padding:9px 18px;border-radius:var(--radius-sm);}
+  .btn-cancel:hover{border-color:var(--ink);color:var(--ink);}
+  .btn-confirm{background:var(--dawn);color:#fff;border:none;font-weight:600;font-size:13px;padding:9px 20px;border-radius:var(--radius-sm);}
+  .btn-confirm:hover{filter:brightness(.94);}
 </style>
 </head>
 <body>
@@ -96,13 +134,13 @@
   <main class="fa-wrap">
     <div class="fa-page-head">
       <h1 class="fa-page-title">月報投放</h1>
-      <p class="fa-page-sub">手動控制台 · 今日投放名單（step 1：可視名單）</p>
+      <p class="fa-page-sub">手動控制台 · 今日投放名單</p>
     </div>
 
     <!-- 手動模式橫幅 -->
     <div class="mode-banner">
       <span class="mode-dot"></span>
-      <span>目前為 <b>手動投放模式</b> — scheduler 自動排程已停用，每日名單由 Admin 進站確認後手動投放。</span>
+      <span>目前為 <b>手動投放模式</b> — scheduler 自動排程已停用,每日名單由 Admin 進站確認後手動投放。</span>
     </div>
 
     <!-- 載入 / 錯誤態 -->
@@ -140,6 +178,7 @@
               <th>帳號</th>
               <th>投放日</th>
               <th>最新一筆 job</th>
+              <th class="col-fire">投放結果</th>
             </tr>
           </thead>
           <tbody id="rosterBody"></tbody>
@@ -150,11 +189,26 @@
       <div class="action-bar">
         <button class="btn-fire" id="fireBtn" type="button" disabled>投放選中</button>
         <span class="sel-count">已選 <b id="selCount">0</b> / <span id="totCount">0</span></span>
-        <span class="action-note">投放觸發於 step 2 接入（做法 B：後端複用 scheduler 的 target/dedup/settle 邏輯，建成 SoT）。</span>
+        <span class="action-note" id="fireHint">投放前會二次確認。fire 成功後名單自動刷新為真實狀態。</span>
       </div>
+      <div class="dispatch-summary fa-hidden" id="dispatchSummary"></div>
 
     </div>
   </main>
+
+  <!-- 二次確認遮罩 -->
+  <div id="confirmMask" class="confirm-mask fa-hidden">
+    <div class="confirm-box">
+      <h3 class="confirm-title">確認投放</h3>
+      <p class="confirm-body">即將對選中的 <b id="cfNum">0</b> 個帳號觸發月報生成,target：<b id="cfTarget">—</b>。</p>
+      <p class="confirm-body">已投過（materials 已編）者會自動略過,不重複投放。</p>
+      <div class="confirm-warn" id="cfAlertWarn"></div>
+      <div class="confirm-actions">
+        <button class="btn-cancel" id="cfCancel" type="button">取消</button>
+        <button class="btn-confirm" id="cfConfirm" type="button">確認投放</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import { supabase, initAdmin } from './admin-common.js';
@@ -163,14 +217,17 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
       ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
+    const EF_URL = 'https://vrquktgjawayuioglqfn.supabase.co/functions/v1/admin-monthly-dispatch';
+
     // 測試帳號 local-part（memory：go-live 前清 session 後自然消失）
     const TEST_ACCOUNTS = ['ben880153', 'fusangvision'];
-    const isTest = email => TEST_ACCOUNTS.some(t => String(email || '').toLowerCase().startsWith(t + '@') ||
-                                                    String(email || '').toLowerCase().includes(t));
+    const isTest = email => TEST_ACCOUNTS.some(t =>
+      String(email || '').toLowerCase().includes(t));
 
     let rows = [];   // RPC 回傳的原始名單
+    let firing = false;
 
-    /* ── 時間距離：判斷卡住多久（純顯示，卡住門檻 6h 由後端旗標決定）── */
+    /* ── 時間距離：判斷卡住多久（純顯示,卡住門檻 6h 由後端旗標決定）── */
     function fmtAge(ts){
       if (!ts) return '';
       const diffMs = Date.now() - new Date(ts).getTime();
@@ -229,18 +286,19 @@
       $('rosterBody').innerHTML = visible.map(r => {
         const alertCls = r.status_flag === 'alert' ? ' is-alert' : '';
         const testTag  = isTest(r.email) ? `<span class="test-tag">測試</span>` : '';
-        // pending 變更（改日期寫 pending、觸發日=結算日）
         const pend = (r.preferred_report_day_pending != null &&
                       r.preferred_report_day_pending !== r.preferred_report_day)
           ? `<div class="r-pending">→ 待改為 ${r.preferred_report_day_pending} 日（觸發時結算）</div>` : '';
-        return `<tr data-email="${esc(r.email)}"${alertCls ? ' class="'+alertCls.trim()+'"' : ''}>
-          <td class="col-chk"><input type="checkbox" class="row-chk" data-email="${esc(r.email)}" checked /></td>
+        const emailAttr = esc(r.email);
+        return `<tr data-email="${emailAttr}"${alertCls ? ' class="'+alertCls.trim()+'"' : ''}>
+          <td class="col-chk"><input type="checkbox" class="row-chk" data-email="${emailAttr}" checked /></td>
           <td>
             <div class="r-email">${esc(r.email)}${testTag}</div>
             ${pend}
           </td>
           <td class="r-day">${r.preferred_report_day ?? '—'} 日</td>
           <td>${statusBadge(r)}</td>
+          <td class="col-fire"><div class="fire-cell" data-fire="${emailAttr}"></div></td>
         </tr>`;
       }).join('');
 
@@ -249,7 +307,11 @@
       updateSelCount();
     }
 
-    /* ── 勾選計數 ── */
+    /* ── 勾選 ── */
+    function selectedEmails(){
+      return [...document.querySelectorAll('.row-chk')]
+        .filter(b => b.checked).map(b => b.dataset.email);
+    }
     function updateSelCount(){
       const boxes = [...document.querySelectorAll('.row-chk')];
       const sel = boxes.filter(b => b.checked).length;
@@ -257,8 +319,112 @@
       $('totCount').textContent = boxes.length;
       $('chkHead').checked = boxes.length > 0 && sel === boxes.length;
       $('chkHead').indeterminate = sel > 0 && sel < boxes.length;
-      // step 2 才啟用投放；step 1 恆停用
-      // $('fireBtn').disabled = sel === 0;
+      $('fireBtn').disabled = firing || sel === 0;
+    }
+
+    /* ── 投放結果欄填入 ── */
+    function setFireCell(email, kind, text, withRetry){
+      const cell = document.querySelector(`.fire-cell[data-fire="${CSS.escape(email)}"]`);
+      if (!cell) return;
+      const cls = { fired:'fired', skipped_already:'skip', error:'err', running:'run' }[kind] || 'skip';
+      const label = { fired:'已觸發', skipped_already:'已投略過', error:'失敗', running:'投放中…' }[kind] || kind;
+      cell.innerHTML =
+        `<span class="fire-badge ${cls}">${label}</span>` +
+        (text ? `<span class="fire-detail" title="${esc(text)}">${esc(text)}</span>` : '') +
+        (withRetry ? `<button class="btn-retry" data-retry="${esc(email)}" type="button">重投</button>` : '');
+      if (withRetry){
+        cell.querySelector('.btn-retry')?.addEventListener('click', () => retryOne(email));
+      }
+    }
+
+    /* ── 呼叫 EF ── */
+    async function callDispatch(emails){
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('無有效 session,請重新登入');
+      const resp = await fetch(EF_URL, {
+        method:'POST',
+        headers:{ 'Authorization':`Bearer ${session.access_token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ emails }),
+      });
+      const body = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(body?.error ? `${body.error}${body.detail ? ': '+body.detail : ''}` : `HTTP ${resp.status}`);
+      return body;
+    }
+
+    /* ── 套用 EF 回報到各列 ── */
+    function applyResults(results){
+      (results || []).forEach(r => {
+        const withRetry = r.result === 'error';
+        setFireCell(r.email, r.result, r.detail || '', withRetry);
+      });
+    }
+
+    /* ── 投放選中（經二次確認）── */
+    $('fireBtn').addEventListener('click', () => {
+      const emails = selectedEmails();
+      if (!emails.length) return;
+      const alerts = rows.filter(r => emails.includes(r.email) && r.status_flag === 'alert').length;
+      $('cfNum').textContent = emails.length;
+      $('cfTarget').textContent = targetLabel();
+      $('cfAlertWarn').textContent = alerts
+        ? `注意：選中含 ${alerts} 個 ⚠異常帳號,投放會對其重試生成。確認要一併投放。` : '';
+      $('cfAlertWarn').style.display = alerts ? '' : 'none';
+      $('confirmMask').classList.remove('fa-hidden');
+    });
+    $('cfCancel').addEventListener('click', () => $('confirmMask').classList.add('fa-hidden'));
+
+    $('cfConfirm').addEventListener('click', async () => {
+      $('confirmMask').classList.add('fa-hidden');
+      const emails = selectedEmails();
+      if (!emails.length) return;
+
+      firing = true;
+      $('fireBtn').disabled = true;
+      $('fireBtn').textContent = '投放中…';
+      $('dispatchSummary').classList.add('fa-hidden');
+      emails.forEach(e => setFireCell(e, 'running', ''));
+
+      try {
+        const { summary, results } = await callDispatch(emails);
+        applyResults(results);
+        $('dispatchSummary').innerHTML =
+          `投放完成 · 觸發 <b>${summary.fired}</b>、已投略過 <b>${summary.skipped_already}</b>、失敗 <b>${summary.error}</b>` +
+          `（target ${summary.target_year}/${String(summary.target_month).padStart(2,'0')}）。3 秒後刷新名單…`;
+        $('dispatchSummary').classList.remove('fa-hidden');
+        // 讓 Admin 看一眼逐列結果,再拉 server 真實狀態
+        setTimeout(load, 3000);
+      } catch (e) {
+        $('dispatchSummary').innerHTML =
+          `<span style="color:var(--fail)">投放失敗：${esc(e.message || String(e))}</span>`;
+        $('dispatchSummary').classList.remove('fa-hidden');
+        emails.forEach(e2 => setFireCell(e2, 'error', '整批呼叫失敗', true));
+      } finally {
+        firing = false;
+        $('fireBtn').textContent = '投放選中';
+        updateSelCount();
+      }
+    });
+
+    /* ── 單獨重投（失敗 job）── */
+    async function retryOne(email){
+      const btn = document.querySelector(`.btn-retry[data-retry="${CSS.escape(email)}"]`);
+      if (btn) btn.disabled = true;
+      setFireCell(email, 'running', '');
+      try {
+        const { results } = await callDispatch([email]);
+        applyResults(results);
+      } catch (e) {
+        setFireCell(email, 'error', e.message || String(e), true);
+      }
+    }
+
+    /* ── target 顯示（前端僅供確認框顯示;真值以 EF 回報為準）── */
+    function targetLabel(){
+      const now = new Date();
+      // 與 SoT monthly_compute_target 等價：net = 觸發當下 UTC 年月
+      const y = now.getUTCFullYear();
+      const m = now.getUTCMonth() + 1;
+      return `${y}/${String(m).padStart(2,'0')}`;
     }
 
     /* ── 載入名單 ── */
@@ -279,6 +445,7 @@
       const now = new Date();
       $('tbDate').textContent =
         `${now.getUTCFullYear()}/${String(now.getUTCMonth()+1).padStart(2,'0')}/${String(now.getUTCDate()).padStart(2,'0')}`;
+      $('dispatchSummary').classList.add('fa-hidden');
       render();
       $('main').classList.remove('fa-hidden');
     }
