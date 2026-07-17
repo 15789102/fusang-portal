@@ -92,8 +92,9 @@
   .cell.generating{background:var(--wait-soft);color:var(--wait);}
   .cell.stuck{background:var(--fail-soft);color:var(--fail);border-color:var(--fail);}
   .cell.missed{background:var(--fail);color:#fff;}
-  .cell.today{background:var(--dawn-soft);color:var(--dawn);border-color:var(--dawn);}
-  .cell.upcoming{background:#F4F5F7;color:var(--faint);}
+  /* 今日待投：實心 dawn（需要 Admin 動作）— 與「卡住」淺底紅框明確區隔 */
+  .cell.today{background:var(--dawn);color:#fff;border-color:var(--dawn);}
+  .cell.upcoming{background:#F4F5F7;color:var(--faint);border-color:var(--hair-strong);}
   .cell.na{background:transparent;color:#D8DBE0;border:1px dashed var(--hair-strong);cursor:default;}
   .cell.na:hover{transform:none;box-shadow:none;}
   td.mcell{text-align:center;padding:8px 6px;}
@@ -173,8 +174,8 @@
         <span><i class="lg" style="background:var(--wait-soft);border:1px solid var(--wait)"></i>生成中（6h 內）</span>
         <span><i class="lg" style="background:var(--fail-soft);border:1px solid var(--fail)"></i>卡住（有 job 未完成）</span>
         <span><i class="lg" style="background:var(--fail)"></i>漏生成（無成功 job）</span>
-        <span><i class="lg" style="background:var(--dawn-soft);border:1px solid var(--dawn)"></i>今日待投</span>
-        <span><i class="lg" style="background:#F4F5F7"></i>未到期</span>
+        <span><i class="lg" style="background:var(--dawn)"></i>今日待投</span>
+        <span><i class="lg" style="background:#F4F5F7;border:1px solid var(--hair-strong)"></i>未到期</span>
         <span><i class="lg" style="border:1px dashed var(--hair-strong)"></i>開通前 N/A</span>
       </div>
     </div>
