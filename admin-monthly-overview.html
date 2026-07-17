@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 月報總覽</title>
+<style>
+  /* ── 月報總覽專屬（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+
+  .mode-banner{
+    display:flex;align-items:center;gap:10px;
+    background:var(--gold-soft);border:1px solid #E9D6A8;border-radius:var(--radius);
+    padding:11px 16px;margin-bottom:20px;font-size:12.5px;color:#8A6414;
+  }
+  .mode-banner b{color:var(--gold);font-weight:700;}
+  .mode-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex:0 0 auto;}
+
+  /* 彙總 pills */
+  .sum-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .sum-pill{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    padding:12px 18px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:10px;
+  }
+  .sum-pill.alert{border-color:var(--fail);background:var(--fail-soft);}
+  .sum-pill.warn{border-color:#E9D6A8;background:var(--gold-soft);}
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:22px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-pill.alert .sum-num{color:var(--fail);}
+  .sum-pill.warn .sum-num{color:var(--gold);}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+  /* 工具列 */
+  .toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .toolbar .spacer{flex:1 1 auto;}
+  .tb-date{font-size:13px;color:var(--muted);}
+  .tb-date b{color:var(--ink);font-weight:600;}
+  .btn-ghost{
+    background:var(--surface);border:1px solid var(--hair-strong);color:var(--muted);
+    font-weight:500;font-size:12.5px;padding:7px 14px;border-radius:var(--radius-sm);transition:all .15s ease;
+  }
+  .btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
+  .tgl{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .tgl input{width:15px;height:15px;accent-color:var(--dawn);}
+
+  /* 矩陣 */
+  .list-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);overflow-x:auto;}
+  table.mx{width:100%;border-collapse:collapse;font-size:13px;}
+  table.mx th{
+    text-align:left;font-size:11px;font-weight:600;color:var(--faint);
+    letter-spacing:.06em;text-transform:uppercase;
+    padding:11px 12px;border-bottom:1px solid var(--hair);background:#FBFBFC;white-space:nowrap;
+  }
+  table.mx th.mcol{text-align:center;font-feature-settings:"tnum" 1;letter-spacing:0;text-transform:none;font-size:11.5px;}
+  table.mx th.mcol.cur{color:var(--dawn);font-weight:700;}
+  table.mx td{padding:10px 12px;border-bottom:1px solid var(--hair);vertical-align:middle;}
+  table.mx tr:last-child td{border-bottom:none;}
+  table.mx tr.has-alert{box-shadow:inset 3px 0 0 var(--fail);}
+  table.mx tr.has-alert td.c-acct{background:var(--fail-soft);}
+
+  .c-acct{min-width:230px;}
+  .r-email{font-weight:600;color:var(--ink);}
+  .r-email .tag{font-size:10px;font-weight:700;letter-spacing:.06em;border-radius:4px;padding:2px 6px;margin-left:6px;
+                color:var(--muted);background:#EEF0F2;}
+  .r-flags{margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;}
+  .flag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:999px;}
+  .flag.err{background:var(--fail-soft);color:var(--fail);}
+  .flag.warn{background:var(--gold-soft);color:var(--gold);}
+
+  /* 訂閱/付費欄 */
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap;}
+  .pill.on{background:var(--ok-soft);color:var(--ok);}
+  .pill.off{background:#EEF0F2;color:var(--muted);}
+  .pill.sub{background:var(--dawn-soft);color:var(--dawn);}
+  .pill.pack{background:var(--gold-soft);color:var(--gold);}
+  .pill.free{background:#EEF0F2;color:var(--muted);}
+  .sub-note{font-size:10.5px;color:var(--faint);margin-top:3px;font-feature-settings:"tnum" 1;}
+
+  .c-day{text-align:center;font-feature-settings:"tnum" 1;white-space:nowrap;}
+  .c-day .pend{display:block;font-size:10.5px;color:var(--wait);margin-top:2px;}
+
+  /* 月格 */
+  .cell{
+    width:34px;height:34px;margin:0 auto;border-radius:8px;border:1px solid transparent;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;cursor:pointer;transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .cell:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(27,30,39,.15);}
+  .cell.sel{box-shadow:0 0 0 2px var(--ink);}
+  .cell.ok{background:var(--ok-soft);color:var(--ok);}
+  .cell.generating{background:var(--wait-soft);color:var(--wait);}
+  .cell.stuck{background:var(--fail-soft);color:var(--fail);border-color:var(--fail);}
+  .cell.missed{background:var(--fail);color:#fff;}
+  .cell.today{background:var(--dawn-soft);color:var(--dawn);border-color:var(--dawn);}
+  .cell.upcoming{background:#F4F5F7;color:var(--faint);}
+  .cell.na{background:transparent;color:#D8DBE0;border:1px dashed var(--hair-strong);cursor:default;}
+  .cell.na:hover{transform:none;box-shadow:none;}
+  td.mcell{text-align:center;padding:8px 6px;}
+
+  /* 圖例 */
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .lg{width:13px;height:13px;border-radius:4px;display:inline-block;}
+
+  /* 診斷面板 */
+  .diag-mask{position:fixed;inset:0;z-index:80;background:rgba(27,30,39,.42);display:flex;align-items:center;justify-content:center;padding:20px;}
+  .diag-box{background:var(--surface);border-radius:var(--radius);box-shadow:0 12px 40px rgba(27,30,39,.22);max-width:520px;width:100%;padding:24px;max-height:85vh;overflow-y:auto;}
+  .diag-title{font-family:"Fraunces",serif;font-weight:600;font-size:18px;margin:0 0 2px;}
+  .diag-sub{font-size:12.5px;color:var(--faint);margin-bottom:16px;font-feature-settings:"tnum" 1;}
+  .diag-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px;}
+  .diag-tbl td{padding:7px 0;border-bottom:1px solid var(--hair);}
+  .diag-tbl td:first-child{color:var(--muted);width:108px;font-size:12.5px;}
+  .diag-tbl td:last-child{font-weight:500;color:var(--ink);font-feature-settings:"tnum" 1;}
+  .diag-tbl tr:last-child td{border-bottom:none;}
+  .brk{color:var(--fail);font-weight:700;}
+  .advice{font-size:12.5px;line-height:1.65;border-radius:var(--radius-sm);padding:12px 14px;}
+  .advice.ok{background:var(--ok-soft);color:var(--ok);}
+  .advice.warn{background:var(--gold-soft);color:#8A6414;}
+  .advice.err{background:var(--fail-soft);color:var(--fail);}
+  .advice.info{background:#F4F5F7;color:var(--muted);}
+  .advice b{display:block;margin-bottom:4px;}
+  .diag-actions{display:flex;justify-content:flex-end;margin-top:18px;}
+  .btn-cancel{background:var(--surface);border:1px solid var(--hair-strong);color:var(--muted);font-weight:500;font-size:13px;padding:9px 18px;border-radius:var(--radius-sm);}
+  .btn-cancel:hover{border-color:var(--ink);color:var(--ink);}
+
+  .empty-hint{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">月報總覽</h1>
+      <p class="fa-page-sub">全體訂閱者 × 生成紀錄矩陣 · 抓漏抓卡</p>
+    </div>
+
+    <div class="mode-banner">
+      <span class="mode-dot"></span>
+      <span>此頁涵蓋 <b>全體、全月</b>（今日投放頁僅列當日輪到者）。卡住的 job 不論哪天投放，都會持續出現在此，直到處理完畢。</span>
+    </div>
+
+    <div id="bootLoad" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">載入總覽…</div>
+    </div>
+    <div id="bootErr" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">載入失敗</div>
+      <div id="bootErrMsg"></div>
+    </div>
+
+    <div id="main" class="fa-hidden">
+      <div class="sum-row" id="sumRow"></div>
+
+      <div class="toolbar">
+        <span class="tb-date">今日 UTC：<b id="tbDate">—</b> · 當期 target：<b id="tbTarget">—</b></span>
+        <label class="tgl"><input type="checkbox" id="onlyAlert" />僅顯示異常</label>
+        <label class="tgl"><input type="checkbox" id="hideTest" />隱藏測試帳號</label>
+        <span class="spacer"></span>
+        <button class="btn-ghost" id="refreshBtn" type="button">↻ 重新整理</button>
+      </div>
+
+      <div class="list-card">
+        <table class="mx">
+          <thead><tr id="mxHead"></tr></thead>
+          <tbody id="mxBody"></tbody>
+        </table>
+        <div id="emptyHint" class="empty-hint fa-hidden">無符合條件的帳號。</div>
+      </div>
+
+      <div class="legend">
+        <span><i class="lg" style="background:var(--ok-soft);border:1px solid var(--ok)"></i>完成</span>
+        <span><i class="lg" style="background:var(--wait-soft);border:1px solid var(--wait)"></i>生成中（6h 內）</span>
+        <span><i class="lg" style="background:var(--fail-soft);border:1px solid var(--fail)"></i>卡住（有 job 未完成）</span>
+        <span><i class="lg" style="background:var(--fail)"></i>漏生成（無成功 job）</span>
+        <span><i class="lg" style="background:var(--dawn-soft);border:1px solid var(--dawn)"></i>今日待投</span>
+        <span><i class="lg" style="background:#F4F5F7"></i>未到期</span>
+        <span><i class="lg" style="border:1px dashed var(--hair-strong)"></i>開通前 N/A</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="diagMask" class="diag-mask fa-hidden">
+    <div class="diag-box">
+      <h3 class="diag-title" id="dgEmail">—</h3>
+      <div class="diag-sub" id="dgPeriod">—</div>
+      <table class="diag-tbl" id="dgTbl"></table>
+      <div class="advice" id="dgAdvice"></div>
+      <div class="diag-actions"><button class="btn-cancel" id="dgClose" type="button">關閉</button></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+    const TEST_ACCOUNTS = ['ben880153', 'fusangvision'];
+    const isTest = e => TEST_ACCOUNTS.some(t => String(e || '').toLowerCase().includes(t));
+
+    let data = null;
+
+    const fmtAge = ts => {
+      if (!ts) return '—';
+      const h = (Date.now() - new Date(ts).getTime()) / 36e5;
+      if (h < 1)  return `${Math.max(0, Math.round(h*60))} 分鐘前`;
+      if (h < 24) return `${Math.floor(h)} 小時前`;
+      return `${Math.floor(h/24)} 天前`;
+    };
+    const fmtDate = ts => ts ? new Date(ts).toISOString().slice(0,10) : '—';
+    const mLabel  = p => `${String(p.y).slice(2)}/${String(p.m).padStart(2,'0')}`;
+
+    /* ── 診斷建議：規則推導（4 種 status 組合 × 兩段殘留筆數），非臆測 ── */
+    function advise(c){
+      const mat = c.materials_rows, rep = c.report_rows;
+      const hasJob = !!c.materials_status;
+
+      if (c.state === 'na')
+        return { k:'info', t:'開通前', d:'此月早於該帳號第一筆 job 的 target 月，無需處理。' };
+      if (c.state === 'upcoming')
+        return { k:'info', t:'未到期', d:'投放日尚未到，屬正常待投狀態。' };
+      if (c.state === 'today')
+        return { k:'info', t:'今日待投', d:'今日輪到此帳號，請至「月報投放」頁執行投放。' };
+      if (c.state === 'ok')
+        return { k:'ok', t:'完成', d:`materials compiled、report done。素材 ${mat} 筆、報告 ${rep} 筆。無需處理。` };
+      if (c.state === 'generating')
+        return { k:'warn', t:'生成中', d:`job 於 ${fmtAge(c.job_updated_at)}更新，仍在 6h 觀察窗內。稍後重新整理確認；超過 6h 未完成將轉為卡住。` };
+
+      // missed：無 job
+      if (c.state === 'missed' && !hasJob){
+        if (mat > 0 || rep > 0)
+          return { k:'err', t:'漏生成，且有殘留',
+                   d:`該月無 job 列，但殘留素材 ${mat} 筆、報告 ${rep} 筆（job 列曾被刪或未建）。直接補發會撞 unique key，須先清該月殘留，或等冪等修復（寫入前 DELETE）落地。` };
+        return { k:'err', t:'漏生成',
+                 d:'該月無 job、無殘留，資料乾淨。可直接補發（補發入口於 step 3b，須待冪等修復落地）。' };
+      }
+
+      // stuck：有 job 未完成
+      if (c.materials_status === 'compiled' && c.report_status !== 'done')
+        return { k:'err', t:'report 段掛了',
+                 d:`素材完整（${mat} 筆），不應重跑 materials。直接重投會被 dedup 擋（materials 已 compiled）；強行繞過會撞 uniq_palace_without_transform。正解為「只補 report」入口（另 ticket）。報告殘留 ${rep} 筆。` };
+      if (c.materials_status !== 'compiled' && mat > 0)
+        return { k:'err', t:'materials 段掛了，有殘留',
+                 d:`素材殘留 ${mat} 筆但未達 compiled。重投前須先清該月殘留，否則撞 unique key（冪等修復未落地前）。` };
+      if (c.materials_status !== 'compiled')
+        return { k:'err', t:'materials 段掛了，資料乾淨',
+                 d:'素材 0 筆、無殘留。dedup 會放行，可直接重投。' };
+      return { k:'err', t:'異常', d:`materials=${c.materials_status} / report=${c.report_status}，素材 ${mat} 筆、報告 ${rep} 筆。` };
+    }
+
+    function openDiag(row, c){
+      $('dgEmail').textContent = row.email;
+      $('dgPeriod').textContent = `${c.y}/${String(c.m).padStart(2,'0')} · 投放日 ${row.preferred_report_day ?? '—'} 日`;
+      const brk = (s, on) => on ? `<span class="brk">${s}　← 斷點</span>` : s;
+      const noJob = !c.materials_status;
+      $('dgTbl').innerHTML = `
+        <tr><td>job 列</td><td>${noJob ? '✗ 不存在' : `✓ 存在（建於 ${fmtDate(c.job_created_at)}）`}</td></tr>
+        <tr><td>materials</td><td>${noJob ? '—' : brk(esc(c.materials_status), c.materials_status !== 'compiled')}</td></tr>
+        <tr><td>report</td><td>${noJob ? '—' : brk(esc(c.report_status), c.materials_status === 'compiled' && c.report_status !== 'done')}</td></tr>
+        <tr><td>最後更新</td><td>${noJob ? '—' : `${fmtDate(c.job_updated_at)} · ${fmtAge(c.job_updated_at)}`}</td></tr>
+        <tr><td>素材殘留</td><td>${c.materials_rows} 筆</td></tr>
+        <tr><td>報告本文</td><td>${c.report_rows} 筆</td></tr>`;
+      const a = advise(c);
+      $('dgAdvice').className = 'advice ' + a.k;
+      $('dgAdvice').innerHTML = `<b>${esc(a.t)}</b>${esc(a.d)}`;
+      $('diagMask').classList.remove('fa-hidden');
+    }
+    $('dgClose').addEventListener('click', () => $('diagMask').classList.add('fa-hidden'));
+
+    function render(){
+      const onlyAlert = $('onlyAlert').checked;
+      const hideTest  = $('hideTest').checked;
+      // RPC 已依 alert_count desc 排序（異常優先）
+      const rows = data.rows.filter(r =>
+        !(hideTest && isTest(r.email)) &&
+        !(onlyAlert && r.alert_count === 0 && !r.zero_job && !r.paid_not_opened && !r.drift && !r.no_chart));
+
+      const s = data.summary;
+      $('sumRow').innerHTML = `
+        <div class="sum-pill"><span class="sum-num">${s.total}</span><span class="sum-label">母體（開通 ∪ 付費）</span></div>
+        <div class="sum-pill"><span class="sum-num">${s.opened}</span><span class="sum-label">月報開通中</span></div>
+        <div class="sum-pill"><span class="sum-num">${s.paid}</span><span class="sum-label">付費中</span></div>
+        <div class="sum-pill${s.rows_with_alert ? ' alert' : ''}"><span class="sum-num">${s.rows_with_alert}</span><span class="sum-label">有異常月份</span></div>
+        <div class="sum-pill${s.drift ? ' alert' : ''}"><span class="sum-num">${s.drift}</span><span class="sum-label">訂閱快取 drift</span></div>
+        <div class="sum-pill${s.paid_not_opened ? ' warn' : ''}"><span class="sum-num">${s.paid_not_opened}</span><span class="sum-label">已付費未開通</span></div>`;
+
+      $('mxHead').innerHTML =
+        `<th>帳號</th><th>月報</th><th>付費</th><th style="text-align:center">投放日</th>` +
+        data.periods.map(p => {
+          const cur = p.y === data.target.year && p.m === data.target.month;
+          return `<th class="mcol${cur ? ' cur' : ''}">${mLabel(p)}</th>`;
+        }).join('');
+
+      if (!rows.length){
+        $('mxBody').innerHTML = '';
+        $('emptyHint').classList.remove('fa-hidden');
+        return;
+      }
+      $('emptyHint').classList.add('fa-hidden');
+
+      $('mxBody').innerHTML = rows.map((r, ri) => {
+        const flags = [];
+        if (r.zero_job)        flags.push('<span class="flag err">⚠ 開通中但零 job</span>');
+        if (r.no_chart)        flags.push('<span class="flag err">⚠ 無盤</span>');
+        if (r.drift)           flags.push('<span class="flag err">⚠ 訂閱快取 drift</span>');
+        if (r.paid_not_opened) flags.push('<span class="flag warn">已付費未開通</span>');
+
+        const payPill = { sub:'<span class="pill sub">月訂閱</span>',
+                          pack:'<span class="pill pack">年方案</span>',
+                          free:'<span class="pill free">免費</span>' }[r.pay_status];
+        const payNote = r.pay_status === 'pack' && r.monthly_access_expires_at
+          ? `<div class="sub-note">到期 ${fmtDate(r.monthly_access_expires_at)}</div>`
+          : (r.pay_status === 'sub' && r.current_period_end
+              ? `<div class="sub-note">週期至 ${fmtDate(r.current_period_end)}</div>` : '');
+
+        const pend = (r.preferred_report_day_pending != null &&
+                      r.preferred_report_day_pending !== r.preferred_report_day)
+          ? `<span class="pend">→ ${r.preferred_report_day_pending} 日</span>` : '';
+
+        const cells = r.cells.map((c, ci) =>
+          `<td class="mcell"><div class="cell ${c.state}" data-r="${ri}" data-c="${ci}"
+             title="${c.y}/${String(c.m).padStart(2,'0')}">${
+               {ok:'✓', generating:'◐', stuck:'!', missed:'✕', today:'●', upcoming:'', na:'–'}[c.state] ?? ''
+             }</div></td>`).join('');
+
+        return `<tr${r.alert_count > 0 ? ' class="has-alert"' : ''}>
+          <td class="c-acct">
+            <div class="r-email">${esc(r.email)}${isTest(r.email) ? '<span class="tag">測試</span>' : ''}</div>
+            ${flags.length ? `<div class="r-flags">${flags.join('')}</div>` : ''}
+          </td>
+          <td>${r.opened ? '<span class="pill on">開通中</span>' : '<span class="pill off">未開通</span>'}</td>
+          <td>${payPill}${payNote}</td>
+          <td class="c-day">${r.preferred_report_day ?? '—'}${pend}</td>
+          ${cells}
+        </tr>`;
+      }).join('');
+
+      $('mxBody').querySelectorAll('.cell').forEach(el => {
+        if (el.classList.contains('na')) return;
+        el.addEventListener('click', () => {
+          const r = rows[+el.dataset.r];
+          openDiag(r, r.cells[+el.dataset.c]);
+        });
+      });
+    }
+
+    async function load(){
+      $('bootErr').classList.add('fa-hidden');
+      $('main').classList.add('fa-hidden');
+      $('bootLoad').classList.remove('fa-hidden');
+
+      const { data: d, error } = await supabase.rpc('admin_monthly_overview');
+
+      $('bootLoad').classList.add('fa-hidden');
+      if (error){
+        $('bootErrMsg').textContent = error.message || String(error);
+        $('bootErr').classList.remove('fa-hidden');
+        return;
+      }
+      data = d;
+      const n = new Date();
+      $('tbDate').textContent   = `${n.getUTCFullYear()}/${String(n.getUTCMonth()+1).padStart(2,'0')}/${String(n.getUTCDate()).padStart(2,'0')}`;
+      $('tbTarget').textContent = `${data.target.year}/${String(data.target.month).padStart(2,'0')}`;
+      render();
+      $('main').classList.remove('fa-hidden');
+    }
+
+    $('refreshBtn').addEventListener('click', load);
+    $('onlyAlert').addEventListener('change', render);
+    $('hideTest').addEventListener('change', render);
+
+    (async function init(){
+      const ok = await initAdmin('overview');
+      if (!ok) return;
+      await load();
+    })();
+  </script>
+</body>
+</html>
