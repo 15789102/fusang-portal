@@ -35,6 +35,7 @@ const ADMIN_NAV = [
   { key: 'charts',   label: '命盤篩選', href: 'admin-charts.html' },
   { key: 'tickets',  label: '單獨問事', href: 'admin-tickets.html' },
   { key: 'monthly',  label: '月報投放', href: 'admin-monthly.html' },
+  { key: 'overview', label: '月報總覽', href: 'admin-monthly-overview.html' },
 ];
 
 // ─── 視覺 tokens + 共用樣式 ──────────────────────────────────
