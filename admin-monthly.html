@@ -217,7 +217,7 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
       ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
-    const EF_URL = 'https://vrquktgjawayuioglqfn.supabase.co/functions/v1/admin-monthly-dispatch';
+    const EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/admin-monthly-dispatch`;
 
     // 測試帳號 local-part（memory：go-live 前清 session 後自然消失）
     const TEST_ACCOUNTS = ['ben880153', 'fusangvision'];
