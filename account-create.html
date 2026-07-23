@@ -348,6 +348,11 @@
     //        → POST submit_birth_data → 跳轉 submitted.html
     //   三段分工:前端算真太陽時 → process_chart 直傳日期/轉編碼 → 引擎做晚子+1
     //            前端只做「真太陽時實際換日」,不對晚子做 ±1(避免雙重位移)。
+    //
+    //   v7 變更(註冊原子性票 / 決策 5-A):submit_birth_data 回傳的 job_id 可能為
+    //     null(該 EF 的 Step 4 已降為 best-effort)。跳轉時改為「僅在有值時才帶入
+    //     job_id 參數」,避免 URLSearchParams 把 null 字串化成 "null" 而繞過
+    //     submitted.html 的 falsy 守衛。此為顯示層調整,不影響任何流程判斷。
     // ============================================================
     const SUPABASE_URL = window.CFG.SUPABASE_URL;
     const SUPABASE_ANON_KEY = window.CFG.SUPABASE_ANON_KEY;
@@ -717,7 +722,13 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
-          const params = new URLSearchParams({ job_id: data.job_id, email: base.email });
+          // v7(決策 5-A)：submit_birth_data 的 Step 4(撈 job) 已降為 best-effort,
+          //   撈不到時回 job_id: null。URLSearchParams 會把 null 字串化成 "null"
+          //   (truthy) → 繞過 submitted.html 的 falsy 守衛 → 參考編號欄顯示 "null"。
+          //   故僅在確實有值時才帶入此參數;缺參數時 submitted.html 自然略過參考編號,
+          //   其餘流程(信箱提示、完成通知信、命盤)不受影響。
+          const params = new URLSearchParams({ email: base.email });
+          if (data.job_id) params.set('job_id', data.job_id);
           window.location.href = `submitted.html?${params.toString()}`;
         } catch (err) {
           console.error('Submit error:', err);
