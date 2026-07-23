@@ -523,8 +523,8 @@
   const CONFIG = {
     /* ── 金流旗標 ──
        現由 user_profiles 真實欄位帶入（見主流程；以下為讀取失敗時的保險預設）── */
-    hasTransformAccess: false,   // 第一層：本命/大限/流年（sihua_unlocked）
-    monthlySubscribed:  false,   // 第二層：流月（monthly_subscribed）
+    hasTransformAccess: false,   // 第一層：本命/大限/流年（user_profiles.sihua_unlocked）
+    monthlySubscribed:  false,   // 第二層：流月（SoT #3 monthly_subscribed_live() RPC，非快取欄）
 
     /* ── 命宮摘要來源（請確認這三個值；填不對會自動退回靜態副文，不會壞頁）── */
     excerpt: {
@@ -606,20 +606,40 @@
     const email = session.user.email || '';
     const userId = session.user.id;
 
-    // display_name + 付費狀態（一次撈齊；撈不到就用 CONFIG 預設）
+    // display_name + 四化解鎖 + 月報訂閱狀態
+    //
+    // sihua_unlocked 仍讀 user_profiles：一次性買斷、無到期概念，付款當下寫入即為終值。
+    //
+    // 月報訂閱狀態一律走 SoT #3 monthly_subscribed_live()（後端即時判定），
+    // 不可改回讀 user_profiles.monthly_subscribed 快取欄：該欄只由 Stripe webhook
+    // 觸發的 recalc_monthly_subscribed() 寫入，而權利到期本身不產生任何 Stripe 事件
+    // → 年方案到期後永停在 true → 已無權者仍看到「已訂閱」而付費牆消失。
+    //
+    // 兩者可並行（一次 round trip）。用 allSettled 而非 all：任一方失敗不影響另一方，
+    // 各自獨立 fail-closed。RPC 失敗一律視為未訂閱 → 顯示付費牆（安全方向）。
     let displayName = email.split('@')[0] || F.t('dash.friend');
-    try {
-      const { data: profile } = await supabase
+    const [profileRes, liveRes] = await Promise.allSettled([
+      supabase
         .from('user_profiles')
-        .select('display_name, sihua_unlocked, monthly_subscribed')
+        .select('display_name, sihua_unlocked')
         .eq('id', userId)
-        .maybeSingle();
+        .maybeSingle(),
+      supabase.rpc('monthly_subscribed_live', { p_user_id: userId }),
+    ]);
+
+    // supabase-js v2 不會 throw DB 錯誤，回 { data, error } → 必須顯式檢查 error
+    if (profileRes.status === 'fulfilled' && !profileRes.value.error) {
+      const profile = profileRes.value.data;
       if (profile) {
         if (profile.display_name) displayName = profile.display_name;
         CONFIG.hasTransformAccess = profile.sihua_unlocked === true;
-        CONFIG.monthlySubscribed  = profile.monthly_subscribed === true;
       }
-    } catch (_) { /* 靜默 fallback，沿用 CONFIG 預設 */ }
+    }
+
+    // 無條件覆寫（不依賴 CONFIG 初值），確保任何失敗路徑都落在 false
+    CONFIG.monthlySubscribed =
+      (liveRes.status === 'fulfilled' && !liveRes.value.error && liveRes.value.data === true);
+
     S.displayName = displayName;
 
     // 並行撈四層
@@ -717,7 +737,9 @@
   /* 第二層付費牆：流月導航 → 導去 pricing */
   function renderMonthlySub() {
     const host = document.getElementById('sub-monthly');
-    if (CONFIG.monthlySubscribed) { host.innerHTML = ''; return; } // 已訂閱 → 不顯示
+    // CONFIG.monthlySubscribed 來源為 SoT #3 RPC（見主流程），失敗時為 false
+    // → 落在此處的「顯示付費牆」分支，方向正確（純顯示，實際門禁在 monthly.html + RLS）
+    if (CONFIG.monthlySubscribed) { host.innerHTML = ''; return; } // 有效訂閱 → 不顯示
     host.innerHTML =
       '<div class="monthly-sub">' +
         '<div class="ms-line"><span class="lock">⟳</span> ' + F.t('dash.subLine') + '</div>' +
