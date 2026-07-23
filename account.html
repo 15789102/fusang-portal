@@ -359,6 +359,7 @@
     birth: undefined,        // undefined=未載入, null=無資料, object=有
     sessionId: undefined,    // undefined=未載入, null=尚未生成, string=有
     billing: undefined,      // undefined=未載入, null/object
+    subscribedLive: false,   // SoT #3 monthly_subscribed_live() 結果；預設 false = fail-closed
     pendingDay: undefined,   // 本 session 剛存的 pending(覆蓋 billing)
     deliveryCanceled: false, // 本 session 剛取消月報
   };
@@ -408,14 +409,36 @@
     const monthlyEl = document.getElementById('acc-monthly-status');
     if (!sihuaEl || !monthlyEl) return;
     const badge = (cls, txt) => `<span class="acc-badge ${cls}"><span class="dot"></span>${txt}</span>`;
+
+    // 四化為一次性買斷、無到期概念 → 讀 user_profiles 欄位即為終值
     sihuaEl.innerHTML = (p && p.sihua_unlocked === true) ? badge('on', F.t('acc.sihuaOn')) : badge('off', F.t('acc.sihuaOff'));
-    const subscribed = !!(p && p.monthly_subscribed === true);
+
+    // ── 月報徽章 ──
+    // 【有無權】一律以 SoT #3 monthly_subscribed_live() 為準（見主流程 RPC）。
+    //   不可改回讀 user_profiles.monthly_subscribed 快取欄：該欄只由 Stripe webhook
+    //   觸發的 recalc 寫入，權利到期本身不產生事件 → 年方案到期後永停在 true。
+    const subscribed = S.subscribedLive === true;
+    if (!subscribed) { monthlyEl.innerHTML = badge('off', F.t('acc.subNone')); return; }
+
+    // 【哪種權】三態展開。此分支條件必須與 monthly_subscribed_live() 的月訂閱分支
+    //   逐字保持一致，亦與 admin_dashboard_overview.subscription_tier 的 'monthly'
+    //   分支、admin_monthly_overview.pay_status 的 'sub' 分支一致（月訂閱優先）。
+    //   SQL: coalesce(status in ('active','trialing'), false)
+    //        and coalesce(current_period_end is null or current_period_end > now(), true)
     const status = p && p.subscription_status;
+    const cpe = p && p.current_period_end;
+    const monthlyActive =
+      (status === 'active' || status === 'trialing') &&
+      (cpe == null || new Date(cpe).getTime() > Date.now());
+    if (monthlyActive) { monthlyEl.innerHTML = badge('on', F.t('acc.subActive')); return; }
+
+    // 走到這裡：SoT #3 為 true 但月訂閱分支不成立 ⇒ 必為年方案有效
+    //   ⇒ monthly_access_expires_at 理論上必為未來時間。
+    //   仍保留 subYes 作為防禦性 fallback（欄位意外缺失時不顯示壞掉的日期）。
     const expires = p && p.monthly_access_expires_at;
-    if (!subscribed) monthlyEl.innerHTML = badge('off', F.t('acc.subNone'));
-    else if (status === 'active' || status === 'trialing') monthlyEl.innerHTML = badge('on', F.t('acc.subActive'));
-    else if (expires) monthlyEl.innerHTML = badge('on', F.t('acc.subUntil').replace('{date}', fmtDate(expires)));
-    else monthlyEl.innerHTML = badge('on', F.t('acc.subYes'));
+    monthlyEl.innerHTML = expires
+      ? badge('on', F.t('acc.subUntil').replace('{date}', fmtDate(expires)))
+      : badge('on', F.t('acc.subYes'));
   }
 
   function renderReportDayDisplay() {
@@ -550,12 +573,22 @@
       S.sessionId = job?.chart_session_id || null;
     } catch (_) { S.sessionId = null; }
 
-    try {
-      const { data: billing } = await supabase.from('user_profiles')
-        .select('sihua_unlocked, monthly_subscribed, subscription_status, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
-        .eq('id', S.userId).maybeSingle();
-      S.billing = billing || null;
-    } catch (_) { S.billing = null; }
+    // billing 欄位 + 月報訂閱即時判定
+    //   select 移除 monthly_subscribed（快取欄，已不作顯示依據）、補 current_period_end
+    //   （renderPlanStatus 的月訂閱分支需要，以與後端判定逐字同源）。
+    //   訂閱判定另走 SoT #3 RPC；用 allSettled 讓兩者各自獨立 fail-closed。
+    const [billingRes, liveRes] = await Promise.allSettled([
+      supabase.from('user_profiles')
+        .select('sihua_unlocked, subscription_status, current_period_end, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
+        .eq('id', S.userId).maybeSingle(),
+      supabase.rpc('monthly_subscribed_live', { p_user_id: S.userId }),
+    ]);
+    // supabase-js v2 不 throw DB 錯誤，回 { data, error } → 必須顯式檢查 error
+    S.billing = (billingRes.status === 'fulfilled' && !billingRes.value.error)
+      ? (billingRes.value.data || null) : null;
+    // 無條件覆寫（不依賴初值），確保任何失敗路徑都落在 false
+    S.subscribedLive =
+      (liveRes.status === 'fulfilled' && !liveRes.value.error && liveRes.value.data === true);
 
     renderStatic();
 
