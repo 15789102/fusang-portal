@@ -426,6 +426,15 @@
     .gen-card.done .gen-card-status { color: var(--accent-deep); }
     .gen-card-arrow { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 14px; color: var(--accent-soft); opacity: 0; transition: opacity 0.2s; }
     .gen-card.done:hover .gen-card-arrow { opacity: 1; }
+    /* T15：stuck（超過門檻仍未完成）— 如實標示，不安撫、不提供重試 */
+    .gen-card.stuck { border-color: var(--rule); background: var(--bg-card); }
+    .gen-card-alert { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--ink-light); color: var(--ink-mid); display: flex; align-items: center; justify-content: center; font-size: 13px; font-family: var(--font-serif-en); }
+    .gen-card.stuck .gen-card-status { color: var(--ink-mid); }
+    .gen-card-hint { font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-light); letter-spacing: 0.03em; margin-top: 3px; }
+    /* T15：月份 tab 的逐月狀態 */
+    .month-tab.pending { opacity: 0.62; cursor: default; }
+    .month-tab.pending:hover { border-color: var(--rule); color: var(--ink-mid); }
+    .month-tab-state { font-size: 10px; letter-spacing: 0.08em; color: var(--ink-light); }
 
     /* ============ Context 個人化面板 ============ */
     .ctx-panel { margin: 40px 0; padding: 28px 30px; background: var(--bg-soft-2); border-radius: 2px; position: relative; overflow: hidden; }
@@ -933,6 +942,15 @@
   const MONTHLY_TRIGGER_URL = window.CFG.WEBHOOK_MONTHLY;
   const POLL_INTERVAL_MS = 15000;
 
+  // ── T15：stuck 判定門檻 ──
+  // 業主實測：單 job 正常 18–25 分；兩帳號並發 4 個仍維持 2x 分（生成並行、非排隊，
+  // 並發不顯著放大單 job 耗時）。60 分 ≈ 正常上限 2.4× 緩衝，涵蓋 Gemini 重試／n8n 抖動。
+  // 原則：寧可晚判 stuck，不可早判（誤判「壞了」比「慢了」傷害大）。
+  // 基準必須是 DB 的 job.created_at，不可用前端 poll 計數——後者在使用者重整頁面後
+  // 會歸零，導致永遠判不出 stuck、輪詢永不收斂。
+  // 單一常數，上線後可依真實數據調整。
+  const STUCK_THRESHOLD_MS = 60 * 60 * 1000;
+
   // 'free'：可看 上月 / 本月 / 下月；'paid'：上月 / 本月 / 未來三月
   const userTier = 'paid';
 
@@ -1006,6 +1024,10 @@
   let introMode = null;       // 'pitch' | 'generating' | null
   let lastJobs = [];
   let lastYears = [];
+  // T15-C2：currentYear 內「確實有 report」的月份集合。
+  // availableMonths 現在會納入「只有 job、還沒有 report」的月份（用於顯示逐月狀態），
+  // 故需要這個集合來決定哪些 tab 可點——沒有 report 的月點下去會落到 loadMonth 的錯誤分支。
+  let reportMonthSet = new Set();
 
   function showView(id) {
     currentView = id;
@@ -1147,7 +1169,7 @@
     grid.appendChild(cta);
   }
 
-  async function loadYear(year) {
+  async function loadYear(year, preferMonth) {
     currentYear = year;
     showView('view-loading');
     document.getElementById('loading-title').textContent = tx('mo.loadingYearTitle').replace('{year}', year);
@@ -1163,17 +1185,59 @@
 
     if (error) { showError(tx('mo.errMonthsFail').replace('{year}', year) + error.message); return; }
 
-    const months = [...new Set((rows || []).map(r => r.valid_month_start).filter(m => m != null))].sort((a, b) => a - b);
-    if (months.length === 0) { showError(tx('mo.errNoYearData').replace('{year}', year)); return; }
+    // 有 report 的月份（＝可讀）
+    const reportMonths = [...new Set((rows || []).map(r => r.valid_month_start).filter(m => m != null))];
+    reportMonthSet = new Set(reportMonths.map(Number));
+
+    // T15-C2：併入該年「有 job 但還沒有 report」的月份，讓 tab 能顯示 generating / stuck。
+    // 不併的話，還在生成的月份會整個從 tab 消失，使用者誤判該月不存在。
+    const jobMonths = (lastJobs || [])
+      .filter(j => Number(j.target_year) === Number(year))
+      .map(j => Number(j.target_month));
+
+    const months = [...new Set([...reportMonths.map(Number), ...jobMonths])]
+      .filter(m => m != null && !Number.isNaN(m))
+      .sort((a, b) => a - b);
+
+    // T15-D：原本這裡是 showError(errNoYearData) → 整頁紅字錯誤頁。
+    // 該年只有卡住／生成中的 job 時，使用者點進來會吃到錯誤頁。
+    // 改為退回生成畫面顯示逐月狀態；真的完全無資料才報錯。
+    if (months.length === 0) {
+      if ((lastJobs || []).length > 0) { renderGenerating(lastJobs); showView('view-intro'); return; }
+      showError(tx('mo.errNoYearData').replace('{year}', year));
+      return;
+    }
 
     availableMonths = months.map(m => ({ year, month: m }));
     visibleMonths = computeVisibleMonths(availableMonths);
 
+    // visibleMonths 可能為空（例如該年的月份全部落在 rel > 3 之外）→ 退回年份清單，不當機
+    if (visibleMonths.length === 0) {
+      renderYears(lastYears && lastYears.length ? lastYears : [year]);
+      showView('view-years');
+      return;
+    }
+
     const base = nowAsLunarBase();
-    let defaultPick = visibleMonths.find(v => v.year === base.year && v.month === base.month)
-      || visibleMonths.find(v => v.unlocked) || visibleMonths[0];
+    // 預設月優先序：呼叫端指定且可讀 → 本月 → 第一個可讀月 → 第一個可見月
+    let defaultPick =
+         (preferMonth != null
+            ? visibleMonths.find(v => v.month === Number(preferMonth) && v.unlocked && reportMonthSet.has(v.month))
+            : null)
+      || visibleMonths.find(v => v.year === base.year && v.month === base.month && reportMonthSet.has(v.month))
+      || visibleMonths.find(v => v.unlocked && reportMonthSet.has(v.month))
+      || visibleMonths.find(v => reportMonthSet.has(v.month));
 
     renderMonthTabs();
+
+    // 該年可見月全部尚無 report → 不呼叫 loadMonth（會落到「無內容」錯誤分支），
+    // 改回生成畫面顯示狀態
+    if (!defaultPick) {
+      if ((lastJobs || []).length > 0) { renderGenerating(lastJobs); showView('view-intro'); return; }
+      showError(tx('mo.errNoYearData').replace('{year}', year));
+      return;
+    }
+
     await loadMonth(defaultPick.year, defaultPick.month);
     showView('view-hub');
   }
@@ -1197,14 +1261,31 @@
     const wrap = document.getElementById('month-tabs');
     wrap.innerHTML = '';
     visibleMonths.forEach(v => {
+      // T15-C2：可讀＝該月有 report。沒有 report 的月改顯示自己那個 job 的狀態，
+      // 且不可點——點下去會落到 loadMonth 的「無內容」錯誤分支。
+      // 零額外查詢：lastJobs 已是模組級變數。
+      const hasReport = reportMonthSet.has(Number(v.month));
+      const st = hasReport ? null : monthJobState(v.year, v.month);
+      const pending = !hasReport && (st === 'generating' || st === 'stuck');
+
       const tab = document.createElement('div');
-      tab.className = 'month-tab' + (v.unlocked ? '' : ' locked') + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
+      tab.className = 'month-tab'
+        + (v.unlocked ? '' : ' locked')
+        + (pending ? ' pending' : '')
+        + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
+
       const rl = relLabel(v.rel) || tx('mo.monthSuffix').replace('{m}', v.month);
+      const stateLabel = pending
+        ? (st === 'stuck' ? stuckText() : tx('mo.genCardGenerating'))
+        : '';
+
       tab.innerHTML = `
         <span class="month-tab-ym">${lunarToSolarYM(v.year, v.month)}</span>
         <span class="month-tab-label">${escapeHtml(rl)}</span>
+        ${stateLabel ? `<span class="month-tab-state">${escapeHtml(stateLabel)}</span>` : ''}
         ${v.unlocked ? '' : `<span class="month-tab-lock">${escapeHtml(tx('mo.tabLockUpgrade'))}</span>`}`;
-      if (v.unlocked) {
+
+      if (v.unlocked && hasReport) {
         tab.addEventListener('click', () => loadMonth(v.year, v.month));
       }
       wrap.appendChild(tab);
@@ -1713,17 +1794,58 @@
   // ===================================================================
   // 訂閱機制（無訂閱表，以 monthly_generation_jobs 有無 job 判斷訂閱狀態）
   // ===================================================================
+  // T15-E：加 chart_session_id 過濾。原本只以 user_email 為範圍，而閱讀路徑
+  // （fetchAvailableYears / loadYear / loadMonth）全部以 chart_session_id 為範圍。
+  // 使用者若曾改盤／重算產生第二個 session，舊 session 的未完成 job 會混入，
+  // 產生讀不到內容的幽靈月卡。兩邊範圍必須一致。
+  // T15-B：select 增 created_at，作為 stuck 判定基準（見 STUCK_THRESHOLD_MS）。
   async function fetchJobs() {
     const { data, error } = await supabase
       .from(MONTHLY_JOBS_TABLE)
-      .select('target_year, target_month, materials_status, report_status')
+      .select('target_year, target_month, materials_status, report_status, created_at')
       .eq('user_email', userEmail)
+      .eq('chart_session_id', chartSessionId)
       .order('target_year', { ascending: false })
       .order('target_month', { ascending: false });
     if (error) { console.warn('[monthly] job 查詢失敗：', error.message); return []; }
     return data || [];
   }
-  function jobDone(j) { return j.report_status === 'done'; }
+
+  function jobDone(j) { return j && j.report_status === 'done'; }
+
+  // T15 核心：逐 job 三態判定。'done' | 'stuck' | 'generating'
+  // stuck 為前端即時計算（now - created_at），不寫回 DB、不是 job status。
+  // 好處：無狀態，不需新欄位或 cron，頁面重整也不會失憶。
+  // 缺口：admin 後台若未做同樣計算，看不到 stuck（已記 backlog）。
+  function jobState(j) {
+    if (jobDone(j)) return 'done';
+    const ts = j && j.created_at ? Date.parse(j.created_at) : NaN;
+    if (!Number.isNaN(ts) && (Date.now() - ts) > STUCK_THRESHOLD_MS) return 'stuck';
+    return 'generating';
+  }
+
+  // i18n fallback：D6 的兩個新 key 若尚未進 i18n.js，避免畫面出現原始 key 字串。
+  // fallback 文案須符 FuSang 前台規則：如實陳述，不用戲劇隱喻、不安撫、不模糊。
+  function txf(key, fallback) {
+    try { const s = tx(key); return (!s || s === key) ? fallback : s; }
+    catch (_) { return fallback; }
+  }
+  function stuckText()     { return txf('mo.genCardStuck', '生成未完成'); }
+  function stuckHintText() { return txf('mo.genCardStuckHint', '已超過預期時間，請聯繫客服'); }
+
+  // 指定年月的 job 狀態；查無 job 回 null
+  function monthJobState(year, month) {
+    const j = (lastJobs || []).find(x =>
+      Number(x.target_year) === Number(year) && Number(x.target_month) === Number(month));
+    return j ? jobState(j) : null;
+  }
+
+  // report 年份 + job 年份聯集（供年份時間軸渲染；路由判定仍只看 report）
+  function mergeJobYears(years, jobs) {
+    const s = new Set(years || []);
+    (jobs || []).forEach(j => s.add(Number(j.target_year)));
+    return [...s].filter(y => y != null && !Number.isNaN(y)).sort((a, b) => b - a);
+  }
 
   function renderGenerating(jobs) {
     introMode = 'generating';
@@ -1737,41 +1859,57 @@
       (a.target_year * 12 + a.target_month) - (b.target_year * 12 + b.target_month));
 
     wrap.innerHTML = sorted.map(j => {
-      const done = jobDone(j);
+      const st = jobState(j);                       // 'done' | 'stuck' | 'generating'
       const rel = (j.target_year * 12 + j.target_month) - (base.year * 12 + base.month);
       const rl = (rel === 0 || rel === 1 || rel === -1) ? relLabel(rel) : '';
       const disp = lunarToSolarDisplay(j.target_year, j.target_month);
-      const left = done
-        ? '<div class="gen-card-check">✓</div>'
-        : '<div class="gen-card-spinner"><span></span><span></span><span></span></div>';
-      const statusText = done ? tx('mo.genCardDone') : tx('mo.genCardGenerating');
-      return `<div class="gen-card ${done ? 'done' : ''}" data-year="${j.target_year}" data-month="${j.target_month}" data-done="${done}">
+
+      let left, statusText, hint = '';
+      if (st === 'done') {
+        left = '<div class="gen-card-check">✓</div>';
+        statusText = tx('mo.genCardDone');
+      } else if (st === 'stuck') {
+        // 如實標示狀態，不提供重試按鈕——重觸發會撞 unique key 殘留，須交 admin 走 purge 復原
+        left = '<div class="gen-card-alert">!</div>';
+        statusText = stuckText();
+        hint = `<div class="gen-card-hint">${escapeHtml(stuckHintText())}</div>`;
+      } else {
+        left = '<div class="gen-card-spinner"><span></span><span></span><span></span></div>';
+        statusText = tx('mo.genCardGenerating');
+      }
+
+      return `<div class="gen-card ${st === 'done' ? 'done' : (st === 'stuck' ? 'stuck' : '')}" data-year="${j.target_year}" data-month="${j.target_month}" data-state="${st}">
         ${left}
         <div class="gen-card-info">
           <div class="gen-card-month">${escapeHtml(disp.label)}${rl ? `<span class="rel">${escapeHtml(rl)}</span>` : ''}</div>
           <div class="gen-card-status">${escapeHtml(statusText)}</div>
+          ${hint}
         </div>
         <div class="gen-card-arrow">→ Read</div>
       </div>`;
     }).join('');
 
+    // T15-C1：click 同時傳 year + month。原本只傳 year，多月情境下會落到該年預設月，
+    // 造成「點什麼開什麼」失效。
     wrap.querySelectorAll('.gen-card.done').forEach(card => {
-      card.addEventListener('click', () => { enterReading(Number(card.dataset.year)); });
+      card.addEventListener('click', () => {
+        enterReading(Number(card.dataset.year), Number(card.dataset.month));
+      });
     });
-
-    return sorted.length > 0 && sorted.every(jobDone);
+    // T15-F：原本此處 return sorted.every(jobDone)，四個呼叫點皆未接收 → 死碼，移除。
   }
 
-  async function enterReading(preferLunarYear) {
+  // T15-C1：增 preferLunarMonth，讓點擊的卡片直達該月而非該年預設月。
+  async function enterReading(preferLunarYear, preferLunarMonth) {
     stopPolling();
     showView('view-loading');
     document.getElementById('loading-title').textContent = tx('mo.loadingTitle');
     document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
 
-    const years = await fetchAvailableYears();
+    const years = mergeJobYears(await fetchAvailableYears(), lastJobs);
     renderYears(years);
-    if (preferLunarYear && years.includes(preferLunarYear)) {
-      await loadYear(preferLunarYear);
+    if (preferLunarYear && years.includes(Number(preferLunarYear))) {
+      await loadYear(Number(preferLunarYear), preferLunarMonth != null ? Number(preferLunarMonth) : null);
     } else {
       showView('view-years');
     }
@@ -1844,18 +1982,40 @@
     startPolling();
   }
 
+  // T15-B：停止條件由 every(jobDone) 改為「pending 收斂」。
+  // 舊版一個永遠不會 done 的 job = 每 15 秒查一次 DB、永不停止。
+  // 新版 stuck 會退出 pending 集合，輪詢因此得以收斂。
+  // 另：不再「全部完成才進入閱讀」——只要出現任何 report 就切入。
   function startPolling() {
     stopPolling();
     pollTimer = setInterval(async () => {
       const jobs = await fetchJobs();
-      if (jobs.length) renderGenerating(jobs);
-      if (jobs.length === 0) return;
-      if (jobs.every(jobDone)) {
-        stopPolling();
-        const latest = jobs.filter(jobDone)
-          .reduce((a, b) => (b.target_year * 12 + b.target_month) > (a.target_year * 12 + a.target_month) ? b : a);
-        await enterReading(latest.target_year);
+      lastJobs = jobs;
+      if (jobs.length === 0) { stopPolling(); return; }
+
+      const pending = jobs.filter(j => jobState(j) === 'generating');
+      const onGenView = (currentView === 'view-intro' && introMode === 'generating');
+
+      if (onGenView) {
+        renderGenerating(jobs);
+        // 停在生成畫面時，一旦有任何月報產出就切入閱讀（不等其他月）
+        if (jobs.some(j => jobState(j) === 'done')) {
+          const years = await fetchAvailableYears();
+          if (years.length > 0) {
+            const done = jobs.filter(j => jobState(j) === 'done');
+            const latest = done.reduce((a, b) =>
+              (b.target_year * 12 + b.target_month) > (a.target_year * 12 + a.target_month) ? b : a);
+            await enterReading(latest.target_year, latest.target_month);   // 內部會 stopPolling
+            if (pending.length > 0) startPolling();                        // 仍有未完成 → 背景續跑
+            return;
+          }
+        }
+      } else if (currentView === 'view-hub') {
+        // 已在閱讀畫面：靜默更新月份 tab 狀態，不打斷使用者
+        renderMonthTabs();
       }
+
+      if (pending.length === 0) stopPolling();
     }, POLL_INTERVAL_MS);
   }
   function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
@@ -1905,6 +2065,7 @@
       ctxBindHubToggle();
 
       const jobs = await fetchJobs();
+      lastJobs = jobs;   // T15：monthJobState / loadYear 依賴此變數，須在路由決策前就緒
 
       if (preferredReportDay == null) {
         introMode = 'pitch';
@@ -1922,15 +2083,23 @@
         return;
       }
 
-      const allDone = jobs.every(jobDone);
-      if (allDone) {
-        const years = await fetchAvailableYears();
-        renderYears(years);
+      // ── T15-A：路由決策改 report-first ──
+      // 舊版：jobs.every(jobDone) 決定去向 → 任一 job 未完成，整頁鎖進生成畫面，
+      //       已經生成好的月報一個都讀不到。現況因「同時只有一個 job」而未引爆，
+      //       Task 15 解鎖多月後必然觸發。
+      // 新版：「能不能讀」只由 report 表回答，job 狀態永不阻擋顯示。
+      const reportYears = await fetchAvailableYears();          // 路由判定：只看 report
+      const pending = jobs.filter(j => jobState(j) === 'generating');
+
+      if (reportYears.length > 0) {
+        renderYears(mergeJobYears(reportYears, jobs));          // 顯示：report 年份 ∪ job 年份
         showView('view-years');
+        if (pending.length > 0) startPolling();                 // 背景輪詢，不擋畫面
       } else {
+        // 完全還沒有任何月報 → 顯示生成進度
         showView('view-intro');
         renderGenerating(jobs);
-        startPolling();
+        if (pending.length > 0) startPolling();                 // 全 stuck 就不輪詢，避免空轉
       }
     } catch (err) {
       showError(err.message || tx('errLoad'));
