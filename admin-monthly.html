@@ -78,6 +78,10 @@
   .badge.none{background:#EEF0F2;color:var(--muted);}
   .badge.none .dot{background:var(--faint);}
   .badge-sub{font-size:11px;color:var(--faint);margin-left:8px;font-feature-settings:"tnum" 1;}
+  /* T15 段 3 / B-1：job 來源。scheduled=排程投放，early_unlock=使用者提前解鎖 */
+  .src-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;border-radius:4px;padding:2px 6px;margin-left:7px;}
+  .src-tag.scheduled{background:#EEF0F2;color:var(--muted);}
+  .src-tag.early_unlock{background:var(--wait-soft);color:var(--wait);}
 
   /* 投放即時結果欄（EF 回報後填入）*/
   .col-fire{width:190px;}
@@ -177,7 +181,7 @@
               <th class="col-chk"><input type="checkbox" id="chkHead" title="全選/全不選" /></th>
               <th>帳號</th>
               <th>投放日</th>
-              <th>最新一筆 job</th>
+              <th>當期 job</th>
               <th class="col-fire">投放結果</th>
             </tr>
           </thead>
@@ -239,21 +243,30 @@
 
     /* ── 狀態旗標 → badge ── */
     function statusBadge(r){
+      // D2-(a)：年月維持 DB 原值（農曆座標），不轉國曆 —— admin 對帳對的是 DB。
+      // B-1 期別對齊後，這個年月必然等於當期 target；顯示出來是為了讓對齊本身可被目視驗證。
       const period = (r.target_year && r.target_month)
         ? `${r.target_year}/${String(r.target_month).padStart(2,'0')}` : '';
+      // source：'scheduled'（default）| 'early_unlock'（monthly_unlock_early 顯式寫入）。
+      // 當期 job 是 early_unlock，代表此人上個月就提前解鎖了這個月 —— 這是「不用投」的
+      // 原因，與「排程已跑完」不同，必須分辨得出來。
+      const SRC_LABEL = { scheduled: '排程', early_unlock: '提前解鎖' };
+      const src = r.source
+        ? `<span class="src-tag ${esc(r.source)}">${esc(SRC_LABEL[r.source] || r.source)}</span>`
+        : '';
       switch (r.status_flag){
         case 'ok':
-          return `<span class="badge ok"><span class="dot"></span>完成</span>` +
+          return `<span class="badge ok"><span class="dot"></span>完成</span>` + src +
                  (period ? `<span class="badge-sub">${period}</span>` : '');
         case 'generating':
-          return `<span class="badge gen"><span class="dot"></span>生成中</span>` +
+          return `<span class="badge gen"><span class="dot"></span>生成中</span>` + src +
                  `<span class="badge-sub">${esc(fmtAge(r.job_updated_at))}${period ? ' · '+period : ''}</span>`;
         case 'alert':
-          return `<span class="badge alert"><span class="dot"></span>⚠ 異常</span>` +
+          return `<span class="badge alert"><span class="dot"></span>⚠ 異常</span>` + src +
                  `<span class="badge-sub">停滯 ${esc(fmtAge(r.job_updated_at))}${period ? ' · '+period : ''}</span>`;
         default: // 'none'
           return `<span class="badge none"><span class="dot"></span>待投</span>` +
-                 `<span class="badge-sub">今日尚無 job</span>`;
+                 `<span class="badge-sub">當期尚無 job</span>`;
       }
     }
 
