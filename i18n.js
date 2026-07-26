@@ -1146,6 +1146,7 @@
   var _uiLang     = DEFAULT_UI_LANG;
   var _reportLang = DEFAULT_REPORT_LANG;
   var _glossary   = null;   // { palaces:{}, stars:{}, transforms:{} } 由報告頁注入
+  var _uiGlossary = null;   // 同結構,但為 uiLang 那一列;供「輸入介面」的宮位名使用
   var _uiExplicit = false;  // 使用者是否已明確選過 UI 語言(localStorage 有值)
 
   // ── 小工具 ──────────────────────────────────────────────────
@@ -1187,9 +1188,18 @@
     return key;
   }
   // RT 巢狀:reportLang → en → zh-TW(缺回 '',交由呼叫端 fallback)
-  function td(dict, key) {
-    var chain = [_reportLang, 'en', 'zh-TW'];
+  //
+  // 第三參數 lang(選填):以指定語言起頭查找,不改變 _reportLang。
+  //   用途 —— 「輸入介面」中的宮位詞彙應跟 UI 語言,而非報告語言。
+  //   例:monthly.html 的個人化 / 解鎖表單,使用者是在操作介面、不是在讀報告,
+  //       說明文字停在報告語言會與已切換的介面語言打架。
+  //   ⚠ 報告「內容」本身(explainer 出現在報告頁面時)仍應走 reportLang,
+  //     即不帶第三參數的原行為。兩者刻意分離,不可把預設改成 uiLang。
+  //   既有所有兩參數呼叫完全不受影響(lang 為 undefined 時 chain 首項被跳過)。
+  function td(dict, key, lang) {
+    var chain = lang ? [lang, _reportLang, 'en', 'zh-TW'] : [_reportLang, 'en', 'zh-TW'];
     for (var i = 0; i < chain.length; i++) {
+      if (!chain[i]) continue;
       var d = RT[chain[i]] && RT[chain[i]][dict];
       if (d && d[key] !== undefined) return d[key];
     }
@@ -1238,6 +1248,18 @@
   // ── 報告 glossary(星曜/宮位名 DB 對照,由 components.loadReportGlossary 注入)──
   function setGlossary(g) { _glossary = g || null; }
   function palaceLabel(zh) { return (_glossary && _glossary.palaces && _glossary.palaces[zh]) || zh; }
+
+  // ── UI 語言 glossary(同一張 report_glossary 表,以 language_code = uiLang 取另一列)──
+  //   為什麼不在本檔建三語宮位名靜態表:那會與 DB glossary 形成兩份真相,
+  //   譯法一經調整就分岔,且不會有人發現。宮位名的 SoT 只有 report_glossary 一處。
+  //   注入者負責在 uiLang 變動時重新注入(uiLang 可即時切換)。
+  //   fallback 鏈:UI glossary → 報告 glossary → 中文原名(永不回空字串)。
+  function setUIGlossary(g) { _uiGlossary = g || null; }
+  function palaceLabelUI(zh) {
+    return (_uiGlossary && _uiGlossary.palaces && _uiGlossary.palaces[zh])
+        || (_glossary   && _glossary.palaces   && _glossary.palaces[zh])
+        || zh;
+  }
   // starLabel:glossary(DB,與後端一致)優先 → STAR_NAMES(前端補漏)→ 中文原名
   function starLabel(zh) {
     if (_glossary && _glossary.stars && _glossary.stars[zh]) return _glossary.stars[zh];
@@ -1354,7 +1376,9 @@
     addUI: addUI,                         // 各頁專屬 UI 字典併入(策略 B)
     seedUILangFromProfile: seedUILangFromProfile,
     setGlossary: setGlossary,
+    setUIGlossary: setUIGlossary,         // UI 語言宮位名注入(輸入介面用)
     palaceLabel: palaceLabel,
+    palaceLabelUI: palaceLabelUI,         // 宮位名(UI 語言);報告內容仍用 palaceLabel
     starLabel: starLabel,
     transformLabel: transformLabel,
     applyI18n: applyI18n
