@@ -98,6 +98,11 @@
   .cell.na{background:transparent;color:#D8DBE0;border:1px dashed var(--hair-strong);cursor:default;}
   .cell.na:hover{transform:none;box-shadow:none;}
   td.mcell{text-align:center;padding:8px 6px;}
+  /* T15 段 3 / B-2：未來欄（target > 當期）。只有在有人提前解鎖遠月時才會出現。
+     用左側分隔線標出「當期 / 未來」的界線，避免被誤讀成歷史欄位。 */
+  table.mx th.mcol.fut{color:var(--faint);}
+  table.mx th.mcol.fut-first, td.mcell.fut-first{border-left:2px solid var(--hair-strong);}
+  td.mcell.fut{background:rgba(0,0,0,0.015);}
 
   /* 圖例 */
   .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--muted);}
@@ -213,6 +218,14 @@
     const fmtDate = ts => ts ? new Date(ts).toISOString().slice(0,10) : '—';
     const mLabel  = p => `${String(p.y).slice(2)}/${String(p.m).padStart(2,'0')}`;
 
+    // B-2：當期 ord。未來欄 = ord > curOrd。render 與 advise 共用同一個判準，
+    // 不各自算一份（兩處分歧會讓視覺與診斷文字互相矛盾）。
+    let curOrd = 0;
+    const cellOrd = c => c.y * 12 + c.m;
+
+    // job 來源（段 2）。default 'scheduled'；'early_unlock' = 使用者提前解鎖。
+    const SRC_LABEL = { scheduled: '排程投放', early_unlock: '提前解鎖' };
+
     /* ── 診斷建議：規則推導（4 種 status 組合 × 兩段殘留筆數），非臆測 ── */
     function advise(c){
       const mat = c.materials_rows, rep = c.report_rows;
@@ -221,7 +234,9 @@
       if (c.state === 'na')
         return { k:'info', t:'開通前', d:'此月早於該帳號第一筆 job 的 target 月，無需處理。' };
       if (c.state === 'upcoming')
-        return { k:'info', t:'未到期', d:'投放日尚未到，屬正常待投狀態。' };
+        return (cellOrd(c) > curOrd)
+          ? { k:'info', t:'未來月', d:'此月晚於當期 target，尚未輪到。它出現在矩陣中，是因為（任一帳號）已提前解鎖了同月或更遠的月份，使總覽的未來上界被拉長。此帳號本身無需處理。' }
+          : { k:'info', t:'未到期', d:'投放日尚未到，屬正常待投狀態。' };
       if (c.state === 'today')
         return { k:'info', t:'今日待投', d:'今日輪到此帳號，請至「月報投放」頁執行投放。' };
       if (c.state === 'ok')
@@ -258,6 +273,7 @@
       const noJob = !c.materials_status;
       $('dgTbl').innerHTML = `
         <tr><td>job 列</td><td>${noJob ? '✗ 不存在' : `✓ 存在（建於 ${fmtDate(c.job_created_at)}）`}</td></tr>
+        <tr><td>來源</td><td>${noJob ? '—' : esc(SRC_LABEL[c.source] || c.source || '—')}</td></tr>
         <tr><td>materials</td><td>${noJob ? '—' : brk(esc(c.materials_status), c.materials_status !== 'compiled')}</td></tr>
         <tr><td>report</td><td>${noJob ? '—' : brk(esc(c.report_status), c.materials_status === 'compiled' && c.report_status !== 'done')}</td></tr>
         <tr><td>最後更新</td><td>${noJob ? '—' : `${fmtDate(c.job_updated_at)} · ${fmtAge(c.job_updated_at)}`}</td></tr>
@@ -287,11 +303,18 @@
         <div class="sum-pill${s.drift ? ' alert' : ''}"><span class="sum-num">${s.drift}</span><span class="sum-label">訂閱快取 drift</span></div>
         <div class="sum-pill${s.paid_not_opened ? ' warn' : ''}"><span class="sum-num">${s.paid_not_opened}</span><span class="sum-label">已付費未開通</span></div>`;
 
+      curOrd = data.target.year * 12 + data.target.month;
+      let futFirst = -1;
+      data.periods.forEach((p, i) => {
+        if (futFirst < 0 && (p.y * 12 + p.m) > curOrd) futFirst = i;
+      });
+
       $('mxHead').innerHTML =
         `<th>帳號</th><th>月報</th><th>付費</th><th style="text-align:center">投放日</th>` +
-        data.periods.map(p => {
+        data.periods.map((p, i) => {
           const cur = p.y === data.target.year && p.m === data.target.month;
-          return `<th class="mcol${cur ? ' cur' : ''}">${mLabel(p)}</th>`;
+          const fut = (p.y * 12 + p.m) > curOrd;
+          return `<th class="mcol${cur ? ' cur' : ''}${fut ? ' fut' : ''}${i === futFirst ? ' fut-first' : ''}">${mLabel(p)}</th>`;
         }).join('');
 
       if (!rows.length){
@@ -321,7 +344,7 @@
           ? `<span class="pend">→ ${r.preferred_report_day_pending} 日</span>` : '';
 
         const cells = r.cells.map((c, ci) =>
-          `<td class="mcell"><div class="cell ${c.state}" data-r="${ri}" data-c="${ci}"
+          `<td class="mcell${cellOrd(c) > curOrd ? ' fut' : ''}${ci === futFirst ? ' fut-first' : ''}"><div class="cell ${c.state}" data-r="${ri}" data-c="${ci}"
              title="${c.y}/${String(c.m).padStart(2,'0')}">${
                {ok:'✓', generating:'◐', stuck:'!', missed:'✕', today:'●', upcoming:'', na:'–'}[c.state] ?? ''
              }</div></td>`).join('');
