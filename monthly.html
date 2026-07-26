@@ -1232,8 +1232,11 @@
     if (rel === -1) return tx('mo.relPrev');
     if (rel === 0)  return tx('mo.relCurr');
     if (rel === 1)  return tx('mo.relNext');
-    if (rel === 2)  return '+2';
-    if (rel === 3)  return '+3';
+    // T15 段 3：原本只寫死 +2 / +3，其餘回 ''。上界移除後 rel 可以 >3，
+    // 落到 '' 就會掉進下方 mo.monthSuffix 的 fallback，而那個 fallback 用的是
+    // 儲存座標的 v.month —— tab 會出現「2026/11」配「10月」的自相矛盾。
+    // 改為一般式，維持既有 +N 的視覺語彙。
+    if (rel >= 2)   return '+' + rel;
     return '';
   }
 
@@ -1552,7 +1555,10 @@
         + (pending ? ' pending' : '')
         + (v.year === currentYear && v.month === currentMonth ? ' active' : '');
 
-      const rl = relLabel(v.rel) || tx('mo.monthSuffix').replace('{m}', v.month);
+      // ⚠ 這個 fallback 必須用「顯示座標」的月份。v.month 是儲存座標，
+      //   直接用會與同一個 tab 上方的 lunarToSolarYM() 差一個月。
+      const rl = relLabel(v.rel)
+        || tx('mo.monthSuffix').replace('{m}', lunarToSolarDisplay(v.year, v.month).month);
       const stateLabel = pending
         ? (st === 'stuck' ? stuckText() : tx('mo.genCardGenerating'))
         : '';
