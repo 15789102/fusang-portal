@@ -133,6 +133,8 @@
       "mo.ulEntryNote": {"zh-TW": "年方案可提前開啟還沒輪到的月份", "zh-CN": "年方案可提前开启还没轮到的月份", "en": "Your annual plan lets you open a month before its turn comes"},
       "mo.ulTitle": {"zh-TW": "解鎖未來月份", "zh-CN": "解锁未来月份", "en": "Unlock a future month"},
       "mo.ulSub": {"zh-TW": "選一個月份，寫下你希望這個月的建議著重什麼。", "zh-CN": "选一个月份，写下你希望这个月的建议着重什么。", "en": "Pick a month, then write what you'd like this month's guidance to focus on."},
+      // form 步驟的副標：此時月份已選定，再說「選一個月份」是錯的指引。
+      "mo.ulFormSub": {"zh-TW": "寫下你希望這個月的建議著重什麼。", "zh-CN": "写下你希望这个月的建议着重什么。", "en": "Write what you'd like this month's guidance to focus on."},
       "mo.ulBack": {"zh-TW": "← 返回", "zh-CN": "← 返回", "en": "← Back"},
       "mo.ulLoading": {"zh-TW": "載入可解鎖的月份…", "zh-CN": "载入可解锁的月份…", "en": "Loading available months…"},
       "mo.ulLoadFail": {"zh-TW": "無法載入可解鎖的月份，請稍後再試。", "zh-CN": "无法载入可解锁的月份，请稍后再试。", "en": "Couldn't load the months. Please try again later."},
@@ -743,7 +745,8 @@
     .ul-quota { background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; }
     .ul-quota-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
     .ul-quota-label { font-size: 13px; color: var(--ink-mid); letter-spacing: 0.04em; }
-    .ul-quota-value { font-family: var(--font-serif-en); font-size: 18px; color: var(--ink-darkest); }
+    /* sans：--font-serif-en 是 old-style 數字，0 會看起來像小寫 o */
+    .ul-quota-value { font-family: var(--font-sans); font-size: 17px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-darkest); }
     .ul-quota-note { margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.65; }
 
     /* 月份清單 */
@@ -1153,6 +1156,42 @@
   // i18n 核心為 classic 全域(window.FSI18N,已於 <head> 的 <script src="i18n.js"> 載入)。
   // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel=報告內容(reportLang,鎖定)。
   const { t: tx, td, palaceLabel, starLabel, transformLabel } = window.FSI18N;
+
+  // ── 輸入介面的宮位詞彙：跟 UI 語言（PM 裁決 a）──────────────────────
+  //   適用：個人化面板（ctx-panel）與解鎖表單（view-unlock）兩處，行為必須一致。
+  //   不適用：報告內容本身（detail explainer / overview 宮位名）—— 那些仍走
+  //   reportLang，用 palaceLabel / td(dict,key) 的兩參數原形。
+  //
+  //   為什麼分開：使用者在這兩處是「操作介面」而不是「讀報告」。介面語言已切成英文
+  //   卻只有這一格停在報告語言，是語言打架；但報告內容跟著介面語言跑，則會讓
+  //   已鎖定的報告語言失去意義。兩者刻意不同源。
+  //
+  //   名稱與說明必須同時切換 —— 只切說明會變成「子女宮 + English 說明」，比不切更糟。
+  function palaceLabelInput(zh) { return window.FSI18N.palaceLabelUI(zh); }
+  function palaceExplainerInput(zh) {
+    return zh ? (td('PALACE_EXPLAINER_MONTHLY', zh, window.FSI18N.getUILang()) || '') : '';
+  }
+
+  // UI 語言 glossary 載入。宮位名的 SoT 是 report_glossary，取同一張表的 uiLang 那一列，
+  // 不在前端另建三語靜態表（會形成第二份真相）。
+  //   uiLang === reportLang → 不打 DB，setUIGlossary(null) 讓 palaceLabelUI 的
+  //   fallback 鏈自然落回已載入的報告 glossary。
+  const uiGlossaryCache = {};
+  async function loadUIGlossary() {
+    const ui = window.FSI18N.getUILang();
+    if (ui === window.FSI18N.getReportLang()) { window.FSI18N.setUIGlossary(null); return; }
+    if (uiGlossaryCache[ui] !== undefined) { window.FSI18N.setUIGlossary(uiGlossaryCache[ui]); return; }
+    try {
+      const { data } = await supabase
+        .from('report_glossary').select('glossary')
+        .eq('language_code', ui).maybeSingle();
+      uiGlossaryCache[ui] = (data && data.glossary) || null;
+    } catch (e) {
+      console.warn('[i18n] UI 語言 glossary 載入失敗，宮位名回退報告語言：', e);
+      uiGlossaryCache[ui] = null;
+    }
+    window.FSI18N.setUIGlossary(uiGlossaryCache[ui]);
+  }
 
   // ── 可調整常數：流月報告表名 ──
   const MONTHLY_TABLE = 'monthly_palace_reports_gated';
@@ -2470,6 +2509,8 @@
   function ulApplyFormI18n() {
     const t = document.getElementById('ul-title');
     if (t && ulPick) t.textContent = tx('mo.ulFormTitle').replace('{ym}', ulPick.label);
+    const subEl = document.getElementById('ul-sub');
+    if (subEl) subEl.textContent = tx('mo.ulFormSub');
     const notice = document.getElementById('ul-notice');
     if (notice) notice.textContent = tx('mo.ulNotice');
     const add = document.getElementById('ul-addslot');
@@ -2494,9 +2535,9 @@
         .concat(PALACE_ORDER.map(p => {
           const dis = used.has(p) && p !== s.palace_name ? ' disabled' : '';
           const sel = p === s.palace_name ? ' selected' : '';
-          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabel(p))}</option>`;
+          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabelInput(p))}</option>`;
         })).join('');
-      const exp = s.palace_name ? (td('PALACE_EXPLAINER_MONTHLY', s.palace_name) || '') : '';
+      const exp = palaceExplainerInput(s.palace_name);
       const text = s.context_text || '';
 
       return `
@@ -2719,9 +2760,10 @@
   function ulApplyStaticI18n() {
     const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
     setText('ul-back', 'mo.ulBack');
-    setText('ul-sub', 'mo.ulSub');
+    const inForm = (ulStep === 'form' && !!ulPick);
+    setText('ul-sub', inForm ? 'mo.ulFormSub' : 'mo.ulSub');
     const t = document.getElementById('ul-title');
-    if (t) t.textContent = (ulStep === 'form' && ulPick)
+    if (t) t.textContent = inForm
       ? tx('mo.ulFormTitle').replace('{ym}', ulPick.label)
       : tx('mo.ulTitle');
   }
@@ -2743,6 +2785,7 @@
       if (!session) return;
 
       await loadReportGlossary(session);  // 鎖定報告語言 + 載入術語 glossary
+      await loadUIGlossary();             // 輸入介面的宮位名跟 UI 語言（PM 裁決 a）
 
       userEmail = session.user.email;
 
@@ -2887,11 +2930,11 @@
         .concat(PALACE_ORDER.map(p => {
           const dis = used.has(p) && p !== cur.palace_name ? ' disabled' : '';
           const sel = p === cur.palace_name ? ' selected' : '';
-          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabel(p))}</option>`;
+          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabelInput(p))}</option>`;
         }))
         .join('');
 
-      const explainerHtml = cur.palace_name ? (td('PALACE_EXPLAINER_MONTHLY', cur.palace_name) || '') : '';
+      const explainerHtml = palaceExplainerInput(cur.palace_name);
 
       slot.innerHTML = `
         <div class="ctx-slot-top">
@@ -2938,7 +2981,7 @@
         const n = sel.dataset.slot;
         const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${n}"]`);
         if (exp) {
-          const html = sel.value ? (td('PALACE_EXPLAINER_MONTHLY', sel.value) || '') : '';
+          const html = palaceExplainerInput(sel.value);
           exp.innerHTML = html;
           exp.classList.toggle('show', !!html);
         }
@@ -3098,7 +3141,12 @@
     }
     if (view) showView(view);
   }
-  window.addEventListener('i18n:changed', () => { document.title = tx('mo.docTitle'); rerender(); });
+  // UI 語言變動 → 先換 UI glossary（宮位名來源），再重繪；否則宮位名會停在舊語言。
+  window.addEventListener('i18n:changed', async () => {
+    document.title = tx('mo.docTitle');
+    await loadUIGlossary();
+    rerender();
+  });
 
   bindReportDay();
   fillReportDays();
