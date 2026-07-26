@@ -126,7 +126,56 @@
       "mo.errMonthsFail": {"zh-TW": "無法載入 {year} 流月月份：", "zh-CN": "无法载入 {year} 流月月份：", "en": "Couldn't load months for {year}: "},
       "mo.errNoYearData": {"zh-TW": "找不到 {year} 的流月資料。", "zh-CN": "找不到 {year} 的流月资料。", "en": "No monthly data found for {year}."},
       "mo.errReportsFail": {"zh-TW": "無法載入 {ym} 流月內容：", "zh-CN": "无法载入 {ym} 流月内容：", "en": "Couldn't load {ym} monthly content: "},
-      "mo.errNoContent": {"zh-TW": "找不到 {ym} 的流月宮位內容。", "zh-CN": "找不到 {ym} 的流月宫位内容。", "en": "No palace content found for {ym}."}
+      "mo.errNoContent": {"zh-TW": "找不到 {ym} 的流月宮位內容。", "zh-CN": "找不到 {ym} 的流月宫位内容。", "en": "No palace content found for {ym}."},
+
+      // ── Task 15 段 3：提前解鎖未來月份（年方案）──
+      "mo.ulEntry": {"zh-TW": "解鎖未來月份", "zh-CN": "解锁未来月份", "en": "Unlock a future month"},
+      "mo.ulEntryNote": {"zh-TW": "年方案可提前開啟還沒輪到的月份", "zh-CN": "年方案可提前开启还没轮到的月份", "en": "Your annual plan lets you open a month before its turn comes"},
+      "mo.ulTitle": {"zh-TW": "解鎖未來月份", "zh-CN": "解锁未来月份", "en": "Unlock a future month"},
+      "mo.ulSub": {"zh-TW": "選一個月份，寫下你希望這個月的建議著重什麼。", "zh-CN": "选一个月份，写下你希望这个月的建议着重什么。", "en": "Pick a month, then write what you'd like this month's guidance to focus on."},
+      "mo.ulBack": {"zh-TW": "← 返回", "zh-CN": "← 返回", "en": "← Back"},
+      "mo.ulLoading": {"zh-TW": "載入可解鎖的月份…", "zh-CN": "载入可解锁的月份…", "en": "Loading available months…"},
+      "mo.ulLoadFail": {"zh-TW": "無法載入可解鎖的月份，請稍後再試。", "zh-CN": "无法载入可解锁的月份，请稍后再试。", "en": "Couldn't load the months. Please try again later."},
+      "mo.ulEmpty": {"zh-TW": "目前沒有可以解鎖的月份。", "zh-CN": "目前没有可以解锁的月份。", "en": "There are no months available to unlock right now."},
+
+      "mo.ulQuotaLabel": {"zh-TW": "進行中的生成", "zh-CN": "进行中的生成", "en": "Generating now"},
+      // D1-b：名額釋放是 OR 條件（完成 或 created_at 滿 60 分鐘），兩者都要講，
+      //       否則遇到卡住的 job，使用者會以為要無限等下去。陳述機制，不作承諾。
+      "mo.ulQuotaNote": {"zh-TW": "同時最多 3 個月在生成中。名額會在生成完成後釋出；若某個月遲遲沒有進展，名額也會在一小時後自動釋出。", "zh-CN": "同时最多 3 个月在生成中。名额会在生成完成后释出；若某个月迟迟没有进展，名额也会在一小时后自动释出。", "en": "Up to three months can generate at once. A slot frees up when a month finishes — and if one stalls, its slot is released automatically after an hour."},
+
+      "mo.ulStUnlocked": {"zh-TW": "已解鎖", "zh-CN": "已解锁", "en": "Unlocked"},
+      "mo.ulStGenerating": {"zh-TW": "生成中", "zh-CN": "生成中", "en": "Generating"},
+      "mo.ulStComplete": {"zh-TW": "已完成", "zh-CN": "已完成", "en": "Ready"},
+      "mo.ulStScheduled": {"zh-TW": "已排程", "zh-CN": "已排程", "en": "Scheduled"},
+      "mo.ulStScheduledNote": {"zh-TW": "會自動為你生成，不需要解鎖", "zh-CN": "会自动为你生成，不需要解锁", "en": "This one is already on its way — no need to unlock it"},
+      "mo.ulStQuotaFull": {"zh-TW": "名額已滿", "zh-CN": "名额已满", "en": "No slot free"},
+      "mo.ulAction": {"zh-TW": "解鎖", "zh-CN": "解锁", "en": "Unlock"},
+
+      "mo.ulFormTitle": {"zh-TW": "解鎖 {ym}", "zh-CN": "解锁 {ym}", "en": "Unlock {ym}"},
+      // C1-b：整組覆蓋的明確告知。常駐、不可關閉。
+      "mo.ulNotice": {"zh-TW": "這個月的報告會依你現在填寫的內容生成，不會帶入你平常的設定。", "zh-CN": "这个月的报告会依你现在填写的内容生成，不会带入你平常的设置。", "en": "This month's reading is generated from what you enter here. Your usual settings won't carry over."},
+      "mo.ulSlotLabel": {"zh-TW": "主題 {n}", "zh-CN": "主题 {n}", "en": "Focus {n}"},
+      "mo.ulAddSlot": {"zh-TW": "＋ 再加一個主題", "zh-CN": "＋ 再加一个主题", "en": "+ Add another focus"},
+      "mo.ulRemoveSlot": {"zh-TW": "移除", "zh-CN": "移除", "en": "Remove"},
+      "mo.ulSubmit": {"zh-TW": "解鎖這個月", "zh-CN": "解锁这个月", "en": "Unlock this month"},
+      "mo.ulSubmitting": {"zh-TW": "解鎖中…", "zh-CN": "解锁中…", "en": "Unlocking…"},
+      // 半填擋在送出前：後端的 where 會靜默丟掉半填的格子，使用者會以為填了卻沒生效。
+      "mo.ulErrHalf": {"zh-TW": "主題 {n} 只填了一半。請補上宮位與內容，或移除這個主題。", "zh-CN": "主题 {n} 只填了一半。请补上宫位与内容，或移除这个主题。", "en": "Focus {n} is only half filled. Add both a palace and your situation, or remove it."},
+      "mo.ulErrNone": {"zh-TW": "請至少填寫一個主題。", "zh-CN": "请至少填写一个主题。", "en": "Add at least one focus."},
+
+      "mo.ulOkTitle": {"zh-TW": "已解鎖 {ym}", "zh-CN": "已解锁 {ym}", "en": "{ym} unlocked"},
+      "mo.ulOkBody": {"zh-TW": "我們正在為你生成這個月的流月，約需數分鐘。完成後會寄信通知你。", "zh-CN": "我们正在为你生成这个月的流月，约需数分钟。完成后会寄信通知你。", "en": "We're generating this month's reading now — it takes a few minutes. We'll email you when it's ready."},
+      // partial：解鎖已寫入、job 已建立，只是觸發沒打成。顯示為成功，且不給重試
+      //（重試會撞 uniq_monthly_job）。
+      "mo.ulPartialBody": {"zh-TW": "生成會稍後開始。你填寫的內容已經保存，不需要重新送出。", "zh-CN": "生成会稍后开始。你填写的内容已经保存，不需要重新送出。", "en": "Generation will start shortly. What you entered has been saved — there's no need to send it again."},
+      "mo.ulResultBack": {"zh-TW": "返回流月", "zh-CN": "返回流月", "en": "Back to my readings"},
+
+      "mo.ulErr401": {"zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again."},
+      "mo.ulErr403": {"zh-TW": "這項功能不適用於你目前的方案。", "zh-CN": "这项功能不适用于你目前的方案。", "en": "This isn't available on your current plan."},
+      "mo.ulErr429": {"zh-TW": "名額已滿。名額會在生成完成後釋出；若某個月遲遲沒有進展，也會在一小時後自動釋出。", "zh-CN": "名额已满。名额会在生成完成后释出；若某个月迟迟没有进展，也会在一小时后自动释出。", "en": "No slot free. A slot frees up when a month finishes — and if one stalls, it's released automatically after an hour."},
+      "mo.ulErr400": {"zh-TW": "這個月份現在無法解鎖，請改選其他月份。", "zh-CN": "这个月份现在无法解锁，请改选其他月份。", "en": "This month can't be unlocked. Please choose another."},
+      "mo.ulErr409": {"zh-TW": "這個月已經解鎖過了。", "zh-CN": "这个月已经解锁过了。", "en": "This month is already unlocked."},
+      "mo.ulErr500": {"zh-TW": "解鎖沒有完成，請稍後再試。", "zh-CN": "解锁没有完成，请稍后再试。", "en": "The unlock didn't go through. Please try again later."}
     });
   </script>
 
@@ -657,8 +706,126 @@
 
     /* ── 放寬（margin 置中，不用 transform）── */
     @media (min-width: 761px) {
-      #view-years, #view-hub, #view-intro { width: min(1120px, calc(100vw - 80px)); max-width: none; margin-left: calc(50% - min(560px, (100vw - 80px) / 2)); }
+      #view-years, #view-hub, #view-intro, #view-unlock { width: min(1120px, calc(100vw - 80px)); max-width: none; margin-left: calc(50% - min(560px, (100vw - 80px) / 2)); }
       .intro-wrap { margin-left: auto; margin-right: auto; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Task 15 段 3：提前解鎖未來月份
+       樣式一律沿用既有 token（--rule / --bg-soft-2 / --ink-* / --accent-*），
+       不引入新色票；本頁視覺方向已定，解鎖介面是既有語彙的延伸而非新設計。
+       ══════════════════════════════════════════════════════════════ */
+
+    /* 入口（掛在 view-hub 與 view-intro 兩處，同一份 markup）*/
+    .ul-entry { margin: 0 0 28px; }
+    .ul-entry-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 12px;
+      padding: 16px 20px; cursor: pointer; text-align: left;
+      font-family: inherit; color: var(--ink-dark);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ul-entry-btn:hover { border-color: var(--accent-soft); box-shadow: 0 4px 16px rgba(21,54,58,0.06); }
+    .ul-entry-btn:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+    .ul-entry-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .ul-entry-title { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 500; color: var(--ink-darkest); }
+    .ul-entry-note { font-size: 12.5px; color: var(--ink-mid); line-height: 1.5; }
+    .ul-entry-quota { flex: 0 0 auto; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-light); white-space: nowrap; }
+    .ul-entry-quota strong { color: var(--ink-dark); font-weight: 600; }
+
+    /* 標題區 */
+    .ul-head { margin-bottom: 28px; }
+    .ul-eyebrow { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; letter-spacing: 0.12em; color: var(--ink-light); margin-bottom: 8px; }
+    .ul-title { font-family: var(--font-serif-zh); font-size: 28px; font-weight: 400; margin: 0 0 10px; color: var(--ink-darkest); }
+    .ul-sub { font-size: 14px; color: var(--ink-mid); line-height: 1.7; margin: 0; }
+
+    /* 名額指示 */
+    .ul-quota { background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; }
+    .ul-quota-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .ul-quota-label { font-size: 13px; color: var(--ink-mid); letter-spacing: 0.04em; }
+    .ul-quota-value { font-family: var(--font-serif-en); font-size: 18px; color: var(--ink-darkest); }
+    .ul-quota-note { margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.65; }
+
+    /* 月份清單 */
+    .ul-list { display: flex; flex-direction: column; gap: 10px; }
+    .ul-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: #ffffff; border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px;
+    }
+    .ul-row-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .ul-row-ym { font-family: var(--font-serif-zh); font-size: 17px; font-weight: 500; color: var(--ink-darkest); letter-spacing: 0.03em; }
+    .ul-row-note { font-size: 12.5px; color: var(--ink-light); line-height: 1.5; }
+    .ul-row-right { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; }
+
+    .ul-badge { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 3px; white-space: nowrap; }
+    .ul-badge.unlocked   { background: var(--t-lu-bg, rgba(184,148,92,0.12)); color: var(--gold, #b8945c); }
+    .ul-badge.scheduled  { background: var(--bg-soft-2); color: var(--ink-mid); }
+    .ul-badge.quotafull  { background: var(--bg-soft-2); color: var(--ink-light); }
+
+    .ul-pick {
+      font-family: inherit; font-size: 13px; letter-spacing: 0.04em;
+      background: var(--accent-deep, #29627f); color: #ffffff; border: 1px solid transparent;
+      border-radius: 6px; padding: 8px 18px; cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .ul-pick:hover { opacity: 0.88; }
+    .ul-pick:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+    .ul-row.is-off { opacity: 0.66; }
+
+    /* C1-b 告知：常駐、不可關閉 */
+    .ul-notice {
+      background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 4px 4px 0;
+      padding: 14px 18px; margin-bottom: 22px;
+      font-size: 13.5px; line-height: 1.75; color: var(--ink-dark);
+    }
+
+    /* 填寫表單 */
+    .ul-slots { display: flex; flex-direction: column; gap: 16px; }
+    .ul-slot { background: #ffffff; border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+    .ul-slot-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .ul-slot-no { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-light); white-space: nowrap; }
+    .ul-slot-rm { margin-left: auto; background: none; border: none; font-family: inherit; font-size: 12px; color: var(--ink-light); cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+    .ul-slot-rm:hover { color: var(--ink-dark); }
+    .ul-slot-rm:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 1px; }
+    .ul-select { width: 100%; font-family: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--rule); border-radius: 6px; background: #ffffff; color: var(--ink-dark); }
+    .ul-textarea { width: 100%; box-sizing: border-box; margin-top: 10px; min-height: 92px; resize: vertical; font-family: inherit; font-size: 14px; line-height: 1.7; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px; color: var(--ink-dark); }
+    .ul-select:focus-visible, .ul-textarea:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 1px; }
+    .ul-counter { display: block; text-align: right; margin-top: 6px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-light); }
+    .ul-counter.over { color: var(--gold, #b8945c); }
+    .ul-slot-exp { margin-top: 8px; font-size: 12.5px; line-height: 1.65; color: var(--ink-mid); display: none; }
+    .ul-slot-exp.show { display: block; }
+
+    .ul-addslot { margin-top: 14px; background: none; border: 1px dashed var(--rule); border-radius: 6px; width: 100%; padding: 10px; font-family: inherit; font-size: 13px; color: var(--ink-mid); cursor: pointer; }
+    .ul-addslot:hover { border-color: var(--accent-soft); color: var(--ink-dark); }
+    .ul-addslot:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+
+    .ul-formerr { margin-top: 14px; font-size: 13px; line-height: 1.65; color: var(--gold, #b8945c); }
+    .ul-formerr:empty { display: none; }
+
+    .ul-actions { margin-top: 24px; display: flex; justify-content: center; }
+    .ul-submit {
+      font-family: inherit; font-size: 14.5px; letter-spacing: 0.06em;
+      background: var(--accent-deep, #29627f); color: #ffffff; border: none; border-radius: 6px;
+      padding: 13px 40px; cursor: pointer; transition: opacity 0.2s ease;
+    }
+    .ul-submit:hover:not(:disabled) { opacity: 0.88; }
+    .ul-submit:disabled { opacity: 0.5; cursor: default; }
+    .ul-submit:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+
+    /* 結果 */
+    .ul-result { text-align: center; padding: 48px 24px; }
+    .ul-result-title { font-family: var(--font-serif-zh); font-size: 24px; font-weight: 400; margin: 0 0 14px; color: var(--ink-darkest); }
+    .ul-result-body { font-size: 14px; line-height: 1.8; color: var(--ink-mid); margin: 0 auto 32px; max-width: 460px; }
+
+    .ul-empty, .ul-state { text-align: center; padding: 40px 24px; font-size: 14px; color: var(--ink-mid); line-height: 1.7; }
+
+    @media (max-width: 560px) {
+      .ul-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .ul-row-right { width: 100%; justify-content: space-between; }
+      .ul-entry-btn { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ul-entry-btn, .ul-pick, .ul-submit { transition: none; }
     }
 
   </style>
@@ -751,6 +918,12 @@
             <div class="g-sub" id="gen-head-sub">我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。</div>
           </div>
           <div id="gen-cards" class="gen-cards"></div>
+
+          <!-- T15 段 3 / D5-b：第二個解鎖入口。
+               年方案使用者剛開通、當期還在生成時停在本畫面，此時名額 3 格只佔 1 格、
+               已可解鎖未來月，但 view-hub 尚未可達（需至少一個月有 report 或 job）。
+               缺這個掛載點，功能會在使用者最想用的時刻消失。-->
+          <div id="ul-entry-intro" class="ul-entry" style="display:none; margin-top: 36px;"></div>
         </div>
       </div>
     </section>
@@ -788,6 +961,10 @@
       </div>
 
       
+      <!-- T15 段 3 / D5-b：解鎖入口掛載點之一（另一處在 view-intro 生成畫面）。
+           兩處共用 ulEntryHtml()，可見性一律由 monthly_unlock_quota().is_annual 決定。-->
+      <div id="ul-entry-hub" class="ul-entry" style="display:none;"></div>
+
       <!-- 月份切換 tab -->
       <div id="month-tabs" class="month-tabs"></div>
 
@@ -815,6 +992,46 @@
     </section>
 
     <!-- 單宮詳情 -->
+    <!-- ══════════════════════════════════════════════════════════
+         Task 15 段 3：提前解鎖未來月份
+         走既有 showView() 視圖機制，不新造 modal（本頁無彈窗基礎設施）。
+         兩個步驟（月份清單 → 填寫）在同一 section 內切 step，不再增視圖。
+         ══════════════════════════════════════════════════════════ -->
+    <section id="view-unlock" class="view">
+      <div class="detail-back-top"><span class="back-link" id="ul-back">← 返回</span></div>
+
+      <div class="ul-head">
+        <div class="ul-eyebrow">Unlock · 提前解鎖</div>
+        <h1 class="ul-title" id="ul-title">解鎖未來月份</h1>
+        <p class="ul-sub" id="ul-sub">選一個月份，寫下你希望這個月的建議著重什麼。</p>
+      </div>
+
+      <!-- step: list -->
+      <div id="ul-step-list">
+        <div id="ul-quota" class="ul-quota" style="display:none;"></div>
+        <div id="ul-list" class="ul-list"></div>
+        <div id="ul-list-state" class="ul-state" style="display:none;"></div>
+      </div>
+
+      <!-- step: form -->
+      <div id="ul-step-form" style="display:none;">
+        <div class="ul-notice" id="ul-notice"></div>
+        <div id="ul-slots" class="ul-slots"></div>
+        <button type="button" id="ul-addslot" class="ul-addslot"></button>
+        <div id="ul-formerr" class="ul-formerr" role="alert"></div>
+        <div class="ul-actions">
+          <button type="button" id="ul-submit" class="ul-submit"></button>
+        </div>
+      </div>
+
+      <!-- step: result -->
+      <div id="ul-step-result" class="ul-result" style="display:none;">
+        <div class="ul-result-title" id="ul-result-title"></div>
+        <div class="ul-result-body" id="ul-result-body"></div>
+        <button type="button" id="ul-result-back" class="ul-submit"></button>
+      </div>
+    </section>
+
     <section id="view-detail" class="view">
       <div class="detail-back-top">
         <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
@@ -953,8 +1170,11 @@
   // 單一常數，上線後可依真實數據調整。
   const STUCK_THRESHOLD_MS = 60 * 60 * 1000;
 
-  // 'free'：可看 上月 / 本月 / 下月；'paid'：上月 / 本月 / 未來三月
-  const userTier = 'paid';
+  // T15 段 3：移除 userTier = 'paid' 硬編。
+  //   它全檔只被 computeVisibleMonths 的 maxAhead 使用，且恆為 'paid'，
+  //   使 maxAhead 與可見性上界同為 3 → month-tab 的 locked 分支從未觸發。
+  //   內容層的付費門禁走 isUnlocked（monthly_subscribed_live），與本常數無關，
+  //   移除不影響任何付費顯示。
 
   let isUnlocked = false;
   const PRICING_PAGE = 'pricing.html';
@@ -1086,6 +1306,10 @@
     setText('hub-to-years', 'mo.hubToYears');
     setText('hub-sub', 'mo.hubSub');
     setText('ctx-toggle-label', 'mo.ctxToggle');
+    // unlock（T15 段 3）；ul-title 在 form 步驟由 ulApplyStaticI18n 覆寫為「解鎖 {ym}」
+    setText('ul-back', 'mo.ulBack');
+    setText('ul-title', 'mo.ulTitle');
+    setText('ul-sub', 'mo.ulSub');
     // overview
     setText('overview-eyebrow', 'mo.ovEyebrow');
     setText('overview-title', 'mo.ovTitle');
@@ -1244,18 +1468,31 @@
     showView('view-hub');
   }
 
+  // T15 段 3：移除 rel <= 3 上界。解鎖 >+3 的未來月時，原本月份 tab 會直接不顯示。
+  //
+  // 為什麼移除是安全的（機制，非結論）：
+  //   all 來自 loadYear 的 reportMonths ∪ jobMonths。
+  //   reportMonths 出自 monthly_palace_reports_gated —— 該 view 只做「欄位遮蔽」
+  //   （CASE WHEN subscribed THEN … ELSE NULL），完全不做 row 過濾；月份維度的
+  //   把關其實在更前面：某月有 report ⟸ 該月跑過 job ⟸ 該月是排程月或已解鎖月。
+  //   未解鎖的遠月既無 report 也無 job，根本不會進入 all。
+  //   → rel <= 3 從來就不是權限邊界，它是舊的 free/paid 顯示規則，
+  //     而 userTier 恆為 'paid' 已使其形同虛設。移除不會漏出任何未授權月份。
+  //
+  // 下界 rel >= -1 保留：那是「不回顧兩個月以前」的產品規則，與解鎖無關。
+  // unlocked 恆為 true：內容層門禁走 isUnlocked，此欄位僅供 renderMonthTabs
+  //   與 loadYear 的 defaultPick 沿用既有寫法，不再承載任何判定。
   function computeVisibleMonths(all) {
     const base = nowAsLunarBase();
     const baseIdx = base.year * 12 + base.month;
-    const maxAhead = userTier === 'paid' ? 3 : 1;
     return all
       .map(({ year, month }) => {
         const idx = year * 12 + month;
         const rel = idx - baseIdx;
         return { year, month, rel };
       })
-      .filter(v => v.rel >= -1 && v.rel <= 3)
-      .map(v => ({ ...v, unlocked: v.rel >= -1 && v.rel <= maxAhead }))
+      .filter(v => v.rel >= -1)
+      .map(v => ({ ...v, unlocked: true }))
       .sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
   }
 
@@ -2022,6 +2259,483 @@
   }
   function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
+  // ===================================================================
+  // Task 15 段 3：提前解鎖未來月份（年方案）
+  //
+  // 架構原則：前端零判定。
+  //   tier / 名額 / 月份 / 有效範圍全由段 2 的 definer RPC 回答，
+  //   本模組只負責 render RPC 回應 + 收集輸入 + 依 HTTP status 顯示結果。
+  //   任何「我來算一下這個月能不能解」的程式碼都是第二個判定點，禁止出現。
+  //
+  // ⚠ 與常規 context（ctxSave / CTX_TABLE）是兩套模型，不可複用：
+  //     常規：key = user_email + slot_no，無月份維度，是使用者的「常設值」，逐格 upsert
+  //     解鎖：綁定特定 target 月，整組覆蓋，一次送出，slot_no 由 RPC 用 row_number() 自編
+  //   若複用 ctxSave()，使用者為某月填的內容會覆寫掉常設 context，污染之後所有正常月份。
+  //
+  // ⚠ 座標系：RPC 回的 target_year/target_month 與 valid_*_start、job.target_* 同一空間
+  //   （皆為本頁所稱的農曆座標），顯示一律過 lunarToSolarDisplay()。直出會差一個月。
+  // ===================================================================
+  const UL_EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/monthly-unlock-early`;
+  const UL_MONTHS_AHEAD = 12;
+  const UL_MAX_SLOTS = 3;
+
+  let ulQuota = null;          // { used, quota_limit, can_unlock, is_annual }
+  let ulRows = [];             // monthly_unlock_months() 原始回應
+  let ulPick = null;           // { y, m, label }
+  let ulSlots = [];            // [{ palace_name, context_text }]
+  let ulStep = 'list';         // 'list' | 'form' | 'result'
+  let ulBusy = false;
+  let ulReturnView = 'view-hub';
+
+  function ulYmLabel(y, m) { return lunarToSolarDisplay(y, m).label; }
+
+  // ── 名額 / 資格 ──
+  // fail-closed：任何失敗一律視為無資格，入口不顯示。
+  async function ulLoadQuota() {
+    try {
+      const { data, error } = await supabase
+        .rpc('monthly_unlock_quota', { p_chart_session_id: chartSessionId });
+      if (error) { console.warn('[unlock] 名額查詢失敗：', error.message); ulQuota = null; return; }
+      ulQuota = Array.isArray(data) ? (data[0] || null) : (data || null);
+    } catch (e) {
+      console.warn('[unlock] 名額查詢例外：', e);
+      ulQuota = null;
+    }
+  }
+
+  // ── 入口 ──
+  // P4：可見性用 is_annual（身分資格），不用 can_unlock（動作當下可行性）。
+  //   用 can_unlock 的話，排程月 job 佔住名額時入口會無故消失，
+  //   使用者看不到進行中的解鎖，quota_full 的提示也永遠沒有機會顯示。
+  function ulEntryHtml() {
+    const used = ulQuota ? ulQuota.used : 0;
+    const lim = ulQuota ? ulQuota.quota_limit : UL_MAX_SLOTS;
+    return `
+      <button type="button" class="ul-entry-btn">
+        <span class="ul-entry-main">
+          <span class="ul-entry-title">${escapeHtml(tx('mo.ulEntry'))}</span>
+          <span class="ul-entry-note">${escapeHtml(tx('mo.ulEntryNote'))}</span>
+        </span>
+        <span class="ul-entry-quota">${escapeHtml(tx('mo.ulQuotaLabel'))} <strong>${used}</strong> / ${lim}</span>
+      </button>`;
+  }
+
+  function ulRenderEntries() {
+    const show = !!(ulQuota && ulQuota.is_annual);
+    [['ul-entry-hub', 'view-hub'], ['ul-entry-intro', 'view-intro']].forEach(([id, from]) => {
+      const host = document.getElementById(id);
+      if (!host) return;
+      if (!show) { host.style.display = 'none'; host.innerHTML = ''; return; }
+      host.style.display = 'block';
+      host.innerHTML = ulEntryHtml();
+      const btn = host.querySelector('.ul-entry-btn');
+      if (btn) btn.addEventListener('click', () => ulOpen(from));
+    });
+  }
+
+  // ── 視圖步驟 ──
+  function ulShowStep(step) {
+    ulStep = step;
+    const map = { list: 'ul-step-list', form: 'ul-step-form', result: 'ul-step-result' };
+    Object.entries(map).forEach(([k, id]) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = (k === step) ? (k === 'result' ? 'block' : 'block') : 'none';
+    });
+    const back = document.getElementById('ul-back');
+    if (back) back.style.display = (step === 'result') ? 'none' : 'inline';
+  }
+
+  async function ulOpen(fromView) {
+    ulReturnView = fromView || 'view-hub';
+    ulPick = null;
+    ulSlots = [];
+    showView('view-unlock');
+    ulShowStep('list');
+    ulApplyStaticI18n();   // 重設標題：上一次進到 form 會把 ul-title 改成「解鎖 {ym}」
+
+    const listEl = document.getElementById('ul-list');
+    const stateEl = document.getElementById('ul-list-state');
+    const quotaEl = document.getElementById('ul-quota');
+    if (listEl) listEl.innerHTML = '';
+    if (quotaEl) quotaEl.style.display = 'none';
+    if (stateEl) { stateEl.style.display = 'block'; stateEl.textContent = tx('mo.ulLoading'); }
+
+    const ok = await ulLoadRows();
+    await ulLoadQuota();
+    ulRenderEntries();
+
+    if (!ok) {
+      if (stateEl) { stateEl.style.display = 'block'; stateEl.textContent = tx('mo.ulLoadFail'); }
+      return;
+    }
+    ulRenderQuota();
+    ulRenderList();
+  }
+
+  async function ulLoadRows() {
+    try {
+      const { data, error } = await supabase.rpc('monthly_unlock_months', {
+        p_chart_session_id: chartSessionId,
+        p_months_ahead: UL_MONTHS_AHEAD,
+      });
+      if (error) { console.warn('[unlock] 月份查詢失敗：', error.message); ulRows = []; return false; }
+      ulRows = Array.isArray(data) ? data : [];
+      return true;
+    } catch (e) {
+      console.warn('[unlock] 月份查詢例外：', e);
+      ulRows = [];
+      return false;
+    }
+  }
+
+  function ulRenderQuota() {
+    const el = document.getElementById('ul-quota');
+    if (!el) return;
+    if (!ulQuota) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.innerHTML = `
+      <div class="ul-quota-row">
+        <span class="ul-quota-label">${escapeHtml(tx('mo.ulQuotaLabel'))}</span>
+        <span class="ul-quota-value">${ulQuota.used} / ${ulQuota.quota_limit}</span>
+      </div>
+      <div class="ul-quota-note">${escapeHtml(tx('mo.ulQuotaNote'))}</div>`;
+  }
+
+  // 五態呈現。status 與 is_complete 正交：is_complete 只在 unlocked 時作為副標補充。
+  // out_of_range 直接不 render（不佔版面，也不需要額外文案）。
+  function ulRenderList() {
+    const wrap = document.getElementById('ul-list');
+    const stateEl = document.getElementById('ul-list-state');
+    if (!wrap) return;
+
+    const rows = ulRows.filter(r => r.status !== 'out_of_range');
+    if (rows.length === 0) {
+      wrap.innerHTML = '';
+      if (stateEl) { stateEl.style.display = 'block'; stateEl.textContent = tx('mo.ulEmpty'); }
+      return;
+    }
+    if (stateEl) stateEl.style.display = 'none';
+
+    wrap.innerHTML = rows.map(r => {
+      const y = Number(r.target_year), m = Number(r.target_month);
+      const label = ulYmLabel(y, m);
+      let badge = '', note = '', right = '', off = '';
+
+      if (r.status === 'unlocked') {
+        badge = `<span class="ul-badge unlocked">${escapeHtml(tx('mo.ulStUnlocked'))}</span>`;
+        note = r.is_complete ? tx('mo.ulStComplete') : tx('mo.ulStGenerating');
+        right = badge;
+      } else if (r.status === 'scheduled') {
+        badge = `<span class="ul-badge scheduled">${escapeHtml(tx('mo.ulStScheduled'))}</span>`;
+        note = tx('mo.ulStScheduledNote');
+        right = badge;
+        off = ' is-off';
+      } else if (r.status === 'quota_full') {
+        badge = `<span class="ul-badge quotafull">${escapeHtml(tx('mo.ulStQuotaFull'))}</span>`;
+        note = tx('mo.ulQuotaNote');
+        right = badge;
+        off = ' is-off';
+      } else { // unlockable
+        right = `<button type="button" class="ul-pick" data-y="${y}" data-m="${m}">${escapeHtml(tx('mo.ulAction'))}</button>`;
+      }
+
+      return `
+        <div class="ul-row${off}">
+          <div class="ul-row-main">
+            <div class="ul-row-ym">${escapeHtml(label)}</div>
+            ${note ? `<div class="ul-row-note">${escapeHtml(note)}</div>` : ''}
+          </div>
+          <div class="ul-row-right">${right}</div>
+        </div>`;
+    }).join('');
+
+    wrap.querySelectorAll('.ul-pick').forEach(btn => {
+      btn.addEventListener('click', () => ulStartForm(Number(btn.dataset.y), Number(btn.dataset.m)));
+    });
+  }
+
+  // ── 填寫表單 ──
+  // 不預填常規 context：整組覆蓋語意下，預填會讓使用者以為「沒動的格子會沿用」，
+  // 正好是 C1-b 要避免的誤解。
+  function ulStartForm(y, m) {
+    ulPick = { y, m, label: ulYmLabel(y, m) };
+    ulSlots = [{ palace_name: '', context_text: '' }];
+    ulShowStep('form');
+    ulApplyFormI18n();
+    ulRenderSlots();
+    const err = document.getElementById('ul-formerr');
+    if (err) err.textContent = '';
+  }
+
+  function ulApplyFormI18n() {
+    const t = document.getElementById('ul-title');
+    if (t && ulPick) t.textContent = tx('mo.ulFormTitle').replace('{ym}', ulPick.label);
+    const notice = document.getElementById('ul-notice');
+    if (notice) notice.textContent = tx('mo.ulNotice');
+    const add = document.getElementById('ul-addslot');
+    if (add) add.textContent = tx('mo.ulAddSlot');
+    const sub = document.getElementById('ul-submit');
+    if (sub) sub.textContent = ulBusy ? tx('mo.ulSubmitting') : tx('mo.ulSubmit');
+  }
+
+  function ulUsedPalaces(exceptIdx) {
+    const used = new Set();
+    ulSlots.forEach((s, i) => { if (i !== exceptIdx && s.palace_name) used.add(s.palace_name); });
+    return used;
+  }
+
+  function ulRenderSlots() {
+    const wrap = document.getElementById('ul-slots');
+    if (!wrap) return;
+
+    wrap.innerHTML = ulSlots.map((s, i) => {
+      const used = ulUsedPalaces(i);
+      const options = [`<option value="">${escapeHtml(tx('mo.ctxSelectPlaceholder'))}</option>`]
+        .concat(PALACE_ORDER.map(p => {
+          const dis = used.has(p) && p !== s.palace_name ? ' disabled' : '';
+          const sel = p === s.palace_name ? ' selected' : '';
+          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabel(p))}</option>`;
+        })).join('');
+      const exp = s.palace_name ? (td('PALACE_EXPLAINER_MONTHLY', s.palace_name) || '') : '';
+      const text = s.context_text || '';
+
+      return `
+        <div class="ul-slot" data-i="${i}">
+          <div class="ul-slot-top">
+            <span class="ul-slot-no">${escapeHtml(tx('mo.ulSlotLabel').replace('{n}', i + 1))}</span>
+            ${ulSlots.length > 1 ? `<button type="button" class="ul-slot-rm" data-i="${i}">${escapeHtml(tx('mo.ulRemoveSlot'))}</button>` : ''}
+          </div>
+          <select class="ul-select" data-i="${i}">${options}</select>
+          <div class="ul-slot-exp${exp ? ' show' : ''}" data-i="${i}">${exp}</div>
+          <textarea class="ul-textarea" data-i="${i}" maxlength="${CTX_MAX_LEN}"
+            placeholder="${escapeHtml(tx('mo.ctxPlaceholder'))}">${escapeHtml(text)}</textarea>
+          <span class="ul-counter" data-i="${i}">${text.length} / ${CTX_MAX_LEN}</span>
+        </div>`;
+    }).join('');
+
+    const add = document.getElementById('ul-addslot');
+    if (add) add.style.display = (ulSlots.length < UL_MAX_SLOTS) ? 'block' : 'none';
+
+    ulBindSlotEvents();
+  }
+
+  function ulBindSlotEvents() {
+    const wrap = document.getElementById('ul-slots');
+    if (!wrap) return;
+
+    wrap.querySelectorAll('.ul-textarea').forEach(ta => {
+      ta.addEventListener('input', () => {
+        const i = Number(ta.dataset.i);
+        ulSlots[i].context_text = ta.value;
+        const c = wrap.querySelector(`.ul-counter[data-i="${i}"]`);
+        if (c) {
+          c.textContent = `${ta.value.length} / ${CTX_MAX_LEN}`;
+          c.classList.toggle('over', ta.value.length >= CTX_MAX_LEN);
+        }
+      });
+    });
+
+    wrap.querySelectorAll('.ul-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const i = Number(sel.dataset.i);
+        ulSlots[i].palace_name = sel.value;
+        ulSyncSlotsFromDom();
+        ulRenderSlots();   // 重繪以更新其他 slot 的 disabled 宮位
+      });
+    });
+
+    wrap.querySelectorAll('.ul-slot-rm').forEach(btn => {
+      btn.addEventListener('click', () => {
+        ulSyncSlotsFromDom();
+        ulSlots.splice(Number(btn.dataset.i), 1);
+        if (ulSlots.length === 0) ulSlots = [{ palace_name: '', context_text: '' }];
+        ulRenderSlots();
+      });
+    });
+  }
+
+  // DOM → state。重繪與驗證前都要先同步，否則使用者輸入會被覆蓋。
+  function ulSyncSlotsFromDom() {
+    const wrap = document.getElementById('ul-slots');
+    if (!wrap) return;
+    wrap.querySelectorAll('.ul-slot').forEach(el => {
+      const i = Number(el.dataset.i);
+      if (!ulSlots[i]) return;
+      const sel = el.querySelector('.ul-select');
+      const ta = el.querySelector('.ul-textarea');
+      if (sel) ulSlots[i].palace_name = sel.value || '';
+      if (ta) ulSlots[i].context_text = ta.value || '';
+    });
+  }
+
+  // 半填必須擋在送出前。
+  //   後端閘門五的 where 同時管計數與寫入：只選了宮位沒寫內容的格子會被靜默丟棄，
+  //   使用者以為送出 3 格、實際只有 2 格生效，而且整組覆蓋、沒有補救機會。
+  //   這不是重複後端判定 —— 後端判的是「有效格數 1–3」，此處擋的是「別讓使用者誤以為填了」。
+  function ulValidate() {
+    const errs = [];
+    const contexts = [];
+    ulSlots.forEach((s, i) => {
+      const p = (s.palace_name || '').trim();
+      const t = (s.context_text || '').trim();
+      if (!p && !t) return;                       // 完全空白：視為未使用，允許
+      if (!p || !t) { errs.push(i + 1); return; } // 半填：擋
+      contexts.push({ palace_name: p, context_text: t });
+    });
+    if (errs.length) return { ok: false, msg: tx('mo.ulErrHalf').replace('{n}', errs[0]) };
+    if (contexts.length === 0) return { ok: false, msg: tx('mo.ulErrNone') };
+    return { ok: true, contexts };
+  }
+
+  const UL_ERR_BY_STATUS = {
+    400: 'mo.ulErr400',
+    401: 'mo.ulErr401',
+    403: 'mo.ulErr403',
+    409: 'mo.ulErr409',
+    429: 'mo.ulErr429',
+  };
+
+  async function ulSubmit() {
+    if (ulBusy || !ulPick) return;
+    ulSyncSlotsFromDom();
+
+    const errEl = document.getElementById('ul-formerr');
+    const v = ulValidate();
+    if (!v.ok) { if (errEl) errEl.textContent = v.msg; return; }
+    if (errEl) errEl.textContent = '';
+
+    const btn = document.getElementById('ul-submit');
+    ulBusy = true;
+    if (btn) { btn.disabled = true; btn.textContent = tx('mo.ulSubmitting'); }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session && session.access_token;
+      if (!token) {
+        if (errEl) errEl.textContent = tx('mo.ulErr401');
+        return;
+      }
+
+      const resp = await fetch(UL_EF_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': window.CFG.SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          chart_session_id: chartSessionId,
+          target_year: ulPick.y,
+          target_month: ulPick.m,
+          contexts: v.contexts,   // [{ palace_name, context_text }]，slot_no 由 RPC 自編
+        }),
+      });
+
+      let body = null;
+      try { body = await resp.json(); } catch (_) { body = null; }
+
+      if (!resp.ok) {
+        // 錯誤分辨只看 HTTP status：EF 的 body.error 在 RPC 失敗時恆為 "unlock_failed"。
+        // body.detail 是原始 Postgres 訊息（含 constraint / 表名），只進 console，
+        // 絕不顯示給使用者 —— 既是資訊洩漏，也是無法三語化的裸英文。
+        console.error('[unlock] 失敗', resp.status, body && body.detail);
+        const key = UL_ERR_BY_STATUS[resp.status] || 'mo.ulErr500';
+        if (errEl) errEl.textContent = tx(key);
+        return;
+      }
+
+      // partial:true 只在「RPC 已成功、job_id 已存在」之後產生（email 查詢失敗或 webhook 失敗），
+      // 解鎖確實已寫入 → 顯示為成功，且不給重試（重試會撞 uniq_monthly_job）。
+      if (body && body.partial) console.warn('[unlock] partial：', body.warning, body.detail);
+      ulShowResult(!!(body && body.partial));
+    } catch (e) {
+      console.error('[unlock] 例外：', e);
+      if (errEl) errEl.textContent = tx('mo.ulErr500');
+    } finally {
+      ulBusy = false;
+      if (btn) { btn.disabled = false; btn.textContent = tx('mo.ulSubmit'); }
+    }
+  }
+
+  function ulShowResult(partial) {
+    ulShowStep('result');
+    const label = ulPick ? ulPick.label : '';
+    const t = document.getElementById('ul-result-title');
+    const b = document.getElementById('ul-result-body');
+    const back = document.getElementById('ul-result-back');
+    if (t) t.textContent = tx('mo.ulOkTitle').replace('{ym}', label);
+    if (b) b.textContent = partial ? tx('mo.ulPartialBody') : tx('mo.ulOkBody');
+    if (back) back.textContent = tx('mo.ulResultBack');
+  }
+
+  // 回到原本的視圖，並讓月份 tab / 生成卡片吃到新的 job。
+  async function ulFinish() {
+    showView('view-loading');
+    document.getElementById('loading-title').textContent = tx('mo.loadingTitle');
+    document.getElementById('loading-sub').textContent = tx('mo.loadingYearSub');
+
+    lastJobs = await fetchJobs();
+    await ulLoadQuota();
+    ulRenderEntries();
+
+    if (ulReturnView === 'view-hub' && currentYear != null) {
+      await loadYear(currentYear, currentMonth);
+    } else {
+      renderGenerating(lastJobs);
+      showView('view-intro');
+    }
+    startPolling();   // 內部先 stopPolling()，不會疊計時器
+  }
+
+  function ulBindStatic() {
+    const back = document.getElementById('ul-back');
+    if (back) {
+      back.addEventListener('click', () => {
+        if (ulStep === 'form') {
+          ulPick = null;
+          ulShowStep('list');
+          ulApplyStaticI18n();
+          return;
+        }
+        showView(ulReturnView);
+      });
+    }
+    const submit = document.getElementById('ul-submit');
+    if (submit) submit.addEventListener('click', ulSubmit);
+
+    const add = document.getElementById('ul-addslot');
+    if (add) {
+      add.addEventListener('click', () => {
+        if (ulSlots.length >= UL_MAX_SLOTS) return;
+        ulSyncSlotsFromDom();
+        ulSlots.push({ palace_name: '', context_text: '' });
+        ulRenderSlots();
+      });
+    }
+    const rback = document.getElementById('ul-result-back');
+    if (rback) rback.addEventListener('click', ulFinish);
+  }
+
+  function ulApplyStaticI18n() {
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
+    setText('ul-back', 'mo.ulBack');
+    setText('ul-sub', 'mo.ulSub');
+    const t = document.getElementById('ul-title');
+    if (t) t.textContent = (ulStep === 'form' && ulPick)
+      ? tx('mo.ulFormTitle').replace('{ym}', ulPick.label)
+      : tx('mo.ulTitle');
+  }
+
+  // 語言切換時就地重繪；form 步驟先把 DOM 同步回 state，避免覆蓋使用者輸入。
+  function ulRerender() {
+    ulRenderEntries();
+    ulApplyStaticI18n();
+    if (currentView !== 'view-unlock') return;
+    if (ulStep === 'list') { ulRenderQuota(); ulRenderList(); }
+    else if (ulStep === 'form') { ulSyncSlotsFromDom(); ulApplyFormI18n(); ulRenderSlots(); }
+    else if (ulStep === 'result') { /* 結果文案依 ulPick 重寫，不影響狀態 */ }
+  }
+
   async function init() {
     try {
       applyStaticI18n();                  // 先以 uiLang 套靜態文字,避免載入時閃現中文
@@ -2065,6 +2779,12 @@
 
       await ctxInit();
       ctxBindHubToggle();
+
+      // T15 段 3：解鎖模組。ulLoadQuota 必須在 chartSessionId 賦值之後；
+      // 失敗一律 fail-closed（ulQuota=null → 入口不顯示）。
+      await ulLoadQuota();
+      ulBindStatic();
+      ulRenderEntries();
 
       const jobs = await fetchJobs();
       lastJobs = jobs;   // T15：monthJobState / loadYear 依賴此變數，須在路由決策前就緒
@@ -2366,6 +3086,7 @@
     applyStaticI18n();
     fillReportDays();
     if (!ctxHasUnsaved()) ctxRenderSlots();
+    ulRerender();                       // T15 段 3：入口 + 解鎖介面（form 步驟保留使用者輸入）
     if (introMode === 'generating') renderGenerating(lastJobs);
     if (lastYears && lastYears.length) renderYears(lastYears);
     if (currentYear != null && currentMonth != null && Object.keys(reportsByPalace).length) {
