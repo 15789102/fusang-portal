@@ -152,6 +152,19 @@
       "mo.ulStScheduledNote": {"zh-TW": "會自動為你生成，不需要解鎖", "zh-CN": "会自动为你生成，不需要解锁", "en": "This one is already on its way — no need to unlock it"},
       "mo.ulStQuotaFull": {"zh-TW": "名額已滿", "zh-CN": "名额已满", "en": "No slot free"},
       "mo.ulAction": {"zh-TW": "解鎖", "zh-CN": "解锁", "en": "Unlock"},
+      // Task 16：expired 態（涵蓋內、未解、付費過期）
+      "mo.ulStExpired": {"zh-TW": "需續購", "zh-CN": "需续购", "en": "Renewal needed"},
+      "mo.ulStExpiredNote": {"zh-TW": "這個月在你的方案範圍內，但目前的付費狀態已過期。續購一年即可恢復解鎖。", "zh-CN": "这个月在你的方案范围内，但目前的付费状态已过期。续购一年即可恢复解锁。", "en": "This month is within your plan, but your paid access has expired. Renew for a year to unlock it again."},
+      // Task 16：續購入口（名額區旁）
+      "mo.ulRenewPrompt": {"zh-TW": "想解鎖更多月份？再購買一年可延伸你的涵蓋範圍。", "zh-CN": "想解锁更多月份？再购买一年可延伸你的涵盖范围。", "en": "Want to unlock more months? Purchase another year to extend your coverage."},
+      "mo.ulRenewBtn": {"zh-TW": "延伸解鎖範圍", "zh-CN": "延伸解锁范围", "en": "Extend coverage"},
+      // Task 16：續購二次確認彈窗
+      "mo.ulRenewTitle": {"zh-TW": "延伸你的涵蓋範圍", "zh-CN": "延伸你的涵盖范围", "en": "Extend your coverage"},
+      "mo.ulRenewRule": {"zh-TW": "續購將從你現有涵蓋範圍之後接續 12 個月。這 12 個月可能包含已經過去的月份——這是正常的，那些月份仍可解鎖，內容一經生成即永久保留。", "zh-CN": "续购将从你现有涵盖范围之后接续 12 个月。这 12 个月可能包含已经过去的月份——这是正常的，那些月份仍可解锁，内容一经生成即永久保留。", "en": "Renewing adds 12 months continuing from your existing coverage. These 12 months may include months that have already passed — this is expected; those months can still be unlocked, and once generated the content is kept permanently."},
+      "mo.ulRenewCancel": {"zh-TW": "取消", "zh-CN": "取消", "en": "Cancel"},
+      "mo.ulRenewConfirm": {"zh-TW": "確認續購", "zh-CN": "确认续购", "en": "Confirm renewal"},
+      "mo.ulRenewGoing": {"zh-TW": "前往付款…", "zh-CN": "前往付款…", "en": "Going to checkout…"},
+      "mo.ulRenewFail": {"zh-TW": "無法前往付款，請稍後再試。", "zh-CN": "无法前往付款，请稍后再试。", "en": "Couldn't start checkout. Please try again later."},
 
       "mo.ulFormTitle": {"zh-TW": "解鎖 {ym}", "zh-CN": "解锁 {ym}", "en": "Unlock {ym}"},
       // C1-b：整組覆蓋的明確告知。常駐、不可關閉。
@@ -764,6 +777,42 @@
     .ul-badge.unlocked   { background: var(--t-lu-bg, rgba(184,148,92,0.12)); color: var(--gold, #b8945c); }
     .ul-badge.scheduled  { background: var(--bg-soft-2); color: var(--ink-mid); }
     .ul-badge.quotafull  { background: var(--bg-soft-2); color: var(--ink-light); }
+    /* Task 16：expired 態 badge（涵蓋內、付費過期、需續購）*/
+    .ul-badge.expired    { background: var(--bg-soft-2); color: var(--accent-deep); border: 1px solid var(--rule); }
+
+    /* Task 16：續購入口（名額區旁）*/
+    .ul-renew { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+    .ul-renew-text { font-size: 12.5px; color: var(--ink-mid); line-height: 1.65; margin-bottom: 10px; }
+    .ul-renew-btn {
+      font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
+      padding: 8px 16px; border-radius: 3px; cursor: pointer;
+      background: transparent; color: var(--accent-deep); border: 1px solid var(--accent-soft);
+      transition: all 0.2s;
+    }
+    .ul-renew-btn:hover { background: var(--accent-deep); color: var(--bg-primary); }
+
+    /* Task 16：續購二次確認彈窗 */
+    .ul-renew-modal {
+      position: fixed; inset: 0; z-index: 1000; background: rgba(21,54,58,0.28);
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .ul-renew-box {
+      background: var(--bg-primary); border-radius: 6px; max-width: 440px; width: 100%;
+      padding: 28px 28px 24px; box-shadow: 0 20px 60px rgba(21,54,58,0.22);
+    }
+    .ul-renew-title { font-family: var(--font-serif-zh); font-size: 19px; color: var(--ink-darkest); letter-spacing: 0.04em; margin-bottom: 14px; }
+    .ul-renew-body { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.85; color: var(--ink-dark); letter-spacing: 0.02em; }
+    .ul-renew-err { margin-top: 12px; font-size: 12.5px; color: var(--accent-deep); line-height: 1.6; }
+    .ul-renew-actions { margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; }
+    .ul-renew-cancel, .ul-renew-confirm {
+      font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.08em;
+      padding: 11px 22px; border-radius: 3px; cursor: pointer; transition: all 0.2s;
+    }
+    .ul-renew-cancel { background: transparent; color: var(--ink-mid); border: 1px solid var(--rule); }
+    .ul-renew-cancel:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
+    .ul-renew-confirm { background: var(--ink-darkest); color: var(--bg-primary); border: 1px solid var(--ink-darkest); }
+    .ul-renew-confirm:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+    .ul-renew-confirm:disabled { opacity: 0.6; cursor: default; }
 
     .ul-pick {
       font-family: inherit; font-size: 13px; letter-spacing: 0.04em;
@@ -1151,7 +1200,7 @@
 <div id="site-footer"></div>
 
 <script type="module">
-  import { supabase, requireAuth, loadReportGlossary } from './components.js';
+  import { supabase, requireAuth, loadReportGlossary, startCheckout } from './components.js';
 
   // i18n 核心為 classic 全域(window.FSI18N,已於 <head> 的 <script src="i18n.js"> 載入)。
   // tx=UI 字串(uiLang,可切);td/palaceLabel/starLabel/transformLabel=報告內容(reportLang,鎖定)。
@@ -2321,7 +2370,8 @@
   //   （皆為本頁所稱的農曆座標），顯示一律過 lunarToSolarDisplay()。直出會差一個月。
   // ===================================================================
   const UL_EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/monthly-unlock-early`;
-  const UL_MONTHS_AHEAD = 12;
+  // Task 16：monthly_unlock_months 改涵蓋集合驅動後，移除 p_months_ahead 參數
+  //   （列舉域 = 涵蓋 ∪ 已解，無「往後 N 個月」概念）。原 UL_MONTHS_AHEAD 常數已刪。
   const UL_MAX_SLOTS = 3;
 
   let ulQuota = null;          // { used, quota_limit, can_unlock, is_annual }
@@ -2421,7 +2471,6 @@
     try {
       const { data, error } = await supabase.rpc('monthly_unlock_months', {
         p_chart_session_id: chartSessionId,
-        p_months_ahead: UL_MONTHS_AHEAD,
       });
       if (error) { console.warn('[unlock] 月份查詢失敗：', error.message); ulRows = []; return false; }
       ulRows = Array.isArray(data) ? data : [];
@@ -2438,12 +2487,71 @@
     if (!el) return;
     if (!ulQuota) { el.style.display = 'none'; return; }
     el.style.display = 'block';
+
+    // Task 16：續購入口（乙）。放在名額區旁——使用者看範圍現況的地方，
+    //   「現況 + 如何延伸」並列。年方案專屬：ul-quota 本身只在 view-unlock 內顯示，
+    //   而 view-unlock 只有年方案能進（ulRenderEntries 用 is_annual 閘門）；
+    //   此處再加 is_annual 顯式閘門作雙保險，不只靠「進得來就是年方案」的間接性。
+    const renewHtml = (ulQuota && ulQuota.is_annual) ? `
+      <div class="ul-renew">
+        <div class="ul-renew-text">${escapeHtml(tx('mo.ulRenewPrompt'))}</div>
+        <button type="button" class="ul-renew-btn" id="ul-renew-btn">${escapeHtml(tx('mo.ulRenewBtn'))}</button>
+      </div>` : '';
+
     el.innerHTML = `
       <div class="ul-quota-row">
         <span class="ul-quota-label">${escapeHtml(tx('mo.ulQuotaLabel'))}</span>
         <span class="ul-quota-value">${ulQuota.used} / ${ulQuota.quota_limit}</span>
       </div>
-      <div class="ul-quota-note">${escapeHtml(tx('mo.ulQuotaNote'))}</div>`;
+      <div class="ul-quota-note">${escapeHtml(tx('mo.ulQuotaNote'))}</div>
+      ${renewHtml}`;
+
+    const rb = document.getElementById('ul-renew-btn');
+    if (rb) rb.addEventListener('click', ulOpenRenewConfirm);
+  }
+
+  // ── Task 16：續購二次確認（Q3 = 需要）─────────────────────────────
+  //   純最遠月+1 邏輯下續購可能全過去月 → 付款前顯示規則文案，
+  //   使用者確認「接續 12 月、可能含過去月」後才跳 Stripe，換掉「付了才發現」的客訴。
+  //   402 攔截與名額區入口共用此彈窗（同一套文案、同一導流）。
+  function ulOpenRenewConfirm() {
+    // 避免重複開啟
+    if (document.getElementById('ul-renew-modal')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ul-renew-modal';
+    overlay.className = 'ul-renew-modal';
+    overlay.innerHTML = `
+      <div class="ul-renew-box" role="dialog" aria-modal="true">
+        <div class="ul-renew-title">${escapeHtml(tx('mo.ulRenewTitle'))}</div>
+        <div class="ul-renew-body">${escapeHtml(tx('mo.ulRenewRule'))}</div>
+        <div class="ul-renew-err" id="ul-renew-err" style="display:none;"></div>
+        <div class="ul-renew-actions">
+          <button type="button" class="ul-renew-cancel" id="ul-renew-cancel">${escapeHtml(tx('mo.ulRenewCancel'))}</button>
+          <button type="button" class="ul-renew-confirm" id="ul-renew-confirm">${escapeHtml(tx('mo.ulRenewConfirm'))}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const close = () => { const m = document.getElementById('ul-renew-modal'); if (m) m.remove(); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    document.getElementById('ul-renew-cancel').addEventListener('click', close);
+
+    document.getElementById('ul-renew-confirm').addEventListener('click', async () => {
+      const cbtn = document.getElementById('ul-renew-confirm');
+      if (cbtn) { cbtn.disabled = true; cbtn.textContent = tx('mo.ulRenewGoing'); }
+      // 複用 components.js 的 startCheckout：成功會自行 window.location 跳 Stripe；
+      // 失敗回 { ok:false, code } → 顯示於彈窗，不自創 fetch/JWT/導向。
+      const res = await startCheckout('annual_pack');
+      if (!res || !res.ok) {
+        const errBox = document.getElementById('ul-renew-err');
+        const msg = (res && res.code === 'not_authenticated')
+          ? tx('mo.ulErr401') : tx('mo.ulRenewFail');
+        if (errBox) { errBox.textContent = msg; errBox.style.display = 'block'; }
+        if (cbtn) { cbtn.disabled = false; cbtn.textContent = tx('mo.ulRenewConfirm'); }
+      }
+      // res.ok === true 時 startCheckout 已跳轉，無需處理
+    });
   }
 
   // 五態呈現。status 與 is_complete 正交：is_complete 只在 unlocked 時作為副標補充。
@@ -2478,6 +2586,14 @@
       } else if (r.status === 'quota_full') {
         badge = `<span class="ul-badge quotafull">${escapeHtml(tx('mo.ulStQuotaFull'))}</span>`;
         note = tx('mo.ulQuotaNote');
+        right = badge;
+        off = ' is-off';
+      } else if (r.status === 'expired') {
+        // Task 16：在涵蓋集合內、未解、但當下付費狀態已過期。
+        //   報告本文（若已解）永久保留，但這些未解月需恢復付費狀態才能解。
+        //   顯示為「需續購」狀態，非可解按鈕；續購入口在名額區（ul-quota）旁。
+        badge = `<span class="ul-badge expired">${escapeHtml(tx('mo.ulStExpired'))}</span>`;
+        note = tx('mo.ulStExpiredNote');
         right = badge;
         off = ' is-off';
       } else { // unlockable
@@ -2682,6 +2798,16 @@
       try { body = await resp.json(); } catch (_) { body = null; }
 
       if (!resp.ok) {
+        // Task 16：402 = out_of_coverage（超出涵蓋集合）。優先於一般錯誤表攔截。
+        //   402 是「行動提示（該續購以延伸範圍）」，不是錯誤 —— 不顯示紅色錯誤訊息，
+        //   而是走續購導流（與名額區續購入口同一套文案、同一個二次確認）。
+        //   註：列舉域 A 下超範圍月不進清單，此路徑主要作防禦兜底（狀態不同步時）。
+        if (resp.status === 402) {
+          console.warn('[unlock] out_of_coverage（超出涵蓋，導向續購）', resp.status);
+          if (errEl) errEl.textContent = '';   // 清掉任何殘留錯誤文字
+          ulOpenRenewConfirm();                 // 開續購二次確認（與 ul-quota 續購入口共用）
+          return;
+        }
         // 錯誤分辨只看 HTTP status：EF 的 body.error 在 RPC 失敗時恆為 "unlock_failed"。
         // body.detail 是原始 Postgres 訊息（含 constraint / 表名），只進 console，
         // 絕不顯示給使用者 —— 既是資訊洩漏，也是無法三語化的裸英文。
