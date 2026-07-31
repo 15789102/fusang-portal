@@ -177,6 +177,10 @@
        · 座標：RPC 已回 display_year/display_month（= target+1），前端直接用，不再換算
      ════════════════════════════════════════════════════════════════════════ -->
 <script type="module">
+  // 複用 components.js 匯出的 authed supabase client（與 pricing/monthly 同一個，
+  // 已帶登入 session）。不自建第二個實例、不賭 localStorage key。
+  import { supabase } from './components.js';
+
   (async function () {
     const params = new URLSearchParams(window.location.search);
     const product = params.get('product');
@@ -204,23 +208,7 @@
       if (fb) fb.textContent = F.t('ps.covFallback');
     });
 
-    // ── 取得 authed supabase client ──
-    //   優先用全域 window.supabase（若共用 module 已掛且為登入態）；
-    //   否則動態 import 自建，persistSession:true → 讀同源 localStorage 的登入 session。
-    async function getClient() {
-      if (window.supabase && window.supabase.rpc) return window.supabase;
-      try {
-        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-        return createClient(window.CFG.SUPABASE_URL, window.CFG.SUPABASE_ANON_KEY, {
-          auth: { persistSession: true, autoRefreshToken: true },
-        });
-      } catch (e) {
-        console.warn('[coverage] 無法建立 supabase client：', e);
-        return null;
-      }
-    }
-
-    const supa = await getClient();
+    const supa = supabase;
     if (!supa) { showFallback(); return; }
 
     // ── 輪詢設定 ──
