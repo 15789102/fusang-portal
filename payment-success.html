@@ -14,7 +14,15 @@
       'ps.body':        { 'zh-TW': '您的購買已經完成，內容正在為您開啟。', 'zh-CN': '您的购买已经完成，内容正在为您开启。', 'en': 'Your purchase is complete and your content is being unlocked.' },
       'ps.note':        { 'zh-TW': '<strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。', 'zh-CN': '<strong>内容尚未解锁？</strong>系统正在为您更新权限，通常只需几秒钟。若您前往报告页后仍看到锁定状态，请<strong>刷新页面</strong>即可显示完整内容。', 'en': "<strong>Content not unlocked yet?</strong> We're updating your access — it usually takes just a few seconds. If a report page still shows as locked, please <strong>refresh the page</strong> to reveal the full content." },
       'ps.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart' },
-      'ps.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard' }
+      'ps.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard' },
+
+      // ── Task 16 新增：年方案涵蓋清單（僅 ?product=annual_pack 時顯示）──
+      //   文案符前台規則：如實、不安撫、無戲劇隱喻。
+      'ps.covTitle':    { 'zh-TW': '本次購買涵蓋的月份', 'zh-CN': '本次购买涵盖的月份', 'en': 'Months covered by this purchase' },
+      'ps.covIntro':    { 'zh-TW': '以下月份已納入你的方案，可隨選解鎖。涵蓋範圍從你現有範圍之後接續，可能包含已經過去的月份。', 'zh-CN': '以下月份已纳入你的方案，可随选解锁。涵盖范围从你现有范围之后接续，可能包含已经过去的月份。', 'en': 'These months are now included in your plan and can be unlocked on demand. Coverage continues from your existing range and may include months that have already passed.' },
+      'ps.covLoading':  { 'zh-TW': '正在確認你的涵蓋月份…', 'zh-CN': '正在确认你的涵盖月份…', 'en': 'Confirming your covered months…' },
+      'ps.covPast':     { 'zh-TW': '已過去', 'zh-CN': '已过去', 'en': 'Past' },
+      'ps.covFallback': { 'zh-TW': '你的涵蓋月份仍在建立中。稍後可於「我的流月」查看完整清單。', 'zh-CN': '你的涵盖月份仍在建立中。稍后可于「我的流月」查看完整清单。', 'en': 'Your covered months are still being set up. You can view the full list later under "My Monthly Chart".' }
     });
   </script>
   <meta name="description" content="Payment successful." />
@@ -64,6 +72,39 @@
 
     .pay-session { margin-top: 40px; font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.05em; }
     .pay-session code { font-family: 'Courier New', monospace; }
+
+    /* ── Task 16 新增：涵蓋清單樣式（沿用既有色票變數，不引入新色）── */
+    .pay-coverage {
+      margin: 40px auto 0; max-width: 460px; padding: 24px 24px 20px;
+      background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 3px;
+      text-align: left;
+    }
+    .pay-cov-title {
+      font-family: var(--font-serif-zh); font-size: 15px; font-weight: 500;
+      color: var(--ink-darkest); letter-spacing: 0.04em; margin-bottom: 10px;
+    }
+    .pay-cov-intro {
+      font-family: var(--font-serif-zh); font-size: 12.5px; line-height: 1.7;
+      color: var(--ink-mid); letter-spacing: 0.02em; margin-bottom: 16px;
+    }
+    .pay-cov-loading {
+      font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid);
+      letter-spacing: 0.02em; padding: 4px 0;
+    }
+    .pay-cov-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pay-cov-chip {
+      font-family: var(--font-sans); font-size: 12.5px; letter-spacing: 0.02em;
+      color: var(--ink-dark); background: var(--bg-primary); border: 1px solid var(--rule);
+      border-radius: 2px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pay-cov-chip .past {
+      font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--ink-faint);
+    }
+    .pay-cov-fallback {
+      font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7;
+      color: var(--ink-mid); letter-spacing: 0.02em; padding: 4px 0;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +124,15 @@
 
     <div class="pay-note" data-i18n-html="ps.note">
       <strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。
+    </div>
+
+    <!-- Task 16 新增：年方案涵蓋清單（預設隱藏，僅 ?product=annual_pack 時由 JS 顯示）-->
+    <div class="pay-coverage" id="pay-coverage" style="display:none;">
+      <div class="pay-cov-title" data-i18n="ps.covTitle">本次購買涵蓋的月份</div>
+      <div class="pay-cov-intro" data-i18n="ps.covIntro"></div>
+      <div class="pay-cov-loading" id="pay-cov-loading" data-i18n="ps.covLoading">正在確認你的涵蓋月份…</div>
+      <div class="pay-cov-grid" id="pay-cov-grid" style="display:none;"></div>
+      <div class="pay-cov-fallback" id="pay-cov-fallback" data-i18n="ps.covFallback" style="display:none;"></div>
     </div>
 
     <div class="pay-actions">
@@ -115,6 +165,130 @@
       if (code) code.textContent = sid;
       if (wrap) wrap.style.display = 'block';
     }
+  })();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     Task 16 新增：年方案涵蓋清單輪詢
+       · 僅在 ?product=annual_pack 時啟動；其他商品完全不觸發（走通用文案）
+       · 讀 annual_pack_latest_coverage(session_id)：12 列 = webhook→grant 已寫入
+       · 天然解競態：成功頁 vs webhook 無順序保證，用輪詢等 grant 寫入
+       · 逾時（~30s）仍 0 列 → fallback「稍後於我的流月查看」（此時確定是年方案）
+       · 座標：RPC 已回 display_year/display_month（= target+1），前端直接用，不再換算
+     ════════════════════════════════════════════════════════════════════════ -->
+<script type="module">
+  (async function () {
+    const params = new URLSearchParams(window.location.search);
+    const product = params.get('product');
+    const sid = params.get('session_id');
+
+    // 判別閘門：非年方案 or 無 session → 完全不動作，涵蓋區塊維持隱藏
+    if (product !== 'annual_pack' || !sid) return;
+
+    const F = window.FSI18N;
+    const wrap    = document.getElementById('pay-coverage');
+    const intro   = wrap ? wrap.querySelector('.pay-cov-intro') : null;
+    const loading = document.getElementById('pay-cov-loading');
+    const grid    = document.getElementById('pay-cov-grid');
+    const fb      = document.getElementById('pay-cov-fallback');
+    if (!wrap) return;
+
+    // 確定是年方案 → 顯示區塊（先顯示「處理中」）
+    wrap.style.display = 'block';
+    if (intro) intro.textContent = F.t('ps.covIntro');
+
+    // 語言即時切換：涵蓋區塊的靜態文字跟著換
+    window.addEventListener('i18n:changed', () => {
+      if (intro) intro.textContent = F.t('ps.covIntro');
+      if (loading) loading.textContent = F.t('ps.covLoading');
+      if (fb) fb.textContent = F.t('ps.covFallback');
+    });
+
+    // ── 取得 authed supabase client ──
+    //   優先用全域 window.supabase（若共用 module 已掛且為登入態）；
+    //   否則動態 import 自建，persistSession:true → 讀同源 localStorage 的登入 session。
+    async function getClient() {
+      if (window.supabase && window.supabase.rpc) return window.supabase;
+      try {
+        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+        return createClient(window.CFG.SUPABASE_URL, window.CFG.SUPABASE_ANON_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true },
+        });
+      } catch (e) {
+        console.warn('[coverage] 無法建立 supabase client：', e);
+        return null;
+      }
+    }
+
+    const supa = await getClient();
+    if (!supa) { showFallback(); return; }
+
+    // ── 輪詢設定 ──
+    const INTERVAL_MS = 2000;   // 每 2 秒
+    const MAX_TRIES   = 15;     // 上限 15 次 ≈ 30 秒
+
+    let tries = 0;
+    let done = false;
+
+    async function pollOnce() {
+      if (done) return;
+      tries += 1;
+      try {
+        const { data, error } = await supa.rpc('annual_pack_latest_coverage', {
+          p_session_id: sid,
+        });
+        if (error) {
+          console.warn('[coverage] RPC 錯誤：', error.message);
+          // 不立即 fallback；可能是短暫網路/未登入，續輪詢至上限
+        } else if (Array.isArray(data) && data.length > 0) {
+          done = true;
+          renderList(data);
+          return;
+        }
+      } catch (e) {
+        console.warn('[coverage] RPC 例外：', e);
+      }
+      if (tries >= MAX_TRIES) { done = true; showFallback(); return; }
+      setTimeout(pollOnce, INTERVAL_MS);
+    }
+
+    function renderList(rows) {
+      // 依 display 座標排序（RPC 已 order by target，但保險再排）
+      rows.sort((a, b) =>
+        (a.display_year - b.display_year) || (a.display_month - b.display_month));
+
+      // 判「已過去」：display 月的月初 < 本月月初（UTC 基準，與後端一致）
+      const now = new Date();
+      const curY = now.getUTCFullYear();
+      const curM = now.getUTCMonth() + 1;   // 1..12
+      const isPast = (y, m) => (y < curY) || (y === curY && m < curM);
+
+      grid.innerHTML = rows.map(r => {
+        const y = Number(r.display_year), m = Number(r.display_month);
+        const label = `${y}/${String(m).padStart(2, '0')}`;
+        const past = isPast(y, m)
+          ? ` <span class="past">${escapeHtml(F.t('ps.covPast'))}</span>` : '';
+        return `<span class="pay-cov-chip">${escapeHtml(label)}${past}</span>`;
+      }).join('');
+
+      if (loading) loading.style.display = 'none';
+      if (fb) fb.style.display = 'none';
+      grid.style.display = 'flex';
+    }
+
+    function showFallback() {
+      if (loading) loading.style.display = 'none';
+      if (grid) grid.style.display = 'none';
+      if (fb) { fb.textContent = F.t('ps.covFallback'); fb.style.display = 'block'; }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
+    }
+
+    pollOnce();
   })();
 </script>
 
