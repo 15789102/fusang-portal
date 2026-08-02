@@ -49,6 +49,11 @@
       "mo.dayOption": {"zh-TW": "{d} 號", "zh-CN": "{d} 号", "en": "Day {d}"},
       "mo.alertPickDay": {"zh-TW": "請先選擇每月收到流月的日期。", "zh-CN": "请先选择每月收到流月的日期。", "en": "Please choose the day of the month to receive your reading."},
       "mo.subscribeFailDay": {"zh-TW": "開通失敗：無法儲存收報日（{msg}），請稍後再試。", "zh-CN": "开通失败：无法储存收报日（{msg}），请稍后再试。", "en": "Couldn't enable: failed to save your delivery day ({msg}). Please try again later."},
+      "mo.subErr401": {"zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again."},
+      "mo.subErr403": {"zh-TW": "開通失敗：找不到有效的訂閱。若你剛完成付款，請稍候片刻再試。", "zh-CN": "开通失败：找不到有效的订阅。若你刚完成付款，请稍候片刻再试。", "en": "Couldn't enable: no active subscription found. If you've just paid, please wait a moment and try again."},
+      "mo.subErr429": {"zh-TW": "目前同時進行中的生成已達上限，請待現有的流月完成後再試。", "zh-CN": "目前同时进行中的生成已达上限，请待现有的流月完成后再试。", "en": "You've reached the limit for readings generating at once. Please wait for the current ones to finish."},
+      "mo.subErr400": {"zh-TW": "開通失敗：資料不完整，請重新整理頁面後再試。", "zh-CN": "开通失败：资料不完整，请重新整理页面后再试。", "en": "Couldn't enable: incomplete data. Please refresh the page and try again."},
+      "mo.subErr500": {"zh-TW": "開通失敗，請稍後再試。", "zh-CN": "开通失败，请稍后再试。", "en": "Couldn't enable. Please try again later."},
       "mo.genHeadTitle": {"zh-TW": "正在為你展開流月", "zh-CN": "正在为你展开流月", "en": "Unfolding your monthly reading"},
       "mo.genHeadSub": {"zh-TW": "我們正在逐宮解讀你的命盤。<br>這需要幾分鐘，你可以先離開，稍後再回來查看。", "zh-CN": "我们正在逐宫解读你的命盘。<br>这需要几分钟，你可以先离开，稍后再回来查看。", "en": "We're reading your chart palace by palace.<br>This takes a few minutes — you can leave and come back later."},
       "mo.genCardDone": {"zh-TW": "已完成 · 點擊閱讀", "zh-CN": "已完成 · 点击阅读", "en": "Complete · Tap to read"},
@@ -1246,7 +1251,12 @@
   const MONTHLY_TABLE = 'monthly_palace_reports_gated';
   const INTERP_TABLE = 'palace_interpretations';
   const MONTHLY_JOBS_TABLE = 'monthly_generation_jobs';
-  const MONTHLY_TRIGGER_URL = window.CFG.WEBHOOK_MONTHLY;
+  // 首發生成入口：monthly-generate EF。
+  //   原本此處為 window.CFG.WEBHOOK_MONTHLY，前端直接 POST n8n webhook —— 該路徑
+  //   不經任何 RPC，付費／歸屬／名額／dedup 一道都不執行（排查確認）。
+  //   改走 EF 後，判定全在 definer RPC monthly_generate_request，
+  //   前端不再持有 webhook URL、不再持有 secret。
+  const GEN_EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/monthly-generate`;
   const POLL_INTERVAL_MS = 15000;
 
   // ── T15：stuck 判定門檻 ──
@@ -2268,15 +2278,72 @@
     return years;
   }
 
-  async function fireTarget(t) {
+  // EF 的 HTTP status → 三語文案鍵。
+  //   錯誤分辨只看 status：body.error 在 RPC 失敗時恆為 "request_failed"。
+  //   body.detail 是原始 Postgres 訊息（含 constraint／表名），只進 console，
+  //   絕不顯示給使用者 —— 既是資訊洩漏，也是無法三語化的裸英文。
+  const SUB_ERR_BY_STATUS = {
+    400: 'mo.subErr400',
+    401: 'mo.subErr401',
+    403: 'mo.subErr403',
+    429: 'mo.subErr429',
+  };
+
+  // 首發生成請求。取代原本的 fireTarget（前端直打 n8n webhook）。
+  //
+  // ⚠ 不傳 target_year／target_month：target 由 RPC 內
+  //   monthly_compute_target() 決定，呼叫端無月份注入點。這是年方案繞過
+  //   Task 16 涵蓋集合的結構性封堵 —— 不要「順手」把 target 補回參數。
+  //
+  // ⚠ 不得沿用舊版的 catch-and-warn：舊版把所有失敗吞進 console.warn，
+  //   403（無有效訂閱）會被靜默吃掉，使用者看到「訂閱成功」卻永遠等不到報告。
+  //   回傳 { ok, status } 由呼叫端據此分支。
+  async function requestGeneration(day) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session && session.access_token;
+    if (!token) return { ok: false, errKey: 'mo.subErr401' };
+    if (!chartSessionId) return { ok: false, errKey: 'mo.subErr400' };
+
     try {
-      await fetch(MONTHLY_TRIGGER_URL, {
+      const resp = await fetch(GEN_EF_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_email: userEmail, target_year: t.target_year, target_month: t.target_month }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': window.CFG.SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          chart_session_id: chartSessionId,
+          report_day: day,
+        }),
       });
+
+      let body = null;
+      try { body = await resp.json(); } catch (_) { body = null; }
+
+      if (!resp.ok) {
+        console.error('[monthly] 開通失敗', resp.status, body && body.detail);
+        return { ok: false, errKey: SUB_ERR_BY_STATUS[resp.status] || 'mo.subErr500' };
+      }
+
+      // 三種 status 皆為成功，差別只在是否真的觸發了生成：
+      //   queued            → 已觸發
+      //   in_progress       → 該月已有 60 分鐘內的 in-flight job，未重複觸發
+      //   already_generated → 該月材料已 compiled，未觸發
+      // 前端一律走生成畫面 + 輪詢：輪詢偵測到 done 會自動切入閱讀，
+      // 不需為後兩者新增跳轉邏輯。
+      if (body && body.status && body.status !== 'queued') {
+        console.info('[monthly] 未重複觸發生成：', body.status);
+      }
+      // partial:true = RPC 已成功、收報日已寫入，但 webhook 未送達。
+      // 顯示為成功（訂閱確實生效），復原由 admin 手動投放。
+      if (body && body.partial) {
+        console.warn('[monthly] partial：', body.warning, body.detail);
+      }
+      return { ok: true };
     } catch (e) {
-      console.warn('[monthly] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+      console.error('[monthly] 開通例外：', e);
+      return { ok: false, errKey: 'mo.subErr500' };
     }
   }
 
@@ -2290,25 +2357,22 @@
     btn.disabled = true;
     btn.textContent = tx('mo.subscribing');
 
-    const { data: { session } } = await supabase.auth.getSession();
-    const { error: dayErr } = await supabase
-      .from('user_profiles')
-      .update({ preferred_report_day: day, preferred_report_day_pending: null })
-      .eq('id', session.user.id);
+    // ⚠ 前端不再寫 preferred_report_day。
+    //   收報日由 RPC monthly_generate_request 在【與閘門同一交易內】寫入：
+    //   閘門失敗 → 整筆回滾 → day 不寫 → 不會出現「首發被擋但 day 已寫、
+    //   排程後門照發」。前端先寫 day 正是那個漏洞的成因。
+    const res = await requestGeneration(day);
 
-    if (dayErr) {
-      alert(tx('mo.subscribeFailDay').replace('{msg}', dayErr.message));
+    if (!res.ok) {
+      alert(tx(res.errKey));
       btn.disabled = false;
       btn.textContent = tx('mo.introSubscribeBtn');
       return;
     }
+
+    // 進入本函式的前提是 pitch 畫面，即 preferredReportDay == null（首次開通），
+    // 故 RPC 寫的是 preferred_report_day 本欄而非 pending，本地直接同步。
     preferredReportDay = day;
-
-    const now = new Date();
-    const sy = now.getFullYear(), sm = now.getMonth() + 1;
-    const nextTarget = solarToLunarTarget(sy, sm, 'next');
-
-    await fireTarget(nextTarget);
 
     const jobs = await fetchJobs();
     renderGenerating(jobs);
