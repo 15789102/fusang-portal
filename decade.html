@@ -58,6 +58,11 @@
       "dc.confirmBody":     { "zh-TW": "系統會為這個十年大限排出十二宮，逐宮生成完整解讀。<br>整個過程約需 <strong>12–15 分鐘</strong>。期間您可以離開本頁，完成後再回來查看；屆時這條大限會顯示「已完成 · 點擊閱讀」。", "zh-CN": "系统会为这个十年大限排出十二宫，逐宫生成完整解读。<br>整个过程约需 <strong>12–15 分钟</strong>。期间您可以离开本页，完成后再回来查看；届时这条大限会显示「已完成 · 点击阅读」。", "en": "We'll lay out the twelve palaces for this ten-year Major Limit and generate a full reading for each.<br>The whole process takes about <strong>12–15 minutes</strong>. You can leave this page and come back later; this period will then show “Complete · Tap to read”." },
       "dc.confirmCancel":   { "zh-TW": "取消", "zh-CN": "取消", "en": "Cancel" },
       "dc.confirmOk":       { "zh-TW": "開始製作", "zh-CN": "开始制作", "en": "Start" },
+      "dc.genErr401":       { "zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again." },
+      "dc.genErr403":       { "zh-TW": "無法製作：此命盤不屬於目前登入的帳號。", "zh-CN": "无法制作：此命盘不属于目前登录的账号。", "en": "Can't create: this chart doesn't belong to the account you're signed in with." },
+      "dc.genErr429":       { "zh-TW": "目前同時進行中的製作已達上限，請待現有的大限完成後再試。", "zh-CN": "目前同时进行中的制作已达上限，请待现有的大限完成后再试。", "en": "You've reached the limit for reports generating at once. Please wait for the current ones to finish." },
+      "dc.genErr400":       { "zh-TW": "無法製作：資料不完整，請重新整理頁面後再試。", "zh-CN": "无法制作：资料不完整，请重新整理页面后再试。", "en": "Can't create: incomplete data. Please refresh the page and try again." },
+      "dc.genErr500":       { "zh-TW": "製作失敗，請稍後再試。", "zh-CN": "制作失败，请稍后再试。", "en": "Couldn't start the report. Please try again later." },
 
       "dc.errTitle":        { "zh-TW": "無法載入大限", "zh-CN": "无法载入大限", "en": "Couldn't load your Major Limits" },
       "dc.errDefault":      { "zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later." },
@@ -560,7 +565,13 @@
 
   const DECADE_TABLE = 'decade_palace_reports_gated';
   const DECADE_JOBS_TABLE = 'decade_generation_jobs';
-  const DECADE_TRIGGER_URL = window.CFG.WEBHOOK_DECADE;
+  // 大限生成入口：decade-generate EF。
+  //   原本此處為 window.CFG.WEBHOOK_DECADE，前端直接 POST n8n webhook ——
+  //   該路徑無認證、無歸屬、無 dedup，且 user_email 由呼叫端指定，可枚舉任意帳號
+  //   （QA 於 annual 端實測證實同構漏洞可完全貫通）。
+  //   改走 EF 後，判定全在 definer RPC decade_generate_request，
+  //   前端不再持有 webhook URL、不再持有 secret。
+  const GEN_EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/decade-generate`;
   const POLL_INTERVAL_MS = 5000;
   const FUTURE_PREVIEW = 2;
 
@@ -760,22 +771,79 @@
     return false;
   }
 
+  // EF 的 HTTP status → 三語文案鍵。
+  //   錯誤分辨只看 status：body.error 在 RPC 失敗時恆為 "request_failed"。
+  //   body.detail 是原始 Postgres 訊息，只進 console，絕不顯示給使用者。
+  const GEN_ERR_BY_STATUS = {
+    400: 'dc.genErr400',
+    401: 'dc.genErr401',
+    403: 'dc.genErr403',
+    429: 'dc.genErr429',
+  };
+
   async function subscribeDecade(startYear) {
+    // 樂觀 UI：先標記為製作中並重繪。失敗時必須回退（見下方 errKey 分支），
+    // 否則使用者會看到一條永遠停在「製作中」的大限。
     generatingStarts.add(startYear);
     renderDecades(decadesCache, jobsToMap(await fetchJobs()));
+
+    // ⚠ 不得沿用舊版的 catch-and-warn：舊版把所有失敗吞進 console.warn，
+    //   403（非本人命盤）會被靜默吃掉，使用者看到「製作中」卻永遠等不到。
+    let errKey = null;
     try {
-      await fetch(DECADE_TRIGGER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_email: userEmail,
-          target_year_start: startYear,
-          chart_session_id: chartSessionId,
-        }),
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session && session.access_token;
+
+      if (!token) {
+        errKey = 'dc.genErr401';
+      } else if (!chartSessionId) {
+        errKey = 'dc.genErr400';
+      } else {
+        const resp = await fetch(GEN_EF_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'apikey': window.CFG.SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            chart_session_id: chartSessionId,
+            target_year_start: startYear,
+          }),
+        });
+
+        let body = null;
+        try { body = await resp.json(); } catch (_) { body = null; }
+
+        if (!resp.ok) {
+          console.error('[decade] 製作失敗', resp.status, body && body.detail);
+          errKey = GEN_ERR_BY_STATUS[resp.status] || 'dc.genErr500';
+        } else {
+          // 三種 status 皆為成功，差別只在是否真的觸發了生成：
+          //   queued / in_progress / already_generated
+          // 一律進輪詢：輪詢偵測到完成會自動更新該條大限狀態。
+          if (body && body.status && body.status !== 'queued') {
+            console.info('[decade] 未重複觸發生成：', body.status);
+          }
+          // partial:true = RPC 已通過，但 webhook 未送達。
+          if (body && body.partial) {
+            console.warn('[decade] partial：', body.warning, body.detail);
+          }
+        }
+      }
     } catch (e) {
-      console.warn('[decade] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+      console.error('[decade] 製作例外：', e);
+      errKey = 'dc.genErr500';
     }
+
+    if (errKey) {
+      // 回退樂觀 UI，讓該條大限回到可再次點擊的狀態
+      generatingStarts.delete(startYear);
+      renderDecades(decadesCache, jobsToMap(await fetchJobs()));
+      alert(tx(errKey));
+      return;
+    }
+
     startPolling(startYear);
   }
 
