@@ -31,6 +31,11 @@
       "an.introPitchTitle": { "zh-TW": "產生您的流年運勢", "zh-CN": "产生您的流年运势", "en": "Generate your annual reading" },
       "an.introPitchSub":   { "zh-TW": "為您生成今年（{year}）的十二宮流年解讀", "zh-CN": "为您生成今年（{year}）的十二宫流年解读", "en": "A twelve-palace annual reading for this year ({year})" },
       "an.introGenerateBtn":{ "zh-TW": "開始生成今年流年", "zh-CN": "开始生成今年流年", "en": "Generate this year's reading" },
+      "an.genErr401":       { "zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again." },
+      "an.genErr403":       { "zh-TW": "無法生成：此命盤不屬於目前登入的帳號。", "zh-CN": "无法生成：此命盘不属于目前登录的账号。", "en": "Can't generate: this chart doesn't belong to the account you're signed in with." },
+      "an.genErr429":       { "zh-TW": "目前同時進行中的生成已達上限，請待現有的流年完成後再試。", "zh-CN": "目前同时进行中的生成已达上限，请待现有的流年完成后再试。", "en": "You've reached the limit for readings generating at once. Please wait for the current ones to finish." },
+      "an.genErr400":       { "zh-TW": "無法生成：資料不完整，請重新整理頁面後再試。", "zh-CN": "无法生成：资料不完整，请重新整理页面后再试。", "en": "Can't generate: incomplete data. Please refresh the page and try again." },
+      "an.genErr500":       { "zh-TW": "生成失敗，請稍後再試。", "zh-CN": "生成失败，请稍后再试。", "en": "Couldn't start generation. Please try again later." },
       "an.introGenerating": { "zh-TW": "正在為您開始…", "zh-CN": "正在为您开始…", "en": "Starting…" },
       "an.genTitle":        { "zh-TW": "正在為您生成流年", "zh-CN": "正在为您生成流年", "en": "Generating your annual reading" },
       "an.genSub":          { "zh-TW": "生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信", "zh-CN": "生成需要几分钟，完成后可在此阅读，也会寄送通知信", "en": "This takes a few minutes. You can read it here when it's done, and we'll email you too." },
@@ -506,7 +511,13 @@
 
   const ANNUAL_TABLE = 'annual_palace_reports_gated';
   const ANNUAL_JOBS_TABLE = 'annual_generation_jobs';
-  const ANNUAL_TRIGGER_URL = window.CFG.WEBHOOK_ANNUAL;
+  // 流年生成入口：annual-generate EF。
+  //   原本此處為 window.CFG.WEBHOOK_ANNUAL，前端直接 POST n8n webhook —— 該路徑
+  //   無認證、無歸屬、無 dedup，且 user_email 由呼叫端指定。QA 實測（2026-08-02）
+  //   從已登入 qa9 的瀏覽器帶 qa6 的 email 直呼，成功建立 job 並啟動生成。
+  //   改走 EF 後，判定全在 definer RPC annual_generate_request，
+  //   前端不再持有 webhook URL、不再持有 secret。
+  const GEN_EF_URL = `${window.CFG.SUPABASE_URL}/functions/v1/annual-generate`;
   const POLL_INTERVAL_MS = 15000;
 
   const PALACE_ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
@@ -980,20 +991,80 @@
     return sorted.length > 0 && sorted.every(jobDone);
   }
 
+  // EF 的 HTTP status → 三語文案鍵。
+  //   錯誤分辨只看 status：body.error 在 RPC 失敗時恆為 "request_failed"。
+  //   body.detail 是原始 Postgres 訊息，只進 console，絕不顯示給使用者 ——
+  //   既是資訊洩漏，也是無法三語化的裸英文。
+  const GEN_ERR_BY_STATUS = {
+    400: 'an.genErr400',
+    401: 'an.genErr401',
+    403: 'an.genErr403',
+    429: 'an.genErr429',
+  };
+
   async function subscribeAnnual() {
     const btn = document.getElementById('intro-generate-btn');
     btn.disabled = true;
     btn.textContent = tx('an.introGenerating');
-    const targetYear = currentAnnualTargetYear();
+
+    // ⚠ 不得沿用舊版的 catch-and-warn：舊版把所有失敗吞進 console.warn，
+    //   403（非本人命盤）會被靜默吃掉，使用者看到「生成中」卻永遠等不到。
+    //
+    // ⚠ 不傳 target_year：年份由 RPC 內 annual_compute_target() 決定（UTC 基準），
+    //   呼叫端無參數注入面。舊版用 new Date().getFullYear()（瀏覽器本地時區），
+    //   跨年當下會與 UTC 分屬不同年。不要把 target 補回參數。
+    let errKey = null;
     try {
-      await fetch(ANNUAL_TRIGGER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_email: userEmail, target_year: targetYear }),
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session && session.access_token;
+
+      if (!token) {
+        errKey = 'an.genErr401';
+      } else if (!chartSessionId) {
+        errKey = 'an.genErr400';
+      } else {
+        const resp = await fetch(GEN_EF_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'apikey': window.CFG.SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ chart_session_id: chartSessionId }),
+        });
+
+        let body = null;
+        try { body = await resp.json(); } catch (_) { body = null; }
+
+        if (!resp.ok) {
+          console.error('[annual] 生成失敗', resp.status, body && body.detail);
+          errKey = GEN_ERR_BY_STATUS[resp.status] || 'an.genErr500';
+        } else {
+          // 三種 status 皆為成功，差別只在是否真的觸發了生成：
+          //   queued / in_progress / already_generated
+          // 前端一律走生成畫面 + 輪詢：輪詢偵測到完成會自動切入閱讀，
+          // 不需為後兩者新增跳轉邏輯。
+          if (body && body.status && body.status !== 'queued') {
+            console.info('[annual] 未重複觸發生成：', body.status);
+          }
+          // partial:true = RPC 已通過，但 webhook 未送達。
+          if (body && body.partial) {
+            console.warn('[annual] partial：', body.warning, body.detail);
+          }
+        }
+      }
     } catch (e) {
-      console.warn('[annual] 觸發 webhook 發生錯誤（仍以 job 表為準）：', e);
+      console.error('[annual] 生成例外：', e);
+      errKey = 'an.genErr500';
     }
+
+    if (errKey) {
+      alert(tx(errKey));
+      btn.disabled = false;
+      btn.textContent = tx('an.introGenerateBtn');
+      return;
+    }
+
     const jobs = await fetchJobs();
     renderGenerating(jobs);
     startPolling();
