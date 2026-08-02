@@ -32,7 +32,8 @@
       'sm.copyAria':  { 'zh-TW': '複製參考編號', 'zh-CN': '复制参考编号', 'en': 'Copy reference ID' },
       'sm.footClose': { 'zh-TW': '您可以放心關閉此視窗，命盤完成時我們會以電子郵件通知您。', 'zh-CN': '您可以放心关闭此窗口，命盘完成时我们会以电子邮件通知您。', 'en': "You can safely close this window. We'll email you when your chart is ready." },
       'sm.footHelp':  { 'zh-TW': '需要協助？', 'zh-CN': '需要协助？', 'en': 'Need help?' },
-      'sm.footContact':{ 'zh-TW': '聯絡我們的團隊 →', 'zh-CN': '联系我们的团队 →', 'en': 'Contact our team →' }
+      'sm.footContact':{ 'zh-TW': '聯絡我們的團隊 →', 'zh-CN': '联系我们的团队 →', 'en': 'Contact our team →' },
+      'sm.backLogin': { 'zh-TW': '← 回到登入', 'zh-CN': '← 返回登录', 'en': '← Back to login' }
     });
   </script>
 
@@ -42,17 +43,18 @@
 
   <style>
     :root {
-      --ink-darkest: #15363a;
-      --accent-deep: #1d4a4f;
-      --accent-soft: #3a6b70;
+      --ink-darkest: #001b3c;
+      --accent-deep: #1d4e63;
+      --accent-soft: #296283;
       --gold: #b8945c;
-      --bg-primary: #faf7f1;
+      --bg-primary: #f8f9fa;
       --bg-card: #ffffff;
-      --bg-soft: #f4efe6;
-      --rule: #e3dccf;
-      --ink-dark: #2b3d3f;
-      --ink-mid: #5e6f70;
-      --ink-light: #97a3a3;
+      --bg-soft: #eef3f9;
+      --rule: #dbe2ea;
+      --accent-pale: #c7e7ff;
+      --ink-dark: #16323f;
+      --ink-mid: #41484d;
+      --ink-light: #8a97a5;
       --font-serif: 'Cormorant Garamond', Georgia, serif;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -231,6 +233,8 @@
     .footnote a { color: var(--accent-soft); text-decoration: none; }
     .footnote a:hover { text-decoration: underline; }
 
+    .back-login { display: inline-block; margin-top: 14px; color: var(--accent-soft); text-decoration: none; font-size: 13px; letter-spacing: 0.02em; }
+    .back-login:hover { color: var(--accent-deep); }
     .page-footer { text-align: center; margin-top: 48px; }
     .page-footer p { font-size: 11px; color: var(--ink-light); letter-spacing: 0.02em; }
 
@@ -322,7 +326,8 @@
 
     <p class="footnote">
       <span data-i18n="sm.footClose">You can safely close this window. We'll email you when your chart is ready.</span><br>
-      <span data-i18n="sm.footHelp">Need help?</span> <a href="mailto:info@fusang-vision.com" data-i18n="sm.footContact">Contact our team →</a>
+      <span data-i18n="sm.footHelp">Need help?</span> <a href="mailto:support@fusang-vision.com" data-i18n="sm.footContact">Contact our team →</a><br>
+      <a href="login.html" class="back-login" data-i18n="sm.backLogin">← Back to login</a>
     </p>
 
   </main>
