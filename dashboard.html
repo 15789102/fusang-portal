@@ -333,6 +333,9 @@
     .dash-consult:hover { transform: translateY(-3px); }
     .dc-brush { width: 48px; height: 2px; background: linear-gradient(90deg, var(--dw-blue), transparent); margin-bottom: 16px; opacity: 0.6; }
     .dc-kicker { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--dw-blue); margin-bottom: 10px; }
+    /* 「即將推出」小標(CONSULT_ENABLED=false 時顯示;共用 i18n key navComingSoon)*/
+    .dc-soon { display: inline-block; margin-left: 8px; padding: 2px 8px; border: 1px solid var(--dw-blue); border-radius: 999px; font-size: 9.5px; letter-spacing: 0.12em; line-height: 1.5; color: var(--dw-blue); opacity: 0.75; vertical-align: middle; white-space: nowrap; }
+    .dc-soon[hidden] { display: none; }
     .dc-name { font-family: var(--font-serif-zh); font-weight: 600; font-size: 22px; color: var(--dw-ink); letter-spacing: 0.02em; margin-bottom: 8px; }
     .dc-desc { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.8; color: var(--dw-ink-soft); margin-bottom: 24px; }
     .dc-cta {
@@ -483,7 +486,7 @@
         <div class="dash-consult" id="card-consult" style="animation-delay:0.42s;">
           <div>
             <div class="dc-brush"></div>
-            <div class="dc-kicker" data-i18n="dash.consultKicker">單獨問事</div>
+            <div class="dc-kicker"><span data-i18n="dash.consultKicker">單獨問事</span><span class="dc-soon" id="consult-soon" data-i18n="navComingSoon" hidden>即將推出</span></div>
             <div class="dc-name" data-i18n="dash.consultName">有一個真正重要的問題？</div>
             <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
           </div>
@@ -658,6 +661,15 @@
     document.getElementById('dash-content').style.display = 'block';
 
     // 單獨問事入口
+    //   開關 SoT:config.js 的 window.CFG.CONSULT_ENABLED,明確等於 true 才算開啟
+    //   (config.js 載入失敗時 window.CFG 為 undefined → 視同關閉,fail-closed)。
+    //   關閉時卡片仍可點進 landing(保留行銷作用),僅顯示「即將推出」小標。
+    //   ⚠ 小標與 kicker 文字各自是獨立的 data-i18n 節點:applyI18n 以 textContent 填值,
+    //      若 data-i18n 留在外層 .dc-kicker,子節點會被清掉。
+    const consultOn = !!(window.CFG && window.CFG.CONSULT_ENABLED === true);
+    const consultSoon = document.getElementById('consult-soon');
+    if (consultSoon && !consultOn) consultSoon.hidden = false;
+
     const consult = document.getElementById('card-consult');
     if (consult) {
       consult.querySelector('[data-go]').addEventListener('click', () => {
