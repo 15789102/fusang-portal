@@ -166,6 +166,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .fs-nav-link:hover { color: var(--accent-deep); }
 .fs-nav-link.active { color: var(--ink-darkest); }
+/* 「即將推出」小標(CONSULT_ENABLED=false 時掛在 nav 項目後)*/
+.fs-nav-soon {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  color: var(--ink-light);
+  vertical-align: middle;
+  white-space: nowrap;
+}
 .fs-nav-link.active::after {
   content: '';
   position: absolute;
@@ -373,6 +388,14 @@ function injectHeader(activePage = null) {
   const el = document.getElementById('site-header');
   if (!el) return;
 
+  // 單獨問事開關(SoT:config.js 的 window.CFG.CONSULT_ENABLED)
+  //   明確等於 true 才算開啟;config.js 載入失敗時視同關閉(fail-closed)。
+  //   關閉時 nav 項仍可點進 consultation.html(landing 保留行銷作用),僅加「即將推出」小標。
+  //   ⚠ 小標與文字都必須是獨立的 data-i18n 節點:applyI18n 以 textContent 填值,
+  //      若把 data-i18n 放外層 span,子節點會被清掉。故沿用 fs-nav-parent 的巢狀寫法。
+  const consultOn = !!(window.CFG && window.CFG.CONSULT_ENABLED === true);
+  const consultSoonTag = consultOn ? '' : '<span class="fs-nav-soon" data-i18n="navComingSoon"></span>';
+
   // nav 文字以 data-i18n 標記 → 由 applyI18n 填入 / 切換時自動更新
   el.innerHTML = `
     <header class="fs-header">
@@ -391,7 +414,7 @@ function injectHeader(activePage = null) {
             <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly" data-i18n="navMonthly"></span>
           </div>
         </div>
-        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation" data-i18n="navConsultation"></span>
+        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation"><span data-i18n="navConsultation"></span>${consultSoonTag}</span>
         <span class="fs-nav-link ${activePage === 'pricing' ? 'active' : ''}" data-nav="pricing" data-i18n="navPricing"></span>
         <div class="fs-nav-group" id="fs-account-group">
           <span class="fs-nav-parent ${['account','support'].includes(activePage) ? 'active' : ''}" id="fs-account-parent"><span data-i18n="navAccount"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
