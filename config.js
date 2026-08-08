@@ -31,6 +31,26 @@
   //     Application 限定 Websites=你的網域)。後端 Time Zone key 絕不進此檔。
   const GOOGLE_MAPS_BROWSER_KEY = 'PASTE_YOUR_FRONTEND_KEY_HERE';
 
+  // ─── 功能開關(feature flags)──────────────────────────────
+  //   與 ENV 無關:這裡管的是「功能是否對外開放」,不是「指向哪個環境」,
+  //   因此獨立於 CONFIGS 之外,兩環境共用同一組值。
+  //
+  //   CONSULT_ENABLED —— 單獨問事(ticket)是否開放。
+  //     false 時前端行為:
+  //       · nav / dashboard 卡片顯示「即將推出」小標(仍可點進 landing)
+  //       · consultation.html 的 CTA 區改 coming soon(定價區保留)
+  //       · consultation-form / list / detail 三頁守衛,導回 consultation.html
+  //     後端 ticket checkout 完全不動,僅前端到不了。
+  //     未來開通:本值改 true 即全站生效,無需逐檔改回。
+  //
+  //   ⚠ 消費端一律用「明確等於 true 才算開啟」的判斷:
+  //       if (window.CFG && window.CFG.CONSULT_ENABLED === true) { ... }
+  //     如此 config.js 載入失敗時 window.CFG 為 undefined → 視同關閉(fail-closed),
+  //     不會意外把未開放的購買入口露出來。
+  const FEATURE_FLAGS = {
+    CONSULT_ENABLED: false,
+  };
+
   const CONFIGS = {
     // ── 正式環境 ──
     production: {
@@ -63,5 +83,6 @@
   }
   cfg.ENV = ENV;          // 方便除錯時確認當前環境
   cfg.GOOGLE_MAPS_BROWSER_KEY = 'AIzaSyD4JeUMZyJATgoSaMNcKmeCR05W44OJhVc';   // 前端 key 併入(不分環境)
+  Object.assign(cfg, FEATURE_FLAGS);   // 功能開關併入(不分環境)
   window.CFG = cfg;
 })();
