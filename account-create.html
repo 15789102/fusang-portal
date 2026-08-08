@@ -61,6 +61,12 @@
       // ── 出生地點 ──────────────────────────────────────────────
       'ac.birthPlaceLabel': { 'zh-TW': '出生地點（非現居地）', 'zh-CN': '出生地点（非现居地）', 'en': 'Birthplace (not your current residence)' },
       'ac.birthPlacePh':    { 'zh-TW': '輸入出生城市', 'zh-CN': '输入出生城市', 'en': 'Enter your birth city' },
+      //   (d) 真太陽時校正告知 —— 與 (a)(b) 互補：(a)(b) 講「時分要精確」，此則講「依出生地經度校正、以校正為準」
+      'ac.noticeSolarTime': {
+        'zh-TW': '命盤採真太陽時計算，將依你的出生地經度自動校正時辰。若校正後時辰與你填寫的時間不同，命盤以校正結果為準。',
+        'zh-CN': '命盘采真太阳时计算，将依你的出生地经度自动校正时辰。若校正后时辰与你填写的时间不同，命盘以校正结果为准。',
+        'en': 'Your chart is calculated in true solar time, corrected automatically for the longitude of your birthplace. If the correction shifts the shichen (two-hour period) away from the time you entered, the chart follows the corrected result.'
+      },
       'ac.placeLoadFail':   { 'zh-TW': '地點輸入載入失敗，請重新整理頁面再試。', 'zh-CN': '地点输入加载失败，请刷新页面再试。', 'en': 'The place input failed to load. Please refresh the page and try again.' },
 
       'ac.gender':          { 'zh-TW': '性別', 'zh-CN': '性别', 'en': 'Gender' },
@@ -303,6 +309,8 @@
       <div class="field">
         <label data-i18n="ac.birthPlaceLabel">Birthplace (not your current residence)</label>
         <div id="place-container" class="place-wrap"></div>
+        <!-- (d) 真太陽時校正告知 -->
+        <p class="field-note" data-i18n="ac.noticeSolarTime">Your chart is calculated in true solar time, corrected automatically for the longitude of your birthplace.</p>
       </div>
 
       <div class="field">
