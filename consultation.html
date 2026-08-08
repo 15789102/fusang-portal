@@ -30,6 +30,10 @@
   .cons-btn:hover .btn-arrow { transform: translateX(3px); }
   .lp-note { text-align: center; font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-light); margin-top: 16px; }
 
+  /* Coming soon(CONSULT_ENABLED=false 時取代 CTA;沿用 .lp-actions 的置中 flex 容器)*/
+  .lp-soon { font-family: var(--font-serif-zh); font-size: 17px; line-height: 1.8; color: var(--ink-mid); letter-spacing: 0.03em; padding: 10px 0; }
+  .lp-soon-tag { display: inline-flex; align-items: center; padding: 9px 20px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.16em; color: var(--accent-soft); }
+
   /* Section heading */
   .lp-secthead { text-align: center; margin-bottom: 44px; }
   .lp-secthead .eb { display: block; font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.7; margin-bottom: 10px; }
@@ -144,6 +148,19 @@
     el,
   } from './consultation-common.js';
 
+  // ── 單獨問事開關(SoT:config.js 的 window.CFG.CONSULT_ENABLED)──────────
+  //   明確等於 true 才算開啟;config.js 載入失敗時視同關閉(fail-closed)。
+  const CONSULT_ON = !!(window.CFG && window.CFG.CONSULT_ENABLED === true);
+
+  //   coming soon 三語(沿用本頁 pick(zh-TW, zh-CN, en) 模式,非 addUI)。
+  //   ⚠ 需在渲染當下呼叫,語言切換後才會重新取值,故包成 function。
+  const SOON = {
+    badge: () => pick('即將推出', '即将推出', 'Coming soon'),
+    title: () => pick('單獨問事即將推出', '单独问事即将推出', 'Individual consultations are coming soon'),
+    // body 保留備用(PM 決策 D7c:三 key 齊備,landing 只渲染 title,避免「即將推出」重複出現)
+    body:  () => pick('單獨問事目前尚未開放，即將推出。', '单独问事目前尚未开放，即将推出。', 'Individual consultations are not open yet — coming soon.'),
+  };
+
   const ICON = {
     human: '<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>',
     write: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2 2 0 0 0-3-3L5 17v3z"/><path d="M14 6l3 3"/></svg>',
@@ -216,6 +233,25 @@
     c.querySelector('.act-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
   }
 
+  // Coming soon 呈現:取代兩處動作區。
+  //   hero 區 → 完整標題句;定價區 → 短標籤(避免同頁重複出現同一句)。
+  //   定價區的 US$68 本身保留不動(PM 決策 D4)。
+  function renderComingSoon() {
+    document.getElementById('lp-loading').style.display = 'none';
+
+    const hero = document.getElementById('lp-actions-hero');
+    hero.style.display = 'flex';
+    hero.innerHTML = `<div class="lp-soon">${SOON.title()}</div>`;
+
+    const price = document.getElementById('lp-actions-price');
+    price.style.display = 'flex';
+    price.innerHTML = `<span class="lp-soon-tag">${SOON.badge()}</span>`;
+
+    const note = document.getElementById('lp-note');
+    note.style.display = 'none';
+    note.textContent = '';
+  }
+
   function renderActions(active) {
     lastActive = active;
     document.getElementById('lp-loading').style.display = 'none';
@@ -239,6 +275,8 @@
   (async () => {
     const session = await initConsult('home');
     if (!session) return;
+    // 關閉時直接呈現 coming soon,不查詢 tickets(省一次 RPC,也避免顯示進行中諮詢入口)
+    if (!CONSULT_ON) { renderComingSoon(); return; }
     const tickets = await getMyTickets();
     renderActions(findActive(tickets));
   })();
@@ -246,6 +284,7 @@
   // 即時語言切換：重套靜態文字 + 重繪動作區(用快取,不重查)
   window.addEventListener('i18n:changed', () => {
     applyStaticText();
+    if (!CONSULT_ON) { renderComingSoon(); return; }
     if (lastActive !== undefined) renderActions(lastActive);
   });
 </script>
