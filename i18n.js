@@ -71,6 +71,7 @@
   "zh-TW": {
     "navDecade": "大限",
     "navConsultation": "單獨問事",
+    "navComingSoon": "即將推出",
     "navChart": "本命盤",
     "navAnnual": "流年",
     "navMonthly": "流月",
@@ -156,6 +157,7 @@
   "zh-CN": {
     "navDecade": "大限",
     "navConsultation": "单独问事",
+    "navComingSoon": "即将推出",
     "navChart": "本命盘",
     "navAnnual": "流年",
     "navMonthly": "流月",
@@ -241,6 +243,7 @@
   "en": {
     "navDecade": "Decade",
     "navConsultation": "Consultation",
+    "navComingSoon": "Coming soon",
     "navChart": "Natal",
     "navAnnual": "Annual",
     "navMonthly": "Monthly",
