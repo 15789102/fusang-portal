@@ -30,6 +30,8 @@
   .cons-btn:hover .btn-arrow { transform: translateX(3px); }
   .lp-note { text-align: center; font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-light); margin-top: 16px; }
 
+  .lp-band.pricing[hidden] { display: none; }
+
   /* Coming soon(CONSULT_ENABLED=false 時取代 CTA;沿用 .lp-actions 的置中 flex 容器)*/
   .lp-soon { font-family: var(--font-serif-zh); font-size: 17px; line-height: 1.8; color: var(--ink-mid); letter-spacing: 0.03em; padding: 10px 0; }
   .lp-soon-tag { display: inline-flex; align-items: center; padding: 9px 20px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.16em; color: var(--accent-soft); }
@@ -102,8 +104,10 @@
       </div>
     </div>
 
-    <!-- Pricing -->
-    <div class="lp-band pricing">
+    <!-- Pricing:CONSULT_ENABLED=false 期間整段隱藏(標籤+價格+小標一起)。
+         預設 hidden、開啟時才由 JS 顯示 —— 避免 module 執行前閃現價格,
+         且 JS 失效時維持隱藏(與全站 fail-closed 方向一致)。 -->
+    <div class="lp-band pricing" id="lp-band-price" hidden>
       <div class="lp-band-in lp-pricing">
         <div class="lp-price-label" id="price-label">Single inquiry fee</div>
         <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">68</span></div>
@@ -160,6 +164,12 @@
     // body 保留備用(PM 決策 D7c:三 key 齊備,landing 只渲染 title,避免「即將推出」重複出現)
     body:  () => pick('單獨問事目前尚未開放，即將推出。', '单独问事目前尚未开放，即将推出。', 'Individual consultations are not open yet — coming soon.'),
   };
+
+  // 定價 band:僅在開放時顯示(PM 決策 D4 已反轉 —— coming soon 期間不揭露價格)
+  if (CONSULT_ON) {
+    const band = document.getElementById('lp-band-price');
+    if (band) band.hidden = false;
+  }
 
   const ICON = {
     human: '<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>',
@@ -233,19 +243,14 @@
     c.querySelector('.act-list').addEventListener('click', () => { window.location.href = 'consultation-list.html'; });
   }
 
-  // Coming soon 呈現:取代兩處動作區。
-  //   hero 區 → 完整標題句;定價區 → 短標籤(避免同頁重複出現同一句)。
-  //   定價區的 US$68 本身保留不動(PM 決策 D4)。
+  // Coming soon 呈現:hero 動作區顯示標題句。
+  //   定價 band 整段隱藏(見上方 D4 反轉),故不再填定價區的小標。
   function renderComingSoon() {
     document.getElementById('lp-loading').style.display = 'none';
 
     const hero = document.getElementById('lp-actions-hero');
     hero.style.display = 'flex';
     hero.innerHTML = `<div class="lp-soon">${SOON.title()}</div>`;
-
-    const price = document.getElementById('lp-actions-price');
-    price.style.display = 'flex';
-    price.innerHTML = `<span class="lp-soon-tag">${SOON.badge()}</span>`;
 
     const note = document.getElementById('lp-note');
     note.style.display = 'none';
