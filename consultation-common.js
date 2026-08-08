@@ -411,8 +411,25 @@ function injectConsultCss() {
 }
 
 /* ── init ── */
+
+// ── 單獨問事開關守衛(SoT:config.js 的 window.CFG.CONSULT_ENABLED)──────
+//   明確等於 true 才算開啟;config.js 載入失敗時視同關閉(fail-closed)。
+function consultEnabled() {
+  return !!(window.CFG && window.CFG.CONSULT_ENABLED === true);
+}
+//   受守衛的功能頁(提交/紀錄/細節)。'home'(landing)不在內 ——
+//   landing 自行呈現 coming soon,不可導回自己(會無限迴圈)。
+const CONSULT_GUARDED = new Set(['form', 'list', 'detail']);
+
 // 回傳 session（未登入 → components.requireAuth 已導走，回 null）
 export async function initConsult(activePage = null) {
+  // 關閉期間:三個功能頁一律導回 landing(該頁已有 coming soon 訊息,語意一致)。
+  //   用 replace() 而非 assign():不留歷史紀錄,避免使用者按上一頁又被彈回,形成來回跳。
+  //   回傳 null → 三頁既有的 `if (!session) return;` 即中止頁面邏輯,三頁本身無需改動。
+  if (!consultEnabled() && CONSULT_GUARDED.has(activePage)) {
+    window.location.replace('consultation.html');
+    return null;
+  }
   injectConsultCss();
   const session = await requireAuth();
   if (!session) return null;
