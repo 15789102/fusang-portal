@@ -85,12 +85,12 @@ git push -u origin main
 6. Wait 1–2 minutes
 7. Your site will be available at:
    ```
-   https://15789102.github.io/fusang-portal/
+   https://portal.fusang-vision.com/
    ```
 
 ### Step 4: Verify
 
-Open `https://15789102.github.io/fusang-portal/` and test the form.
+Open `https://portal.fusang-vision.com/` and test the form.
 
 ## Updating
 
