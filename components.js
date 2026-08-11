@@ -338,13 +338,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 100%;
 }
 /* ── 全站固定背景層（避開 iOS Safari background-attachment 坑）── */
-/* 圖出好後把 background-image 換成 url('/fusang-portal/assets/bg-desktop.webp') 即可;淡度改 --bg-veil */
+/* 圖出好後把 background-image 換成 url('./assets/bg-desktop.webp') 即可;淡度改 --bg-veil */
 #fs-bg {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url('/fusang-portal/assets/bg-desktop.webp');
+  background-image: url('./assets/bg-desktop.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -356,7 +356,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: rgba(248, 249, 250, var(--bg-veil, 0.72));
 }
 @media (max-width: 640px) {
-  #fs-bg { background-image: url('/fusang-portal/assets/bg-mobile.webp'); }
+  #fs-bg { background-image: url('./assets/bg-mobile.webp'); }
 }
 `;
 
