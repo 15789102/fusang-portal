@@ -73,7 +73,17 @@
     'acc.sending':    { 'zh-TW': '寄送中…', 'zh-CN': '发送中…', 'en': 'Sending…' },
     'acc.resetSent':  { 'zh-TW': '已寄出重設密碼連結，請至 {email} 收信。', 'zh-CN': '已发送重置密码链接，请至 {email} 收信。', 'en': 'A reset link has been sent to {email}.' },
     'acc.resetSentBtn':{ 'zh-TW': '已寄出', 'zh-CN': '已发送', 'en': 'Sent' },
-    'acc.resetFail':  { 'zh-TW': '寄送失敗：{msg}', 'zh-CN': '发送失败：{msg}', 'en': 'Send failed: {msg}' }
+    'acc.resetFail':  { 'zh-TW': '寄送失敗：{msg}', 'zh-CN': '发送失败：{msg}', 'en': 'Send failed: {msg}' },
+
+    // ── 顯示稱呼編輯（純顯示欄位，不影響命盤與付費）──
+    'acc.nmChange':   { 'zh-TW': '更改', 'zh-CN': '更改', 'en': 'Edit' },
+    'acc.nmPh':       { 'zh-TW': '想被怎麼稱呼？', 'zh-CN': '想被怎么称呼？', 'en': 'What should we call you?' },
+    'acc.nmHint':     { 'zh-TW': '此稱呼僅用於畫面顯示，最多 50 字。命盤與報告內容不受影響。', 'zh-CN': '此称呼仅用于画面显示，最多 50 字。命盘与报告内容不受影响。', 'en': 'Used for display only, up to 50 characters. Your chart and reports are unaffected.' },
+    'acc.nmSaved':    { 'zh-TW': '已更新。', 'zh-CN': '已更新。', 'en': 'Updated.' },
+    'acc.nmErrEmpty': { 'zh-TW': '請輸入稱呼。', 'zh-CN': '请输入称呼。', 'en': 'Please enter a name.' },
+    'acc.nmErrLong':  { 'zh-TW': '稱呼請控制在 50 字以內。', 'zh-CN': '称呼请控制在 50 字以内。', 'en': 'Please keep it to 50 characters or fewer.' },
+    'acc.nmErrDenied':{ 'zh-TW': '沒有權限修改此欄位。', 'zh-CN': '没有权限修改此栏位。', 'en': 'You do not have permission to change this.' },
+    'acc.nmErrFail':  { 'zh-TW': '儲存失敗：{msg}', 'zh-CN': '保存失败：{msg}', 'en': 'Save failed: {msg}' }
   });
 </script>
 
@@ -179,6 +189,31 @@
     font-size: 15px; letter-spacing: 0.08em;
   }
 
+  /* ── 顯示稱呼編輯（沿用月報設定卡的視覺語言）── */
+  .nm-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+  .nm-edit-box { display: none; padding: 0 0 18px; }
+  .nm-edit-box.show { display: block; }
+  .nm-edit-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .nm-input {
+    flex: 1 1 220px; min-width: 0;
+    font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest);
+    padding: 9px 13px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
+    letter-spacing: 0.04em;
+  }
+  .nm-input:focus { outline: none; border-color: var(--accent-soft); }
+  .nm-save-btn {
+    font-family: var(--font-serif-zh); font-size: 14px; letter-spacing: 0.06em;
+    color: var(--bg-card); background: var(--accent-deep); padding: 9px 20px; border-radius: 3px;
+    cursor: pointer; border: none; transition: background 0.2s; flex-shrink: 0;
+  }
+  .nm-save-btn:hover:not(:disabled) { background: #1d4448; }
+  .nm-save-btn:disabled { opacity: 0.5; cursor: default; }
+  .nm-msg { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; letter-spacing: 0.03em; display: none; }
+  .nm-msg.show { display: block; }
+  .nm-msg.ok { color: var(--t-lu); }
+  .nm-msg.err { color: var(--t-ji); }
+  .nm-hint { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-light); line-height: 1.6; letter-spacing: 0.02em; }
+
   /* ── 月報設定卡 ── */
   .rd-current { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .rd-current-day { font-family: var(--font-serif-zh); font-size: 18px; color: var(--ink-darkest); font-weight: 500; letter-spacing: 0.04em; }
@@ -242,9 +277,23 @@
       <!-- 個人資料 -->
       <div class="acc-card">
         <div class="acc-card-label" data-i18n="acc.lblProfile">基本資料</div>
-        <div class="acc-row">
+        <div class="acc-row" style="border-bottom:none; padding-bottom:8px;">
           <span class="acc-row-key" data-i18n="acc.kName">顯示名稱</span>
-          <span class="acc-row-val" id="acc-name">—</span>
+          <span class="acc-row-val">
+            <span class="nm-line">
+              <span id="acc-name">—</span>
+              <span class="rd-edit-link" id="nm-edit-link" data-i18n="acc.nmChange">更改</span>
+            </span>
+          </span>
+        </div>
+        <div class="nm-edit-box" id="nm-edit-box">
+          <div class="nm-edit-row">
+            <input type="text" id="nm-input" class="nm-input" maxlength="50"
+                   autocomplete="nickname" placeholder="想被怎麼稱呼？" data-i18n-placeholder="acc.nmPh" />
+            <button class="nm-save-btn" id="nm-save-btn" data-i18n="acc.save">儲存</button>
+          </div>
+          <div class="nm-msg" id="nm-msg"></div>
+          <div class="nm-hint" data-i18n="acc.nmHint">此稱呼僅用於畫面顯示，最多 50 字。命盤與報告內容不受影響。</div>
         </div>
         <div class="acc-row">
           <span class="acc-row-key" data-i18n="acc.kEmail">電子郵件</span>
@@ -356,6 +405,7 @@
   // 存下資料,供語言切換重繪(只讀顯示);監聽只綁一次
   const S = {
     email: '', name: '—', userId: '',
+    hasName: false,          // true=display_name 有值; false=name 目前是 email 前綴 fallback
     birth: undefined,        // undefined=未載入, null=無資料, object=有
     sessionId: undefined,    // undefined=未載入, null=尚未生成, string=有
     billing: undefined,      // undefined=未載入, null/object
@@ -376,6 +426,10 @@
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     set('acc-name', S.name || '—');
     set('acc-email', S.email || '—');
+
+    // 稱呼儲存訊息是動態文案,換語言後會殘留舊語言 → 一律清掉(不重譯,語意為「本次操作結果」)
+    const nmMsg = document.getElementById('nm-msg');
+    if (nmMsg) { nmMsg.className = 'nm-msg'; nmMsg.textContent = ''; }
 
     const gEl = document.getElementById('acc-gender');
     const bdEl = document.getElementById('acc-bdate');
@@ -461,6 +515,73 @@
   window.addEventListener('i18n:changed', renderStatic);
 
   // ── 綁定(只綁一次)──
+
+  // 顯示稱呼編輯
+  //   display_name 是純顯示欄位:實查確認全 repo 與 6 個 DB 函數皆只用於呈現,
+  //   歸屬鍵一律走 id / email,故使用者可自由修改而不影響任何判定。
+  //   歸屬由 RLS 強制:user_profiles_update_own 的 using/with_check 皆為 auth.uid() = id,
+  //   前端 .eq('id', userId) 只是讓 PostgREST 定位到列,不是安全邊界。
+  //   長度/空白同時在 DB 層以 CHECK constraint 把關(user_profiles_display_name_len),
+  //   前端驗證只為即時回饋 —— 使用者可繞過頁面直打 PostgREST,故不可只靠前端。
+  const NAME_MAX = 50;
+  function bindDisplayName(userId) {
+    const link = document.getElementById('nm-edit-link');
+    const box = document.getElementById('nm-edit-box');
+    const input = document.getElementById('nm-input');
+    const btn = document.getElementById('nm-save-btn');
+    const msg = document.getElementById('nm-msg');
+    if (!link || !box || !input || !btn || !msg) return;
+
+    const show = (cls, txt) => { msg.className = 'nm-msg show ' + cls; msg.textContent = txt; };
+
+    link.addEventListener('click', () => {
+      const opening = !box.classList.contains('show');
+      box.classList.toggle('show');
+      if (opening) {
+        // 以目前顯示值開場;S.name 在無 display_name 時是 email 前綴的 fallback,
+        // 那不是使用者設定的值 → 不預填,讓輸入框留白。
+        input.value = (S.hasName ? S.name : '');
+        msg.className = 'nm-msg'; msg.textContent = '';
+        input.focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') btn.click(); });
+
+    btn.addEventListener('click', async () => {
+      const val = input.value.trim();
+      // 前端驗證:空白擋下、長度以碼點計(與 PG char_length 一致;JS .length 會把 emoji 算成 2)
+      if (!val) { show('err', F.t('acc.nmErrEmpty')); return; }
+      if ([...val].length > NAME_MAX) { show('err', F.t('acc.nmErrLong')); return; }
+
+      btn.disabled = true;
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ display_name: val })
+        .eq('id', userId);
+      btn.disabled = false;
+
+      // supabase-js v2 不 throw DB 錯誤,回 { data, error } → 必須顯式檢查;
+      // 依錯誤碼分支,不靜默吞:
+      //   23514 = CHECK 違反(空白/超長,前端漏接時的最後一道)
+      //   42501 = RLS 擋下(理論上只在改到他人列或凍結欄時發生)
+      if (error) {
+        const code = error.code || '';
+        if (code === '23514') show('err', F.t('acc.nmErrLong'));
+        else if (code === '42501') show('err', F.t('acc.nmErrDenied'));
+        else show('err', F.t('acc.nmErrFail').replace('{msg}', error.message || F.t('acc.tryLater')));
+        return;
+      }
+
+      // 寫入成功 → 更新 S 並重繪(renderStatic 以 textContent 填值,使用者輸入不會被當 HTML 解析)
+      S.name = val;
+      S.hasName = true;
+      renderStatic();
+      show('ok', F.t('acc.nmSaved'));
+      box.classList.remove('show');
+    });
+  }
+
   function bindReportDay(userId) {
     const p = S.billing;
     if (!p || p.preferred_report_day == null) return;
@@ -556,7 +677,9 @@
 
     try {
       const { data: profile } = await supabase.from('user_profiles').select('display_name').eq('id', S.userId).maybeSingle();
-      if (profile && profile.display_name) S.name = profile.display_name;
+      // hasName 區分「使用者設定過的稱呼」與「email 前綴 fallback」:
+      //   編輯框開場時只預填前者,避免把 fallback 誤存成真正的 display_name。
+      if (profile && profile.display_name) { S.name = profile.display_name; S.hasName = true; }
     } catch (_) {}
 
     try {
@@ -597,6 +720,7 @@
       document.getElementById('acc-billing-card').style.display = 'block';
       document.getElementById('acc-portal').addEventListener('click', openPortal);
     }
+    bindDisplayName(S.userId);
     bindReportDay(S.userId);
     document.getElementById('acc-reset').addEventListener('click', () => sendReset(S.email));
 
