@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script>
+    // ── handoff 專屬 UI 字典(策略 B)──────────────────────────────
+    //   共用 key(footer 等)在 i18n.js;此處只放 handoff 專屬。
+    //   ⚠ 位置索引尚未登記於 i18n.js 檔頭 —— 待本頁通過全鏈路驗證、
+    //     確定不再改動後補登記(避免為未定案的頁面動共用檔)。
+    window.FSI18N.addUI({
+      'hf.docTitle':   { 'zh-TW': 'FuSang Vision — 登入中', 'zh-CN': 'FuSang Vision — 登录中', 'en': 'FuSang Vision — Signing you in' },
+      'hf.working':    { 'zh-TW': '正在為你登入…', 'zh-CN': '正在为你登录…', 'en': 'Signing you in…' },
+      'hf.workingSub': { 'zh-TW': '請稍候，馬上就好。', 'zh-CN': '请稍候，马上就好。', 'en': 'One moment — this only takes a second.' },
+      'hf.errTitle':   { 'zh-TW': '你的帳號已建立', 'zh-CN': '你的账号已建立', 'en': 'Your account is ready' },
+      'hf.errBody':    {
+        'zh-TW': '這個登入連結無法使用。你的帳號與命盤都已建立完成，請以註冊時的電子郵件與密碼登入。',
+        'zh-CN': '这个登录链接无法使用。你的账号与命盘都已建立完成，请以注册时的电子邮件与密码登录。',
+        'en':    "This sign-in link can't be used. Your account and chart are both ready — please log in with the email and password you signed up with."
+      },
+      'hf.errCta':     { 'zh-TW': '前往登入', 'zh-CN': '前往登录', 'en': 'Go to log in' }
+    });
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>FuSang Vision — 登入中</title>
+
+  <style>
+    /* ════════════════════════════════════════════════════════
+       handoff — Shopify 註冊後的一次性登入過場頁
+
+       使用者停留時間約一秒。故：
+         · 不注入 header / footer（不放 #site-header / #site-footer；
+           components.js 的 injectHeader/injectFooter 皆有 if (!el) return 守衛，
+           略過它們不會報錯）
+         · 不放語言切換鈕（切完就跳走了，沒有使用場景）
+       視覺沿用 login 的晨曦語彙，但收到最小。
+       共用 tokens 由 components.js 注入(--wash-teal / --dawn / --gold …)
+       ════════════════════════════════════════════════════════ */
+
+    .hf-page {
+      --hf-blue-pale: #e3ecf3;
+      --hf-blue: #4f6b84;
+      --hf-water-ink: #16232c;
+
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      position: relative;
+      background: var(--bg-primary, #faf7f1);
+      overflow: hidden;
+    }
+    .hf-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 56% 52% at 18% 28%, var(--hf-blue-pale) 0%, transparent 60%),
+        radial-gradient(ellipse 52% 48% at 34% 80%, var(--wash-teal, #e6efec) 0%, transparent 62%),
+        radial-gradient(ellipse 46% 40% at 88% 12%, rgba(216, 178, 120, 0.18) 0%, transparent 56%);
+      pointer-events: none;
+    }
+
+    .hf-card {
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .hf-eyebrow {
+      font-size: 12px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold, #b8945c);
+      margin-bottom: 24px;
+    }
+
+    /* ── 進行中 ── */
+    .hf-spinner {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 22px;
+      border: 2px solid rgba(79, 107, 132, 0.22);
+      border-top-color: var(--hf-blue);
+      border-radius: 50%;
+      animation: hf-spin 0.85s linear infinite;
+    }
+    @keyframes hf-spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hf-spinner { animation-duration: 2.4s; }
+    }
+
+    .hf-title {
+      font-family: var(--font-serif-tc, 'Noto Serif TC', Georgia, serif);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--hf-water-ink);
+      margin: 0 0 8px;
+    }
+    .hf-sub {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text-secondary, #2d4a4d);
+      margin: 0;
+    }
+
+    /* ── 失敗 ── */
+    .hf-state { display: none; }
+    .hf-state.active { display: block; }
+
+    .hf-err-body {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--text-secondary, #2d4a4d);
+      margin: 0 0 26px;
+    }
+    .hf-btn {
+      display: inline-block;
+      background: var(--hf-water-ink);
+      color: #faf7f1;
+      text-decoration: none;
+      font-size: 15px;
+      padding: 13px 30px;
+      border-radius: 3px;
+      transition: opacity .18s ease;
+    }
+    .hf-btn:hover { opacity: .88; }
+    .hf-btn:focus-visible { outline: 2px solid var(--gold, #b8945c); outline-offset: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="hf-page">
+  <div class="hf-card">
+    <div class="hf-eyebrow">FuSang Vision</div>
+
+    <!-- 進行中(預設顯示) -->
+    <div class="hf-state active" id="hf-working">
+      <div class="hf-spinner" role="status" aria-live="polite"></div>
+      <h1 class="hf-title" data-i18n="hf.working">Signing you in…</h1>
+      <p class="hf-sub" data-i18n="hf.workingSub">One moment — this only takes a second.</p>
+    </div>
+
+    <!-- 失敗 -->
+    <div class="hf-state" id="hf-error">
+      <h1 class="hf-title" data-i18n="hf.errTitle">Your account is ready</h1>
+      <p class="hf-err-body" data-i18n="hf.errBody">This sign-in link can't be used.</p>
+      <a class="hf-btn" href="login.html" data-i18n="hf.errCta">Go to log in</a>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  // ════════════════════════════════════════════════════════════════
+  // handoff — 一次性 token → portal session
+  // ════════════════════════════════════════════════════════════════
+  //
+  // 為什麼需要這一頁：
+  //   session 存在 localStorage(supabase-js v2 預設)，而 localStorage 依
+  //   origin 隔離 —— fusang-vision.com(Shopify) 與 portal.fusang-vision.com
+  //   是兩個不同 origin，Shopify 端無論如何都寫不進 portal 的 session。
+  //   故必須讓使用者的瀏覽器實際落在 portal 這個 origin 上，由 portal 自己的
+  //   程式碼呼叫 verifyOtp，session 才會寫進 portal 讀得到的那把 key。
+  //   這一頁就是那個落點。
+  //
+  // ⚠ supabase client 必須從 components.js 取(不可在此另外 createClient)——
+  //   同一個 client 才會用同一個 storageKey，session 才被 portal 其他頁讀到。
+  //
+  // URL 契約：
+  //   handoff.html?job_id=<uuid>#t=<hashed_token>
+  //   · token 放 hash → 不送往伺服器、不進 Referer、不進 GitHub Pages /
+  //     Cloudflare 存取日誌
+  //   · job_id 放 query → 只是參考編號 UUID，非個資
+  //   · email 不放 URL → verifyOtp 成功後由 session 取得，
+  //     故 email 完全不跨越 Shopify → portal 的網域邊界
+  //
+  // 本頁不修改任何既有檔案：login.html / submitted.html / components.js
+  // 皆維持原狀（submitted.html 既有的 ?job_id= & ?email= 契約直接沿用）。
+  import { supabase } from './components.js';
+
+  const F = window.FSI18N;
+  document.title = F.t('hf.docTitle');
+
+  const workingBox = document.getElementById('hf-working');
+  const errorBox = document.getElementById('hf-error');
+
+  function showError() {
+    workingBox.classList.remove('active');
+    errorBox.classList.add('active');
+  }
+
+  // ── 讀 token，並「立刻」把 hash 清掉 ────────────────────────────
+  //   刻意在驗證之前就清 —— 若排在驗證之後，驗證失敗或網路卡住的那段期間
+  //   token 仍留在網址列，可能被使用者複製分享或留進瀏覽歷程。
+  //   token 等同一次性登入憑證，能早一刻移除就早一刻移除。
+  function takeToken() {
+    const hash = window.location.hash || '';
+    const m = hash.match(/[#&]t=([^&]+)/);
+    const token = m ? decodeURIComponent(m[1]) : null;
+    if (hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    return token;
+  }
+
+  (async () => {
+    const token = takeToken();
+    const jobId = new URLSearchParams(window.location.search).get('job_id');
+
+    // 失敗一律走同一條路徑，不區分「無 token / 過期 / 已使用」——
+    // 對使用者而言處置完全相同（去登入），且不必對外透露 token 狀態。
+    if (!token) {
+      console.warn('[handoff] no token in URL');
+      showError();
+      return;
+    }
+
+    let session = null;
+    try {
+      // ⚠ supabase-js v2 的 auth 方法不 throw，錯誤在回傳物件裡 → 顯式檢查。
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'email',
+      });
+      if (error) throw error;
+      session = data?.session ?? null;
+    } catch (e) {
+      // ⚠ 只記失敗事由，絕不記 token 本身。
+      console.warn('[handoff] verifyOtp failed:', e?.message || e);
+      showError();
+      return;
+    }
+
+    if (!session) {
+      console.warn('[handoff] verifyOtp returned no session');
+      showError();
+      return;
+    }
+
+    // ── 成功：session 已寫入 portal 的 localStorage ────────────────
+    //   email 由 session 取得（不從 URL 帶），再交給 submitted.html 顯示。
+    const email = session.user?.email ?? '';
+
+    const params = new URLSearchParams();
+    // 決策 5-A 的延續：只在有值時帶入，避免 "null" 字串繞過下游 falsy 守衛。
+    if (jobId) params.set('job_id', jobId);
+    if (email) params.set('email', email);
+
+    const qs = params.toString();
+    window.location.replace('submitted.html' + (qs ? '?' + qs : ''));
+  })();
+</script>
+
+<script type="module" src="components.js"></script>
+
+</body>
+</html>
