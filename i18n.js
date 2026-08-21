@@ -32,6 +32,7 @@
 //   ‣ account-create.html    → 頁內 addUI inline(account-create.html 的 <head> addUI script)
 //   ‣ submitted.html         → 頁內 addUI inline(submitted.html 的 <head> addUI script)
 //   ‣ set-password.html      → 頁內 addUI inline(set-password.html 的 <head> addUI script)
+//   ‣ handoff.html           → 頁內 addUI inline(handoff.html 的 <head> addUI script;Shopify 註冊後的 token 兌換過場頁)
 //   ‣ pricing.html           → 頁內 addUI inline(pricing.html 的 <head> addUI script;登入頁,用 header 切換鈕)
 //   ‣ dashboard.html         → 頁內 addUI inline(dashboard.html 的 <head> addUI script;登入頁,用 header 切換鈕)
 //   ‣ payment-success.html   → 頁內 addUI inline(payment-success.html;登入頁,用 header 切換鈕)
