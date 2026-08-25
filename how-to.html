@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>怎麼使用 FuSang - FuSang Vision</title>
+<script>
+  // ── how-to 專屬 UI 字典(策略 B;位置索引見 i18n.js 檔頭)──
+  //   ⚠ 介面用語一致原則(PM 決策 D3):文案中提到 nav 下拉的四層時,
+  //     一律使用 i18n.js 共用區 navChart / navDecade / navAnnual / navMonthly / navCharts
+  //     的「現值」,不自創別名(例:nav 現值為「大限」,不可寫成「大限盤」)。
+  //     日後若共用區那些 key 的值有變動,本檔對應字串必須同步更新。
+  //   裝飾性英文 eyebrow 刻意保留靜態(比照 support.html)。
+  window.FSI18N.addUI({
+    'ht.docTitle': { 'zh-TW': '怎麼使用 FuSang - FuSang Vision', 'zh-CN': '如何使用 FuSang - FuSang Vision', 'en': 'How to Use FuSang - FuSang Vision' },
+    'ht.title':    { 'zh-TW': '怎麼使用 FuSang', 'zh-CN': '如何使用 FuSang', 'en': 'How to Use FuSang' },
+    'ht.sub':      { 'zh-TW': 'FuSang 提供四層報告：本命、大限、流年、流月。這頁說明怎麼一步步使用。', 'zh-CN': 'FuSang 提供四层报告：本命、大限、流年、流月。这页说明怎么一步步使用。', 'en': 'FuSang offers four layers of reading: Natal, Decade, Annual, and Monthly. Here\u2019s how to use each step.' },
+
+    // ── 順序規則帶 ──
+    'ht.ruleLabel': { 'zh-TW': '順序', 'zh-CN': '顺序', 'en': 'Order' },
+    'ht.rule':      { 'zh-TW': '使用上只有一個順序——先完成本命盤，其餘三層才能開啟；本命完成後，大限、流年、流月可以同時開啟，不必照順序。', 'zh-CN': '使用上只有一个顺序——先完成本命盘，其余三层才能开启；本命完成后，大限、流年、流月可以同时开启，不必按顺序。', 'en': 'There\u2019s only one rule of order \u2014 complete your Natal chart first, and the other three unlock. Once your Natal chart is ready, Decade, Annual, and Monthly can all be opened at once, in any order.' },
+
+    // ── 第一步 ──
+    'ht.s1Label':    { 'zh-TW': '第一步', 'zh-CN': '第一步', 'en': 'Step 1' },
+    'ht.s1Title':    { 'zh-TW': '生成並查看你的本命盤', 'zh-CN': '生成并查看你的本命盘', 'en': 'Generate and read your Natal chart' },
+    'ht.s1Body':     { 'zh-TW': '填寫出生資料（日期、時間、地點）後，系統會生成你的本命盤。本命盤的生成需要約 20 分鐘，完成後就可以開始查看。', 'zh-CN': '填写出生资料（日期、时间、地点）后，系统会生成你的本命盘。本命盘的生成需要约 20 分钟，完成后就可以开始查看。', 'en': 'After you enter your birth details (date, time, place), the system generates your Natal chart. Generating the Natal chart takes about 20 minutes; once it\u2019s ready, you can start reading.' },
+    'ht.s1HowLabel': { 'zh-TW': '查看方式', 'zh-CN': '查看方式', 'en': 'How to view it' },
+    'ht.s1How1':     { 'zh-TW': '在上方導覽列打開「命盤」選單', 'zh-CN': '在上方导航栏打开「命盘」菜单', 'en': 'Open the Charts menu in the top navigation' },
+    'ht.s1How2':     { 'zh-TW': '命盤 → 本命盤', 'zh-CN': '命盘 → 本命盘', 'en': 'Charts → Natal' },
+    'ht.s1How3':     { 'zh-TW': '點擊每個宮位，就能看到該宮位的解讀', 'zh-CN': '点击每个宫位，就能看到该宫位的解读', 'en': 'Click any palace to see its reading' },
+    'ht.s1Foot':     { 'zh-TW': '本命盤是一切的基礎，也是解鎖其餘三層的第一步。', 'zh-CN': '本命盘是一切的基础，也是解锁其余三层的第一步。', 'en': 'The Natal chart is the foundation of everything, and the first step to unlocking the other three layers.' },
+
+    // ── 第二步 ──
+    'ht.s2Label': { 'zh-TW': '第二步', 'zh-CN': '第二步', 'en': 'Step 2' },
+    'ht.s2Title': { 'zh-TW': '開啟大限、流年、流月', 'zh-CN': '开启大限、流年、流月', 'en': 'Open Decade, Annual, and Monthly' },
+    'ht.s2Body':  { 'zh-TW': '本命盤完成後，「命盤」選單會出現其餘三層的入口——這是很多人容易錯過的地方：如果你只看了本命，別忘了還有三層可以開啟。而且這三層可以同時開啟，不必照順序。', 'zh-CN': '本命盘完成后，「命盘」菜单会出现其余三层的入口——这是很多人容易错过的地方：如果你只看了本命，别忘了还有三层可以开启。而且这三层可以同时开启，不必按顺序。', 'en': 'Once your Natal chart is complete, the Charts menu reveals the other three layers \u2014 this is where many people miss out: if you\u2019ve only read your Natal chart, don\u2019t forget there are three more layers to open. And these three can be opened at the same time, in any order.' },
+
+    // ── 三層卡片(名稱與路徑必須等同 nav 現值,見檔頭警告)──
+    'ht.lyDecadeName': { 'zh-TW': '大限', 'zh-CN': '大限', 'en': 'Decade' },
+    'ht.lyDecadePath': { 'zh-TW': '命盤 → 大限', 'zh-CN': '命盘 → 大限', 'en': 'Charts → Decade' },
+    'ht.lyDecadeBody': { 'zh-TW': '在「命盤」選單點擊大限，開啟每個十年的解讀，看見你人生不同十年階段的重心與節奏。', 'zh-CN': '在「命盘」菜单点击大限，开启每个十年的解读，看见你人生不同十年阶段的重心与节奏。', 'en': 'Open Charts → Decade to open the reading for each ten-year period, and see the focus and rhythm of the different decades of your life.' },
+
+    'ht.lyAnnualName': { 'zh-TW': '流年', 'zh-CN': '流年', 'en': 'Annual' },
+    'ht.lyAnnualPath': { 'zh-TW': '命盤 → 流年', 'zh-CN': '命盘 → 流年', 'en': 'Charts → Annual' },
+    'ht.lyAnnualBody': { 'zh-TW': '在「命盤」選單點擊流年，開啟當前年度的解讀，看見這一年哪些領域比較活躍、重心落在哪裡。', 'zh-CN': '在「命盘」菜单点击流年，开启当前年度的解读，看见这一年哪些领域比较活跃、重心落在哪里。', 'en': 'Open Charts → Annual to open the reading for the current year, and see which areas are more active this year and where the focus lies.' },
+
+    'ht.lyMonthlyName': { 'zh-TW': '流月', 'zh-CN': '流月', 'en': 'Monthly' },
+    'ht.lyMonthlyTag':  { 'zh-TW': '最重要', 'zh-CN': '最重要', 'en': 'Most important' },
+    'ht.lyMonthlyPath': { 'zh-TW': '命盤 → 流月', 'zh-CN': '命盘 → 流月', 'en': 'Charts → Monthly' },
+    'ht.lyMonthlyBody': { 'zh-TW': '在「命盤」選單點擊流月——這是最個人化的一層。你可以訂閱每月解讀，針對你的命盤看見每個月的重心。你還可以留下一個問題，讓每月的解讀持續追蹤它。', 'zh-CN': '在「命盘」菜单点击流月——这是最个人化的一层。你可以订阅每月解读，针对你的命盘看见每个月的重心。你还可以留下一个问题，让每月的解读持续追踪它。', 'en': 'Open Charts → Monthly \u2014 this is the most personal layer. You can subscribe to monthly readings tailored to your chart, and see the focus of each month. You can also leave one question for the monthly readings to keep tracking over time.' }
+  });
+</script>
+<style>
+  .ht-wrap { max-width: 760px; margin: 0 auto; padding: 44px 32px 64px; }
+  @media (max-width: 640px) { .ht-wrap { padding: 32px 20px 48px; } }
+
+  .ht-hero { text-align: center; margin-bottom: 40px; }
+  .ht-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 14px; }
+  .ht-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(30px, 5vw, 44px); color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 14px; }
+  .ht-sub { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-mid); line-height: 1.8; max-width: 520px; margin: 0 auto; }
+
+  /* ── 順序規則帶 ── */
+  .ht-rule { display: flex; align-items: flex-start; gap: 16px; padding: 22px 26px; background: var(--bg-soft-2); border-radius: 14px; margin-bottom: 40px; }
+  .ht-rule-label { flex: 0 0 auto; font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.85; padding-top: 4px; }
+  .ht-rule-text { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-dark); }
+  @media (max-width: 640px) { .ht-rule { flex-direction: column; gap: 8px; padding: 20px; } .ht-rule-label { padding-top: 0; } }
+
+  /* ── 步驟卡 ── */
+  .ht-steps { display: flex; flex-direction: column; gap: 20px; }
+  .ht-step { background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; padding: 28px 30px; }
+  @media (max-width: 640px) { .ht-step { padding: 24px 20px; } }
+  .ht-step-label { font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.85; margin-bottom: 10px; }
+  .ht-step-title { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 14px; }
+  .ht-step-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-mid); }
+
+  /* ── 查看方式清單 ── */
+  .ht-how { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--rule-soft-2); }
+  .ht-how-label { font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 14px; }
+  .ht-how-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .ht-how-list li { display: flex; align-items: flex-start; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-mid); }
+  .ht-how-n { flex: 0 0 auto; width: 21px; height: 21px; margin-top: 2px; border-radius: 50%; background: var(--bg-soft); color: var(--accent-soft); font-family: var(--font-sans); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+
+  .ht-step-foot { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule-soft-2); font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.85; color: var(--ink-dark); }
+
+  /* ── 三層卡片 ── */
+  .ht-layers { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .ht-layer { border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; background: var(--bg-card); }
+  .ht-layer.is-key { border-color: var(--accent-pale); background: linear-gradient(180deg, var(--wash-teal) 0%, #ffffff 60%); }
+  .ht-layer-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+  .ht-layer-name { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.03em; }
+  .ht-layer-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold-soft); border-radius: 999px; padding: 3px 9px; }
+  .ht-layer-path { font-family: var(--font-sans); font-size: 11.5px; letter-spacing: 0.06em; color: var(--silver-deep); background: var(--bg-soft); border-radius: 999px; padding: 4px 11px; }
+  .ht-layer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-mid); }
+</style>
+</head>
+
+<body>
+
+<script>window.FS_ACTIVE_PAGE = 'howto';</script>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <div class="ht-wrap">
+
+    <div class="ht-hero">
+      <div class="ht-eyebrow">How to Use</div>
+      <h1 class="ht-title" data-i18n="ht.title"></h1>
+      <div class="ht-sub" data-i18n="ht.sub"></div>
+    </div>
+
+    <div class="ht-rule">
+      <div class="ht-rule-label" data-i18n="ht.ruleLabel"></div>
+      <div class="ht-rule-text" data-i18n="ht.rule"></div>
+    </div>
+
+    <div class="ht-steps">
+
+      <!-- 第一步 -->
+      <section class="ht-step">
+        <div class="ht-step-label" data-i18n="ht.s1Label"></div>
+        <h2 class="ht-step-title" data-i18n="ht.s1Title"></h2>
+        <div class="ht-step-body" data-i18n="ht.s1Body"></div>
+
+        <div class="ht-how">
+          <div class="ht-how-label" data-i18n="ht.s1HowLabel"></div>
+          <ul class="ht-how-list">
+            <li><span class="ht-how-n">1</span><span data-i18n="ht.s1How1"></span></li>
+            <li><span class="ht-how-n">2</span><span data-i18n="ht.s1How2"></span></li>
+            <li><span class="ht-how-n">3</span><span data-i18n="ht.s1How3"></span></li>
+          </ul>
+        </div>
+
+        <div class="ht-step-foot" data-i18n="ht.s1Foot"></div>
+      </section>
+
+      <!-- 第二步 -->
+      <section class="ht-step">
+        <div class="ht-step-label" data-i18n="ht.s2Label"></div>
+        <h2 class="ht-step-title" data-i18n="ht.s2Title"></h2>
+        <div class="ht-step-body" data-i18n="ht.s2Body"></div>
+
+        <div class="ht-layers">
+
+          <div class="ht-layer">
+            <div class="ht-layer-head">
+              <span class="ht-layer-name" data-i18n="ht.lyDecadeName"></span>
+              <span class="ht-layer-path" data-i18n="ht.lyDecadePath"></span>
+            </div>
+            <div class="ht-layer-body" data-i18n="ht.lyDecadeBody"></div>
+          </div>
+
+          <div class="ht-layer">
+            <div class="ht-layer-head">
+              <span class="ht-layer-name" data-i18n="ht.lyAnnualName"></span>
+              <span class="ht-layer-path" data-i18n="ht.lyAnnualPath"></span>
+            </div>
+            <div class="ht-layer-body" data-i18n="ht.lyAnnualBody"></div>
+          </div>
+
+          <div class="ht-layer is-key">
+            <div class="ht-layer-head">
+              <span class="ht-layer-name" data-i18n="ht.lyMonthlyName"></span>
+              <span class="ht-layer-tag" data-i18n="ht.lyMonthlyTag"></span>
+              <span class="ht-layer-path" data-i18n="ht.lyMonthlyPath"></span>
+            </div>
+            <div class="ht-layer-body" data-i18n="ht.lyMonthlyBody"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  // 純說明頁:不呼叫 requireAuth(PM 決策 D4,未登入可直達;供 Brevo 再行銷信連入)。
+  // 僅以 side-effect import 觸發 components.js 的 initComponents(header / footer / 背景層)。
+  import './components.js';
+
+  const F = window.FSI18N;
+
+  // 靜態內容(data-i18n)由 i18n.js 的 applyI18n 自動填入與重譯;
+  // 此處只補非 data-i18n 的 document.title。
+  function applyLangUi() {
+    document.title = F.t('ht.docTitle');
+  }
+  applyLangUi();
+  document.addEventListener('DOMContentLoaded', applyLangUi);
+  window.addEventListener('i18n:changed', applyLangUi);
+</script>
+
+</body>
+</html>
