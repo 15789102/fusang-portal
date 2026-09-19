@@ -20,6 +20,10 @@
     // monthly 專屬 UI 字典(策略 B);共用 chrome/報告術語走中央 UI/RT。
     //   星曜/宮位/四化 → starLabel/palaceLabel/transformLabel;流月語境 explainer/tooltip → td(...MONTHLY)。
     window.FSI18N.addUI({
+      // 自動四層票：收報日未設定、但已有月報的使用者（註冊自動生成）→ 年份頁上方提示條
+      "mo.rdSetupTitle": {"zh-TW": "設定每月收報日", "zh-CN": "设定每月收报日", "en": "Set your monthly delivery day"},
+      "mo.rdSetupBody": {"zh-TW": "你的第一份流月已經準備好了。選擇每月收報日後，之後每個月的流月會在那天自動生成並寄給你。", "zh-CN": "你的第一份流月已经准备好了。选择每月收报日后，之后每个月的流月会在那天自动生成并寄给你。", "en": "Your first monthly reading is ready. Choose a delivery day and each new month's reading will be generated and emailed to you on that day."},
+      "mo.rdSetupBtn": {"zh-TW": "設定收報日", "zh-CN": "设定收报日", "en": "Set delivery day"},
       'mo.enterYear': { 'zh-TW': '進入 {year} 流月', 'zh-CN': '进入 {year} 流月', 'en': 'Open {year} reading' },
       "mo.docTitle": {"zh-TW": "我的流月 - FuSang Vision", "zh-CN": "我的流月 - FuSang Vision", "en": "My Monthly Chart - FuSang Vision"},
       "mo.loadingTitle": {"zh-TW": "載入您的流月", "zh-CN": "载入您的流月", "en": "Loading your monthly chart"},
@@ -239,6 +243,13 @@
     .year-card:hover { border-color: var(--accent-soft); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(21,54,58,0.06); }
     .year-card-num { font-family: var(--font-serif-zh); font-size: 32px; font-weight: 500; letter-spacing: 0.04em; }
     .year-card-label { font-family: var(--font-serif-en); font-style: italic; font-size: 12px; color: var(--ink-light); letter-spacing: 0.1em; }
+    /* 自動四層票：收報日設定提示條 */
+    .rd-setup-banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 0 28px; padding: 18px 22px; background: var(--bg-soft-2); border: 1px solid var(--rule); border-left: 3px solid var(--accent-deep); border-radius: 8px; }
+    .rd-setup-title { font-family: var(--font-serif-zh); font-size: 15px; font-weight: 600; color: var(--ink-darkest); margin-bottom: 4px; }
+    .rd-setup-body { font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; color: var(--ink-mid); }
+    .rd-setup-btn { flex: 0 0 auto; padding: 11px 22px; background: var(--ink-darkest); color: var(--bg-primary); border: none; border-radius: 6px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: 0.06em; cursor: pointer; }
+    .rd-setup-btn:hover { opacity: 0.88; }
+    @media (max-width: 600px) { .rd-setup-banner { flex-direction: column; align-items: stretch; } }
     .years-empty { text-align: center; padding: 56px 32px; background: var(--bg-soft-2); border-radius: 2px; margin-top: 24px; }
     .years-empty-title { font-family: var(--font-serif-zh); font-size: 20px; font-weight: 400; color: var(--ink-dark); margin-bottom: 12px; letter-spacing: 0.05em; }
     .years-empty-body { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); line-height: 1.8; letter-spacing: 0.02em; }
@@ -992,6 +1003,15 @@
         <h1 class="years-title" id="years-title">我的流月運勢</h1>
         <p class="years-sub" id="years-sub">選擇一個年份，再選擇月份閱讀當月的十二宮運勢</p>
       </div>
+      <!-- 自動四層票：已有月報但未設定收報日（註冊時自動生成）→ 提示去設定。
+           點擊進入原本的開通表單（intro-pitch）；送出後由 RPC 寫入收報日。 -->
+      <div id="rd-setup-banner" class="rd-setup-banner" style="display:none;">
+        <div class="rd-setup-text">
+          <div class="rd-setup-title" id="rd-setup-title">設定每月收報日</div>
+          <div class="rd-setup-body" id="rd-setup-body">你的第一份流月已經準備好了。選擇每月收報日後，之後每個月的流月會在那天自動生成並寄給你。</div>
+        </div>
+        <button type="button" id="rd-setup-btn" class="rd-setup-btn">設定收報日</button>
+      </div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
         <div class="years-empty-title" id="years-empty-title">尚無流月資料</div>
@@ -1400,6 +1420,9 @@
     setHtml('gen-head-sub', 'mo.genHeadSub');
     // years
     setText('years-title', 'mo.yearsTitle');
+    setText('rd-setup-title', 'mo.rdSetupTitle');
+    setText('rd-setup-body', 'mo.rdSetupBody');
+    setText('rd-setup-btn', 'mo.rdSetupBtn');
     setText('years-sub', 'mo.yearsSub');
     setText('years-empty-title', 'mo.yearsEmptyTitle');
     setHtml('years-empty-body', 'mo.yearsEmptyBody');
@@ -2373,6 +2396,7 @@
     // 進入本函式的前提是 pitch 畫面，即 preferredReportDay == null（首次開通），
     // 故 RPC 寫的是 preferred_report_day 本欄而非 pending，本地直接同步。
     preferredReportDay = day;
+    updateRdSetupBanner();   // 自動四層票：收報日已設定 → 隱藏提示條
 
     const jobs = await fetchJobs();
     renderGenerating(jobs);
@@ -2974,6 +2998,20 @@
     else if (ulStep === 'result') { /* 結果文案依 ulPick 重寫，不影響狀態 */ }
   }
 
+  // 自動四層票：進入開通頁（原本 init 內兩處重複的程式碼抽出，並供提示條使用）
+  function showPitch() {
+    introMode = 'pitch';
+    document.getElementById('intro-pitch').style.display = 'block';
+    document.getElementById('intro-generating').style.display = 'none';
+    showView('view-intro');
+  }
+
+  // 自動四層票：收報日未設定時顯示提示條；設定後（subscribeMonthly 成功）自動隱藏
+  function updateRdSetupBanner() {
+    const el = document.getElementById('rd-setup-banner');
+    if (el) el.style.display = (preferredReportDay == null) ? 'flex' : 'none';
+  }
+
   async function init() {
     try {
       applyStaticI18n();                  // 先以 uiLang 套靜態文字,避免載入時閃現中文
@@ -3028,19 +3066,18 @@
       const jobs = await fetchJobs();
       lastJobs = jobs;   // T15：monthJobState / loadYear 依賴此變數，須在路由決策前就緒
 
-      if (preferredReportDay == null) {
-        introMode = 'pitch';
-        document.getElementById('intro-pitch').style.display = 'block';
-        document.getElementById('intro-generating').style.display = 'none';
-        showView('view-intro');
-        return;
-      }
-
+      // ── 自動四層票：收報日判定移到 report 之後 ──
+      //   舊版：preferredReportDay == null 一律進開通頁（pitch），不看 report。
+      //   註冊自動生成的流月刻意不寫收報日（D1：收報日是使用者主動選擇），
+      //   舊版會把「已有完整月報」的使用者擋在開通頁，報告讀不到。
+      //   新版：
+      //     · 有 report → 照常進年份頁；收報日空則顯示提示條（rd-setup-banner）
+      //     · 無 report、有 job（自動生成進行中）→ 生成畫面
+      //     · 無 report、無 job → 開通頁（與舊版相同）
+      //   ⚠ 不可改成前端代寫收報日 —— 收報日只由 RPC monthly_generate_request 寫入
+      //     （與閘門同一交易）。提示條只負責把使用者帶回原本的開通表單。
       if (jobs.length === 0) {
-        introMode = 'pitch';
-        document.getElementById('intro-pitch').style.display = 'block';
-        document.getElementById('intro-generating').style.display = 'none';
-        showView('view-intro');
+        showPitch();
         return;
       }
 
@@ -3054,6 +3091,7 @@
 
       if (reportYears.length > 0) {
         renderYears(mergeJobYears(reportYears, jobs));          // 顯示：report 年份 ∪ job 年份
+        updateRdSetupBanner();                                  // 收報日未設定 → 提示條
         showView('view-years');
         if (pending.length > 0) startPolling();                 // 背景輪詢，不擋畫面
       } else {
@@ -3349,6 +3387,7 @@
 
   document.getElementById('intro-subscribe-btn').addEventListener('click', subscribeMonthly);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
+  document.getElementById('rd-setup-btn').addEventListener('click', () => showPitch());
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
   document.addEventListener('click', () => {
