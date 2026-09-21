@@ -29,8 +29,8 @@
       "an.loadingYearSub":  { "zh-TW": "正在展開當年的十二宮…", "zh-CN": "正在展开当年的十二宫…", "en": "Unfolding the twelve palaces for this year…" },
 
       "an.introPitchTitle": { "zh-TW": "產生您的流年運勢", "zh-CN": "产生您的流年运势", "en": "Generate your annual reading" },
-      "an.introPitchSub":   { "zh-TW": "為您生成今年（{year}）的十二宮流年解讀", "zh-CN": "为您生成今年（{year}）的十二宫流年解读", "en": "A twelve-palace annual reading for this year ({year})" },
-      "an.introGenerateBtn":{ "zh-TW": "開始生成今年流年", "zh-CN": "开始生成今年流年", "en": "Generate this year's reading" },
+      "an.introPitchSub":   { "zh-TW": "為您生成 {year} 年的十二宮流年解讀", "zh-CN": "为您生成 {year} 年的十二宫流年解读", "en": "A twelve-palace annual reading for {year}" },
+      "an.introGenerateBtn":{ "zh-TW": "開始生成 {year} 流年", "zh-CN": "开始生成 {year} 流年", "en": "Generate the {year} reading" },
       "an.genErr401":       { "zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again." },
       "an.genErr403":       { "zh-TW": "無法生成：此命盤不屬於目前登入的帳號。", "zh-CN": "无法生成：此命盘不属于目前登录的账号。", "en": "Can't generate: this chart doesn't belong to the account you're signed in with." },
       "an.genErr429":       { "zh-TW": "目前同時進行中的生成已達上限，請待現有的流年完成後再試。", "zh-CN": "目前同时进行中的生成已达上限，请待现有的流年完成后再试。", "en": "You've reached the limit for readings generating at once. Please wait for the current ones to finish." },
@@ -362,7 +362,7 @@
           <p class="years-sub" id="intro-pitch-sub"></p>
         </div>
         <div style="text-align:center; margin-top:32px;">
-          <button id="intro-generate-btn" class="btn-primary">開始生成今年流年</button>
+          <button id="intro-generate-btn" class="btn-primary">開始生成流年</button>
         </div>
       </div>
       <div id="intro-generating" style="display:none;">
@@ -538,7 +538,11 @@
   let lastYears = [];
   let lastJobs = [];
 
-  function currentAnnualTargetYear() { return new Date().getFullYear(); }
+  // 流年目標年（UI 呈現用）：必須與 DB public.annual_compute_target() 同值。
+  //   生成年份的唯一 SoT 在 RPC；此處只決定時間軸 current／CTA／文案，不參與生成請求。
+  //   ⚠ 調整目標年時，RPC 與此常數必須同批修改，否則按鈕年份與實際生成年份不一致。
+  const ANNUAL_TARGET_YEAR = 2027;
+  function currentAnnualTargetYear() { return ANNUAL_TARGET_YEAR; }
 
   function showView(id) {
     currentView = id;
@@ -569,7 +573,8 @@
     setText('intro-pitch-title', 'an.introPitchTitle');
     const ipSub = document.getElementById('intro-pitch-sub');
     if (ipSub) ipSub.textContent = tx('an.introPitchSub').replace('{year}', currentAnnualTargetYear());
-    setText('intro-generate-btn', 'an.introGenerateBtn');
+    const igBtn = document.getElementById('intro-generate-btn');
+    if (igBtn) igBtn.textContent = tx('an.introGenerateBtn').replace('{year}', currentAnnualTargetYear());
     // intro — generating
     setText('intro-gen-title', 'an.genTitle');
     setText('intro-gen-sub', 'an.genSub');
@@ -670,7 +675,7 @@
       btn.textContent = tx('an.enterYear').replace('{year}', cur);
       btn.addEventListener('click', () => loadYear(cur));
     } else {
-      btn.textContent = tx('an.introGenerateBtn');
+      btn.textContent = tx('an.introGenerateBtn').replace('{year}', cur);
       btn.addEventListener('click', genCur);
     }
     cta.appendChild(btn);
@@ -1061,7 +1066,7 @@
     if (errKey) {
       alert(tx(errKey));
       btn.disabled = false;
-      btn.textContent = tx('an.introGenerateBtn');
+      btn.textContent = tx('an.introGenerateBtn').replace('{year}', currentAnnualTargetYear());
       return;
     }
 
