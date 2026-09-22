@@ -32,13 +32,11 @@
     'acc.kBplace':    { 'zh-TW': '出生地', 'zh-CN': '出生地', 'en': 'Birthplace' },
     'acc.kSihua':     { 'zh-TW': '本命四化解鎖', 'zh-CN': '本命四化解锁', 'en': 'Full Reading' },
     'acc.kMonthly':   { 'zh-TW': '付費月報訂閱', 'zh-CN': '付费月报订阅', 'en': 'Monthly Subscription' },
-    'acc.kReportDay': { 'zh-TW': '每月收報日', 'zh-CN': '每月收报日', 'en': 'Delivery day' },
-    'acc.change':     { 'zh-TW': '更改', 'zh-CN': '更改', 'en': 'Change' },
-    'acc.changeTo':   { 'zh-TW': '改為每月', 'zh-CN': '改为每月', 'en': 'Change to day' },
-    'acc.dayUnit':    { 'zh-TW': '號', 'zh-CN': '号', 'en': 'of each month' },
+    'acc.kDelivery': { 'zh-TW': '每月流月', 'zh-CN': '每月流月', 'en': 'Monthly reading' },
+    'acc.delivOn':    { 'zh-TW': '已開啟（每月 1 號寄送，UTC）', 'zh-CN': '已开启（每月 1 号发送，UTC）', 'en': 'On (sent on the 1st of each month, UTC)' },
+    'acc.delivOff':   { 'zh-TW': '未開啟', 'zh-CN': '未开启', 'en': 'Off' },
+    'acc.delivEnable':{ 'zh-TW': '前往流月頁開啟', 'zh-CN': '前往流月页开启', 'en': 'Turn on from the Monthly page' },
     'acc.save':       { 'zh-TW': '儲存', 'zh-CN': '保存', 'en': 'Save' },
-    'acc.savedMsg':   { 'zh-TW': '已更新，將於下個月生效。', 'zh-CN': '已更新，将于下个月生效。', 'en': 'Updated — takes effect next month.' },
-    'acc.utcHint':    { 'zh-TW': '日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。', 'zh-CN': '日期以世界标准时间（UTC）计算。变更会套用到下一期，本期维持原定日期。', 'en': 'Dates are in UTC. Changes apply to the next cycle; the current cycle keeps its original date.' },
     'acc.cancelDelivery':{ 'zh-TW': '取消月報寄送', 'zh-CN': '取消月报发送', 'en': 'Stop monthly delivery' },
     'acc.subDesc':    { 'zh-TW': '管理您的訂閱、付款方式與發票紀錄。點擊下方按鈕前往安全的 Stripe 管理頁面。', 'zh-CN': '管理您的订阅、付款方式与发票记录。点击下方按钮前往安全的 Stripe 管理页面。', 'en': 'Manage your subscription, payment methods, and invoices. The button below opens the secure Stripe portal.' },
     'acc.manageSub':  { 'zh-TW': '管理訂閱', 'zh-CN': '管理订阅', 'en': 'Manage subscription' },
@@ -57,10 +55,6 @@
     'acc.subActive':  { 'zh-TW': '訂閱中（每月自動續扣）', 'zh-CN': '订阅中（每月自动续扣）', 'en': 'Active (auto-renews monthly)' },
     'acc.subUntil':   { 'zh-TW': '有效至 {date}', 'zh-CN': '有效至 {date}', 'en': 'Valid until {date}' },
     'acc.subYes':     { 'zh-TW': '已訂閱', 'zh-CN': '已订阅', 'en': 'Subscribed' },
-    'acc.dayUtc':     { 'zh-TW': '{d} 號（UTC）', 'zh-CN': '{d} 号（UTC）', 'en': 'Day {d} (UTC)' },
-    'acc.pendingNote':{ 'zh-TW': '＊下期起將改為每月 {d} 號', 'zh-CN': '＊下期起将改为每月 {d} 号', 'en': '* Changes to day {d} each month from the next cycle' },
-    'acc.canceled':   { 'zh-TW': '已取消', 'zh-CN': '已取消', 'en': 'Canceled' },
-    'acc.saveFail':   { 'zh-TW': '儲存失敗：{msg}', 'zh-CN': '保存失败：{msg}', 'en': 'Save failed: {msg}' },
     'acc.cancelBlockedSub':{ 'zh-TW': '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。', 'zh-CN': '您有进行中的付费订阅，请先于下方「订阅管理」取消付费订阅后，再取消月报发送。', 'en': 'You have an active paid subscription. Please cancel it under "Subscription" below before stopping monthly delivery.' },
     'acc.cancelConfirmPrepaid':{ 'zh-TW': '你的流月權限為買斷方案，有效至 {date}。\n\n取消寄送不會退費，你的權限仍然保留——隨時可回到流月頁面重新開通、繼續收取報告，直到期限為止。\n\n確定要暫停月報寄送嗎？', 'zh-CN': '你的流月权限为买断方案，有效至 {date}。\n\n取消发送不会退费，你的权限仍然保留——随时可回到流月页面重新开通、继续收取报告，直到期限为止。\n\n确定要暂停月报发送吗？', 'en': 'Your monthly access is a one-time purchase, valid until {date}.\n\nStopping delivery is not refunded, and your access remains — you can re-enable it from the Monthly page anytime to keep receiving reports until it expires.\n\nStop monthly delivery?' },
     'acc.cancelConfirm':{ 'zh-TW': '確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n你隨時可以回到流月頁面重新開通。', 'zh-CN': '确定要取消月报发送吗？取消后将不再收到每月流月报告。\n\n你随时可以回到流月页面重新开通。', 'en': "Stop monthly delivery? You'll no longer receive the monthly report.\n\nYou can re-enable it from the Monthly page anytime." },
@@ -214,35 +208,17 @@
   .nm-msg.err { color: var(--t-ji); }
   .nm-hint { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-light); line-height: 1.6; letter-spacing: 0.02em; }
 
-  /* ── 月報設定卡 ── */
+  /* ── 月報寄送設定卡（月報統一每月 1 號）── */
   .rd-current { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .rd-current-day { font-family: var(--font-serif-zh); font-size: 18px; color: var(--ink-darkest); font-weight: 500; letter-spacing: 0.04em; }
-  .rd-pending-note { font-family: var(--font-serif-zh); font-size: 13px; color: var(--gold); letter-spacing: 0.03em; }
+  .rd-current-day { font-family: var(--font-serif-zh); font-size: 16px; color: var(--ink-darkest); font-weight: 500; letter-spacing: 0.04em; }
+  .rd-current-day.off { color: var(--ink-light); font-weight: 400; }
+  /* 「更改」連結樣式（顯示名稱卡共用）*/
   .rd-edit-link {
     font-family: var(--font-serif-zh); font-size: 13px; letter-spacing: 0.06em; color: var(--accent-deep);
     cursor: pointer; border-bottom: 1px solid var(--accent-soft); transition: color 0.2s;
   }
   .rd-edit-link:hover { color: #1d4448; }
-  .rd-edit-box { display: none; margin-top: 14px; }
-  .rd-edit-box.show { display: block; }
-  .rd-edit-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .rd-edit-row .rd-pre { font-family: var(--font-serif-zh); font-size: 14px; color: var(--ink-mid); letter-spacing: 0.03em; }
-  .rd-select {
-    font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-darkest);
-    padding: 9px 13px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
-    letter-spacing: 0.04em; cursor: pointer; min-width: 90px;
-  }
-  .rd-select:focus { outline: none; border-color: var(--accent-soft); }
-  .rd-save-btn {
-    font-family: var(--font-serif-zh); font-size: 14px; letter-spacing: 0.06em;
-    color: var(--bg-card); background: var(--accent-deep); padding: 9px 20px; border-radius: 3px;
-    cursor: pointer; border: none; transition: background 0.2s;
-  }
-  .rd-save-btn:hover:not(:disabled) { background: #1d4448; }
-  .rd-save-btn:disabled { opacity: 0.5; cursor: default; }
-  .rd-saved-msg { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--t-lu); letter-spacing: 0.03em; display: none; }
-  .rd-saved-msg.show { display: block; }
-  .rd-utc-hint { margin-top: 12px; font-family: var(--font-serif-zh); font-size: 12px; color: var(--ink-light); line-height: 1.6; letter-spacing: 0.02em; }
+  a.rd-edit-link { text-decoration: none; }
 
   /* 取消月報 */
   .rd-cancel-row { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule-soft-2); }
@@ -339,32 +315,20 @@
         </div>
       </div>
 
-      <!-- 月報設定(僅已開通收報日者顯示) -->
-      <div class="acc-card" id="acc-report-day-card" style="display:none;">
+      <!-- 月報寄送設定（月報統一每月 1 號；開關 = user_profiles.monthly_enabled）-->
+      <div class="acc-card" id="acc-delivery-card" style="display:none;">
         <div class="acc-card-label" data-i18n="acc.lblDelivery">月報寄送設定</div>
         <div class="acc-row" style="border-bottom:none;">
-          <span class="acc-row-key" data-i18n="acc.kReportDay">每月收報日</span>
+          <span class="acc-row-key" data-i18n="acc.kDelivery">每月流月</span>
           <span class="acc-row-val">
             <span class="rd-current">
-              <span class="rd-current-day" id="rd-current-day">—</span>
-              <span class="rd-edit-link" id="rd-edit-link" data-i18n="acc.change">更改</span>
+              <span class="rd-current-day" id="deliv-status">—</span>
+              <a class="rd-edit-link" id="deliv-enable-link" href="monthly.html" style="display:none;" data-i18n="acc.delivEnable">前往流月頁開啟</a>
             </span>
           </span>
         </div>
-        <div id="rd-pending-row" class="rd-pending-note" style="display:none; padding:0 0 12px;"></div>
 
-        <div class="rd-edit-box" id="rd-edit-box">
-          <div class="rd-edit-row">
-            <span class="rd-pre" data-i18n="acc.changeTo">改為每月</span>
-            <select id="rd-select" class="rd-select"></select>
-            <span class="rd-pre" data-i18n="acc.dayUnit">號</span>
-            <button class="rd-save-btn" id="rd-save-btn" data-i18n="acc.save">儲存</button>
-          </div>
-          <div class="rd-saved-msg" id="rd-saved-msg" data-i18n="acc.savedMsg">已更新，將於下個月生效。</div>
-          <div class="rd-utc-hint" data-i18n="acc.utcHint">日期以世界標準時間（UTC）計算。變更會套用到下一期，本期維持原訂日期。</div>
-        </div>
-
-        <div class="rd-cancel-row">
+        <div class="rd-cancel-row" id="deliv-cancel-row" style="display:none;">
           <span class="rd-cancel-link" id="rd-cancel-link" data-i18n="acc.cancelDelivery">取消月報寄送</span>
           <div class="rd-cancel-msg" id="rd-cancel-msg"></div>
         </div>
@@ -410,7 +374,6 @@
     sessionId: undefined,    // undefined=未載入, null=尚未生成, string=有
     billing: undefined,      // undefined=未載入, null/object
     subscribedLive: false,   // SoT #3 monthly_subscribed_live() 結果；預設 false = fail-closed
-    pendingDay: undefined,   // 本 session 剛存的 pending(覆蓋 billing)
     deliveryCanceled: false, // 本 session 剛取消月報
   };
 
@@ -455,7 +418,7 @@
 
     if (S.sessionId !== undefined) set('acc-session', S.sessionId || F.t('acc.notGenerated'));
 
-    if (S.billing !== undefined) { renderPlanStatus(S.billing); renderReportDayDisplay(); }
+    if (S.billing !== undefined) { renderPlanStatus(S.billing); renderDelivery(); }
   }
 
   function renderPlanStatus(p) {
@@ -495,19 +458,23 @@
       : badge('on', F.t('acc.subYes'));
   }
 
-  function renderReportDayDisplay() {
+  // 月報寄送設定：開關 = monthly_enabled。
+  //   開啟 → 只能從流月頁（RPC monthly_generate_request 與閘門同交易寫入）或付款；本頁只提供連結。
+  //   取消 → 本頁直接寫 monthly_enabled = false（RLS update_own，只能改自己的列）。
+  function renderDelivery() {
     const p = S.billing;
-    const card = document.getElementById('acc-report-day-card');
+    const card = document.getElementById('acc-delivery-card');
     if (!card) return;
-    if (!p || p.preferred_report_day == null) { card.style.display = 'none'; return; }
+    if (!p) { card.style.display = 'none'; return; }
     card.style.display = 'block';
-    const curEl = document.getElementById('rd-current-day');
-    const pendRow = document.getElementById('rd-pending-row');
-    if (S.deliveryCanceled) { curEl.textContent = F.t('acc.canceled'); pendRow.style.display = 'none'; return; }
-    curEl.textContent = F.t('acc.dayUtc').replace('{d}', p.preferred_report_day);
-    const pend = (S.pendingDay !== undefined) ? S.pendingDay : p.preferred_report_day_pending;
-    if (pend != null) { pendRow.style.display = 'block'; pendRow.textContent = F.t('acc.pendingNote').replace('{d}', pend); }
-    else pendRow.style.display = 'none';
+    const on = (p.monthly_enabled === true) && !S.deliveryCanceled;
+    const st = document.getElementById('deliv-status');
+    st.textContent = F.t(on ? 'acc.delivOn' : 'acc.delivOff');
+    st.classList.toggle('off', !on);
+    document.getElementById('deliv-enable-link').style.display = on ? 'none' : 'inline';
+    // 取消區塊：開啟中才顯示；剛取消時保留，讓「已取消」訊息留在畫面上
+    document.getElementById('deliv-cancel-row').style.display = (on || S.deliveryCanceled) ? 'block' : 'none';
+    document.getElementById('rd-cancel-link').style.display = on ? 'inline' : 'none';
   }
 
   // 語言切換 → 重繪只讀顯示 + 標題(靜態 data-i18n 由 header 切換的 applyI18n 處理)
@@ -582,31 +549,9 @@
     });
   }
 
-  function bindReportDay(userId) {
+  function bindDelivery(userId) {
     const p = S.billing;
-    if (!p || p.preferred_report_day == null) return;
-    const sel = document.getElementById('rd-select');
-    sel.innerHTML = '';
-    for (let d = 1; d <= 15; d++) {
-      const o = document.createElement('option');
-      o.value = String(d); o.textContent = d;
-      if (d === (p.preferred_report_day_pending != null ? p.preferred_report_day_pending : p.preferred_report_day)) o.selected = true;
-      sel.appendChild(o);
-    }
-    document.getElementById('rd-edit-link').addEventListener('click', () => document.getElementById('rd-edit-box').classList.toggle('show'));
-
-    const saveBtn = document.getElementById('rd-save-btn');
-    saveBtn.addEventListener('click', async () => {
-      const newDay = Number(sel.value);
-      if (!newDay || newDay < 1 || newDay > 15) return;
-      saveBtn.disabled = true;
-      const { error } = await supabase.from('user_profiles').update({ preferred_report_day_pending: newDay }).eq('id', userId);
-      saveBtn.disabled = false;
-      const savedMsg = document.getElementById('rd-saved-msg');
-      if (error) { savedMsg.textContent = F.t('acc.saveFail').replace('{msg}', error.message); savedMsg.style.color = 'var(--t-ji)'; savedMsg.classList.add('show'); return; }
-      savedMsg.textContent = F.t('acc.savedMsg'); savedMsg.style.color = 'var(--t-lu)'; savedMsg.classList.add('show');
-      S.pendingDay = newDay; renderReportDayDisplay();
-    });
+    if (!p) return;
 
     const cancelLink = document.getElementById('rd-cancel-link');
     const cancelMsg = document.getElementById('rd-cancel-msg');
@@ -624,13 +569,11 @@
         : F.t('acc.cancelConfirm');
       if (!confirm(confirmMsg)) return;
       cancelLink.style.pointerEvents = 'none';
-      const { error } = await supabase.from('user_profiles').update({ preferred_report_day: null, preferred_report_day_pending: null }).eq('id', userId);
+      const { error } = await supabase.from('user_profiles').update({ monthly_enabled: false }).eq('id', userId);
       if (error) { cancelLink.style.pointerEvents = 'auto'; cancelMsg.className = 'rd-cancel-msg show err'; cancelMsg.textContent = F.t('acc.cancelFail').replace('{msg}', error.message); return; }
       cancelMsg.className = 'rd-cancel-msg show ok'; cancelMsg.textContent = F.t('acc.cancelDone');
       S.deliveryCanceled = true;
-      document.getElementById('rd-edit-link').style.display = 'none';
-      document.getElementById('rd-edit-box').classList.remove('show');
-      renderReportDayDisplay();
+      renderDelivery();
     });
   }
 
@@ -702,7 +645,7 @@
     //   訂閱判定另走 SoT #3 RPC；用 allSettled 讓兩者各自獨立 fail-closed。
     const [billingRes, liveRes] = await Promise.allSettled([
       supabase.from('user_profiles')
-        .select('sihua_unlocked, subscription_status, current_period_end, monthly_access_expires_at, stripe_customer_id, preferred_report_day, preferred_report_day_pending')
+        .select('sihua_unlocked, subscription_status, current_period_end, monthly_access_expires_at, stripe_customer_id, monthly_enabled')
         .eq('id', S.userId).maybeSingle(),
       supabase.rpc('monthly_subscribed_live', { p_user_id: S.userId }),
     ]);
@@ -721,7 +664,7 @@
       document.getElementById('acc-portal').addEventListener('click', openPortal);
     }
     bindDisplayName(S.userId);
-    bindReportDay(S.userId);
+    bindDelivery(S.userId);
     document.getElementById('acc-reset').addEventListener('click', () => sendReset(S.email));
 
     document.getElementById('acc-loading').style.display = 'none';
