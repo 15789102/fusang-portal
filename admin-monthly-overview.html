@@ -77,8 +77,6 @@
   .pill.free{background:#EEF0F2;color:var(--muted);}
   .sub-note{font-size:10.5px;color:var(--faint);margin-top:3px;font-feature-settings:"tnum" 1;}
 
-  .c-day{text-align:center;font-feature-settings:"tnum" 1;white-space:nowrap;}
-  .c-day .pend{display:block;font-size:10.5px;color:var(--wait);margin-top:2px;}
 
   /* 月格 */
   .cell{
@@ -236,9 +234,9 @@
       if (c.state === 'upcoming')
         return (cellOrd(c) > curOrd)
           ? { k:'info', t:'未來月', d:'此月晚於當期 target，尚未輪到。它出現在矩陣中，是因為（任一帳號）已提前解鎖了同月或更遠的月份，使總覽的未來上界被拉長。此帳號本身無需處理。' }
-          : { k:'info', t:'未到期', d:'投放日尚未到，屬正常待投狀態。' };
+          : { k:'info', t:'未到期', d:'尚未到投放日（每月 1 號 UTC），屬正常待投狀態。' };
       if (c.state === 'today')
-        return { k:'info', t:'今日待投', d:'今日輪到此帳號，請至「月報投放」頁執行投放。' };
+        return { k:'info', t:'今日待投', d:'今天是 1 號，排程會於 UTC 11:00 起分批投放；若已過投放時段仍為此狀態，可至「月報投放」頁手動補投。' };
       if (c.state === 'ok')
         return { k:'ok', t:'完成', d:`materials compiled、report done。素材 ${mat} 筆、報告 ${rep} 筆。無需處理。` };
       if (c.state === 'generating')
@@ -268,7 +266,7 @@
 
     function openDiag(row, c){
       $('dgEmail').textContent = row.email;
-      $('dgPeriod').textContent = `${c.y}/${String(c.m).padStart(2,'0')} · 投放日 ${row.preferred_report_day ?? '—'} 日`;
+      $('dgPeriod').textContent = `${c.y}/${String(c.m).padStart(2,'0')} · 投放日 每月 1 號（UTC）`;
       const brk = (s, on) => on ? `<span class="brk">${s}　← 斷點</span>` : s;
       const noJob = !c.materials_status;
       $('dgTbl').innerHTML = `
@@ -297,11 +295,11 @@
       const s = data.summary;
       $('sumRow').innerHTML = `
         <div class="sum-pill"><span class="sum-num">${s.total}</span><span class="sum-label">母體（開通 ∪ 付費）</span></div>
-        <div class="sum-pill"><span class="sum-num">${s.opened}</span><span class="sum-label">月報開通中</span></div>
+        <div class="sum-pill"><span class="sum-num">${s.opened}</span><span class="sum-label">月報已開啟</span></div>
         <div class="sum-pill"><span class="sum-num">${s.paid}</span><span class="sum-label">付費中</span></div>
         <div class="sum-pill${s.rows_with_alert ? ' alert' : ''}"><span class="sum-num">${s.rows_with_alert}</span><span class="sum-label">有異常月份</span></div>
         <div class="sum-pill${s.drift ? ' alert' : ''}"><span class="sum-num">${s.drift}</span><span class="sum-label">訂閱快取 drift</span></div>
-        <div class="sum-pill${s.paid_not_opened ? ' warn' : ''}"><span class="sum-num">${s.paid_not_opened}</span><span class="sum-label">已付費未開通</span></div>`;
+        <div class="sum-pill${s.paid_not_opened ? ' warn' : ''}"><span class="sum-num">${s.paid_not_opened}</span><span class="sum-label">已付費未開啟</span></div>`;
 
       curOrd = data.target.year * 12 + data.target.month;
       let futFirst = -1;
@@ -310,7 +308,7 @@
       });
 
       $('mxHead').innerHTML =
-        `<th>帳號</th><th>月報</th><th>付費</th><th style="text-align:center">投放日</th>` +
+        `<th>帳號</th><th>月報</th><th>付費</th>` +
         data.periods.map((p, i) => {
           const cur = p.y === data.target.year && p.m === data.target.month;
           const fut = (p.y * 12 + p.m) > curOrd;
@@ -326,10 +324,10 @@
 
       $('mxBody').innerHTML = rows.map((r, ri) => {
         const flags = [];
-        if (r.zero_job)        flags.push('<span class="flag err">⚠ 開通中但零 job</span>');
+        if (r.zero_job)        flags.push('<span class="flag err">⚠ 已開啟但零 job</span>');
         if (r.no_chart)        flags.push('<span class="flag err">⚠ 無盤</span>');
         if (r.drift)           flags.push('<span class="flag err">⚠ 訂閱快取 drift</span>');
-        if (r.paid_not_opened) flags.push('<span class="flag warn">已付費未開通</span>');
+        if (r.paid_not_opened) flags.push('<span class="flag warn">已付費未開啟</span>');
 
         const payPill = { sub:'<span class="pill sub">月訂閱</span>',
                           pack:'<span class="pill pack">年方案</span>',
@@ -338,10 +336,6 @@
           ? `<div class="sub-note">到期 ${fmtDate(r.monthly_access_expires_at)}</div>`
           : (r.pay_status === 'sub' && r.current_period_end
               ? `<div class="sub-note">週期至 ${fmtDate(r.current_period_end)}</div>` : '');
-
-        const pend = (r.preferred_report_day_pending != null &&
-                      r.preferred_report_day_pending !== r.preferred_report_day)
-          ? `<span class="pend">→ ${r.preferred_report_day_pending} 日</span>` : '';
 
         const cells = r.cells.map((c, ci) =>
           `<td class="mcell${cellOrd(c) > curOrd ? ' fut' : ''}${ci === futFirst ? ' fut-first' : ''}"><div class="cell ${c.state}" data-r="${ri}" data-c="${ci}"
@@ -354,9 +348,8 @@
             <div class="r-email">${esc(r.email)}${isTest(r.email) ? '<span class="tag">測試</span>' : ''}</div>
             ${flags.length ? `<div class="r-flags">${flags.join('')}</div>` : ''}
           </td>
-          <td>${r.opened ? '<span class="pill on">開通中</span>' : '<span class="pill off">未開通</span>'}</td>
+          <td>${r.opened ? '<span class="pill on">已開啟</span>' : '<span class="pill off">未開啟</span>'}</td>
           <td>${payPill}${payNote}</td>
-          <td class="c-day">${r.preferred_report_day ?? '—'}${pend}</td>
           ${cells}
         </tr>`;
       }).join('');
