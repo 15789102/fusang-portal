@@ -64,7 +64,6 @@
   .r-email{font-weight:600;color:var(--ink);}
   .r-email .test-tag{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);background:#EEF0F2;border-radius:4px;padding:2px 6px;margin-left:7px;}
   .r-day{font-feature-settings:"tnum" 1;color:var(--ink);}
-  .r-pending{font-size:11.5px;color:var(--wait);margin-top:2px;}
 
   /* 狀態旗標 badge */
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap;}
@@ -138,19 +137,19 @@
   <main class="fa-wrap">
     <div class="fa-page-head">
       <h1 class="fa-page-title">月報投放</h1>
-      <p class="fa-page-sub">手動控制台 · 今日投放名單</p>
+      <p class="fa-page-sub">手動控制台 · 每月 1 號投放名單</p>
     </div>
 
     <!-- 手動模式橫幅 -->
     <div class="mode-banner">
       <span class="mode-dot"></span>
-      <span>目前為 <b>手動投放模式</b> — scheduler 自動排程已停用,每日名單由 Admin 進站確認後手動投放。</span>
+      <span>自動排程：每月 1 號 UTC 11:00 起分批投放（pg_cron → monthly-scheduled-dispatch）。本頁為手動補投用，名單為所有已開啟月報者。</span>
     </div>
 
     <!-- 載入 / 錯誤態 -->
     <div id="bootLoad" class="fa-state">
       <div class="fa-spinner"></div>
-      <div class="fa-state-title">載入今日名單…</div>
+      <div class="fa-state-title">載入投放名單…</div>
     </div>
     <div id="bootErr" class="fa-state is-error fa-hidden">
       <div class="fa-state-title">載入失敗</div>
@@ -180,14 +179,14 @@
             <tr>
               <th class="col-chk"><input type="checkbox" id="chkHead" title="全選/全不選" /></th>
               <th>帳號</th>
-              <th>投放日</th>
+              <th>月報開關</th>
               <th>當期 job</th>
               <th class="col-fire">投放結果</th>
             </tr>
           </thead>
           <tbody id="rosterBody"></tbody>
         </table>
-        <div id="emptyHint" class="empty-hint fa-hidden">今日（UTC）無排定投放的帳號。</div>
+        <div id="emptyHint" class="empty-hint fa-hidden">目前沒有已開啟月報的帳號。</div>
       </div>
 
       <div class="action-bar">
@@ -276,7 +275,7 @@
       const alerts = visible.filter(r => r.status_flag === 'alert').length;
       const todo   = visible.filter(r => r.status_flag === 'none').length;
       $('sumRow').innerHTML = `
-        <div class="sum-pill"><span class="sum-num">${total}</span><span class="sum-label">今日名單</span></div>
+        <div class="sum-pill"><span class="sum-num">${total}</span><span class="sum-label">投放名單</span></div>
         <div class="sum-pill${alerts ? ' alert' : ''}"><span class="sum-num">${alerts}</span><span class="sum-label">⚠ 異常需查</span></div>
         <div class="sum-pill"><span class="sum-num">${todo}</span><span class="sum-label">待投（無 job）</span></div>`;
     }
@@ -299,17 +298,13 @@
       $('rosterBody').innerHTML = visible.map(r => {
         const alertCls = r.status_flag === 'alert' ? ' is-alert' : '';
         const testTag  = isTest(r.email) ? `<span class="test-tag">測試</span>` : '';
-        const pend = (r.preferred_report_day_pending != null &&
-                      r.preferred_report_day_pending !== r.preferred_report_day)
-          ? `<div class="r-pending">→ 待改為 ${r.preferred_report_day_pending} 日（觸發時結算）</div>` : '';
         const emailAttr = esc(r.email);
         return `<tr data-email="${emailAttr}"${alertCls ? ' class="'+alertCls.trim()+'"' : ''}>
           <td class="col-chk"><input type="checkbox" class="row-chk" data-email="${emailAttr}" checked /></td>
           <td>
             <div class="r-email">${esc(r.email)}${testTag}</div>
-            ${pend}
           </td>
-          <td class="r-day">${r.preferred_report_day ?? '—'} 日</td>
+          <td class="r-day">已開啟</td>
           <td>${statusBadge(r)}</td>
           <td class="col-fire"><div class="fire-cell" data-fire="${emailAttr}"></div></td>
         </tr>`;
