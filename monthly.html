@@ -107,7 +107,7 @@
       "mo.paywallItem2": {"zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving."},
       "mo.paywallItem3": {"zh-TW": "<b>本月專屬建議</b>", "zh-CN": "<b>本月专属建议</b>", "en": "<b>Guidance for the month</b>"},
       "mo.paywallCta": {"zh-TW": "查看方案", "zh-CN": "查看方案", "en": "View plans"},
-      "mo.paywallNote": {"zh-TW": "已訂閱？回此頁重新整理即可顯示", "zh-CN": "已订阅？回此页刷新即可显示", "en": "Already subscribed? Refresh this page to display it."},
+      "mo.paywallNote": {"zh-TW": "已解鎖四化？回此頁重新整理即可顯示", "zh-CN": "已解锁四化？回此页刷新即可显示", "en": "Already unlocked? Refresh this page to display it."},
       "mo.secLock": {"zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view"},
       "mo.noContent": {"zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)"},
       "mo.ctxSelectPlaceholder": {"zh-TW": "— 選擇宮位 —", "zh-CN": "— 选择宫位 —", "en": "— Select a palace —"},
@@ -2459,7 +2459,8 @@
   }
 
   function ulRenderEntries() {
-    const show = !!(ulQuota && ulQuota.is_annual);
+    // 2026-09 四化統一買斷：選月份（提前解鎖未來月份）前端明確隱藏，不依任何判定欄位。
+    const show = false;
     [['ul-entry-hub', 'view-hub'], ['ul-entry-intro', 'view-intro']].forEach(([id, from]) => {
       const host = document.getElementById(id);
       if (!host) return;
@@ -2999,14 +3000,15 @@
         monthlyEnabled = !!(prof && prof.monthly_enabled === true);
       } catch (_) { monthlyEnabled = false; }
 
-      // 付費門禁判定一律走 SoT #3 monthly_subscribed_live()（後端即時判定）。
-      // 不可改回讀 user_profiles.monthly_subscribed 快取欄：該欄無任何機制更新，
-      // 年方案到期後永停在 true → UI 顯示解鎖但 gated view 回傳 NULL 的空白破圖。
+      // 2026-09 四化統一買斷：流月四化門禁改讀 sihua_unlocked（與 chart/decade/annual 同源）。
+      // 必須與 monthly_palace_reports_gated 的 gate 條件一致（該 view 亦讀 sihua_unlocked）。
+      // ⚠ 不再呼叫 monthly_subscribed_live()：該函式仍 gate 議題 slot 2/3 與選月份，與四化脫鉤。
       // 失敗一律 fail-closed（視為未解鎖）。
       try {
-        const { data: live, error: liveErr } = await supabase
-          .rpc('monthly_subscribed_live', { p_user_id: session.user.id });
-        isUnlocked = (!liveErr && live === true);
+        const { data: sp, error: spErr } = await supabase
+          .from('user_profiles').select('sihua_unlocked')
+          .eq('id', session.user.id).maybeSingle();
+        isUnlocked = (!spErr && !!sp && sp.sihua_unlocked === true);
       } catch (_) { isUnlocked = false; }
 
       await ctxInit();
@@ -3071,7 +3073,10 @@
   // 後端配額由 monthly_palace_context 的 mpc_insert_own / mpc_update_own policy
   //（slot_no BETWEEN 1 AND 3 且 slot_no=1 OR monthly_subscribed_live()）強制，此處僅為顯示。
   function ctxLoadTier() {
-    ctxSlotCount = isUnlocked ? 3 : 1;
+    // 2026-09 四化統一買斷：3 議題追蹤前端明確隱藏，固定 1 格（免費格）。
+    // ⚠ 刻意【不】依 isUnlocked —— isUnlocked 已改讀 sihua_unlocked，
+    //   沿用會讓買 $4.99 的人看到 3 格（DB 的 RLS 仍擋 slot 2/3 → 存檔失敗）。
+    ctxSlotCount = 1;
   }
 
   async function ctxLoadData() {
@@ -3141,7 +3146,8 @@
       wrap.appendChild(slot);
     }
 
-    if (upsell) upsell.style.display = (ctxSlotCount < 3) ? 'block' : 'none';
+    // 2026-09：3 議題追蹤已隱藏 → 不再顯示「付費開放 3 個」提示。
+    if (upsell) upsell.style.display = 'none';
 
     ctxBindSlotEvents();
   }
