@@ -25,7 +25,7 @@ import { supabase, requireAuth, startCheckout } from './components.js';
 export { supabase, requireAuth, startCheckout };
 
 /* ── 常數 ── */
-export const PRICE_LABEL = 'US$68';
+export const PRICE_LABEL = 'US$49.90';
 export const FOLLOWUP_DAYS = 7;
 export const AVATAR = 'https://fusang-vision.com/cdn/shop/files/ruei-syuan.jpg?v=1756331083&width=1500';
 export const SIGNER = 'RS Chen';
