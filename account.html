@@ -30,8 +30,7 @@
     'acc.kBdate':     { 'zh-TW': '出生日期', 'zh-CN': '出生日期', 'en': 'Date of Birth' },
     'acc.kBtime':     { 'zh-TW': '出生時間', 'zh-CN': '出生时间', 'en': 'Time of Birth' },
     'acc.kBplace':    { 'zh-TW': '出生地', 'zh-CN': '出生地', 'en': 'Birthplace' },
-    'acc.kSihua':     { 'zh-TW': '本命四化解鎖', 'zh-CN': '本命四化解锁', 'en': 'Full Reading' },
-    'acc.kMonthly':   { 'zh-TW': '付費月報訂閱', 'zh-CN': '付费月报订阅', 'en': 'Monthly Subscription' },
+    'acc.kSihua':     { 'zh-TW': '四化解鎖（全部四層）', 'zh-CN': '四化解锁（全部四层）', 'en': 'Full Reading (all four layers)' },
     'acc.kDelivery': { 'zh-TW': '每月流月', 'zh-CN': '每月流月', 'en': 'Monthly reading' },
     'acc.delivOn':    { 'zh-TW': '已開啟（每月 1 號寄送，UTC）', 'zh-CN': '已开启（每月 1 号发送，UTC）', 'en': 'On (sent on the 1st of each month, UTC)' },
     'acc.delivOff':   { 'zh-TW': '未開啟', 'zh-CN': '未开启', 'en': 'Off' },
@@ -51,10 +50,6 @@
     'acc.placeSep':   { 'zh-TW': '，', 'zh-CN': '，', 'en': ', ' },
     'acc.sihuaOn':    { 'zh-TW': '已開通', 'zh-CN': '已开通', 'en': 'Unlocked' },
     'acc.sihuaOff':   { 'zh-TW': '未開通', 'zh-CN': '未开通', 'en': 'Not unlocked' },
-    'acc.subNone':    { 'zh-TW': '尚未訂閱', 'zh-CN': '尚未订阅', 'en': 'Not subscribed' },
-    'acc.subActive':  { 'zh-TW': '訂閱中（每月自動續扣）', 'zh-CN': '订阅中（每月自动续扣）', 'en': 'Active (auto-renews monthly)' },
-    'acc.subUntil':   { 'zh-TW': '有效至 {date}', 'zh-CN': '有效至 {date}', 'en': 'Valid until {date}' },
-    'acc.subYes':     { 'zh-TW': '已訂閱', 'zh-CN': '已订阅', 'en': 'Subscribed' },
     'acc.cancelBlockedSub':{ 'zh-TW': '您有進行中的付費訂閱，請先於下方「訂閱管理」取消付費訂閱後，再取消月報寄送。', 'zh-CN': '您有进行中的付费订阅，请先于下方「订阅管理」取消付费订阅后，再取消月报发送。', 'en': 'You have an active paid subscription. Please cancel it under "Subscription" below before stopping monthly delivery.' },
     'acc.cancelConfirmPrepaid':{ 'zh-TW': '你的流月權限為買斷方案，有效至 {date}。\n\n取消寄送不會退費，你的權限仍然保留——隨時可回到流月頁面重新開通、繼續收取報告，直到期限為止。\n\n確定要暫停月報寄送嗎？', 'zh-CN': '你的流月权限为买断方案，有效至 {date}。\n\n取消发送不会退费，你的权限仍然保留——随时可回到流月页面重新开通、继续收取报告，直到期限为止。\n\n确定要暂停月报发送吗？', 'en': 'Your monthly access is a one-time purchase, valid until {date}.\n\nStopping delivery is not refunded, and your access remains — you can re-enable it from the Monthly page anytime to keep receiving reports until it expires.\n\nStop monthly delivery?' },
     'acc.cancelConfirm':{ 'zh-TW': '確定要取消月報寄送嗎？取消後將不再收到每月流月報告。\n\n你隨時可以回到流月頁面重新開通。', 'zh-CN': '确定要取消月报发送吗？取消后将不再收到每月流月报告。\n\n你随时可以回到流月页面重新开通。', 'en': "Stop monthly delivery? You'll no longer receive the monthly report.\n\nYou can re-enable it from the Monthly page anytime." },
@@ -306,13 +301,10 @@
       <div class="acc-card">
         <div class="acc-card-label" data-i18n="acc.lblPlan">購買狀況</div>
         <div class="acc-row">
-          <span class="acc-row-key" data-i18n="acc.kSihua">本命四化解鎖</span>
+          <span class="acc-row-key" data-i18n="acc.kSihua">四化解鎖（全部四層）</span>
           <span class="acc-row-val" id="acc-sihua-status">—</span>
         </div>
-        <div class="acc-row">
-          <span class="acc-row-key" data-i18n="acc.kMonthly">付費月報訂閱</span>
-          <span class="acc-row-val" id="acc-monthly-status">—</span>
-        </div>
+        <!-- 2026-09：月訂閱／年方案停售，「付費月報訂閱」列移除（流月四化併入四化解鎖）-->
       </div>
 
       <!-- 月報寄送設定（月報統一每月 1 號；開關 = user_profiles.monthly_enabled）-->
@@ -335,7 +327,8 @@
       </div>
 
 
-      <!-- 訂閱管理(僅付費者顯示) -->
+      <!-- 訂閱管理：2026-09 起僅「仍有進行中舊月訂閱」者顯示（供其自行管理／取消）；
+           四化解鎖為一次性付款，無需管理 → 其餘用戶不顯示。 -->
       <div class="acc-card" id="acc-billing-card" style="display:none;">
         <div class="acc-card-label" data-i18n="acc.lblSub">訂閱管理</div>
         <div class="acc-sec-desc" data-i18n="acc.subDesc">
@@ -373,7 +366,6 @@
     birth: undefined,        // undefined=未載入, null=無資料, object=有
     sessionId: undefined,    // undefined=未載入, null=尚未生成, string=有
     billing: undefined,      // undefined=未載入, null/object
-    subscribedLive: false,   // SoT #3 monthly_subscribed_live() 結果；預設 false = fail-closed
     deliveryCanceled: false, // 本 session 剛取消月報
   };
 
@@ -423,39 +415,12 @@
 
   function renderPlanStatus(p) {
     const sihuaEl = document.getElementById('acc-sihua-status');
-    const monthlyEl = document.getElementById('acc-monthly-status');
-    if (!sihuaEl || !monthlyEl) return;
+    if (!sihuaEl) return;
     const badge = (cls, txt) => `<span class="acc-badge ${cls}"><span class="dot"></span>${txt}</span>`;
 
-    // 四化為一次性買斷、無到期概念 → 讀 user_profiles 欄位即為終值
+    // 四化為一次性買斷、無到期概念 → 讀 user_profiles 欄位即為終值。
+    // 2026-09 四化統一買斷：sihua_unlocked 解鎖全部四層（含流月）；月訂閱／年方案停售，不再顯示月報訂閱徽章。
     sihuaEl.innerHTML = (p && p.sihua_unlocked === true) ? badge('on', F.t('acc.sihuaOn')) : badge('off', F.t('acc.sihuaOff'));
-
-    // ── 月報徽章 ──
-    // 【有無權】一律以 SoT #3 monthly_subscribed_live() 為準（見主流程 RPC）。
-    //   不可改回讀 user_profiles.monthly_subscribed 快取欄：該欄只由 Stripe webhook
-    //   觸發的 recalc 寫入，權利到期本身不產生事件 → 年方案到期後永停在 true。
-    const subscribed = S.subscribedLive === true;
-    if (!subscribed) { monthlyEl.innerHTML = badge('off', F.t('acc.subNone')); return; }
-
-    // 【哪種權】三態展開。此分支條件必須與 monthly_subscribed_live() 的月訂閱分支
-    //   逐字保持一致，亦與 admin_dashboard_overview.subscription_tier 的 'monthly'
-    //   分支、admin_monthly_overview.pay_status 的 'sub' 分支一致（月訂閱優先）。
-    //   SQL: coalesce(status in ('active','trialing'), false)
-    //        and coalesce(current_period_end is null or current_period_end > now(), true)
-    const status = p && p.subscription_status;
-    const cpe = p && p.current_period_end;
-    const monthlyActive =
-      (status === 'active' || status === 'trialing') &&
-      (cpe == null || new Date(cpe).getTime() > Date.now());
-    if (monthlyActive) { monthlyEl.innerHTML = badge('on', F.t('acc.subActive')); return; }
-
-    // 走到這裡：SoT #3 為 true 但月訂閱分支不成立 ⇒ 必為年方案有效
-    //   ⇒ monthly_access_expires_at 理論上必為未來時間。
-    //   仍保留 subYes 作為防禦性 fallback（欄位意外缺失時不顯示壞掉的日期）。
-    const expires = p && p.monthly_access_expires_at;
-    monthlyEl.innerHTML = expires
-      ? badge('on', F.t('acc.subUntil').replace('{date}', fmtDate(expires)))
-      : badge('on', F.t('acc.subYes'));
   }
 
   // 月報寄送設定：開關 = monthly_enabled。
@@ -639,27 +604,25 @@
       S.sessionId = job?.chart_session_id || null;
     } catch (_) { S.sessionId = null; }
 
-    // billing 欄位 + 月報訂閱即時判定
-    //   select 移除 monthly_subscribed（快取欄，已不作顯示依據）、補 current_period_end
-    //   （renderPlanStatus 的月訂閱分支需要，以與後端判定逐字同源）。
-    //   訂閱判定另走 SoT #3 RPC；用 allSettled 讓兩者各自獨立 fail-closed。
-    const [billingRes, liveRes] = await Promise.allSettled([
+    // billing 欄位
+    //   2026-09：不再查 monthly_subscribed_live()（月訂閱／年方案停售，購買狀況只顯示四化解鎖）。
+    //   subscription_status / monthly_access_expires_at 仍讀：取消寄送的舊訂閱防呆、訂閱管理卡顯示條件需要。
+    const [billingRes] = await Promise.allSettled([
       supabase.from('user_profiles')
         .select('sihua_unlocked, subscription_status, current_period_end, monthly_access_expires_at, stripe_customer_id, monthly_enabled')
         .eq('id', S.userId).maybeSingle(),
-      supabase.rpc('monthly_subscribed_live', { p_user_id: S.userId }),
     ]);
     // supabase-js v2 不 throw DB 錯誤，回 { data, error } → 必須顯式檢查 error
     S.billing = (billingRes.status === 'fulfilled' && !billingRes.value.error)
       ? (billingRes.value.data || null) : null;
-    // 無條件覆寫（不依賴初值），確保任何失敗路徑都落在 false
-    S.subscribedLive =
-      (liveRes.status === 'fulfilled' && !liveRes.value.error && liveRes.value.data === true);
 
     renderStatic();
 
     // 綁定(只一次)
-    if (S.billing && S.billing.stripe_customer_id) {
+    // 訂閱管理卡：僅仍有進行中舊月訂閱者顯示（四化解鎖為一次性付款，無需管理）
+    const legacySub = S.billing && S.billing.stripe_customer_id &&
+      (S.billing.subscription_status === 'active' || S.billing.subscription_status === 'trialing');
+    if (legacySub) {
       document.getElementById('acc-billing-card').style.display = 'block';
       document.getElementById('acc-portal').addEventListener('click', openPortal);
     }
