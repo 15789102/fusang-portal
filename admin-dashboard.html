@@ -204,7 +204,7 @@
       <table>
         <thead>
           <tr>
-            <th>Email</th><th>名稱</th><th>命盤狀態</th><th>月報</th><th>報告日</th>
+            <th>Email</th><th>名稱</th><th>命盤狀態</th><th>月報</th>
             <th>訂閱層</th><th>到期</th><th>四化</th><th>最新 Job</th><th>註冊</th>
           </tr>
         </thead>
@@ -332,7 +332,6 @@
           <td class="col-name">${esc(r.display_name) || '<span class="dim">—</span>'}</td>
           <td>${chartStatusBadge(r.chart_status)}</td>
           <td>${monthly}</td>
-          <td class="num">${r.preferred_report_day ?? '<span class="dim">—</span>'}</td>
           <td>${tierBadge(r.subscription_tier)}</td>
           <td class="num dim">${fmtDate(r.access_expires_at)}</td>
           <td>${sihua}</td>
