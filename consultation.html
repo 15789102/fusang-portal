@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta charset="UTF-8">
 <script src="config.js"></script>
 <script src="i18n.js"></script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>單獨問事 - FuSang Vision</title>
+<link rel="stylesheet" href="fs-v2.css" />
 <style>
   /* ── Landing 專屬（共用樣式由 consultation-common.js 注入；顏色由 .cons-wrap 冷藍 token 覆寫）── */
 
@@ -72,10 +73,84 @@
   .lp-values { display: flex; flex-wrap: wrap; gap: 12px; }
   .lp-val { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; background: #ffffff; border: 1px solid var(--accent-pale); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-dark); }
   .lp-val svg { width: 16px; height: 16px; stroke: var(--accent-soft); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+
+  /* ════════ v2 視覺層（landing 專屬）— 限定 .fs-v2 ════════ */
+  body.consult-page.fs-v2 { background: #ffffff; }
+  .fs-v2 .lp-hero {
+    position: relative; min-height: 280px; margin: 0 0 16px; padding: 40px 32px; overflow: hidden; text-align: left;
+    background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  }
+  .fs-v2 .lp-eyebrow { margin: 0 0 8px; opacity: 1; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .lp-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 40px; line-height: 56px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .lp-sub { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-style: normal; font-size: 18px; line-height: 30px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .lp-lead { max-width: 560px; margin: 0 0 28px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; letter-spacing: 0; color: var(--v2-muted); }
+  .fs-v2 .lp-actions { justify-content: flex-start; gap: 12px; }
+  .fs-v2 .lp-actions .cons-btn { width: auto; min-width: 180px; }
+  .fs-v2 .btn-arrow { display: none; }
+  .fs-v2 .lp-note { text-align: left; margin-top: 12px; font-family: var(--v2-font-cjk); font-size: 13px; color: var(--v2-muted); }
+  .fs-v2 .lp-soon { padding: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 28px; font-weight: 600; letter-spacing: 0; color: var(--v2-blue); }
+  .fs-v2 .cons-loading[style*="padding:20px"] { padding: 0 !important; text-align: left; }
+
+  /* 區段：不再滿版色塊，改分隔線 */
+  .fs-v2 .lp-band,
+  .fs-v2 .lp-band.features,
+  .fs-v2 .lp-band.story { margin: 0; padding: 48px 0; background: transparent; border-top: 1px solid var(--v2-line); }
+  .fs-v2 .lp-band-in { max-width: none; margin: 0; padding: 0; }
+  .fs-v2 .lp-secthead { margin: 0 0 24px; text-align: left; }
+  .fs-v2 .lp-secthead .zh { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+
+  /* 服務特色：格線三格 */
+  .fs-v2 .lp-features { gap: 0; padding: 1px 0 0 1px; }
+  .fs-v2 .lp-feat { position: relative; margin: -1px 0 0 -1px; padding: 32px; background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; overflow: hidden; }
+  .fs-v2 .lp-feat::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .3; background: url('assets/v2/palace-cloud.webp') right bottom / auto 160% no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent 40%, #000); mask-image: linear-gradient(90deg, transparent 40%, #000); }
+  .fs-v2 .lp-feat > * { position: relative; z-index: 1; }
+  .fs-v2 .lp-feat-ic { width: 32px; height: 32px; margin: 0 0 20px; background: none; border-radius: 0; justify-content: flex-start; }
+  .fs-v2 .lp-feat-ic svg { width: 28px; height: 28px; stroke: var(--v2-ink); }
+  .fs-v2 .lp-feat-n { margin: 0 0 4px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
+  .fs-v2 .lp-feat-h { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .lp-feat-p { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; color: var(--v2-muted); }
+
+  /* 定價：與方案頁同一語彙 */
+  .fs-v2 .lp-pricing { position: relative; padding: 40px; text-align: left; border: 1px solid var(--v2-blue-line); overflow: hidden; }
+  .fs-v2 .lp-pricing::before { content: ''; position: absolute; inset: 0 0 0 auto; width: 55%; pointer-events: none; opacity: .4; background: url('assets/v2/palace-cloud.webp') right top / auto 150% no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%); mask-image: linear-gradient(90deg, transparent, #000 70%); }
+  .fs-v2 .lp-pricing > * { position: relative; z-index: 1; }
+  .fs-v2 .lp-pricing { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+  .fs-v2 .lp-price-list { list-style: none; margin: 0; padding: 0; }
+  .fs-v2 .lp-price-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: baseline; gap: 8px; padding: 14px 0; border-top: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; color: var(--v2-ink); }
+  .fs-v2 .lp-price-list li:last-child { border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .lp-price-list .mk { font-family: var(--v2-font-latin); font-size: 14px; font-weight: 500; color: var(--v2-blue); }
+  .lp-price-list { display: none; }
+  .fs-v2 .lp-price-list { display: block; }
+  .fs-v2 .lp-price-label { margin: 0 0 8px; opacity: 1; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; letter-spacing: 0; text-transform: none; color: var(--v2-muted); }
+  .fs-v2 .lp-price-tag { margin: 0 0 24px; font-family: var(--v2-font-latin); }
+  .fs-v2 .lp-price-tag .cur { font-size: 20px; color: var(--v2-muted); }
+  .fs-v2 .lp-price-tag .amt { font-size: 48px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+
+  /* 品牌故事 */
+  .fs-v2 .lp-story { gap: 48px; }
+  .fs-v2 .lp-story-media { border-radius: 0; box-shadow: none; }
+  .fs-v2 .lp-story-wm { display: none; }
+  .fs-v2 .lp-story-eyebrow { margin: 0 0 8px; opacity: 1; font-family: var(--v2-font-latin); font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
+  .fs-v2 .lp-story-h2 { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 28px; line-height: 40px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .lp-story-h3 { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 28px; color: var(--v2-muted); }
+  .fs-v2 .lp-story-founder { margin: 0 0 24px; font-family: var(--v2-font-latin); font-style: normal; font-size: 14px; color: var(--v2-faint); }
+  .fs-v2 .lp-values { gap: 8px; }
+  .fs-v2 .lp-val { padding: 6px 12px; border-radius: 0; border: 1px solid var(--v2-line); background: #ffffff; font-family: var(--v2-font-cjk); font-size: 13px; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .lp-val svg { stroke: var(--v2-blue); }
+
+  @media (max-width: 799px) {
+    .fs-v2 .lp-hero { padding: 28px 24px; min-height: 0; background-position: 60% center; }
+    .fs-v2 .lp-title { font-size: 30px; line-height: 44px; }
+    .fs-v2 .lp-actions { flex-direction: column; align-items: stretch; }
+    .fs-v2 .lp-actions .cons-btn { width: 100%; }
+    .fs-v2 .lp-band { padding: 32px 0; }
+    .fs-v2 .lp-feat, .fs-v2 .lp-pricing { padding: 24px 20px; }
+    .fs-v2 .lp-pricing { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  }
 </style>
 </head>
 
-<body>
+<body class="consult-page fs-v2">
 
 <div id="site-header"></div>
 
@@ -109,9 +184,13 @@
          且 JS 失效時維持隱藏(與全站 fail-closed 方向一致)。 -->
     <div class="lp-band pricing" id="lp-band-price" hidden>
       <div class="lp-band-in lp-pricing">
-        <div class="lp-price-label" id="price-label">Single inquiry fee</div>
-        <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">49.90</span></div>
-        <div class="lp-actions" id="lp-actions-price" style="display:none;"></div>
+        <div class="lp-price-main">
+          <div class="lp-price-label" id="price-label">Single inquiry fee</div>
+          <div class="lp-price-tag"><span class="cur">US$</span><span class="amt">49.90</span></div>
+          <div class="lp-actions" id="lp-actions-price" style="display:none;"></div>
+        </div>
+        <!-- v2：價格卡右欄（與方案頁單獨問事卡同一組三點）-->
+        <ul class="lp-price-list" id="lp-price-list"></ul>
       </div>
     </div>
 
@@ -162,7 +241,7 @@
     badge: () => pick('即將推出', '即将推出', 'Coming soon'),
     title: () => pick('單獨問事即將推出', '单独问事即将推出', 'Individual consultations are coming soon'),
     // body 保留備用(PM 決策 D7c:三 key 齊備,landing 只渲染 title,避免「即將推出」重複出現)
-    body:  () => pick('單獨問事目前尚未開放，即將推出。', '单独问事目前尚未开放，即将推出。', 'Individual consultations are not open yet — coming soon.'),
+    body:  () => pick('單獨問事目前尚未開放，即將推出。', '单独问事目前尚未开放，即将推出。', 'Individual consultations are not open yet. Coming soon.'),
   };
 
   // 定價 band:僅在開放時顯示(PM 決策 D4 已反轉 —— coming soon 期間不揭露價格)
@@ -182,17 +261,17 @@
       zh_h: '真人解盤', cn_h: '真人解盘', en_h: 'Answered by a human',
       zh_p: '由 R.S. Chen 親自解讀你的命盤，結合深厚的紫微斗數造詣與現代心理洞察，針對你的處境書面回覆。',
       cn_p: '由 R.S. Chen 亲自解读你的命盘，结合深厚的紫微斗数造诣与现代心理洞察，针对你的处境书面回复。',
-      en_p: 'R.S. Chen personally reads your chart — pairing deep Zi Wei Dou Shu craft with modern psychological insight — and replies in writing to your situation.' },
+      en_p: 'R.S. Chen personally reads your chart, pairing deep Zi Wei Dou Shu craft with modern psychological insight, and replies in writing to your situation.' },
     { n: '02', ic: ICON.write,
       zh_h: '為你個別撰寫', cn_h: '为你个别撰写', en_h: 'Written for you alone',
       zh_p: '每一則諮詢都是針對你的問題單獨準備。我們拒絕罐頭答案，每一字一句皆是基於你的能量流動所寫下。',
       cn_p: '每一则咨询都是针对你的问题单独准备。我们拒绝罐头答案，每一字一句皆是基于你的能量流动所写下。',
-      en_p: 'Every consultation is prepared for your question alone — never a template. Each line is written from how your own energies move.' },
+      en_p: 'Every consultation is prepared for your question alone, never from a template. Each line is written from how your own energies move.' },
     { n: '03', ic: ICON.ask,
       zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up',
       zh_p: '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。',
       cn_p: '收到回复后，7 天内可再针对原议题追问一次。我们陪你把想厘清的地方问清楚，不留遗憾。',
-      en_p: 'After the reply, you may ask one follow-up on the same topic within 7 days — so nothing is left unclear.' },
+      en_p: 'After the reply, you may ask one follow-up on the same topic within 7 days, so nothing is left unclear.' },
   ];
 
   // 靜態文字(可重繪：語言切換時重套)
@@ -215,11 +294,16 @@
     ).join('');
 
     document.getElementById('price-label').textContent = pick('單次問事費用', '单次问事费用', 'Single inquiry fee');
+    document.getElementById('lp-price-list').innerHTML = [
+      pick('由 R.S. Chen 親自解讀你的命盤', '由 R.S. Chen 亲自解读你的命盘', 'R.S. Chen personally reads your chart'),
+      pick('針對你的問題個別撰寫的書面回覆', '针对你的问题个别撰写的书面回复', 'A written reply prepared for your question alone'),
+      pick('收到回覆後 7 天內可追問一次', '收到回复后 7 天内可追问一次', 'One follow-up within 7 days of the reply'),
+    ].map((t, i) => `<li><span class="mk">${['I', 'II', 'III'][i]}</span><span>${t}</span></li>`).join('');
 
     document.getElementById('story-eyebrow').textContent = pick('品牌故事', '品牌故事', 'Brand Story');
     document.getElementById('story-h2').textContent      = pick('探索你的內在天賦', '探索你的内在天赋', 'Discover your innate gifts');
     document.getElementById('story-h3').textContent      = pick('將東方智慧，帶入你真正嚮往的現代生活。', '将东方智慧，带入你真正向往的现代生活。', 'Bringing Eastern wisdom into the modern life you long for.');
-    document.getElementById('story-founder').textContent = pick('創辦人的話 — R.S. Chen', '创办人的话 — R.S. Chen', 'A note from the founder — R.S. Chen');
+    document.getElementById('story-founder').textContent = pick('創辦人的話 — R.S. Chen', '创办人的话 — R.S. Chen', 'A note from the founder: R.S. Chen');
     document.getElementById('val-1').textContent = pick('自我探索', '自我探索', 'Self-exploration');
     document.getElementById('val-2').textContent = pick('勇氣', '勇气', 'Courage');
     document.getElementById('val-3').textContent = pick('清晰', '清晰', 'Clarity');
