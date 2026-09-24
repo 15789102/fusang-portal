@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <meta charset="UTF-8" />
   <script src="config.js"></script>
   <script src="i18n.js"></script>
   <script>
@@ -42,452 +43,81 @@
       'login.resetSent':      { 'zh-TW': '密碼重設連結已寄至您的信箱，請查收（可能在垃圾郵件）。', 'zh-CN': '密码重置链接已发送至您的信箱，请查收（可能在垃圾邮件）。', 'en': 'A password reset link has been sent to your inbox (check spam too).' }
     });
   </script>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FuSang Vision — 登入</title>
-
+  <!-- v2 視覺（共用版型 §10 公開頁：品牌列 / 主視覺 / 右側卡片）-->
+  <link rel="stylesheet" href="fs-v2.css" />
   <style>
-    /* ════════════════════════════════════════════════════════
-       login 視覺改版：現代東方禪意 + 療癒極簡
-       淺色晨曦底(青綠 wash + 一抹 dawn 暖光) / 左對齊通透表單 / 細框輸入
-       共用 tokens 由 components.js 注入(--wash-teal / --dawn / --gold …)
-       ════════════════════════════════════════════════════════ */
-
-    /* ── 頁面：淺色晨曦底 ── */
-    /* login 本地：五行金水配色(先只在 login 試色,不動全站 DESIGN.md) */
-    .login-page {
-      --lp-blue-pale: #e3ecf3;   /* 水 · 淡藍(暈染) */
-      --lp-blue: #4f6b84;        /* 水 · 鋼藍(強調 / focus / 連結) */
-      --lp-water-ink: #16232c;   /* 水 · 藍黑(主標 / 按鈕深錨) */
-      --lp-gold-pale: #d9c39a;   /* 金 · 淡金(細飾) */
-    }
-
-    .login-page {
-      min-height: calc(100vh - 120px);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      position: relative;
-      background: var(--bg-primary);
-      overflow: hidden;
-    }
-    /* 晨曦暈染：左側淡青綠 wash + 右上一抹旭日暖光(CSS 漸層,不放圖) */
-    .login-page::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 56% 52% at 12% 26%, var(--lp-blue-pale) 0%, transparent 60%),   /* 水 · 淡藍 */
-        radial-gradient(ellipse 52% 48% at 30% 78%, var(--wash-teal) 0%, transparent 62%),        /* 水 · 淡藍綠 */
-        radial-gradient(ellipse 46% 40% at 90% 10%, rgba(216, 178, 120, 0.18) 0%, transparent 56%); /* 金 · 暖金光 */
-      pointer-events: none;
-    }
-
-    .login-container {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      max-width: 1080px;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-    }
-    @media (max-width: 900px) {
-      .login-container { grid-template-columns: 1fr; max-width: 460px; }
-    }
-
-    /* ───────────────────────────────────── */
-    /* LEFT — 品牌氛圍區(淺色)                */
-    /* ───────────────────────────────────── */
-    .login-left {
-      padding: 88px 56px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-    @media (max-width: 900px) {
-      /* 手機：收成頂部品牌帶,只留 eyebrow + craft,保住晨曦第一印象又不擠壓表單 */
-      .login-left {
-        padding: 36px 32px 4px;
-        justify-content: flex-start;
-      }
-    }
-
-    .login-left-glow { display: none; } /* 舊金色光暈移除,改用頁面 wash */
-
-    .login-left-top { position: relative; z-index: 1; }
-    .login-left-eyebrow {
-      font-family: var(--font-serif-en);
-      font-style: italic;
-      font-size: 13px;
-      letter-spacing: 0.28em;
-      color: var(--gold);
-      margin-bottom: 14px;
-    }
-    .login-left-brand {
-      font-family: var(--font-serif-zh);
-      font-size: 17px;
-      letter-spacing: 0.3em;
-      color: var(--ink-dark);
-      font-weight: 500;
-    }
-
-    .login-left-center {
-      position: relative;
-      z-index: 1;
-      margin: 58px 0;
-    }
-    .login-left-title {
-      font-family: var(--font-serif-zh);
-      font-size: clamp(30px, 3.4vw, 42px);
-      font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: 0.04em;
-      color: var(--lp-water-ink);
-    }
-    .login-left-title .accent {
-      color: var(--lp-blue);
-      font-weight: 500;
-    }
-    .login-left-divider {
-      width: 52px;
-      height: 1px;
-      background: var(--gold);
-      opacity: 0.55;
-      margin: 30px 0;
-    }
-    .login-left-sub {
-      font-family: var(--font-serif-zh);
-      font-size: 15px;
-      line-height: 2;
-      color: var(--ink-mid);
-      letter-spacing: 0.04em;
-      max-width: 380px;
-    }
-
-    .login-left-bottom {
-      position: relative;
-      z-index: 1;
-      font-family: var(--font-serif-en);
-      font-style: italic;
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      color: var(--ink-light);
-    }
-    @media (max-width: 900px) {
-      .login-left-center, .login-left-bottom { display: none; }
-    }
-
-    /* ───────────────────────────────────── */
-    /* RIGHT — 登入表單(左對齊,通透)          */
-    /* ───────────────────────────────────── */
-    .login-right {
-      padding: 88px 56px 88px 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: relative;
-    }
-    @media (max-width: 900px) {
-      .login-right { padding: 6px 32px 48px; }
-    }
-    /* 桌機：兩欄間細分隔線(漸層淡出,禪意細線) */
-    @media (min-width: 901px) {
-      .login-right::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 14%; bottom: 14%;
-        width: 1px;
-        background: linear-gradient(180deg, transparent, var(--rule) 22%, var(--rule) 78%, transparent);
-      }
-    }
-
-    .login-right-eyebrow {
-      font-family: var(--font-serif-en);
-      font-style: italic;
-      font-size: 14px;
-      color: var(--gold);
-      letter-spacing: 0.15em;
-      margin-bottom: 10px;
-    }
-    .login-right-title {
-      font-family: var(--font-serif-zh);
-      font-size: 30px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      color: var(--lp-water-ink);
-      margin-bottom: 8px;
-    }
-    .login-right-sub {
-      font-family: var(--font-serif-zh);
-      font-size: 13px;
-      color: var(--ink-mid);
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
-    }
-    .login-mini-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 22px 0 34px;
-    }
-    .login-mini-divider::before {
-      content: '';
-      width: 34px;
-      height: 1px;
-      background: var(--gold);
-      opacity: 0.55;
-    }
-    .login-mini-divider span {
-      font-family: var(--font-serif-en);
-      font-style: italic;
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--gold);
-    }
-
-    /* Messages */
-    .login-error, .login-success {
-      display: none;
-      padding: 12px 14px;
-      margin-bottom: 20px;
-      border-radius: 3px;
-      font-size: 13px;
-      font-family: var(--font-serif-zh);
-      line-height: 1.6;
-    }
-    .login-error {
-      background: #f6eae7;
-      border: 1px solid #e0b9b2;
-      color: var(--error);
-    }
-    .login-success {
-      background: var(--t-lu-bg);
-      border: 1px solid var(--t-lu);
-      color: var(--t-lu);
-    }
-    .login-error.active, .login-success.active { display: block; }
-
-    /* ── Form(細框白底,focus 青綠)── */
-    .login-field {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 22px;
-    }
-    .login-field label {
-      font-family: var(--font-sans);
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 9px;
-    }
-    .login-field input {
-      height: 48px;
-      padding: 0 15px;
-      border: 1px solid var(--rule);
-      border-radius: 3px;
-      background: var(--bg-card);
-      font-size: 15px;
-      font-family: var(--font-serif-zh);
-      color: var(--ink-darkest);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      letter-spacing: 0.02em;
-    }
-    .login-field input::placeholder { color: var(--ink-faint); }
-    .login-field input:hover { border-color: var(--lp-blue); }
-    .login-field input:focus {
-      outline: none;
-      border-color: var(--lp-blue);
-      box-shadow: 0 0 0 3px rgba(79, 107, 132, 0.16);
-    }
-
-    .login-forgot {
-      text-align: right;
-      margin-top: -10px;
-      margin-bottom: 28px;
-    }
-    .login-forgot a {
-      font-family: var(--font-serif-zh);
-      font-size: 12px;
-      color: var(--ink-mid);
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      border-bottom: 1px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .login-forgot a:hover {
-      color: var(--lp-blue);
-      border-bottom-color: var(--lp-blue);
-    }
-
-    .login-btn {
-      width: 100%;
-      height: 52px;
-      background: var(--lp-water-ink);
-      color: var(--bg-primary);
-      font-family: var(--font-sans);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
-      margin-top: 4px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    .login-btn:hover:not(:disabled) {
-      background: var(--lp-blue);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(22, 35, 44, 0.16);
-    }
-    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .login-btn-arrow {
-      font-family: var(--font-sans);
-      font-size: 15px;
-      line-height: 1;
-      transition: transform 0.25s;
-    }
-    .login-btn:hover:not(:disabled) .login-btn-arrow { transform: translateX(4px); }
-
-    .login-altcta {
-      margin-top: 34px;
-      padding-top: 26px;
-      border-top: 1px solid var(--rule);
-      text-align: left;
-      font-family: var(--font-serif-zh);
-      font-size: 13px;
-      color: var(--ink-mid);
-      line-height: 1.9;
-    }
-    .login-altcta a {
-      color: var(--lp-blue);
-      font-weight: 500;
-      border-bottom: 1px solid var(--gold-soft);
-      padding-bottom: 1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .login-altcta a:hover { color: var(--gold); border-bottom-color: var(--gold); }
-
-    /* ── 頁內語言切換(header 已移除,固定右上)── */
-    .login-lang {
-      position: fixed;
-      top: 20px; right: 24px;
-      z-index: 20;
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid var(--rule);
-      border-radius: 3px;
-      overflow: hidden;
-      background: rgba(250, 247, 241, 0.85);
-      backdrop-filter: blur(4px);
-    }
-    .login-lang-opt {
-      font-family: var(--font-sans);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--ink-light);
-      padding: 6px 10px;
-      line-height: 1;
-      background: transparent;
-      transition: background 0.2s, color 0.2s;
-    }
-    .login-lang-opt + .login-lang-opt { border-left: 1px solid var(--rule); }
-    .login-lang-opt:hover { color: var(--accent-deep); }
-    .login-lang-opt.active { background: var(--accent-deep); color: var(--bg-primary); }
-    @media (max-width: 560px) {
-      .login-lang { top: 14px; right: 14px; }
-      .login-lang-opt { padding: 5px 8px; font-size: 10px; }
-    }
+    /* login 專屬：只剩細節，版型全在 fs-v2.css §10 */
+    .fs-v2 .login-forgot { display: flex; justify-content: flex-end; margin: -8px 0 20px; }
+    .fs-v2 .login-btn-arrow { font-family: var(--v2-font-latin); font-size: 15px; line-height: 1; transition: transform .2s; }
+    .fs-v2 .login-btn:hover:not(:disabled) .login-btn-arrow { transform: translateX(4px); }
+    @media (prefers-reduced-motion: reduce) { .fs-v2 .login-btn-arrow { transition: none; } }
   </style>
 </head>
-<body>
+<body class="login-body fs-v2">
 
-<!-- header 已移除;以頁內語言切換取代 -->
-<div class="login-lang" id="login-lang">
-  <button type="button" class="login-lang-opt" data-lang="zh-TW">繁中</button>
-  <button type="button" class="login-lang-opt" data-lang="zh-CN">简中</button>
-  <button type="button" class="login-lang-opt" data-lang="en">EN</button>
-</div>
-
-<div class="fs-page login-page">
-
-  <div class="login-container">
-
-    <!-- ════════ LEFT ════════ -->
-    <div class="login-left">
-      <div class="login-left-glow"></div>
-
-      <div class="login-left-top">
-        <div class="login-left-eyebrow">FUSANG VISION</div>
-        <div class="login-left-brand" data-i18n="login.craft">紫微斗數</div>
-      </div>
-
-      <div class="login-left-center">
-        <h1 class="login-left-title" data-i18n-html="login.heroTitle">
-          不是預知命運,<br>
-          而是<span class="accent">穩健有意識地</span><br>
-          走向嚮往的生活。
-        </h1>
-        <div class="login-left-divider"></div>
-        <p class="login-left-sub" data-i18n-html="login.heroSub">
-          您的命盤已備妥。<br>
-          以您專屬的能量地圖,理解此刻所在,看見前行方向。
-        </p>
-      </div>
-
-      <div class="login-left-bottom">
-        — Ancient wisdom for a modern life —
-      </div>
-    </div>
-
-    <!-- ════════ RIGHT ════════ -->
-    <div class="login-right">
-
-      <div class="login-right-eyebrow" data-i18n="login.welcomeBack">Welcome Back</div>
-      <h2 class="login-right-title" data-i18n="login.title">登入</h2>
-      <p class="login-right-sub" data-i18n="login.subtitle">繼續您的能量探索</p>
-
-      <div class="login-mini-divider"><span>✦</span></div>
-
-      <div id="login-error" class="login-error"></div>
-      <div id="login-success" class="login-success"></div>
-
-      <form id="login-form" novalidate>
-
-        <div class="login-field">
-          <label for="email" data-i18n="login.email">電子郵件</label>
-          <input type="email" id="email" name="email" autocomplete="email" required />
-        </div>
-
-        <div class="login-field">
-          <label for="password" data-i18n="login.password">密碼</label>
-          <input type="password" id="password" name="password" autocomplete="current-password" required />
-        </div>
-
-        <div class="login-forgot">
-          <a id="forgot-link" data-i18n="login.forgot">忘記密碼?</a>
-        </div>
-
-        <button type="submit" id="login-btn" class="login-btn">
-          <span id="login-btn-text" data-i18n="login.submit">登入</span>
-          <span class="login-btn-arrow" aria-hidden="true">→</span>
-        </button>
-
-      </form>
-
-      <div class="login-altcta">
-        <span data-i18n="login.noChartQ">還沒有命盤?</span><br>
-        <a href="account-create.html" data-i18n="login.createLink">建立您的本命盤</a>
-      </div>
-
-    </div>
-
+<!-- 品牌列（公開頁不放主選單）＋ 語言切換 -->
+<header class="v2-auth-bar">
+  <a class="v2-auth-brand" href="https://fusang-vision.com/" aria-label="FuSang Vision">
+    <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
+    <span class="v2-auth-brand-name">FuSang Vision</span>
+  </a>
+  <div class="v2-auth-lang login-lang" id="login-lang" role="group" aria-label="Language">
+    <button type="button" class="login-lang-opt" data-lang="zh-TW" lang="zh-TW">繁中</button>
+    <button type="button" class="login-lang-opt" data-lang="zh-CN" lang="zh-CN">简中</button>
+    <button type="button" class="login-lang-opt" data-lang="en" lang="en">EN</button>
   </div>
-</div>
+</header>
+
+<main class="fs-page v2-auth-stage login-page" id="fs-main" tabindex="-1">
+
+  <!-- 左：品牌語（壓在主視覺留白處）-->
+  <div class="v2-auth-intro">
+    <p class="v2-auth-eyebrow"><span data-i18n="login.craft">紫微斗數</span> · FuSang Vision</p>
+    <h2 class="v2-auth-headline" data-i18n-html="login.heroTitle">
+      不是預知命運，<br>而是<span class="accent">穩健有意識地</span><br>走向嚮往的生活。
+    </h2>
+    <p class="v2-auth-lead" data-i18n-html="login.heroSub">
+      您的命盤已備妥。<br>以您專屬的能量地圖，理解此刻所在，看見前行方向。
+    </p>
+  </div>
+
+  <!-- 右：登入卡片 -->
+  <div class="v2-auth-card">
+    <p class="v2-auth-card-eyebrow" data-i18n="login.welcomeBack">Welcome Back</p>
+    <h1 class="v2-auth-title" data-i18n="login.title">登入</h1>
+    <p class="v2-auth-sub" data-i18n="login.subtitle">繼續您的能量探索</p>
+
+    <div id="login-error" class="v2-auth-msg v2-auth-msg--error login-error" role="alert"></div>
+    <div id="login-success" class="v2-auth-msg v2-auth-msg--ok login-success" role="status"></div>
+
+    <form id="login-form" novalidate>
+      <div class="v2-field">
+        <label for="email" data-i18n="login.email">電子郵件</label>
+        <input type="email" id="email" name="email" autocomplete="email" required />
+      </div>
+      <div class="v2-field">
+        <label for="password" data-i18n="login.password">密碼</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <div class="login-forgot">
+        <a id="forgot-link" class="v2-auth-link" role="button" tabindex="0" data-i18n="login.forgot">忘記密碼？</a>
+      </div>
+      <button type="submit" id="login-btn" class="v2-auth-submit login-btn">
+        <span id="login-btn-text" data-i18n="login.submit">登入</span>
+        <span class="login-btn-arrow" aria-hidden="true">→</span>
+      </button>
+    </form>
+
+    <!-- 建立帳號：官網表單（2026-09 起由官網維護）-->
+    <div class="v2-auth-alt">
+      <span data-i18n="login.noChartQ">還沒有命盤？</span><br>
+      <a href="https://fusang-vision.com/pages/create-account" data-i18n="login.createLink">建立您的本命盤</a>
+    </div>
+  </div>
+
+</main>
 
 <div id="site-footer"></div>
 
@@ -586,6 +216,11 @@
       showError(F.t('login.errRetry'));
       setLoading(false);
     }
+  });
+
+  // v2：忘記密碼改為可用鍵盤觸發（Enter / 空白鍵）
+  forgotLink.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); forgotLink.click(); }
   });
 
   forgotLink.addEventListener('click', async () => {
