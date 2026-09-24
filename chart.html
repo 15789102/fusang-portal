@@ -19,7 +19,14 @@
       'chart.paywallItem2': { 'zh-TW': '<b>能量飛出</b>　你正在影響、推動哪些面向。', 'zh-CN': '<b>能量飞出</b>　你正在影响、推动哪些面向。', 'en': "<b>Outflowing energy</b> — which areas you're influencing and driving." },
       'chart.paywallItem3': { 'zh-TW': '<b>專屬行動建議</b>', 'zh-CN': '<b>专属行动建议</b>', 'en': '<b>Tailored guidance</b>' },
       'chart.paywallCta':   { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans' },
-      'chart.paywallNote':  { 'zh-TW': '已購買？回此頁重新整理即可顯示', 'zh-CN': '已购买？回此页刷新即可显示', 'en': 'Already purchased? Refresh this page to display it.' }
+      'chart.paywallNote':  { 'zh-TW': '已購買？回此頁重新整理即可顯示', 'zh-CN': '已购买？回此页刷新即可显示', 'en': 'Already purchased? Refresh this page to display it.' },
+      // ── v2 視覺（設計師 v1.0 文案；設計稿沒有的句子依文案規則草擬）──
+      'chart.v2Enter':        { 'zh-TW': '進入{palace}詳情', 'zh-CN': '进入{palace}详情', 'en': 'Read the {palace}' },
+      'chart.v2GridNote':     { 'zh-TW': 'I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。', 'zh-CN': 'I–XII 为宫位索引编号；个人命盘资料以详细解读为准。', 'en': 'I–XII identify the palaces. See the detailed reading for your personal chart information.' },
+      'chart.v2BackOverview': { 'zh-TW': '返回本命總覽', 'zh-CN': '返回本命总览', 'en': 'Back to natal overview' },
+      'chart.v2IntroLabel':   { 'zh-TW': '導讀', 'zh-CN': '导读', 'en': 'Introduction' },
+      'chart.v2IntroMore':    { 'zh-TW': '展開閱讀', 'zh-CN': '展开阅读', 'en': 'Read more' },
+      'chart.v2IntroLess':    { 'zh-TW': '收起', 'zh-CN': '收起', 'en': 'Show less' }
     });
   </script>
   <meta charset="UTF-8" />
@@ -631,17 +638,6 @@
     .fs-v2 #view-overview .ov-legend .tg { color: var(--v2-ink); font-weight: 600; }
     .fs-v2 #view-overview .ov-legend .sp { color: var(--v2-faint); }
 
-    /* 付費提示（總覽後盾）*/
-    .fs-v2 .ov-locked-hint,
-    .fs-v2 #view-overview .ov-locked-hint {
-      padding: 20px 24px; border: 1px solid var(--v2-blue); border-left-width: 2px; border-radius: 0; background: var(--v2-tint);
-      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-ink);
-    }
-    .fs-v2 .ov-locked-hint .ov-locked-link,
-    .fs-v2 #view-overview .ov-locked-hint .ov-locked-link { margin-left: 8px; color: var(--v2-blue); font-weight: 600; border-bottom: 1px solid currentColor; padding-bottom: 1px; cursor: pointer; }
-    .fs-v2 #view-overview .ov-locked-hint .ov-locked-link:hover { color: var(--v2-ink); border-color: var(--v2-ink); }
-
-
     /* ════════ 十二宮（Twelve Palaces）：環狀命盤排列 ════════ */
     .fs-v2 .hub-head { margin-bottom: 40px; }
     .fs-v2 #palace-grid {
@@ -851,33 +847,8 @@
     .fs-v2 .epilogue-prose p { margin-bottom: 12px; }
     .fs-v2 .epilogue-prose p.closing { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--v2-line); text-align: left; font-style: normal; font-weight: 500; font-size: 16px; letter-spacing: 0; color: var(--v2-ink); }
 
-    /* ── 付費牆（未解鎖：02/03/04 內容換鎖，底部單一 CTA）── 必須清楚可見 */
-    .fs-v2 .sec-lock {
-      margin-top: 8px; padding: 20px 24px; gap: 12px;
-      border: 1px dashed var(--v2-blue); border-radius: 0; background: var(--v2-tint);
-      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted);
-    }
-    .fs-v2 .sec-lock-icon { color: var(--v2-blue); }
-    .fs-v2 .paywall {
-      margin-top: 48px; padding: 40px 32px; max-width: 800px;
-      border: 1px solid var(--v2-blue); border-radius: 0; background: var(--v2-tint); text-align: center;
-    }
-    .fs-v2 .paywall-lock { width: 48px; height: 48px; margin: 0 auto 16px; background: #fff; border: 1px solid var(--v2-blue); color: var(--v2-blue); font-size: 20px; }
-    .fs-v2 .paywall-eyebrow { margin-bottom: 8px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
-    .fs-v2 .paywall-title { margin-bottom: 24px; font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
-    .fs-v2 .paywall-list { gap: 12px; max-width: 400px; margin: 0 auto 32px; }
-    .fs-v2 .paywall-item { gap: 12px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
-    .fs-v2 .paywall-item .mk { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; color: var(--v2-blue); }
-    .fs-v2 .paywall-item b { color: var(--v2-ink); font-weight: 600; }
-    .fs-v2 .paywall-cta {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-width: 180px; min-height: 48px; padding: 12px 28px;
-      background: var(--v2-ink); color: #fff; border: 1px solid var(--v2-ink); border-radius: 0;
-      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
-      transition: background .15s, border-color .15s;
-    }
-    .fs-v2 .paywall-cta:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
-    .fs-v2 .paywall-note { margin-top: 12px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+    /* ── 付費牆版面（外觀由 fs-v2.css §9 統一：白底灰框 + 雲紋 + 線條鎖頭）── */
+    .fs-v2 .paywall { margin-top: 48px; max-width: 800px; }
 
     /* 底部：上一宮 ／ 全部十二宮 ／ 下一宮 → 設計師按鈕 */
     .fs-v2 .detail-nav { margin-top: 48px; padding-top: 0; border-top: 0; display: flex; justify-content: space-between; gap: 24px; }
@@ -950,7 +921,6 @@
       .fs-v2 .prose,
       .fs-v2 .transform-card-content,
       .fs-v2 .epilogue-prose { font-size: 15px; line-height: 28px; }
-      .fs-v2 .paywall { padding: 32px 20px; }
       .fs-v2 .detail-nav { gap: 8px; }
       .fs-v2 .nav-link,
       .fs-v2 .nav-center { flex: 1; min-width: 0; padding: 10px 8px; font-size: 12px; }
@@ -960,6 +930,106 @@
       .fs-v2 #palace-grid .palace-card { grid-area: auto !important; }
       .fs-v2 #palace-grid::before { display: none; }
     }
+    /* ════════ v2 第二輪：兩段式十二宮 / 四化標 / 導讀 / 各段 CTA / 說明泡泡 ════════ */
+
+    /* 十二宮：中央預覽（取代裝飾；v2 script 附加為 #palace-grid 最後一個子元素）*/
+    .fs-v2 #palace-grid::before { content: none; }
+    .fs-v2 .v2-hub-preview {
+      grid-area: 2 / 2 / 4 / 4;
+      margin: -1px 0 0 -1px;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px;
+      padding: 48px; min-width: 0; overflow: hidden;
+      border: 1px solid var(--v2-line);
+      background: #fff;
+    }
+    .fs-v2 .v2-hp-index { font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .v2-hp-name { margin: 0; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-hp-tagline { font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-hp-explainer { font-size: 15px; line-height: 27px; color: var(--v2-muted); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .fs-v2 .v2-hp-explainer .domain-keyword { color: var(--v2-ink); font-weight: 500; }
+    .fs-v2 .v2-hp-enter {
+      margin-top: 8px; display: inline-flex; align-items: center; justify-content: center;
+      min-width: 180px; min-height: 48px; padding: 12px 28px;
+      background: var(--v2-ink); color: #fff; border: 1px solid var(--v2-ink);
+      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .fs-v2 .v2-hp-enter:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); }
+
+    /* 選取中的宮位：藍框 + 淡藍底 + 雲紋 + 藍色宮名與圖示 */
+    .fs-v2 #palace-grid .palace-card.is-selected { z-index: 1; border-color: var(--v2-blue); background: var(--v2-tint); }
+    .fs-v2 #palace-grid .palace-card.is-selected::before { opacity: .5; transform: none; transition-duration: 1100ms, 900ms; transition-delay: 100ms; }
+    .fs-v2 #palace-grid .palace-card.is-selected .palace-card-name { color: var(--v2-blue-strong); }
+    .fs-v2 #palace-grid .palace-card.is-selected > .palace-card-index::after { background: var(--v2-blue); }
+    .fs-v2 #palace-grid .palace-card:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: -2px; z-index: 2; }
+
+    /* 生年四化標（語意色沿用 --t-*）*/
+    .fs-v2 .v2-hub-hua { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; }
+    .fs-v2 .v2-hua { font-family: var(--v2-font-cjk); font-size: 11px; line-height: 16px; padding: 1px 6px; border: 1px solid currentColor; background: #fff; }
+    .fs-v2 .v2-hua--lu { color: var(--t-lu); }
+    .fs-v2 .v2-hua--quan { color: var(--t-quan); }
+    .fs-v2 .v2-hua--ke { color: var(--t-ke); }
+    .fs-v2 .v2-hua--ji { color: var(--t-ji); }
+
+    /* 十二宮底部：編號說明 + 返回本命總覽 */
+    .fs-v2 .v2-grid-note { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 32px; }
+    .fs-v2 .v2-grid-note p { margin: 0; font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+
+    /* 總覽：導讀 */
+    .fs-v2 .v2-intro:empty { display: none; }
+    .fs-v2 .v2-intro { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+    .fs-v2 .v2-intro-item { padding: 24px 0 0; border-top: 1px solid var(--v2-line-soft); }
+    .fs-v2 .v2-intro-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+    .fs-v2 .v2-intro-label { font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-blue); }
+    .fs-v2 .v2-intro-palace { font-size: 16px; line-height: 26px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-intro-lead,
+    .fs-v2 .v2-intro-more p { margin: 0; max-width: 820px; font-size: 16px; line-height: 29px; color: var(--v2-ink); }
+    .fs-v2 .v2-intro-more p { margin-top: 12px; }
+    .fs-v2 .v2-intro-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 12px; }
+    .fs-v2 .v2-intro-toggle,
+    .fs-v2 .v2-intro-go,
+    .fs-v2 .v2-link { padding: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-blue); cursor: pointer; }
+    .fs-v2 .v2-intro-toggle { color: var(--v2-ink); border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .v2-intro-toggle:hover,
+    .fs-v2 .v2-intro-go:hover,
+    .fs-v2 .v2-link:hover { color: var(--v2-ink); }
+
+    /* 總覽：各段「瀏覽全部十二宮 →」*/
+    .fs-v2 .v2-sec-cta { margin-top: 16px; display: flex; justify-content: flex-end; }
+
+    /* 左欄四化標籤：可點，說明泡泡 */
+    .fs-v2 .palace-stars-line .transform-tag { cursor: help; }
+    .fs-v2 .palace-stars-line .transform-tag:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .v2-tip {
+      position: absolute; z-index: 60; padding: 14px 16px;
+      background: var(--v2-ink); color: #fff; box-shadow: var(--v2-shadow-pop);
+      font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px;
+    }
+    .fs-v2 .v2-tip[hidden] { display: none; }
+    .fs-v2 .v2-tip-title { font-weight: 600; margin-bottom: 4px; }
+    .fs-v2 .v2-tip-body { margin: 0; color: #e6e6e6; }
+
+    @media (max-width: 1000px) {
+      .fs-v2 .v2-hub-preview { padding: 24px; }
+      .fs-v2 .v2-hp-name { font-size: 30px; line-height: 42px; }
+    }
+    @media (max-width: 799px) {
+      .fs-v2 .v2-hub-preview { padding: 20px 12px; gap: 8px; }
+      .fs-v2 .v2-hp-name { font-size: 24px; line-height: 32px; }
+      .fs-v2 .v2-hp-tagline { font-size: 15px; line-height: 24px; }
+      .fs-v2 .v2-hp-explainer { font-size: 13px; line-height: 22px; -webkit-line-clamp: 3; }
+      .fs-v2 .v2-hp-enter { min-width: 0; padding: 10px 14px; font-size: 13px; }
+      .fs-v2 .v2-hub-hua { display: none; }
+      .fs-v2 .v2-grid-note { flex-direction: column; align-items: flex-start; }
+      .fs-v2 .v2-intro-lead, .fs-v2 .v2-intro-more p { font-size: 15px; line-height: 28px; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 #palace-grid { grid-auto-rows: minmax(148px, auto); }
+      .fs-v2 .v2-hub-preview { grid-area: auto; grid-column: 1 / -1; grid-row: 1; margin: -1px 0 0 -1px; padding: 24px; }
+      .fs-v2 .v2-hp-explainer { -webkit-line-clamp: 5; }
+      .fs-v2 .v2-hub-hua { display: flex; }
+    }
+
     /* 英文：章節列允許換行 */
     @media (max-width: 1000px) {
       html[lang="en"] .fs-v2 .v2-chapter-tabs { height: auto; min-height: 48px; }
@@ -1019,6 +1089,8 @@
         <div class="ov-sec-label"><span class="bz" id="sec-lead-label">主角</span><span class="be">The Lead</span></div>
         <div class="lead" id="ov-lead"></div>
         <div class="ov-legend" id="ov-lead-legend"></div>
+        <div class="v2-intro" data-v2-intro="lead"></div>
+        <div class="v2-sec-cta"><button type="button" class="v2-link" data-v2-go="view-hub" data-i18n="ovToHub">瀏覽全部十二宮 →</button></div>
       </div>
 
       <div class="ov-sec" id="v2-ov-stage">
@@ -1026,11 +1098,15 @@
         <div class="stage-line" id="ov-stage-line"></div>
         <div class="tri" id="ov-tri"></div>
         <div class="ov-legend" id="legend-stage">句型固定為「以【財】為舞台，由【命】驅動，於【官】展開」，括號內短語取自各宮主星的固定句用詞<span class="sp">|</span>點宮位進該宮完整內容</div>
+        <div class="v2-intro" data-v2-intro="stage"></div>
+        <div class="v2-sec-cta"><button type="button" class="v2-link" data-v2-go="view-hub" data-i18n="ovToHub">瀏覽全部十二宮 →</button></div>
       </div>
 
       <div class="ov-sec" id="v2-ov-gift">
         <div class="ov-sec-label"><span class="bz" id="sec-gift-label">角色天賦線</span><span class="be" id="sec-gift-sub">Innate Kit · 生年四化落點</span></div>
         <div id="ov-birth"></div>
+        <div class="v2-intro" data-v2-intro="gift"></div>
+        <div class="v2-sec-cta"><button type="button" class="v2-link" data-v2-go="view-hub" data-i18n="ovToHub">瀏覽全部十二宮 →</button></div>
       </div>
 
       <div class="block-head"><span class="num">II</span><div><div class="bz" id="block-head-2">我的資源</div><div class="be">What You Hold</div></div></div>
@@ -1040,12 +1116,14 @@
         <div class="ov-sec-label"><span class="bz" id="sec-ally-label">貴人</span><span class="be">Allies</span></div>
         <div id="ov-ally"></div>
         <div class="ov-legend" id="legend-ally">依六內六外分欄：貴人星落<span class="tg">內部宮</span>＝自帶特質；落<span class="tg">外部宮</span>＝別人助力<span class="sp">|</span><span class="tg">左輔右弼</span> 整合・左右逢源<span class="sp">|</span><span class="tg">天魁天鉞</span> 提攜・貴氣<span class="sp">|</span><span class="tg">文昌</span> 才學<span class="sp">|</span><span class="tg">文曲</span> 才藝・口才</div>
+        <div class="v2-sec-cta"><button type="button" class="v2-link" data-v2-go="view-hub" data-i18n="ovToHub">瀏覽全部十二宮 →</button></div>
       </div>
 
       <div class="ov-sec" id="v2-ov-feed">
         <div class="ov-sec-label"><span class="bz" id="sec-feed-label">後盾</span><span class="be" id="sec-feed-sub">Foundation · 飛入助力</span></div>
         <div id="ov-feed"></div>
         <div class="ov-legend" id="legend-feed"><span class="tg">祿</span> 資源・緣分<span class="sp">|</span><span class="tg">權</span> 主導・掌控<span class="sp">|</span><span class="tg">科</span> 名聲・貴氣<span class="sp">|</span>助力合計＝祿＋權＋科 飛入數（依合計排序）</div>
+        <div class="v2-sec-cta"><button type="button" class="v2-link" data-v2-go="view-hub" data-i18n="ovToHub">瀏覽全部十二宮 →</button></div>
       </div>
 
     </section>
@@ -1058,6 +1136,11 @@
         <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
       <div id="palace-grid" class="palace-grid"></div>
+      <!-- v2：編號說明 + 返回本命總覽 -->
+      <div class="v2-grid-note">
+        <p data-i18n="chart.v2GridNote">I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。</p>
+        <button type="button" class="v2-btn v2-btn--secondary" data-v2-go="view-overview" data-i18n="chart.v2BackOverview">返回本命總覽</button>
+      </div>
       <div class="hub-meta">
         <div style="margin-bottom: 8px;">Chart Session</div>
         <code id="session-id">—</code>
@@ -1178,26 +1261,120 @@
 
 <div id="site-footer"></div>
 
+<!-- v2：返回頂部 -->
+<button type="button" class="v2-back-to-top" id="v2-top" hidden><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5h10M8 13.5V5.5M4.5 9 8 5.5 11.5 9"/></svg><span data-i18n="backToTop">返回頂部</span></button>
+
 <script>
   /* ════════════════════════════════════════════════════════════
-     v2 視覺互動（設計師 v1.0）— 獨立 classic script
-     只讀 DOM、只做導覽：不讀資料、不碰四化 gate / 付費牆 / i18n 字典。
-       1) 宮位切換列：鏡像 #palace-grid 的 12 張宮位卡；點擊 = 觸發原卡 click
-          → 走 module 內原本的 openDetail（含 gate 判斷）。
-       2) 章節列（01–04）與總覽主題選單：點擊捲到對應段落，捲動時標示目前段落。
-     任何一步失敗都只會少掉導覽輔助，不影響頁面功能。
+     v2 視覺互動（設計師 v1.0 + 第二輪 UX）— 獨立 classic script
+     只透過 module 提供的唯讀掛鉤 window.FSChart（openDetail / showView / 免費欄位 getter）操作，
+     不讀付費欄、不碰 sihua_unlocked / gated view / 付費牆判斷；開宮位一律走 module 的 openDetail（含 gate）。
+       1) 瀏覽紀錄 + 網址：總覽 chart.html、十二宮 ?view=hub、宮位 ?palace=命宮（手機返回鍵可回上一畫面）
+       2) 十二宮兩段式：點宮位 → 中央預覽（宮名 / 標語 / 定義）→「進入…詳情」
+       3) 十二宮格：標出生年四化（composition 為免費欄位）
+       4) 總覽導讀：主角＝命宮；生活核心＝財帛宮、官祿宮；角色天賦線＝化祿所在宮（palace_analysis 免費欄位）
+       5) 宮位切換列 / 章節列（含方向鍵）/ 主題選單 / 各段「瀏覽全部十二宮」
+       6) 左欄四化標籤：點擊顯示說明（沿用 TRANSFORM_TOOLTIP 字典）
+       7) 記住上次閱讀的宮位（dashboard「繼續閱讀」用）；返回頂部
+     任何一步失敗都只少掉導覽輔助，不影響頁面功能。
      ════════════════════════════════════════════════════════════ */
   (function () {
-    // 與 module 的 PALACE_ORDER 同序；圖示檔 assets/v2/palaces/palace-00…11.svg 以此索引命名
-    var ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
+    var F = window.FSI18N;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
+    var ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+    var TF_ORDER = ['化祿','化權','化科','化忌'];
+    var TF_CLASS = { '化祿': 'lu', '化權': 'quan', '化科': 'ke', '化忌': 'ji' };
+    var LAST_KEY = 'fs_v2_last_palace';
+
+    function FS() { return window.FSChart || null; }
+    function tx(k) { try { return F.t(k); } catch (_) { return ''; } }
+    function smooth() { return reduce ? 'auto' : 'smooth'; }
+    function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function seatedTransforms(p) {
+      var c = FS() && FS().getComposition(p);
+      if (!c) return [];
+      var all = [].concat(c.main_stars || [], c.support_stars || [], c.minor_stars || [], c.sha_ji_stars || []);
+      return all.filter(function (s) { return s && typeof s === 'object' && s.transform; });
+    }
+    function paragraphs(text) { return String(text || '').split(/\n\n+/).map(function (s) { return s.trim(); }).filter(Boolean); }
 
     function init() {
       var grid = document.getElementById('palace-grid');
       var sw = document.getElementById('v2-palace-switcher');
       var titleEl = document.getElementById('detail-title-zh');
+      var ready = false;
+      var selected = '命宮';
 
-      // ── 1) 宮位切換列 ──
+      /* ── 3) 十二宮格：生年四化標 ── */
+      function decorateHub() {
+        if (!grid || !FS()) return;
+        var cards = grid.querySelectorAll('.palace-card');
+        for (var i = 0; i < cards.length; i++) {
+          var card = cards[i];
+          var p = ORDER[i];
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('role', 'button');
+          card.dataset.v2Palace = p;
+          card.classList.toggle('is-selected', p === selected);
+          var old = card.querySelector('.v2-hub-hua');
+          if (old) old.remove();
+          var tfs = seatedTransforms(p);
+          if (tfs.length) {
+            var box = el('div', 'v2-hub-hua');
+            tfs.sort(function (a, b) { return TF_ORDER.indexOf(a.transform) - TF_ORDER.indexOf(b.transform); })
+               .forEach(function (s) { box.appendChild(el('span', 'v2-hua v2-hua--' + (TF_CLASS[s.transform] || 'x'), F.transformLabel(s.transform))); });
+            card.appendChild(box);
+          }
+        }
+      }
+
+      /* ── 2) 十二宮兩段式：中央預覽 ── */
+      var preview = el('div', 'v2-hub-preview');
+      preview.id = 'v2-hub-preview';
+      preview.setAttribute('aria-live', 'polite');
+      function renderPreview() {
+        if (!grid) return;
+        if (preview.parentNode !== grid) grid.appendChild(preview);
+        var i = ORDER.indexOf(selected);
+        var card = grid.querySelectorAll('.palace-card')[i];
+        var name = card ? (card.querySelector('.palace-card-name') || {}).textContent : selected;
+        preview.innerHTML = '';
+        preview.appendChild(el('div', 'v2-hp-index', ROMAN[i] + ' / XII'));
+        preview.appendChild(el('h2', 'v2-hp-name', name));
+        var tag = el('div', 'v2-hp-tagline'); tag.innerHTML = F.td('PALACE_TAGLINE', selected) || ''; preview.appendChild(tag);
+        var ex = el('div', 'v2-hp-explainer'); ex.innerHTML = F.td('PALACE_EXPLAINER', selected) || ''; preview.appendChild(ex);
+        var btn = el('button', 'v2-hp-enter', (tx('chart.v2Enter') || '').replace('{palace}', name));
+        btn.type = 'button';
+        btn.addEventListener('click', function () { if (FS()) FS().openDetail(selected); });
+        preview.appendChild(btn);
+      }
+      function select(p) {
+        selected = p;
+        if (grid) grid.querySelectorAll('.palace-card').forEach(function (c) { c.classList.toggle('is-selected', c.dataset.v2Palace === p); });
+        renderPreview();
+      }
+      if (grid) {
+        // 攔截宮位卡點擊（capture）：第一下＝選取預覽；再點已選取的宮＝進入詳情
+        grid.addEventListener('click', function (e) {
+          var card = e.target.closest && e.target.closest('.palace-card');
+          if (!card || !grid.contains(card)) return;
+          e.stopPropagation();
+          var p = card.dataset.v2Palace || ORDER[Array.prototype.indexOf.call(grid.querySelectorAll('.palace-card'), card)];
+          if (p === selected && preview.parentNode === grid && card.classList.contains('is-selected')) { if (FS()) FS().openDetail(p); return; }
+          select(p);
+          if (window.matchMedia('(max-width: 599px)').matches) preview.scrollIntoView({ behavior: smooth(), block: 'start' });
+        }, true);
+        grid.addEventListener('keydown', function (e) {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          var card = e.target.closest && e.target.closest('.palace-card');
+          if (!card) return;
+          e.preventDefault();
+          card.click();
+        });
+      }
+
+      /* ── 5a) 宮位切換列 ── */
       function markSelected() {
         if (!sw || !titleEl) return;
         var cur = ORDER.indexOf((titleEl.textContent || '').trim());
@@ -1216,38 +1393,128 @@
         sw.innerHTML = '';
         for (var i = 0; i < cards.length; i++) {
           (function (idx, card) {
-            var b = document.createElement('button');
+            var b = el('button', 'v2-sw-item');
             b.type = 'button';
-            b.className = 'v2-sw-item';
-            var ic = document.createElement('span');
-            ic.className = 'v2-palace-icon';
+            var ic = el('span', 'v2-palace-icon');
             ic.setAttribute('aria-hidden', 'true');
             ic.style.setProperty('--icon-url', 'url(assets/v2/palaces/palace-' + (idx < 10 ? '0' : '') + idx + '.svg)');
-            var lb = document.createElement('span');
             var nm = card.querySelector('.palace-card-name');
-            lb.textContent = nm ? nm.textContent : '';
             b.appendChild(ic);
-            b.appendChild(lb);
-            b.addEventListener('click', function () {
-              var c = grid.querySelectorAll('.palace-card')[idx];
-              if (c) c.click();
-            });
+            b.appendChild(el('span', '', nm ? nm.textContent : ''));
+            b.addEventListener('click', function () { if (FS()) FS().openDetail(ORDER[idx]); });
             sw.appendChild(b);
           })(i, cards[i]);
         }
         markSelected();
       }
-      if (grid && sw) new MutationObserver(buildSwitcher).observe(grid, { childList: true });
-      if (titleEl) new MutationObserver(markSelected).observe(titleEl, { childList: true, characterData: true, subtree: true });
-      buildSwitcher();
 
-      // ── 2) 段落導覽（章節列 + 主題選單）──
-      function sectionOf(id) {
-        var el = document.getElementById(id);
-        if (!el) return null;
-        return (el.closest && el.closest('.section')) || el;
+      /* ── 4) 總覽導讀 ── */
+      function introFor(key) {
+        if (key === 'lead') return ['命宮'];
+        if (key === 'stage') return ['財帛宮', '官祿宮'];
+        if (key === 'gift') {
+          for (var i = 0; i < ORDER.length; i++) {
+            if (seatedTransforms(ORDER[i]).some(function (s) { return s.transform === '化祿'; })) return [ORDER[i]];
+          }
+        }
+        return [];
       }
-      function wireNav(navId, viewId) {
+      function renderIntros() {
+        var hosts = document.querySelectorAll('[data-v2-intro]');
+        for (var h = 0; h < hosts.length; h++) {
+          var host = hosts[h];
+          host.innerHTML = '';
+          introFor(host.getAttribute('data-v2-intro')).forEach(function (p) {
+            var paras = paragraphs(FS() && FS().getAnalysis(p));
+            if (!paras.length) return;
+            var label = F.palaceLabel(p);
+            var item = el('div', 'v2-intro-item');
+            var head = el('div', 'v2-intro-head');
+            head.appendChild(el('span', 'v2-intro-label', tx('chart.v2IntroLabel')));
+            head.appendChild(el('span', 'v2-intro-palace', label));
+            item.appendChild(head);
+            item.appendChild(el('p', 'v2-intro-lead', paras[0]));
+            var more = el('div', 'v2-intro-more');
+            more.hidden = true;
+            paras.slice(1, 3).forEach(function (t) { more.appendChild(el('p', '', t)); });
+            item.appendChild(more);
+            var foot = el('div', 'v2-intro-foot');
+            if (paras.length > 1) {
+              var tog = el('button', 'v2-intro-toggle', tx('chart.v2IntroMore'));
+              tog.type = 'button';
+              tog.setAttribute('aria-expanded', 'false');
+              tog.addEventListener('click', function () {
+                var open = more.hidden;
+                more.hidden = !open;
+                tog.textContent = open ? tx('chart.v2IntroLess') : tx('chart.v2IntroMore');
+                tog.setAttribute('aria-expanded', open ? 'true' : 'false');
+              });
+              foot.appendChild(tog);
+            }
+            var go = el('button', 'v2-intro-go', (tx('ovLeadFullLink') || '').replace('{p}', label));
+            go.type = 'button';
+            go.addEventListener('click', function () { if (FS()) FS().openDetail(p); });
+            foot.appendChild(go);
+            item.appendChild(foot);
+            host.appendChild(item);
+          });
+        }
+      }
+
+      /* 各段「瀏覽全部十二宮」與十二宮頁「返回本命總覽」 */
+      document.querySelectorAll('[data-v2-go]').forEach(function (b) {
+        b.addEventListener('click', function () { if (FS()) FS().showView(b.getAttribute('data-v2-go')); });
+      });
+
+      /* ── 6) 左欄四化標籤說明 ── */
+      var stars = document.getElementById('detail-stars-line');
+      var tip = el('div', 'v2-tip');
+      tip.setAttribute('role', 'tooltip');
+      tip.hidden = true;
+      document.body.appendChild(tip);
+      function hideTip() { tip.hidden = true; }
+      function prepTags() {
+        if (!stars) return;
+        stars.querySelectorAll('.transform-tag').forEach(function (t) { t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); });
+      }
+      function showTip(tag) {
+        var tf = TF_ORDER.filter(function (k) { return tag.classList.contains(k); })[0];
+        var d = tf && F.td('TRANSFORM_TOOLTIP', tf);
+        if (!d) return;
+        tip.innerHTML = '';
+        var t = el('div', 'v2-tip-title'); t.innerHTML = d.title || ''; tip.appendChild(t);
+        var b = el('p', 'v2-tip-body'); b.innerHTML = d.body || ''; tip.appendChild(b);
+        tip.hidden = false;
+        var r = tag.getBoundingClientRect();
+        var w = Math.min(280, window.innerWidth - 32);
+        tip.style.width = w + 'px';
+        tip.style.left = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 16)) + window.scrollX + 'px';
+        tip.style.top = (r.bottom + 10 + window.scrollY) + 'px';
+      }
+      if (stars) {
+        stars.addEventListener('click', function (e) {
+          var tag = e.target.closest && e.target.closest('.transform-tag');
+          if (!tag) return;
+          e.stopPropagation();
+          if (!tip.hidden && tip._for === tag) { hideTip(); return; }
+          tip._for = tag; showTip(tag);
+        });
+        stars.addEventListener('keydown', function (e) {
+          if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('transform-tag')) { e.preventDefault(); e.target.click(); }
+        });
+        new MutationObserver(function () { hideTip(); prepTags(); }).observe(stars, { childList: true });
+      }
+      document.addEventListener('click', function (e) { if (!tip.contains(e.target)) hideTip(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideTip(); });
+      window.addEventListener('resize', hideTip);
+
+      /* ── 5b) 章節列 / 主題選單：捲動導覽 + 目前段落 ── */
+      function sectionOf(id) {
+        var t = document.getElementById(id);
+        if (!t) return null;
+        return (t.closest && t.closest('.section')) || t;
+      }
+      function wireNav(navId, viewId, arrows) {
         var nav = document.getElementById(navId);
         if (!nav) return null;
         var links = nav.querySelectorAll('[data-v2-target]');
@@ -1255,9 +1522,23 @@
           links[i].addEventListener('click', function (e) {
             e.preventDefault();
             var t = sectionOf(this.getAttribute('data-v2-target'));
-            if (t) t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+            if (t) t.scrollIntoView({ behavior: smooth(), block: 'start' });
           });
         }
+        if (arrows) nav.addEventListener('keydown', function (e) {
+          var list = Array.prototype.slice.call(links);
+          var i = list.indexOf(document.activeElement);
+          if (i < 0) return;
+          var n = null;
+          if (e.key === 'ArrowRight') n = (i + 1) % list.length;
+          else if (e.key === 'ArrowLeft') n = (i - 1 + list.length) % list.length;
+          else if (e.key === 'Home') n = 0;
+          else if (e.key === 'End') n = list.length - 1;
+          if (n === null) return;
+          e.preventDefault();
+          list[n].focus();
+          list[n].click();
+        });
         return function update() {
           var view = document.getElementById(viewId);
           if (!view || !view.classList.contains('active')) return;
@@ -1270,18 +1551,110 @@
           for (var k = 0; k < links.length; k++) links[k].classList.toggle('is-selected', k === cur);
         };
       }
-      var updaters = [wireNav('v2-chapter-tabs', 'view-detail'), wireNav('v2-rail', 'view-overview')].filter(Boolean);
+      var updaters = [wireNav('v2-chapter-tabs', 'view-detail', true), wireNav('v2-rail', 'view-overview', false)].filter(Boolean);
+
+      /* ── 7) 返回頂部 ── */
+      var topBtn = document.getElementById('v2-top');
+      if (topBtn) topBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: smooth() }); });
+
       var ticking = false;
       function onScroll() {
         if (ticking) return;
         ticking = true;
-        requestAnimationFrame(function () { ticking = false; updaters.forEach(function (u) { u(); }); });
+        requestAnimationFrame(function () {
+          ticking = false;
+          updaters.forEach(function (u) { u(); });
+          if (topBtn) topBtn.hidden = window.scrollY < 600;
+        });
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll);
-      // 切換 view（module 的 showView 會改 .active）→ 重新標示
+
+      /* ── 1) 瀏覽紀錄 + 網址 ── */
+      var applying = false;
+      var lastKey = null;
+      var syncQueued = false;
+      function stateNow() {
+        var f = FS();
+        if (!f) return null;
+        var v = f.currentView();
+        if (['view-overview', 'view-hub', 'view-detail'].indexOf(v) === -1) return null;
+        return { view: v, palace: v === 'view-detail' ? f.currentPalace() : null };
+      }
+      function keyOf(s) { return s.view + '|' + (s.palace || ''); }
+      function urlOf(s) {
+        var u = new URL(window.location.href);
+        u.searchParams.delete('view');
+        u.searchParams.delete('palace');
+        if (s.view === 'view-hub') u.searchParams.set('view', 'hub');
+        else if (s.view === 'view-detail' && s.palace) u.searchParams.set('palace', s.palace);
+        return u.pathname + u.search + u.hash;
+      }
+      function sync() {
+        syncQueued = false;
+        if (!ready) return;
+        var s = stateNow();
+        if (!s) return;
+        var k = keyOf(s);
+        if (s.view === 'view-detail' && s.palace) { try { localStorage.setItem(LAST_KEY, s.palace); } catch (_) {} }
+        if (k === lastKey) return;
+        if (applying) history.replaceState({ v2: s }, '', urlOf(s));
+        else history.pushState({ v2: s }, '', urlOf(s));
+        lastKey = k;
+      }
+      function queueSync() {
+        onScroll();
+        if (syncQueued) return;
+        syncQueued = true;
+        requestAnimationFrame(sync);
+      }
+      window.addEventListener('popstate', function (e) {
+        var s = (e.state && e.state.v2) || { view: 'view-overview', palace: null };
+        if (!FS()) return;
+        applying = true;
+        hideTip();
+        if (s.view === 'view-detail' && s.palace) FS().openDetail(s.palace);
+        else FS().showView(s.view);
+        lastKey = keyOf(s);
+        requestAnimationFrame(function () { applying = false; });
+      });
+
+      /* 資料就緒 / 重繪（首次載入、語言切換都會重建 #palace-grid）*/
+      function onHubRendered() {
+        if (!grid || !grid.querySelector('.palace-card')) return;
+        decorateHub();
+        renderPreview();
+        buildSwitcher();
+        renderIntros();
+        if (!ready && FS() && FS().isReady()) {
+          ready = true;
+          // 深連結：?view=hub / ?palace=命宮
+          var q = new URLSearchParams(window.location.search);
+          var want = { view: 'view-overview', palace: null };
+          var pp = q.get('palace');
+          if (pp && ORDER.indexOf(pp) !== -1) want = { view: 'view-detail', palace: pp };
+          else if (q.get('view') === 'hub') want = { view: 'view-hub', palace: null };
+          applying = true;
+          if (want.view === 'view-detail') { FS().openDetail(want.palace); select(want.palace); }
+          else if (want.view === 'view-hub') FS().showView('view-hub');
+          var s = stateNow() || want;
+          history.replaceState({ v2: s }, '', urlOf(s));
+          lastKey = keyOf(s);
+          requestAnimationFrame(function () { applying = false; });
+        }
+      }
+      if (grid) new MutationObserver(function (muts) {
+        // 只在 module 重建宮位卡時反應（忽略本 script 自己加的預覽 / 四化標）
+        var rebuilt = muts.some(function (m) {
+          return m.target === grid && Array.prototype.some.call(m.removedNodes, function (n) { return n.classList && n.classList.contains('palace-card'); })
+              || m.target === grid && Array.prototype.some.call(m.addedNodes, function (n) { return n.classList && n.classList.contains('palace-card'); });
+        });
+        if (rebuilt) onHubRendered();
+      }).observe(grid, { childList: true });
+      if (titleEl) new MutationObserver(function () { markSelected(); queueSync(); }).observe(titleEl, { childList: true, characterData: true, subtree: true });
       var views = document.querySelectorAll('.view');
-      for (var v = 0; v < views.length; v++) new MutationObserver(onScroll).observe(views[v], { attributes: true, attributeFilter: ['class'] });
+      for (var v = 0; v < views.length; v++) new MutationObserver(queueSync).observe(views[v], { attributes: true, attributeFilter: ['class'] });
+      onHubRendered();
       onScroll();
     }
 
@@ -1825,6 +2198,20 @@
     showView(view);
   }
   window.addEventListener('i18n:changed', () => { document.title = tx('chart.docTitle'); rerender(); });
+
+  // ── v2 視覺層掛鉤（唯讀 + 導覽）──────────────────────────────
+  //   供頁尾 v2 script 使用（宮位切換列、兩段式十二宮、深連結、瀏覽紀錄、導讀）。
+  //   開宮位一律走 openDetail（四化 gate 在其中，照常執行）；getter 只回免費欄位
+  //   composition / palace_analysis（gated view 對所有使用者開放），不暴露付費欄與 isUnlocked。
+  window.FSChart = Object.freeze({
+    openDetail: (p) => openDetail(p),
+    showView: (id) => showView(id),
+    currentView: () => currentView,
+    currentPalace: () => currentPalace,
+    isReady: () => !!chartSessionId,
+    getComposition: (p) => reportsByPalace[p]?.composition || null,
+    getAnalysis: (p) => reportsByPalace[p]?.palace_analysis || '',
+  });
 
   init();
 </script>
