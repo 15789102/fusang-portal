@@ -45,6 +45,10 @@
       'pr.c1ForLabel':{ 'zh-TW': '適合', 'zh-CN': '适合', 'en': 'Who it suits' },
       'pr.c1For':     { 'zh-TW': '想認識自己整體的人生藍圖，知道手上有哪些資源可以掌握，也想跟著每個月的變化調整腳步。第一次接觸紫微斗數的人，多半從這裡開始。', 'zh-CN': '想认识自己整体的人生蓝图，知道手上有哪些资源可以掌握，也想跟着每个月的变化调整脚步。第一次接触紫微斗数的人，多半从这里开始。', 'en': 'You want the wider picture of your life and what you already have to draw on, and you want to follow how things shift month by month. This is where most people new to Zi Wei Dou Shu begin.' },
       'pr.c1Btn':     { 'zh-TW': '永久解鎖全部四化', 'zh-CN': '永久解锁全部四化', 'en': 'Unlock All Four Layers' },
+      // 已買過四化 → 按鈕改為已解鎖狀態
+      'pr.c1Owned':   { 'zh-TW': '已解鎖全部四化', 'zh-CN': '已解锁全部四化', 'en': 'All four layers unlocked' },
+      'pr.c1OwnedNote':{ 'zh-TW': '你已經擁有完整命盤解讀，未來的年份與月份也會自動包含四化。', 'zh-CN': '你已经拥有完整命盘解读，未来的年份与月份也会自动包含四化。', 'en': 'You already have the full reading. Future years and months will include the transformations automatically.' },
+      'pr.c1OwnedLink':{ 'zh-TW': '回到我的命盤', 'zh-CN': '回到我的命盘', 'en': 'Back to my chart' },
 
       // ── 區塊 4:單獨問事(ticket)── 僅 CONSULT_ENABLED=true 時顯示
       'pr.bSecTitle': { 'zh-TW': '單獨問事', 'zh-CN': '单独问事', 'en': 'Individual Consultation' },
@@ -382,6 +386,14 @@
     .fs-v2 .pr-btn.outline:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
     .fs-v2 .pr-btn:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
     .fs-v2 .pr-btn:disabled { background: #f7f7f7; color: var(--v2-muted); border-color: #f7f7f7; }
+    /* 已解鎖狀態 */
+    .fs-v2 .pr-btn.is-owned,
+    .fs-v2 .pr-btn.is-owned:disabled { background: var(--v2-tint); color: var(--v2-blue); border-color: var(--v2-blue-line); cursor: default; }
+    .fs-v2 .pr-owned[hidden] { display: none; }
+    .fs-v2 .pr-owned { margin: 12px 0 0; }
+    .fs-v2 .pr-owned-note { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+    .fs-v2 .pr-owned-link { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; font-weight: 600; color: var(--v2-ink); border-bottom: 1px solid var(--v2-ink); }
+    .fs-v2 .pr-owned-link:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
 
     /* 版位：I 寬卡兩欄；II 同樣兩欄（由 v2 標記的 .pr-wide 包住）*/
     .fs-v2 .pr-sec-a,
@@ -499,6 +511,11 @@
             </div>
             <div class="pr-price-note" data-i18n="pr.c1PriceNote">永久有效，含未來年份與月份，不再另外收費</div>
             <button class="pr-btn" data-product="sihua" data-i18n="pr.c1Btn">永久解鎖全部四化</button>
+            <!-- 已解鎖時顯示（JS 讀 user_profiles.sihua_unlocked；只讀，不影響付款流程）-->
+            <div class="pr-owned" id="pr-owned" hidden>
+              <p class="pr-owned-note" data-i18n="pr.c1OwnedNote">你已經擁有完整命盤解讀，未來的年份與月份也會自動包含四化。</p>
+              <a class="pr-owned-link" href="chart.html" data-i18n="pr.c1OwnedLink">回到我的命盤</a>
+            </div>
           </div>
 
           <div class="pr-wide-right">
@@ -584,7 +601,7 @@
 <div id="site-footer"></div>
 
 <script type="module">
-  import { requireAuth, startCheckout } from './components.js';
+  import { supabase, requireAuth, startCheckout } from './components.js';
 
   const F = window.FSI18N;
   const noticeEl = document.getElementById('pr-notice');
@@ -661,10 +678,28 @@
   // 語言切換(header 切換鈕派 i18n:changed)→ 更新標題、補填價格、重繪通知
   //   頁面靜態內容(data-i18n)由 setUILang 的 applyI18n 自動重譯,此處只補非 data-i18n
   //   部分,以及 applyI18n 寫回後被清掉的價格佔位。
+  // 已買過四化：按鈕改為「已解鎖全部四化」（停用）＋ 回命盤連結
+  //   只讀 user_profiles.sihua_unlocked；讀取失敗 → 維持可購買（不阻擋正常購買流程）。
+  let sihuaOwned = false;
+  function renderOwned() {
+    if (!sihuaOwned) return;
+    const btn = document.querySelector('.pr-btn[data-product="sihua"]');
+    if (btn) {
+      btn.removeAttribute('data-i18n');          // 避免語言切換時 applyI18n 改回購買文案
+      btn.classList.add('is-owned');
+      btn.disabled = true;
+      btn.setAttribute('aria-disabled', 'true');
+      btn.textContent = F.t('pr.c1Owned');
+    }
+    const box = document.getElementById('pr-owned');
+    if (box) box.hidden = false;
+  }
+
   function applyLangUi() {
     document.title = F.t('pr.docTitle');
     fillPrices();
     renderNotice();
+    renderOwned();
   }
   applyLangUi();
   // module script 為 defer,執行時 i18n.js 掛的 DOMContentLoaded applyI18n 尚未跑;
@@ -681,6 +716,13 @@
   (async function init() {
     const session = await requireAuth();
     if (!session) return;
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles').select('sihua_unlocked')
+        .eq('id', session.user.id).maybeSingle();
+      sihuaOwned = !error && !!data && data.sihua_unlocked === true;
+    } catch (_) { sihuaOwned = false; }
+    renderOwned();
     bindButtons();
   })();
 </script>
