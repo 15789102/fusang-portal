@@ -141,7 +141,7 @@
   /* 客戶見證（2026-09-24）：原文照登；來源為先前的一對一解讀 */
   .fs-v2 .lp-secthead h2.zh { margin: 0; }
   .fs-v2 .lp-secthead .lp-sect-note { margin: 4px 0 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
-  .fs-v2 .lp-testis { columns: 3 260px; column-gap: 16px; }
+  .fs-v2 .lp-testis { columns: 2 320px; column-gap: 16px; }
   .fs-v2 .lp-testi { break-inside: avoid; margin: 0 0 16px; padding: 24px; background: #ffffff; border: 1px solid var(--v2-line); }
   .fs-v2 .lp-testi:first-child { background: var(--v2-tint); border-color: var(--v2-blue-line); }
   .fs-v2 .lp-testi-mk { display: block; width: 20px; height: 20px; margin: 0 0 12px; fill: var(--v2-blue); }
@@ -149,7 +149,7 @@
   .fs-v2 .lp-testi-by { margin: 12px 0 0; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
 
   /* 創辦人背景：三格事實數字 + 自述 */
-  .fs-v2 .lp-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 20px; border-top: 1px solid var(--v2-line); border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .lp-facts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 0 0 20px; border-top: 1px solid var(--v2-line); border-bottom: 1px solid var(--v2-line); }
   .fs-v2 .lp-fact { padding: 16px 12px 16px 0; }
   .fs-v2 .lp-fact + .lp-fact { padding-left: 16px; border-left: 1px solid var(--v2-line); }
   .fs-v2 .lp-fact-n { display: block; font-family: var(--v2-font-latin); font-size: 28px; line-height: 36px; font-weight: 500; color: var(--v2-blue); }
@@ -310,6 +310,7 @@
   // ── 客戶見證 ─────────────────────────────────────────────────
   //   zh：原文照登（只做繁轉簡，不改語意）；en：翻譯，並於區段說明註明譯自中文。
   //   來源：先前的一對一解讀（非目前的書面問事），區段說明如實標示。
+  //   2026-09-24 精選 4 則：內容具體、能說明解讀方式與感受者；純讚美短句未放。
   const TESTIMONIALS = [
     { zh: '整體都很好！我喜歡會先說明整體狀態、個性，再回應到流年。語氣中也可以感覺得到正向和溫暖。有給予很多自己判斷的方向和可能性，也會建議最後回到自己去做決定！',
       cn: '整体都很好！我喜欢会先说明整体状态、个性，再回应到流年。语气中也可以感觉得到正向和温暖。有给予很多自己判断的方向和可能性，也会建议最后回到自己去做决定！',
@@ -323,19 +324,12 @@
     { zh: '很感謝Ben提供這次的機會 真的學到很多也很充實的訪談 讓我可以好好審視自己各方面的狀態！Really appreciate that!! Thanks a lot!!',
       cn: '很感谢Ben提供这次的机会 真的学到很多也很充实的访谈 让我可以好好审视自己各方面的状态！Really appreciate that!! Thanks a lot!!',
       en: 'Thank you, Ben, for this opportunity. I learned a lot, and the session was truly rich. It let me take a good look at every part of my life. Really appreciate that!! Thanks a lot!!' },
-    { zh: '能了解自己的命盤還有聽一些人生的建議真的好有趣～',
-      cn: '能了解自己的命盘还有听一些人生的建议真的好有趣～',
-      en: 'Getting to understand my own chart and hear some life advice was so much fun!' },
-    { zh: 'BenBen太讚惹！！感恩～謝謝',
-      cn: 'BenBen太赞惹！！感恩～谢谢',
-      en: 'BenBen, you were amazing!! So grateful, thank you.' },
   ];
   const QUOTE_SVG = '<svg class="lp-testi-mk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V12.5C4 8.4 6.2 5.8 10 5l.7 1.6C8.6 7.4 7.6 8.9 7.5 11H10v7zm10 0V12.5c0-4.1 2.2-6.7 6-7.5l.7 1.6c-2.1.8-3.1 2.3-3.2 4.4H20v7z"/></svg>';
 
   // ── 創辦人背景（事實，不誇大）──────────────────────────────
   const FACTS = [
-    { n: '2023', zh: '開始研習紫微斗數', cn: '开始研习紫微斗数', en: 'Began studying Zi Wei Dou Shu' },
-    { n: '1:1',  zh: '實體一對一解讀', cn: '实体一对一解读', en: 'In-person, one-on-one readings' },
+    { n: '1:1',  zh: '一對一解讀命盤', cn: '一对一解读命盘', en: 'One-on-one chart readings' },
     { n: '300+', zh: '位使用者用過線上命財官解析', cn: '位使用者用过线上命财官解析', en: 'People used the online Life, Wealth and Career reading' },
   ];
 
@@ -385,9 +379,9 @@
       `<div class="lp-fact"><span class="lp-fact-n">${f.n}</span><span class="lp-fact-l">${pick(f.zh, f.cn, f.en)}</span></div>`
     ).join('');
     document.getElementById('story-bio').textContent = pick(
-      '我是 R.S. Chen，大家都叫我 Ben。2023 年開始學習紫微斗數，先以實體一對一的方式為人解讀命盤；之後推出線上的「命財官解析」，至今已有 300 多位使用者。',
-      '我是 R.S. Chen，大家都叫我 Ben。2023 年开始学习紫微斗数，先以实体一对一的方式为人解读命盘；之后推出线上的「命财官解析」，至今已有 300 多位使用者。',
-      'I am R.S. Chen, and most people call me Ben. I began studying Zi Wei Dou Shu in 2023 and first offered in-person, one-on-one chart readings. Since then, more than 300 people have used my online Life, Wealth and Career reading.'
+      '我是 R.S. Chen，大家都叫我 Ben。我先以一對一的方式為人解讀命盤；之後推出線上的「命財官解析」，至今已有 300 多位使用者。',
+      '我是 R.S. Chen，大家都叫我 Ben。我先以一对一的方式为人解读命盘；之后推出线上的「命财官解析」，至今已有 300 多位使用者。',
+      'I am R.S. Chen, and most people call me Ben. I first read charts one-on-one, and since then more than 300 people have used my online Life, Wealth and Career reading.'
     );
     document.getElementById('val-1').textContent = pick('自我探索', '自我探索', 'Self-exploration');
     document.getElementById('val-2').textContent = pick('勇氣', '勇气', 'Courage');
