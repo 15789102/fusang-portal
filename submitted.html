@@ -13,7 +13,7 @@
     window.FSI18N.addUI({
       'sm.docTitle':  { 'zh-TW': 'FuSang Vision — 命盤生成中', 'zh-CN': 'FuSang Vision — 命盘生成中', 'en': 'FuSang Vision — Chart in Progress' },
       'sm.title':     { 'zh-TW': '正在為您繪製命盤', 'zh-CN': '正在为您绘制命盘', 'en': 'Crafting your chart' },
-      'sm.subtitle':  { 'zh-TW': '請稍候——以下是幕後正在進行的步驟。', 'zh-CN': '请稍候——以下是幕后正在进行的步骤。', 'en': "Hang tight — here's what's happening behind the scenes." },
+      'sm.subtitle':  { 'zh-TW': '請稍候——以下是幕後正在進行的步驟。', 'zh-CN': '请稍候——以下是幕后正在进行的步骤。', 'en': 'Hang tight. Here is what is happening behind the scenes.' },
       'sm.s1Eyebrow': { 'zh-TW': '完成 · 剛剛', 'zh-CN': '完成 · 刚刚', 'en': 'Done · just now' },
       'sm.s1Title':   { 'zh-TW': '已提交', 'zh-CN': '已提交', 'en': 'Submitted' },
       'sm.s1Desc':    { 'zh-TW': '您的出生資料已收到，專屬工作階段已建立。', 'zh-CN': '您的出生资料已收到，专属工作会话已建立。', 'en': 'Your birth details are in and your session is created.' },
@@ -25,316 +25,169 @@
       'sm.s3Desc':    { 'zh-TW': '您完整的紫微解讀已彙整並儲存至您的帳戶。', 'zh-CN': '您完整的紫微解读已汇整并保存至您的账户。', 'en': 'Your full Zi Wei reading is assembled and saved to your account.' },
       'sm.s4Eyebrow': { 'zh-TW': '完成時', 'zh-CN': '完成时', 'en': 'When ready' },
       'sm.s4Title':   { 'zh-TW': '通知信即將寄出', 'zh-CN': '通知信即将发送', 'en': 'Email on its way' },
-      'sm.s4Desc':    { 'zh-TW': '命盤一準備好，我們會立即寄信到 {email} 通知您。', 'zh-CN': '命盘一准备好，我们会立即发送邮件到 {email} 通知您。', 'en': "We'll let you know at {email} the moment it's ready to view." },
+      'sm.s4Desc':    { 'zh-TW': '命盤一準備好，我們會立即寄信到 {email} 通知您。', 'zh-CN': '命盘一准备好，我们会立即发送邮件到 {email} 通知您。', 'en': 'We will let you know at {email} as soon as it is ready to view.' },
       'sm.yourInbox': { 'zh-TW': '您的信箱', 'zh-CN': '您的信箱', 'en': 'your inbox' },
       'sm.refLabel':  { 'zh-TW': '參考編號', 'zh-CN': '参考编号', 'en': 'Reference ID' },
-      'sm.refHint':   { 'zh-TW': '請保存此編號——若需我們的團隊協助時會用到。', 'zh-CN': '请保存此编号——若需我们的团队协助时会用到。', 'en': 'Save this ID — useful if our team needs to assist you.' },
+      'sm.refHint':   { 'zh-TW': '請保存此編號——若需我們的團隊協助時會用到。', 'zh-CN': '请保存此编号——若需我们的团队协助时会用到。', 'en': 'Save this ID. It helps if our team needs to assist you.' },
       'sm.copyAria':  { 'zh-TW': '複製參考編號', 'zh-CN': '复制参考编号', 'en': 'Copy reference ID' },
-      'sm.footClose': { 'zh-TW': '您可以放心關閉此視窗，命盤完成時我們會以電子郵件通知您。', 'zh-CN': '您可以放心关闭此窗口，命盘完成时我们会以电子邮件通知您。', 'en': "You can safely close this window. We'll email you when your chart is ready." },
+      'sm.footClose': { 'zh-TW': '您可以放心關閉此視窗，命盤完成時我們會以電子郵件通知您。', 'zh-CN': '您可以放心关闭此窗口，命盘完成时我们会以电子邮件通知您。', 'en': 'You can safely close this window. We will email you when your chart is ready.' },
       'sm.footHelp':  { 'zh-TW': '需要協助？', 'zh-CN': '需要协助？', 'en': 'Need help?' },
       'sm.footContact':{ 'zh-TW': '聯絡我們的團隊 →', 'zh-CN': '联系我们的团队 →', 'en': 'Contact our team →' },
-      'sm.backLogin': { 'zh-TW': '← 回到登入', 'zh-CN': '← 返回登录', 'en': '← Back to login' }
+      'sm.backLogin': { 'zh-TW': '← 回到登入', 'zh-CN': '← 返回登录', 'en': '← Back to login' },
+      // v2 版型
+      'sm.craft':     { 'zh-TW': '紫微斗數', 'zh-CN': '紫微斗数', 'en': 'Zi Wei Dou Shu' },
+      'sm.copied':    { 'zh-TW': '已複製', 'zh-CN': '已复制', 'en': 'Copied' }
     });
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
+  <!-- v2 視覺（共用版型 §10 公開頁）。本頁刻意不載 components.js / Supabase，頁尾為頁內簡版 -->
+  <link rel="stylesheet" href="fs-v2.css" />
   <style>
-    :root {
-      --ink-darkest: #001b3c;
-      --accent-deep: #1d4e63;
-      --accent-soft: #296283;
-      --gold: #b8945c;
-      --bg-primary: #f8f9fa;
-      --bg-card: #ffffff;
-      --bg-soft: #eef3f9;
-      --rule: #dbe2ea;
-      --accent-pale: #c7e7ff;
-      --ink-dark: #16323f;
-      --ink-mid: #41484d;
-      --ink-light: #8a97a5;
-      --font-serif: 'Cormorant Garamond', Georgia, serif;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg-primary);
-      color: var(--ink-dark);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      padding: 56px 20px 72px;
-      -webkit-font-smoothing: antialiased;
-    }
-    .container { max-width: 520px; margin: 0 auto; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body.fs-v2 { min-height: 100vh; display: flex; flex-direction: column; }
+    .fs-v2 a { color: inherit; text-decoration: none; }
+    .fs-v2 button { font-family: inherit; }
+    .fs-v2 h1, .fs-v2 h2, .fs-v2 p, .fs-v2 ol { margin: 0; padding: 0; }
 
-    .brand-mark {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--ink-darkest);
-      text-align: center;
-      margin-bottom: 36px;
+    /* 卡片內：處理進度（縱向時間軸）*/
+    .fs-v2 .sm-timeline { list-style: none; margin: 0 0 28px; }
+    .fs-v2 .sm-step { position: relative; padding: 0 0 24px 44px; min-height: 28px; }
+    .fs-v2 .sm-step:last-child { padding-bottom: 0; }
+    .fs-v2 .sm-step::before { content: ''; position: absolute; left: 13px; top: 30px; bottom: 2px; width: 1px; background: var(--v2-line); }
+    .fs-v2 .sm-step:last-child::before { display: none; }
+    .fs-v2 .sm-step.done::before { background: var(--v2-blue); }
+    .fs-v2 .sm-node {
+      position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--v2-font-latin); font-size: 12px; font-weight: 600; line-height: 1;
     }
+    .fs-v2 .sm-step.done .sm-node,
+    .fs-v2 .sm-step.active .sm-node { background: var(--v2-ink); color: #ffffff; }
+    .fs-v2 .sm-step.upcoming .sm-node { background: #ffffff; color: var(--v2-faint); border: 1px solid var(--v2-line); }
+    .fs-v2 .sm-step.active .sm-node::after {
+      content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--v2-blue);
+      animation: smPulse 2.2s ease-out infinite;
+    }
+    @keyframes smPulse { 0% { transform: scale(.8); opacity: .85; } 100% { transform: scale(1.55); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .fs-v2 .sm-step.active .sm-node::after { opacity: .55; transform: scale(1.15); } }
+    .fs-v2 .sm-eyebrow { margin: 0 0 2px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
+    .fs-v2 .sm-step.active .sm-eyebrow { color: var(--v2-blue); font-weight: 600; }
+    .fs-v2 .sm-title { margin: 0 0 2px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; font-weight: 600; color: var(--v2-ink); }
+    .fs-v2 .sm-step.upcoming .sm-title { color: var(--v2-muted); font-weight: 500; }
+    .fs-v2 .sm-desc { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+    .fs-v2 .sm-desc code { font-family: var(--v2-font-latin); font-size: 13px; font-weight: 500; color: var(--v2-ink); background: var(--v2-tint); padding: 1px 6px; display: inline-block; max-width: 100%; overflow-wrap: anywhere; vertical-align: bottom; }
 
-    .title {
-      font-family: var(--font-serif);
-      font-size: 34px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      color: var(--ink-darkest);
-      text-align: center;
-      line-height: 1.2;
-      margin-bottom: 10px;
+    /* 參考編號（設計師 form ④ 語彙：左側線 + 淡藍底）*/
+    .fs-v2 .sm-ref { padding: 16px 18px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); }
+    .fs-v2 .sm-ref-label { margin: 0 0 6px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .sm-ref-row { display: flex; align-items: center; gap: 10px; }
+    .fs-v2 .sm-ref-row code { flex: 1; min-width: 0; font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 13px; line-height: 20px; color: var(--v2-ink); word-break: break-all; }
+    .fs-v2 .sm-copy {
+      flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0;
+      background: #ffffff; border: 1px solid var(--v2-line); color: var(--v2-muted); cursor: pointer; transition: border-color .15s, color .15s;
     }
-    .subtitle {
-      text-align: center;
-      font-size: 14px;
-      color: var(--ink-mid);
-      max-width: 380px;
-      margin: 0 auto;
-    }
+    .fs-v2 .sm-copy:hover { border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .sm-copy:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .sm-copy .ic-done { display: none; }
+    .fs-v2 .sm-copy.is-copied { border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .sm-copy.is-copied .ic-copy { display: none; }
+    .fs-v2 .sm-copy.is-copied .ic-done { display: inline; }
+    .fs-v2 .sm-ref-hint { margin: 8px 0 0; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
 
-    .divider { height: 1px; background: var(--rule); margin: 36px 0 34px; }
+    .fs-v2 .sm-foot { margin-top: 24px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+    .fs-v2 .sm-foot a { color: var(--v2-ink); border-bottom: 1px solid var(--v2-ink); padding-bottom: 1px; }
+    .fs-v2 .sm-foot a:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
+    .fs-v2 .sm-back { display: inline-block; margin-top: 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; font-weight: 600; color: var(--v2-ink); }
+    .fs-v2 .sm-back:hover { color: var(--v2-blue); }
 
-    /* ── Signature: vertical process timeline ───────────────── */
-    .timeline { list-style: none; }
-    .step {
-      position: relative;
-      padding: 0 0 26px 46px;
-      min-height: 28px;
+    /* 頁尾（簡版，與全站頁尾同語彙）*/
+    .fs-v2 .sm-page-footer {
+      margin-top: auto; padding: 24px max(var(--v2-gutter), calc((100% - var(--v2-max)) / 2)) 32px;
+      border-top: 1px solid var(--v2-line-soft); font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-faint);
     }
-    .step:last-child { padding-bottom: 0; }
-    /* connector */
-    .step::before {
-      content: '';
-      position: absolute;
-      left: 13px;
-      top: 26px;
-      bottom: -2px;
-      width: 2px;
-      background: var(--rule);
-    }
-    .step:last-child::before { display: none; }
-    .step.done::before { background: var(--gold); }
-    /* node */
-    .node {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      font-family: var(--font-sans);
-    }
-    .step.done .node { background: var(--ink-darkest); color: #fff; }
-    .step.active .node { background: var(--ink-darkest); color: #fff; }
-    .step.upcoming .node {
-      background: var(--bg-card);
-      color: var(--ink-light);
-      border: 1.5px solid var(--rule);
-    }
-    /* active pulse ring */
-    .step.active .node::after {
-      content: '';
-      position: absolute;
-      inset: -5px;
-      border-radius: 50%;
-      border: 2px solid var(--gold);
-      animation: pulse 2.2s ease-out infinite;
-    }
-    @keyframes pulse {
-      0%   { transform: scale(0.8); opacity: 0.85; }
-      100% { transform: scale(1.55); opacity: 0; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .step.active .node::after { animation: none; opacity: 0.55; transform: scale(1.15); }
-    }
-
-    .step .eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 3px;
-    }
-    .step.active .eyebrow { color: var(--gold); }
-    .step .s-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--ink-darkest);
-      margin-bottom: 3px;
-    }
-    .step.upcoming .s-title { color: var(--ink-mid); font-weight: 500; }
-    .step .s-desc { font-size: 13px; color: var(--ink-mid); line-height: 1.55; }
-    .step .s-desc code {
-      font-family: var(--font-sans);
-      color: var(--ink-darkest);
-      font-weight: 500;
-      background: var(--bg-soft);
-      padding: 1px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
-
-    /* ── Reference ID card ──────────────────────────────────── */
-    .ref-card {
-      margin-top: 34px;
-      padding: 16px 18px;
-      background: var(--bg-soft);
-      border-left: 3px solid var(--gold);
-      border-radius: 4px;
-    }
-    .ref-label {
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 8px;
-    }
-    .ref-row { display: flex; align-items: center; gap: 10px; }
-    .ref-row code {
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      color: var(--ink-darkest);
-      word-break: break-all;
-      flex: 1;
-    }
-    .copy-btn {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border: 1px solid var(--rule);
-      background: var(--bg-card);
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--ink-mid);
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-    .copy-btn:hover { border-color: var(--accent-soft); color: var(--ink-darkest); }
-    .copy-btn:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
-    .ref-hint { font-size: 11px; color: var(--ink-light); margin-top: 8px; }
-
-    .footnote {
-      text-align: center;
-      font-size: 12.5px;
-      color: var(--ink-light);
-      line-height: 1.7;
-      margin-top: 32px;
-    }
-    .footnote a { color: var(--accent-soft); text-decoration: none; }
-    .footnote a:hover { text-decoration: underline; }
-
-    .back-login { display: inline-block; margin-top: 14px; color: var(--accent-soft); text-decoration: none; font-size: 13px; letter-spacing: 0.02em; }
-    .back-login:hover { color: var(--accent-deep); }
-    .page-footer { text-align: center; margin-top: 48px; }
-    .page-footer p { font-size: 11px; color: var(--ink-light); letter-spacing: 0.02em; }
-
-    @media (max-width: 420px) {
-      .title { font-size: 28px; }
-    }
-
-    /* ── 頁內 UI 語言切換(此頁無 header,固定右上)── */
-    .sm-lang {
-      position: fixed; top: 16px; right: 18px; z-index: 20;
-      display: inline-flex; align-items: center;
-      border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
-      background: var(--bg-primary);
-    }
-    .sm-lang-opt {
-      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.06em;
-      color: var(--ink-light); padding: 6px 10px; line-height: 1;
-      background: transparent; border: none; cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-    .sm-lang-opt + .sm-lang-opt { border-left: 1px solid var(--rule); }
-    .sm-lang-opt:hover { color: var(--accent-deep); }
-    .sm-lang-opt.active { background: var(--accent-deep); color: #fff; }
-    @media (max-width: 560px) {
-      .sm-lang { top: 12px; right: 12px; }
-      .sm-lang-opt { padding: 5px 8px; font-size: 10px; }
-    }
+    .fs-v2 .v2-auth-stage { flex: 1 0 auto; }
+    @media (max-width: 899px) { .fs-v2 .v2-auth-stage { align-content: start; } }
   </style>
 </head>
-<body>
+<body class="sm-body fs-v2">
 
-  <!-- 頁內 UI 語言切換(此頁無 header)-->
-  <div class="sm-lang" id="sm-lang">
-    <button type="button" class="sm-lang-opt" data-lang="zh-TW">繁中</button>
-    <button type="button" class="sm-lang-opt" data-lang="zh-CN">简中</button>
-    <button type="button" class="sm-lang-opt" data-lang="en">EN</button>
-  </div>
+  <!-- 品牌列 ＋ 語言切換（此頁無主選單）-->
+  <header class="v2-auth-bar">
+    <span class="v2-auth-brand">
+      <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
+      <span class="v2-auth-brand-name">FuSang Vision</span>
+    </span>
+    <div class="v2-auth-lang sm-lang" id="sm-lang" role="group" aria-label="Language">
+      <button type="button" class="sm-lang-opt" data-lang="zh-TW" lang="zh-TW">繁中</button>
+      <button type="button" class="sm-lang-opt" data-lang="zh-CN" lang="zh-CN">简中</button>
+      <button type="button" class="sm-lang-opt" data-lang="en" lang="en">EN</button>
+    </div>
+  </header>
 
-  <main class="container">
+  <main class="v2-auth-stage" id="fs-main">
 
-    <div class="brand-mark">FuSang Vision</div>
-
-    <h1 class="title" data-i18n="sm.title">Crafting your chart</h1>
-    <p class="subtitle" data-i18n="sm.subtitle">Hang tight — here's what's happening behind the scenes.</p>
-
-    <div class="divider"></div>
-
-    <ol class="timeline">
-      <li class="step done">
-        <span class="node" aria-hidden="true">✓</span>
-        <div class="eyebrow" data-i18n="sm.s1Eyebrow">Done · just now</div>
-        <div class="s-title" data-i18n="sm.s1Title">Submitted</div>
-        <div class="s-desc" data-i18n="sm.s1Desc">Your birth details are in and your session is created.</div>
-      </li>
-
-      <li class="step active">
-        <span class="node" aria-hidden="true">2</span>
-        <div class="eyebrow" data-i18n="sm.s2Eyebrow">In progress</div>
-        <div class="s-title" data-i18n="sm.s2Title">Analyzing</div>
-        <div class="s-desc" data-i18n="sm.s2Desc">Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.</div>
-      </li>
-
-      <li class="step upcoming">
-        <span class="node" aria-hidden="true">3</span>
-        <div class="eyebrow" data-i18n="sm.s3Eyebrow">About 20 minutes</div>
-        <div class="s-title" data-i18n="sm.s3Title">Reading complete</div>
-        <div class="s-desc" data-i18n="sm.s3Desc">Your full Zi Wei reading is assembled and saved to your account.</div>
-      </li>
-
-      <li class="step upcoming">
-        <span class="node" aria-hidden="true">4</span>
-        <div class="eyebrow" data-i18n="sm.s4Eyebrow">When ready</div>
-        <div class="s-title" data-i18n="sm.s4Title">Email on its way</div>
-        <!-- 含動態 email → 由 JS 以 {email} 模板組(不用 data-i18n,避免切換時覆蓋信箱) -->
-        <div class="s-desc" id="s4-desc"></div>
-      </li>
-    </ol>
-
-    <div class="ref-card">
-      <div class="ref-label" data-i18n="sm.refLabel">Reference ID</div>
-      <div class="ref-row">
-        <code id="ref-id">—</code>
-        <button id="copy-ref" type="button" class="copy-btn" data-i18n-aria-label="sm.copyAria" aria-label="Copy reference ID">
-          <span class="copy-icon" aria-hidden="true">⎘</span>
-        </button>
-      </div>
-      <div class="ref-hint" data-i18n="sm.refHint">Save this ID — useful if our team needs to assist you.</div>
+    <!-- 左：標題 -->
+    <div class="v2-auth-intro">
+      <p class="v2-auth-eyebrow"><span data-i18n="sm.craft">紫微斗數</span> · FuSang Vision</p>
+      <h1 class="v2-auth-headline" data-i18n="sm.title">Crafting your chart</h1>
+      <p class="v2-auth-lead" data-i18n="sm.subtitle">Hang tight. Here is what is happening behind the scenes.</p>
     </div>
 
-    <p class="footnote">
-      <span data-i18n="sm.footClose">You can safely close this window. We'll email you when your chart is ready.</span><br>
-      <span data-i18n="sm.footHelp">Need help?</span> <a href="mailto:support@fusang-vision.com" data-i18n="sm.footContact">Contact our team →</a><br>
-      <a href="login.html" class="back-login" data-i18n="sm.backLogin">← Back to login</a>
-    </p>
+    <!-- 右：進度卡片 -->
+    <div class="v2-auth-card">
+      <p class="v2-auth-card-eyebrow">Chart in Progress</p>
+
+      <ol class="sm-timeline">
+        <li class="sm-step done">
+          <span class="sm-node" aria-hidden="true">✓</span>
+          <div class="sm-eyebrow" data-i18n="sm.s1Eyebrow">Done · just now</div>
+          <div class="sm-title" data-i18n="sm.s1Title">Submitted</div>
+          <div class="sm-desc" data-i18n="sm.s1Desc">Your birth details are in and your session is created.</div>
+        </li>
+        <li class="sm-step active" aria-current="step">
+          <span class="sm-node" aria-hidden="true">2</span>
+          <div class="sm-eyebrow" data-i18n="sm.s2Eyebrow">In progress</div>
+          <div class="sm-title" data-i18n="sm.s2Title">Analyzing</div>
+          <div class="sm-desc" data-i18n="sm.s2Desc">Calculating your natal chart and reading all twelve palaces, the four transformations, and opposing influences.</div>
+        </li>
+        <li class="sm-step upcoming">
+          <span class="sm-node" aria-hidden="true">3</span>
+          <div class="sm-eyebrow" data-i18n="sm.s3Eyebrow">About 20 minutes</div>
+          <div class="sm-title" data-i18n="sm.s3Title">Reading complete</div>
+          <div class="sm-desc" data-i18n="sm.s3Desc">Your full Zi Wei reading is assembled and saved to your account.</div>
+        </li>
+        <li class="sm-step upcoming">
+          <span class="sm-node" aria-hidden="true">4</span>
+          <div class="sm-eyebrow" data-i18n="sm.s4Eyebrow">When ready</div>
+          <div class="sm-title" data-i18n="sm.s4Title">Email on its way</div>
+          <!-- 含動態 email → 由 JS 以 {email} 模板組(不用 data-i18n,避免切換時覆蓋信箱) -->
+          <div class="sm-desc" id="s4-desc"></div>
+        </li>
+      </ol>
+
+      <div class="sm-ref">
+        <div class="sm-ref-label" data-i18n="sm.refLabel">Reference ID</div>
+        <div class="sm-ref-row">
+          <code id="ref-id">—</code>
+          <button id="copy-ref" type="button" class="sm-copy" data-i18n-aria-label="sm.copyAria" aria-label="Copy reference ID">
+            <svg class="ic-copy" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8"/><path d="M10.5 3.5v-1h-8v8h1"/></svg>
+            <svg class="ic-done" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+          </button>
+        </div>
+        <div class="sm-ref-hint" data-i18n="sm.refHint">Save this ID. It helps if our team needs to assist you.</div>
+      </div>
+
+      <p class="sm-foot">
+        <span data-i18n="sm.footClose">You can safely close this window. We will email you when your chart is ready.</span><br>
+        <span data-i18n="sm.footHelp">Need help?</span> <a href="mailto:support@fusang-vision.com" data-i18n="sm.footContact">Contact our team →</a>
+      </p>
+      <a href="login.html" class="sm-back" data-i18n="sm.backLogin">← Back to login</a>
+    </div>
 
   </main>
 
-  <footer class="page-footer">
-    <p>© 2026 FuSang Vision · Ancient wisdom for a modern life</p>
-  </footer>
+  <footer class="sm-page-footer">© 2026 FuSang Vision · Ancient wisdom for a modern life</footer>
 
   <script>
     (function () {
@@ -377,10 +230,10 @@
         if (!jobId) return;
         try {
           await navigator.clipboard.writeText(jobId);
-          const icon = document.querySelector('#copy-ref .copy-icon');
-          const orig = icon.textContent;
-          icon.textContent = '✓';
-          setTimeout(() => { icon.textContent = orig; }, 1500);
+          const btn = document.getElementById('copy-ref');
+          btn.classList.add('is-copied');
+          btn.setAttribute('aria-label', F.t('sm.copied'));
+          setTimeout(() => { btn.classList.remove('is-copied'); btn.setAttribute('aria-label', F.t('sm.copyAria')); }, 1500);
         } catch (err) {
           console.error('Copy failed:', err);
         }
