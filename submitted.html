@@ -36,7 +36,12 @@
       'sm.backLogin': { 'zh-TW': '← 回到登入', 'zh-CN': '← 返回登录', 'en': '← Back to login' },
       // v2 版型
       'sm.craft':     { 'zh-TW': '紫微斗數', 'zh-CN': '紫微斗数', 'en': 'Zi Wei Dou Shu' },
-      'sm.copied':    { 'zh-TW': '已複製', 'zh-CN': '已复制', 'en': 'Copied' }
+      'sm.copied':    { 'zh-TW': '已複製', 'zh-CN': '已复制', 'en': 'Copied' },
+      // 等待時的下一步：官網免費排盤
+      'sm.nextLabel': { 'zh-TW': '等待的時候', 'zh-CN': '等待的时候', 'en': 'While you wait' },
+      'sm.nextBody':  { 'zh-TW': '可以先透過我們的排盤系統，初步了解不同星曜的特質。', 'zh-CN': '可以先通过我们的排盘系统，初步了解不同星曜的特质。', 'en': 'Try our free chart calculator for a first look at the qualities of each star.' },
+      'sm.nextCta':   { 'zh-TW': '前往免費排盤', 'zh-CN': '前往免费排盘', 'en': 'Open the free calculator' },
+      'sm.newTab':    { 'zh-TW': '（另開新分頁）', 'zh-CN': '（在新标签页打开）', 'en': '(opens in a new tab)' }
     });
   </script>
 
@@ -94,6 +99,19 @@
     .fs-v2 .sm-copy.is-copied .ic-copy { display: none; }
     .fs-v2 .sm-copy.is-copied .ic-done { display: inline; }
     .fs-v2 .sm-ref-hint { margin: 8px 0 0; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
+
+    /* 下一步：官網免費排盤 */
+    .fs-v2 .sm-next { margin-top: 20px; padding: 20px; background: var(--v2-tint); border: 1px solid var(--v2-blue-line); }
+    .fs-v2 .sm-next-label { margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; font-weight: 600; color: var(--v2-ink); }
+    .fs-v2 .sm-next-body { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+    .fs-v2 .sm-next-cta {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px 20px;
+      background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-ink);
+      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; transition: background .15s, color .15s, border-color .15s;
+    }
+    .fs-v2 .sm-next-cta:hover { background: var(--v2-tint-soft); border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .sm-next-cta:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .sm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
     .fs-v2 .sm-foot { margin-top: 24px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
     .fs-v2 .sm-foot a { color: var(--v2-ink); border-bottom: 1px solid var(--v2-ink); padding-bottom: 1px; }
@@ -176,6 +194,17 @@
           </button>
         </div>
         <div class="sm-ref-hint" data-i18n="sm.refHint">Save this ID. It helps if our team needs to assist you.</div>
+      </div>
+
+      <!-- 下一步：等待時先到官網免費排盤（另開分頁，不離開本頁）-->
+      <div class="sm-next">
+        <p class="sm-next-label" data-i18n="sm.nextLabel">While you wait</p>
+        <p class="sm-next-body" data-i18n="sm.nextBody">Try our free chart calculator for a first look at the qualities of each star.</p>
+        <a class="sm-next-cta" href="https://fusang-vision.com/pages/free-zi-wei-dou-shu-calculator" target="_blank" rel="noopener">
+          <span data-i18n="sm.nextCta">Open the free calculator</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h-3v9h9v-3M8 2.5h3.5V6M11.5 2.5 6.5 7.5"/></svg>
+          <span class="sm-sr" data-i18n="sm.newTab">(opens in a new tab)</span>
+        </a>
       </div>
 
       <p class="sm-foot">
