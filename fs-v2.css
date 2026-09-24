@@ -553,3 +553,107 @@ body.fs-v2 .ov-locked-hint .ov-locked-link:hover { background: var(--v2-tint); b
   body.fs-v2 *::before,
   body.fs-v2 *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* ── §10 公開頁版型（不需登入、無主選單：login / set-password / handoff / submitted）──
+   結構：
+     <div class="v2-auth-bar"> 品牌 ＋ 語言切換 </div>
+     <div class="fs-page v2-auth-stage"> <div class="v2-auth-intro">…</div> <div class="v2-auth-card">…</div> </div>
+   背景：dashboard 同一張主視覺（桌機 hero-home / 手機 hero-home-m）；文字在左、卡片壓在右側銀杏上。 */
+body.fs-v2 .v2-auth-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  height: 88px; padding: 0 max(var(--v2-gutter), calc((100% - var(--v2-max)) / 2));
+  background: #ffffff; border-bottom: 1px solid var(--v2-line-soft);
+}
+body.fs-v2 .v2-auth-brand { display: flex; align-items: center; gap: 12px; color: var(--v2-ink); }
+body.fs-v2 .v2-auth-brand img { width: 50px; height: 37px; object-fit: contain; }
+body.fs-v2 .v2-auth-brand-name { font-family: var(--v2-font-latin); font-size: 20px; line-height: 30px; font-weight: 500; letter-spacing: 0; }
+body.fs-v2 .v2-auth-lang { display: flex; align-items: center; gap: 4px; }
+body.fs-v2 .v2-auth-lang button {
+  padding: 8px 10px; border: 0; background: none; cursor: pointer;
+  font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; letter-spacing: 0; color: var(--v2-muted);
+}
+body.fs-v2 .v2-auth-lang button:hover { color: var(--v2-blue); }
+body.fs-v2 .v2-auth-lang button.active { color: var(--v2-ink); font-weight: 600; }
+body.fs-v2 .v2-auth-lang button:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+
+body.fs-v2 .v2-auth-stage {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); align-items: center; gap: 64px;
+  min-height: clamp(560px, calc(100svh - 88px), 760px);
+  padding: 64px max(var(--v2-gutter), calc((100% - var(--v2-max)) / 2));
+  background: #eaf2ff url('assets/v2/hero-home.webp') center / cover no-repeat;
+}
+body.fs-v2 .v2-auth-intro { max-width: 560px; }
+body.fs-v2 .v2-auth-eyebrow { margin: 0 0 16px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-ink); }
+body.fs-v2 .v2-auth-headline { margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 44px; line-height: 62px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+body.fs-v2 .v2-auth-headline .accent { color: var(--v2-blue-strong); font-weight: 500; }
+body.fs-v2 .v2-auth-lead { margin: 0; max-width: 440px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-muted); }
+
+/* 右側卡片 */
+body.fs-v2 .v2-auth-card {
+  width: 100%; padding: 40px;
+  background: #ffffff; border: 1px solid var(--v2-line);
+  box-shadow: 0 12px 32px #2020200f;
+}
+body.fs-v2 .v2-auth-card-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; text-transform: uppercase; letter-spacing: 0; color: var(--v2-muted); }
+body.fs-v2 .v2-auth-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 28px; line-height: 40px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+body.fs-v2 .v2-auth-sub { margin: 0 0 28px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+
+/* 表單欄位（設計師 form 語彙：標籤在上、48px 細框、focus 藍框 + 淡藍光暈）*/
+body.fs-v2 .v2-field { display: flex; flex-direction: column; gap: 6px; margin: 0 0 20px; }
+body.fs-v2 .v2-field label { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; letter-spacing: 0; text-transform: none; color: var(--v2-ink); }
+body.fs-v2 .v2-field input {
+  width: 100%; height: 48px; padding: 0 16px; margin: 0;
+  background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; box-shadow: none;
+  font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; letter-spacing: 0; color: var(--v2-ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+body.fs-v2 .v2-field input::placeholder { color: var(--v2-faint); }
+body.fs-v2 .v2-field input:hover { border-color: var(--v2-faint); }
+body.fs-v2 .v2-field input:focus { outline: none; border-color: var(--v2-blue); box-shadow: 0 0 0 3px var(--v2-tint); }
+body.fs-v2 .v2-field-hint { font-size: 12px; line-height: 20px; color: var(--v2-faint); }
+body.fs-v2 .v2-auth-link { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); cursor: pointer; border-bottom: 1px solid transparent; transition: color .15s, border-color .15s; }
+body.fs-v2 .v2-auth-link:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
+body.fs-v2 .v2-auth-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 48px; padding: 12px 24px; margin: 8px 0 0;
+  background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink); border-radius: 0;
+  font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+body.fs-v2 .v2-auth-submit:hover:not(:disabled) { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
+body.fs-v2 .v2-auth-submit:disabled { opacity: .5; cursor: not-allowed; }
+body.fs-v2 .v2-auth-alt { margin: 32px 0 0; padding: 24px 0 0; border-top: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+body.fs-v2 .v2-auth-alt a { color: var(--v2-ink); font-weight: 600; border-bottom: 1px solid var(--v2-ink); padding-bottom: 1px; transition: color .15s, border-color .15s; }
+body.fs-v2 .v2-auth-alt a:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
+
+/* 訊息（錯誤 / 成功）*/
+body.fs-v2 .v2-auth-msg { display: none; margin: 0 0 20px; padding: 12px 16px; border-radius: 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; }
+body.fs-v2 .v2-auth-msg.active { display: block; }
+body.fs-v2 .v2-auth-msg--error { background: #fdf5f6; border: 1px solid #e7c2c7; color: #a8505c; }
+body.fs-v2 .v2-auth-msg--ok { background: var(--v2-tint); border: 1px solid var(--v2-blue-line); color: var(--v2-ink); }
+
+@media (max-width: 1000px) {
+  body.fs-v2 .v2-auth-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 40px; }
+  body.fs-v2 .v2-auth-headline { font-size: 36px; line-height: 52px; }
+}
+@media (max-width: 899px) {
+  body.fs-v2 .v2-auth-bar { height: 72px; }
+  body.fs-v2 .v2-auth-brand img { width: 40px; height: 30px; }
+  body.fs-v2 .v2-auth-brand-name { font-size: 17px; line-height: 26px; }
+  body.fs-v2 .v2-auth-lang button { padding: 6px 6px; font-size: 13px; }
+  body.fs-v2 .v2-auth-stage {
+    grid-template-columns: minmax(0, 1fr); gap: 0; min-height: 0; padding: 0 0 48px;
+    background: #ffffff;
+  }
+  body.fs-v2 .v2-auth-intro {
+    max-width: none; min-height: 200px; padding: 32px var(--v2-gutter) 72px;
+    background: #eaf2ff url('assets/v2/hero-home-m.webp') 70% center / cover no-repeat;
+  }
+  body.fs-v2 .v2-auth-eyebrow { margin-bottom: 8px; }
+  body.fs-v2 .v2-auth-headline { margin: 0; max-width: 300px; font-size: 24px; line-height: 38px; }
+  body.fs-v2 .v2-auth-lead { display: none; }
+  body.fs-v2 .v2-auth-card { width: auto; margin: -40px var(--v2-gutter) 0; padding: 28px 20px; }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  body.fs-v2 .v2-auth-card { width: calc(100% - 2 * var(--v2-gutter)); max-width: 520px; margin-right: auto; }
+}
