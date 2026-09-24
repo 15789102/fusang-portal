@@ -68,10 +68,18 @@
       "an.errTitle":        { "zh-TW": "無法載入流年", "zh-CN": "无法载入流年", "en": "Couldn't load your annual chart" },
       "an.errDefault":      { "zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later." },
       "an.errReportsFail":  { "zh-TW": "無法載入 {year} 流年內容：", "zh-CN": "无法载入 {year} 流年内容：", "en": "Couldn't load the {year} annual content: " },
-      "an.errNoContent":    { "zh-TW": "找不到 {year} 的流年宮位內容。", "zh-CN": "找不到 {year} 的流年宫位内容。", "en": "No palace content found for the {year} annual chart." }
+      "an.errNoContent":    { "zh-TW": "找不到 {year} 的流年宮位內容。", "zh-CN": "找不到 {year} 的流年宫位内容。", "en": "No palace content found for the {year} annual chart." },
+
+      // ── v2 視覺（設計師 v1.0 語彙；說明與標籤為本輪新文案）──
+      "an.v2Latest":        { "zh-TW": "最新流年", "zh-CN": "最新流年", "en": "Latest year" },
+      "an.v2Intro":         { "zh-TW": "<strong>流年</strong>是一年一度的運勢週期。每一年，十二宮會依當年的天干地支重新排列，四化也隨之流轉，呈現這一年的重心、機會與需要留意的地方。", "zh-CN": "<strong>流年</strong>是一年一度的运势周期。每一年，十二宫会依当年的天干地支重新排列，四化也随之流转，呈现这一年的重心、机会与需要留意的地方。", "en": "The <strong>annual chart</strong> follows a yearly cycle. Each year, the twelve palaces are rearranged by the stem and branch of that year, and the Four Transformations move with them. Together they show the focus, openings and points to watch for the year." },
+      "an.v2Enter":         { "zh-TW": "進入{palace}詳情", "zh-CN": "进入{palace}详情", "en": "Read the {palace}" },
+      "an.v2GridNote":      { "zh-TW": "I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。", "zh-CN": "I–XII 为宫位索引编号；个人命盘资料以详细解读为准。", "en": "I–XII identify the palaces. See the detailed reading for your personal chart information." },
+      "an.v2BackList":      { "zh-TW": "返回流年清單", "zh-CN": "返回流年清单", "en": "Back to all years" }
     });
   </script>
 
+  <link rel="stylesheet" href="fs-v2.css" />
   <style>
     .shell { max-width: 760px; margin: 0 auto; padding: 48px 32px 96px; }
     .view { display: none; }
@@ -328,9 +336,548 @@
       }
     }
 
+/* ════════════════════════════════════════════════════════════════
+       ▼ v2 視覺層（設計師 v1.0）— 以下全部限定 .fs-v2，疊在原有規則之上
+       ════════════════════════════════════════════════════════════════ */
+
+    /* ════════ 原有規則的中和（v2 版心 / 色票 / 背景）════════ */
+    body.annual-page.fs-v2 { background: #ffffff; }
+    .fs-v2 .shell {
+      --ink-darkest: var(--v2-ink);
+      --ink-dark:    var(--v2-ink);
+      --ink-mid:     var(--v2-muted);
+      --ink-light:   var(--v2-faint);
+      --ink-faint:   #c4c4c4;
+      --accent-deep: var(--v2-ink);
+      --accent-soft: var(--v2-blue);
+      --accent-pale: #d6e4fd;
+      --rule:        var(--v2-line);
+      --bg-primary:  #ffffff;
+      --bg-soft:     var(--v2-tint);
+      --bg-soft-2:   #f7f9fc;
+      --bg-card:     #ffffff;
+      --silver-deep: var(--v2-muted);
+      --silver-soft: #b5b5b5;
+      --silver-pale: var(--v2-line);
+      --gold:        var(--v2-blue);
+      --gold-soft:   var(--v2-blue-line);
+    }
+    @media (min-width: 761px) {
+    }
+
+    /* ════════════════════════════════════════════════════════
+       chart 視覺改版 v3：套用設計師 v1.0（Natal Overview / Twelve Palaces / Palace Readings）
+       - 共用 token / header / footer / 字體 → fs-v2.css（限 body.fs-v2）
+       - 本段重寫整個 <style>；module script（資料、四化 gate、付費牆、i18n）一字不動
+       - 另加：總覽主題選單、宮位切換列、章節列（靜態標記 + 頁尾獨立 v2 script，只讀 DOM）
+       - 四化語意色 --t-* 維持不變
+       ════════════════════════════════════════════════════════ */
+
+    /* ── 版心 ── */
+    .fs-v2 .shell {
+      width: calc(100% - 2 * var(--v2-gutter));
+      max-width: var(--v2-max);
+      margin: 0 auto;
+      padding: 32px 0 96px;
+    }
+    .fs-v2 .view { display: none; }
+    .fs-v2 .view.active { display: block; animation: v2Fade 240ms ease-out both; }
+    @keyframes v2Fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── 載入 / 錯誤 ── */
+    .fs-v2 #view-loading { text-align: center; padding: 120px 0; }
+    .fs-v2 .loading-dots { display: flex; justify-content: center; gap: 8px; margin: 16px 0 32px; }
+    .fs-v2 .loading-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--v2-blue); animation: pulse 1.4s ease-in-out infinite; }
+    .fs-v2 .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .fs-v2 .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.2); } }
+    .fs-v2 .loading-title,
+    .fs-v2 .error-title { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; margin: 0 0 12px; color: var(--v2-ink); }
+    .fs-v2 .loading-sub,
+    .fs-v2 .error-detail { font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+    .fs-v2 #view-error { text-align: center; padding: 120px 0; }
+    .fs-v2 .error-detail { margin: 0 0 32px; }
+    .fs-v2 .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 180px; min-height: 48px; padding: 12px 28px;
+      background: var(--v2-ink); color: #fff; border: 1px solid var(--v2-ink); border-radius: 0;
+      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+      transition: background .15s, border-color .15s;
+    }
+    .fs-v2 .btn-primary:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); }
+
+    /* ── 共用：麵包屑式返回連結 ── */
+    .fs-v2 .detail-back-top { margin: 0 0 16px; min-height: 48px; display: flex; align-items: center; }
+    .fs-v2 .back-link {
+      font-family: var(--v2-font-cjk); font-style: normal; font-size: 14px; line-height: 24px; letter-spacing: 0; text-transform: none;
+      color: var(--v2-muted); cursor: pointer; transition: color .15s; gap: 8px;
+    }
+    .fs-v2 .back-link:hover { color: var(--v2-blue); }
+
+    /* ── 共用：頁首橫幅（總覽 / 十二宮 / 宮位）── */
+    .fs-v2 .hub-head,
+    .fs-v2 .palace-head {
+      position: relative;
+      min-height: 179px;
+      padding: 32px;
+      margin: 0;
+      overflow: hidden;
+      text-align: left;
+      background: #fff url('assets/v2/banner.webp') center / cover no-repeat;
+    }
+    .fs-v2 .hub-eyebrow,
+    .fs-v2 .palace-index {
+      font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; font-weight: 400;
+      letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); opacity: 1; margin: 0 0 8px;
+    }
+    .fs-v2 .hub-title,
+    .fs-v2 .title-zh {
+      max-width: 720px; margin: 0 0 8px;
+      font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink);
+    }
+    .fs-v2 .hub-sub {
+      margin: 0; display: block; font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 29px; color: var(--v2-muted); opacity: 1;
+    }
+
+    /* ════════ 十二宮（Twelve Palaces）：環狀命盤排列 ════════ */
+    .fs-v2 .hub-head { margin-bottom: 40px; }
+    .fs-v2 #palace-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(4, 184px);
+      gap: 0;
+      margin: 0;
+      padding: 1px 0 0 1px;
+    }
+    /* 順序 = PALACE_ORDER（命 兄 夫 子 財 疾 遷 交 官 田 福 父）→ 傳統命盤逆時針環狀 */
+    .fs-v2 #palace-grid .palace-card:nth-child(1)  { grid-area: 1 / 1; }
+    .fs-v2 #palace-grid .palace-card:nth-child(2)  { grid-area: 1 / 2; }
+    .fs-v2 #palace-grid .palace-card:nth-child(3)  { grid-area: 1 / 3; }
+    .fs-v2 #palace-grid .palace-card:nth-child(4)  { grid-area: 1 / 4; }
+    .fs-v2 #palace-grid .palace-card:nth-child(5)  { grid-area: 2 / 4; }
+    .fs-v2 #palace-grid .palace-card:nth-child(6)  { grid-area: 3 / 4; }
+    .fs-v2 #palace-grid .palace-card:nth-child(7)  { grid-area: 4 / 4; }
+    .fs-v2 #palace-grid .palace-card:nth-child(8)  { grid-area: 4 / 3; }
+    .fs-v2 #palace-grid .palace-card:nth-child(9)  { grid-area: 4 / 2; }
+    .fs-v2 #palace-grid .palace-card:nth-child(10) { grid-area: 4 / 1; }
+    .fs-v2 #palace-grid .palace-card:nth-child(11) { grid-area: 3 / 1; }
+    .fs-v2 #palace-grid .palace-card:nth-child(12) { grid-area: 2 / 1; }
+    /* 中央：裝飾（雲紋 + 品牌花） */
+    .fs-v2 #palace-grid::before {
+      content: '';
+      grid-area: 2 / 2 / 4 / 4;
+      margin: -1px 0 0 -1px;
+      border: 1px solid var(--v2-line);
+      background:
+        url('assets/v2/topic-flower.svg') center / 96px no-repeat,
+        linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)),
+        var(--v2-tint) url('assets/v2/palace-cloud.webp') center / cover no-repeat;
+    }
+
+    .fs-v2 #palace-grid .palace-card,
+    .fs-v2 #palace-grid .palace-card:first-child {
+      position: relative; overflow: hidden;
+      margin: -1px 0 0 -1px;
+      padding: 24px;
+      min-height: 0;
+      display: flex; flex-direction: column; gap: 8px;
+      background: #fff;
+      border: 1px solid var(--v2-line);
+      border-radius: 0;
+      box-shadow: none;
+      transform: none;
+      cursor: pointer;
+      transition: border-color .4s, background-color .4s;
+    }
+    .fs-v2 #palace-grid .palace-card:first-child::after { content: none; }
+    .fs-v2 #palace-grid .palace-card:hover { z-index: 1; transform: none; box-shadow: none; border-color: var(--v2-blue); background: var(--v2-tint); }
+    .fs-v2 #palace-grid .palace-card::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: url('assets/v2/palace-cloud.webp') center / cover;
+      opacity: 0; transform: translate(24px, 4px);
+      transition: transform .8s cubic-bezier(.4,0,.2,1), opacity .65s ease;
+    }
+    .fs-v2 #palace-grid .palace-card:hover::before { opacity: .5; transform: none; }
+    .fs-v2 #palace-grid .palace-card > * { position: relative; }
+    .fs-v2 .palace-card-index { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .palace-card-name,
+    .fs-v2 .palace-grid .palace-card:first-child .palace-card-name { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 #palace-grid .palace-card:hover .palace-card-name { color: var(--v2-blue-strong); }
+    .fs-v2 .palace-card-stars { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); min-height: 0; }
+
+    /* 宮位圖示（右上角；灰 → hover 藍）*/
+    .fs-v2 #palace-grid .palace-card > .palace-card-index::after {
+      content: ''; position: absolute; top: 0; right: 0; width: 24px; height: 24px;
+      background: var(--v2-faint);
+      -webkit-mask: var(--icon-url) center / contain no-repeat; mask: var(--icon-url) center / contain no-repeat;
+      transition: background-color .3s;
+    }
+    .fs-v2 #palace-grid .palace-card > .palace-card-index { position: static; }
+    .fs-v2 #palace-grid .palace-card { --icon-url: none; }
+    .fs-v2 #palace-grid .palace-card > .palace-card-index::after { top: 24px; right: 24px; }
+    .fs-v2 #palace-grid .palace-card:hover > .palace-card-index::after { background: var(--v2-blue); }
+    .fs-v2 #palace-grid .palace-card:nth-child(1)  { --icon-url: url('assets/v2/palaces/palace-00.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(2)  { --icon-url: url('assets/v2/palaces/palace-01.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(3)  { --icon-url: url('assets/v2/palaces/palace-02.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(4)  { --icon-url: url('assets/v2/palaces/palace-03.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(5)  { --icon-url: url('assets/v2/palaces/palace-04.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(6)  { --icon-url: url('assets/v2/palaces/palace-05.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(7)  { --icon-url: url('assets/v2/palaces/palace-06.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(8)  { --icon-url: url('assets/v2/palaces/palace-07.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(9)  { --icon-url: url('assets/v2/palaces/palace-08.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(10) { --icon-url: url('assets/v2/palaces/palace-09.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(11) { --icon-url: url('assets/v2/palaces/palace-10.svg'); }
+    .fs-v2 #palace-grid .palace-card:nth-child(12) { --icon-url: url('assets/v2/palaces/palace-11.svg'); }
+
+    /* ════════ 宮位細節（Palace Readings）════════ */
+    .fs-v2 #view-detail.active {
+      display: grid;
+      grid-template-columns: 288px minmax(0, 1fr);
+      column-gap: 64px;
+      align-items: start;
+    }
+    .fs-v2 #view-detail > * { grid-column: 1 / -1; min-width: 0; }
+    .fs-v2 #view-detail > .detail-back-top      { grid-row: 1; }
+    .fs-v2 #view-detail > .v2-palace-switcher   { grid-row: 2; }
+    .fs-v2 #view-detail > .palace-head          { grid-row: 3; margin-top: 40px; }
+    .fs-v2 #view-detail > .v2-basis             { grid-row: 4; grid-column: 1; margin-top: 40px; position: sticky; top: 24px; }
+    .fs-v2 #view-detail > .v2-reader            { grid-row: 4; grid-column: 2; margin-top: 40px; }
+    .fs-v2 #view-detail > .detail-nav           { grid-row: 5; }
+
+    /* 宮位切換列（v2 script 依 #palace-grid 產生；點擊 = 點原宮位卡）*/
+    .fs-v2 .v2-palace-switcher { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+    .fs-v2 .v2-palace-switcher:empty { display: none; }
+    .fs-v2 .v2-sw-item {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      height: 64px; padding: 0 8px; border: 1px solid var(--v2-line); background: #fff;
+      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; color: var(--v2-ink); cursor: pointer;
+      transition: border-color .15s, background-color .15s;
+    }
+    .fs-v2 .v2-sw-item:hover { border-color: var(--v2-blue); }
+    .fs-v2 .v2-sw-item.is-selected { color: var(--v2-blue); background: var(--v2-tint); border-color: var(--v2-blue); font-weight: 600; }
+
+    /* 宮位橫幅：I / XII → 宮名 → 本地化宮名 → 標語 */
+    .fs-v2 .palace-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+    .fs-v2 .palace-head-left,
+    .fs-v2 .palace-head-right { display: contents; }
+    .fs-v2 #detail-index    { order: 1; }
+    .fs-v2 #detail-title-zh { order: 2; }
+    .fs-v2 #detail-eyebrow  { order: 3; }
+    .fs-v2 #detail-tagline  { order: 4; margin-top: 4px !important; }
+    .fs-v2 .palace-head .eyebrow { margin: 0; font-family: var(--v2-font-cjk); font-style: normal; font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .title-zh { margin: 0; }
+    .fs-v2 #detail-tagline { font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 29px; color: var(--v2-muted); text-align: left; }
+
+    /* 左欄：解讀依據（宮位說明 + 本宮星曜） */
+    .fs-v2 .v2-basis { border-right: 1px solid var(--v2-line); padding: 8px 32px 0 0; display: flex; flex-direction: column; gap: 24px; }
+    .fs-v2 .palace-explainer { margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0; }
+    .fs-v2 .palace-explainer-label,
+    .fs-v2 .palace-subtitle {
+      margin: 0 0 8px; padding: 0; border: 0;
+      font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 29px; font-weight: 600; letter-spacing: 0; color: var(--v2-ink);
+    }
+    .fs-v2 .palace-explainer-body { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .palace-explainer-body .domain-keyword { color: var(--v2-ink); font-weight: 500; }
+    .fs-v2 .palace-stars-line { margin: -16px 0 0; font-size: 14px; line-height: 26px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .palace-stars-line .sep { color: var(--v2-faint); margin: 0 6px; }
+    .fs-v2 .palace-stars-line .transform-tag { font-family: var(--v2-font-cjk); font-size: 11px; line-height: 16px; padding: 1px 6px; letter-spacing: 0; border-radius: 0; vertical-align: 1px; }
+
+    /* 右欄：章節列 + 內文 */
+    .fs-v2 .v2-chapter-tabs {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; height: 48px; background: #fff; border-bottom: 1px solid var(--v2-line);
+    }
+    .fs-v2 .v2-chapter-tabs button {
+      flex: 1; padding: 12px 8px; white-space: nowrap;
+      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; color: var(--v2-ink);
+      border-bottom: 2px solid transparent; transition: background-color .15s;
+    }
+    .fs-v2 .v2-chapter-tabs button:hover { background: #f7faff; }
+    .fs-v2 .v2-chapter-tabs button.is-selected { background: var(--v2-tint); border-bottom-color: var(--v2-blue); font-weight: 600; }
+
+    .fs-v2 .section { margin-top: 48px; scroll-margin-top: 64px; max-width: 800px; }
+    .fs-v2 .v2-reader > .section:first-of-type { margin-top: 32px; }
+    .fs-v2 .section-head { gap: 16px; align-items: baseline; padding-bottom: 12px; border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .section-num { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; font-weight: 500; color: var(--v2-blue); }
+    .fs-v2 .section-titles { gap: 0; }
+    .fs-v2 .section-title-zh { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .section-title-en { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .section-explainer {
+      margin: 16px 0 24px; padding: 12px 16px; gap: 12px; border-radius: 0; background: #f7f9fc;
+      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted);
+    }
+    .fs-v2 .section-explainer-icon { font-family: var(--v2-font-latin); font-style: normal; color: var(--v2-blue); font-size: 16px; line-height: 24px; }
+    .fs-v2 .section-explainer strong { color: var(--v2-ink); font-weight: 600; }
+
+    .fs-v2 .prose { margin-top: 24px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .prose p { margin-bottom: 12px; }
+    .fs-v2 .prose .lead { font-size: 16px; }
+    .fs-v2 .prose .lead::first-letter { font: inherit; float: none; padding: 0; color: inherit; }
+    .fs-v2 .pull-quote {
+      margin: 32px 0; padding: 20px 24px; border-left: 2px solid var(--v2-blue); background: var(--v2-tint);
+      font-family: var(--v2-font-cjk); font-size: 18px; line-height: 32px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink);
+    }
+    .fs-v2 .pull-quote::before { content: none; }
+
+    /* 四化卡（付費內容；語意色保留）*/
+    .fs-v2 .transform-blocks { gap: 24px; margin-top: 8px; }
+    .fs-v2 .transform-card { border: 1px solid var(--v2-line); border-radius: 0; background: #fff; overflow: visible; }
+    .fs-v2 .transform-card-head { padding: 16px 24px; gap: 16px; border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .transform-card-tag { padding: 4px 12px; border-radius: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; letter-spacing: 0; }
+    .fs-v2 .info-dot { font-family: var(--v2-font-latin); font-style: normal; }
+    .fs-v2 .tooltip-body { border-radius: 0; background: var(--v2-ink); color: #fff; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; box-shadow: var(--v2-shadow-pop); }
+    .fs-v2 .tooltip-body::after { border-top-color: var(--v2-ink); }
+    .fs-v2 .tooltip-body p { color: #e6e6e6; }
+    .fs-v2 .transform-card-en { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .transform-card-body { padding: 24px; }
+    .fs-v2 .transform-card-title { margin-bottom: 16px; font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .source-row { gap: 8px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--v2-line); }
+    .fs-v2 .source-label { font-family: var(--v2-font-latin); font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .source-chip { padding: 4px 10px; border-radius: 0; background: #f7f9fc; border: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 13px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .source-chip .mini-transform { border-radius: 0; }
+    .fs-v2 .transform-card-content { font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .transform-card-content p { margin-bottom: 12px; }
+    .fs-v2 .transform-empty { padding: 24px; border-radius: 0; background: #f7f9fc; font-family: var(--v2-font-cjk); font-style: normal; font-size: 14px; color: var(--v2-muted); }
+
+    /* 建議（Epilogue）*/
+    .fs-v2 .epilogue { margin-top: 24px; padding: 32px; border-radius: 0; background: #f7f9fc; border: 1px solid var(--v2-line); }
+    .fs-v2 .epilogue::before,
+    .fs-v2 .epilogue::after { content: none; }
+    .fs-v2 .epilogue-eyebrow { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); text-align: left; margin-bottom: 16px; }
+    .fs-v2 .epilogue-prose { font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .epilogue-prose p { margin-bottom: 12px; }
+    .fs-v2 .epilogue-prose p.closing { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--v2-line); text-align: left; font-style: normal; font-weight: 500; font-size: 16px; letter-spacing: 0; color: var(--v2-ink); }
+
+    /* ── 付費牆版面（外觀由 fs-v2.css §9 統一：白底灰框 + 雲紋 + 線條鎖頭）── */
+    .fs-v2 .paywall { margin-top: 48px; max-width: 800px; }
+
+    /* 底部：上一宮 ／ 全部十二宮 ／ 下一宮 → 設計師按鈕 */
+    .fs-v2 .detail-nav { margin-top: 48px; padding-top: 0; border-top: 0; display: flex; justify-content: space-between; gap: 24px; }
+    .fs-v2 .nav-link,
+    .fs-v2 .nav-center {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      min-width: 180px; min-height: 48px; padding: 12px 28px;
+      font-family: var(--v2-font-cjk); font-style: normal; font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+      color: var(--v2-ink); background: #fff; border: 1px solid var(--v2-ink); cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .fs-v2 .nav-link:hover,
+    .fs-v2 .nav-center:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .nav-link .arrow { font-family: var(--v2-font-latin); font-style: normal; color: inherit; margin: 0; }
+
+    /* ── RWD（斷點沿用設計師 1270 / 1000 / 799 / 599）── */
+    @media (max-width: 1270px) {
+      .fs-v2 #view-detail.active { grid-template-columns: 240px minmax(0, 1fr); column-gap: 40px; }
+    }
+    @media (max-width: 1000px) {
+      .fs-v2 #view-detail.active { grid-template-columns: 200px minmax(0, 1fr); column-gap: 24px; }
+      .fs-v2 .v2-basis { padding-right: 24px; }
+      .fs-v2 #palace-grid .palace-card { padding: 20px 16px; }
+      .fs-v2 #palace-grid .palace-card > .palace-card-index::after { top: 20px; right: 16px; }
+      .fs-v2 .v2-sw-item { gap: 8px; }
+    }
+    @media (max-width: 799px) {
+      .fs-v2 .shell { padding-top: 16px; }
+      .fs-v2 .hub-head,
+      .fs-v2 .palace-head { padding: 24px; min-height: 169px; background-position: 60% center; }
+      .fs-v2 .hub-title,
+      .fs-v2 .title-zh { font-size: 28px; line-height: 42px; }
+      .fs-v2 .hub-sub,
+      .fs-v2 #detail-tagline { font-size: 14px; line-height: 24px; }
+
+      /* 總覽：主題選單改為橫向捲動列 */
+
+      /* 十二宮：縮小格子 */
+      .fs-v2 #palace-grid { grid-template-rows: repeat(4, 160px); }
+      .fs-v2 #palace-grid .palace-card { padding: 12px 8px; gap: 6px; }
+      .fs-v2 .palace-card-name,
+      .fs-v2 .palace-grid .palace-card:first-child .palace-card-name { font-size: 18px; line-height: 28px; }
+      .fs-v2 .palace-card-stars { font-size: 12px; line-height: 20px; }
+      .fs-v2 #palace-grid .palace-card > .palace-card-index::after { top: 12px; right: 8px; width: 20px; height: 20px; }
+
+      /* 宮位細節：單欄 */
+      .fs-v2 #view-detail.active { display: block; }
+      .fs-v2 .v2-palace-switcher { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+      .fs-v2 .v2-sw-item { height: 52px; font-size: 13px; }
+      .fs-v2 #view-detail > .palace-head { margin-top: 24px; }
+      .fs-v2 .v2-basis { position: static; margin-top: 24px; padding: 0 0 24px; border-right: 0; border-bottom: 1px solid var(--v2-line); }
+      .fs-v2 #view-detail > .v2-reader { margin-top: 24px; }
+      .fs-v2 .v2-chapter-tabs button { font-size: 12px; }
+      .fs-v2 .prose,
+      .fs-v2 .transform-card-content,
+      .fs-v2 .epilogue-prose { font-size: 15px; line-height: 28px; }
+      .fs-v2 .detail-nav { gap: 8px; }
+      .fs-v2 .nav-link,
+      .fs-v2 .nav-center { flex: 1; min-width: 0; padding: 10px 8px; font-size: 12px; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 #palace-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: 140px; }
+      .fs-v2 #palace-grid .palace-card { grid-area: auto !important; }
+      .fs-v2 #palace-grid::before { display: none; }
+    }
+    /* ════════ v2 第二輪：兩段式十二宮 / 四化標 / 導讀 / 各段 CTA / 說明泡泡 ════════ */
+
+    /* 十二宮：中央預覽（取代裝飾；v2 script 附加為 #palace-grid 最後一個子元素）*/
+    .fs-v2 #palace-grid::before { content: none; }
+    .fs-v2 .v2-hub-preview {
+      grid-area: 2 / 2 / 4 / 4;
+      margin: -1px 0 0 -1px;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px;
+      padding: 48px; min-width: 0; overflow: hidden;
+      border: 1px solid var(--v2-line);
+      background: #fff;
+    }
+    .fs-v2 .v2-hp-index { font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .v2-hp-name { margin: 0; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-hp-tagline { font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-hp-explainer { font-size: 15px; line-height: 27px; color: var(--v2-muted); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .fs-v2 .v2-hp-explainer .domain-keyword { color: var(--v2-ink); font-weight: 500; }
+    .fs-v2 .v2-hp-enter {
+      margin-top: 8px; display: inline-flex; align-items: center; justify-content: center;
+      min-width: 180px; min-height: 48px; padding: 12px 28px;
+      background: var(--v2-ink); color: #fff; border: 1px solid var(--v2-ink);
+      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .fs-v2 .v2-hp-enter:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); }
+
+    /* 選取中的宮位：藍框 + 淡藍底 + 雲紋 + 藍色宮名與圖示 */
+    .fs-v2 #palace-grid .palace-card.is-selected { z-index: 1; border-color: var(--v2-blue); background: var(--v2-tint); }
+    .fs-v2 #palace-grid .palace-card.is-selected::before { opacity: .5; transform: none; transition-duration: 1100ms, 900ms; transition-delay: 100ms; }
+    .fs-v2 #palace-grid .palace-card.is-selected .palace-card-name { color: var(--v2-blue-strong); }
+    .fs-v2 #palace-grid .palace-card.is-selected > .palace-card-index::after { background: var(--v2-blue); }
+    .fs-v2 #palace-grid .palace-card:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: -2px; z-index: 2; }
+
+    /* 生年四化標（語意色沿用 --t-*）*/
+    .fs-v2 .v2-hub-hua { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; }
+    .fs-v2 .v2-hua { font-family: var(--v2-font-cjk); font-size: 11px; line-height: 16px; padding: 1px 6px; border: 1px solid currentColor; background: #fff; }
+    .fs-v2 .v2-hua--lu { color: var(--t-lu); }
+    .fs-v2 .v2-hua--quan { color: var(--t-quan); }
+    .fs-v2 .v2-hua--ke { color: var(--t-ke); }
+    .fs-v2 .v2-hua--ji { color: var(--t-ji); }
+
+    /* 十二宮底部：編號說明 + 返回本命總覽 */
+    .fs-v2 .v2-grid-note { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 32px; }
+    .fs-v2 .v2-grid-note p { margin: 0; font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+
+    /* 總覽：導讀 */
+
+    /* 總覽：各段「瀏覽全部十二宮 →」*/
+
+    /* 左欄四化標籤：可點，說明泡泡 */
+    .fs-v2 .palace-stars-line .transform-tag { cursor: help; }
+    .fs-v2 .palace-stars-line .transform-tag:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .v2-tip {
+      position: absolute; z-index: 60; padding: 14px 16px;
+      background: var(--v2-ink); color: #fff; box-shadow: var(--v2-shadow-pop);
+      font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px;
+    }
+    .fs-v2 .v2-tip[hidden] { display: none; }
+    .fs-v2 .v2-tip-title { font-weight: 600; margin-bottom: 4px; }
+    .fs-v2 .v2-tip-body { margin: 0; color: #e6e6e6; }
+
+    @media (max-width: 1000px) {
+      .fs-v2 .v2-hub-preview { padding: 24px; }
+      .fs-v2 .v2-hp-name { font-size: 30px; line-height: 42px; }
+    }
+    @media (max-width: 799px) {
+      .fs-v2 .v2-hub-preview { padding: 20px 12px; gap: 8px; }
+      .fs-v2 .v2-hp-name { font-size: 24px; line-height: 32px; }
+      .fs-v2 .v2-hp-tagline { font-size: 15px; line-height: 24px; }
+      .fs-v2 .v2-hp-explainer { font-size: 13px; line-height: 22px; -webkit-line-clamp: 3; }
+      .fs-v2 .v2-hp-enter { min-width: 0; padding: 10px 14px; font-size: 13px; }
+      .fs-v2 .v2-hub-hua { display: none; }
+      .fs-v2 .v2-grid-note { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 #palace-grid { grid-auto-rows: minmax(148px, auto); }
+      .fs-v2 .v2-hub-preview { grid-area: auto; grid-column: 1 / -1; grid-row: 1; margin: -1px 0 0 -1px; padding: 24px; }
+      .fs-v2 .v2-hp-explainer { -webkit-line-clamp: 5; }
+      .fs-v2 .v2-hub-hua { display: flex; }
+    }
+
+    /* 英文：章節列允許換行 */
+    @media (max-width: 1000px) {
+      html[lang="en"] .fs-v2 .v2-chapter-tabs { height: auto; min-height: 48px; }
+      html[lang="en"] .fs-v2 .v2-chapter-tabs button { white-space: normal; line-height: 18px; font-size: 13px; padding: 6px; }
+      html[lang="en"] .fs-v2 .v2-sw-item { font-size: 12px; line-height: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fs-v2 .view.active, .fs-v2 .loading-dots span { animation: none; }
+    }
+  
+    /* ════════ annual 專屬：選年份列表（與 decade 同一套列表語彙）════════ */
+    /* 十二宮卡：原本置中 → 設計師靠左 */
+    .fs-v2 #palace-grid .palace-card { align-items: flex-start; justify-content: flex-start; text-align: left; }
+
+    /* 解除原本的 1120 放寬規則，改用 v2 版心（1280）*/
+    @media (min-width: 761px) {
+      .fs-v2 #view-years, .fs-v2 #view-hub, .fs-v2 #view-intro { width: auto; max-width: none; margin-left: 0; transform: none; }
+    }
+
+    /* 頂部橫幅（清單 / 首次生成 / 生成中 共用 .years-head）*/
+    .fs-v2 .years-head {
+      position: relative; min-height: 179px; padding: 32px; margin: 0; overflow: hidden; text-align: left;
+      background: #fff url('assets/v2/banner.webp') center / cover no-repeat;
+    }
+    .fs-v2 .years-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); opacity: 1; }
+    .fs-v2 .years-title { max-width: 720px; margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .years-sub { margin: 0; font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 29px; color: var(--v2-muted); }
+
+    /* 流年說明 */
+    .fs-v2 .v2-period-intro { max-width: 820px; margin: 32px 0; font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+    .fs-v2 .v2-period-intro strong { color: var(--v2-ink); font-weight: 600; }
+
+    /* 原本的時間軸 / 生成按鈕 / 年份卡：v2 下隱藏（仍在 DOM，列表代按它們）*/
+    .fs-v2 #years-grid,
+    .fs-v2 #gen-cards,
+    .fs-v2 #intro-pitch > div[style*="text-align"] { display: none !important; }
+
+    /* 年份列：左 年份 ｜ 中 標籤 ｜ 右 動作 */
+    .fs-v2 .v2-year-list { display: flex; flex-direction: column; }
+    .fs-v2 .v2-yrow {
+      display: grid;
+      grid-template-columns: 200px minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 32px;
+      min-height: 112px;
+      padding: 24px 0;
+      border-top: 1px solid var(--v2-line);
+      transition: background-color .2s;
+    }
+    .fs-v2 .v2-yrow:last-child { border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .v2-yrow.is-clickable { cursor: pointer; }
+    .fs-v2 .v2-yrow.is-clickable:hover { background: var(--v2-tint-soft); }
+    .fs-v2 .v2-yrow.is-clickable:hover .v2-btn--secondary { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .v2-yrow.is-coming { opacity: .5; }
+    .fs-v2 .v2-yrow-year { font-family: var(--v2-font-latin); font-size: 24px; line-height: 36px; font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-yrow.is-latest .v2-yrow-year { color: var(--v2-blue-strong); }
+    .fs-v2 .v2-yrow-tag { font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .v2-yrow.is-latest .v2-yrow-tag { color: var(--v2-blue); font-weight: 600; }
+    .fs-v2 .v2-yrow-act { justify-self: end; }
+    .fs-v2 .v2-yrow-act .v2-btn { white-space: nowrap; }
+    .fs-v2 .v2-yrow-status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 22px; color: var(--v2-muted); }
+    .fs-v2 .v2-yrow-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--dawn); animation: pulse 1.4s ease-in-out infinite; }
+
+    /* 空狀態 */
+    .fs-v2 .years-empty { margin-top: 24px; padding: 48px 32px; border: 1px solid var(--v2-line); border-radius: 0; background: #fff; text-align: left; }
+    .fs-v2 .years-empty-title { font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; color: var(--v2-ink); margin-bottom: 8px; letter-spacing: 0; }
+    .fs-v2 .years-empty-body { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); letter-spacing: 0; }
+
+    @media (max-width: 799px) {
+      .fs-v2 .years-head { padding: 24px; min-height: 169px; background-position: 60% center; }
+      .fs-v2 .years-title { font-size: 28px; line-height: 42px; }
+      .fs-v2 .years-sub { font-size: 14px; line-height: 24px; }
+      .fs-v2 .v2-yrow { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "year act" "tag act"; column-gap: 16px; row-gap: 2px; min-height: 0; padding: 20px 0; }
+      .fs-v2 .v2-yrow-year { grid-area: year; font-size: 20px; line-height: 30px; }
+      .fs-v2 .v2-yrow-tag { grid-area: tag; }
+      .fs-v2 .v2-yrow-act { grid-area: act; }
+      .fs-v2 .v2-yrow-act .v2-btn { min-width: 0; padding: 10px 14px; font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .fs-v2 .v2-yrow-dot { animation: none; } }
   </style>
 </head>
-<body class="annual-page">
+<body class="annual-page fs-v2">
 
 <div id="site-header"></div>
 
@@ -361,6 +908,9 @@
           <h1 class="years-title" id="intro-pitch-title">產生您的流年運勢</h1>
           <p class="years-sub" id="intro-pitch-sub"></p>
         </div>
+        <!-- v2：流年說明 + 年份列表（代按下方原本的生成按鈕）-->
+        <p class="v2-period-intro" data-i18n-html="an.v2Intro"></p>
+        <div class="v2-year-list" id="v2-pitch-list"></div>
         <div style="text-align:center; margin-top:32px;">
           <button id="intro-generate-btn" class="btn-primary">開始生成流年</button>
         </div>
@@ -371,6 +921,9 @@
           <h1 class="years-title" id="intro-gen-title">正在為您生成流年</h1>
           <p class="years-sub" id="intro-gen-sub">生成需要幾分鐘，完成後可在此閱讀，也會寄送通知信</p>
         </div>
+        <!-- v2：流年說明 + 年份列表（代按下方原本的年份卡）-->
+        <p class="v2-period-intro" data-i18n-html="an.v2Intro"></p>
+        <div class="v2-year-list" id="v2-gen-list"></div>
         <div id="gen-cards" class="years-grid"></div>
       </div>
     </section>
@@ -381,6 +934,9 @@
         <h1 class="years-title" id="years-title">我的流年運勢</h1>
         <p class="years-sub" id="years-sub">選擇一個年份，閱讀當年的十二宮運勢</p>
       </div>
+      <!-- v2：流年說明 + 年份列表（代按下方原本的時間軸）-->
+      <p class="v2-period-intro" data-i18n-html="an.v2Intro"></p>
+      <div class="v2-year-list" id="v2-years-list"></div>
       <div id="years-grid" class="years-grid"></div>
       <div id="years-empty" class="years-empty" style="display:none;">
         <div class="years-empty-title" id="years-empty-title">尚無流年資料</div>
@@ -396,6 +952,11 @@
         <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
       <div id="palace-grid" class="palace-grid"></div>
+      <!-- v2：編號說明 + 返回流年清單 -->
+      <div class="v2-grid-note">
+        <p data-i18n="an.v2GridNote">I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。</p>
+        <button type="button" class="v2-btn v2-btn--secondary" id="v2-back-list" data-i18n="an.v2BackList">返回流年清單</button>
+      </div>
       <div class="hub-meta">
         <div style="margin-bottom: 8px;">Chart Session</div>
         <code id="session-id">—</code>
@@ -406,6 +967,9 @@
       <div class="detail-back-top">
         <span class="back-link" id="back-to-hub-top">← All Twelve Palaces</span>
       </div>
+
+      <!-- v2：宮位切換列（fs-v2-period.js 依 #palace-grid 產生）-->
+      <nav class="v2-palace-switcher" id="v2-palace-switcher" aria-label="Palaces"></nav>
       <div class="palace-head">
         <div class="palace-head-left">
           <div class="eyebrow" id="detail-eyebrow"></div>
@@ -416,12 +980,24 @@
           <div style="margin-top: 6px;" id="detail-tagline"></div>
         </div>
       </div>
+      <!-- v2：左欄（解讀依據）-->
+      <aside class="v2-basis">
       <div class="palace-explainer">
         <div class="palace-explainer-label" id="detail-explainer-label">About this Palace</div>
         <div class="palace-explainer-body" id="detail-explainer"></div>
       </div>
       <div class="palace-subtitle" id="palace-subtitle">本宮主星 · 輔星 · 四化</div>
       <div class="palace-stars-line" id="detail-stars-line"></div>
+      </aside>
+
+      <!-- v2：右欄（章節列 + 01–04 + 付費 CTA）-->
+      <div class="v2-reader">
+      <div class="v2-chapter-tabs" id="v2-chapter-tabs">
+        <button type="button" data-v2-target="detail-analysis" data-i18n="sectionPalaceAnalysis">宮位解析</button>
+        <button type="button" data-v2-target="sec-02" data-i18n="secInflowTitle">能量飛入</button>
+        <button type="button" data-v2-target="sec-03" data-i18n="secOutflowTitle">能量飛出</button>
+        <button type="button" data-v2-target="sec-04" data-i18n="secSuggestTitle">我們的建議</button>
+      </div>
 
       <section class="section">
         <div class="section-head">
@@ -481,6 +1057,7 @@
 
       <!-- 底部單一 CTA -->
       <div id="detail-paywall-cta"></div>
+      </div>
 
       <nav class="detail-nav">
         <span class="nav-link left" id="nav-prev"></span>
@@ -498,7 +1075,136 @@
   </div>
 </div>
 
+<!-- v2：返回頂部 -->
+<button type="button" class="v2-back-to-top" id="v2-top" hidden><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5h10M8 13.5V5.5M4.5 9 8 5.5 11.5 9"/></svg><span data-i18n="backToTop">返回頂部</span></button>
+
 <div id="site-footer"></div>
+
+<script>
+  /* ════════════════════════════════════════════════════════════
+     v2 annual：選年份列表（設計師「階段報告」列表語彙，與 decade 一致）
+     只讀 DOM、只做呈現：把 module 產生的三種畫面（時間軸 / 首次生成 / 生成中）
+     排成同一種列表。列表按鈕一律「代按」原本的元素（年份點、生成按鈕、年份卡），
+     生成、輪詢、載入年份全部走 module 原本的程式；原本的元素只在 v2 下隱藏。
+     ════════════════════════════════════════════════════════════ */
+  (function () {
+    var F = window.FSI18N;
+    function tx(k) { try { return F.t(k); } catch (_) { return ''; } }
+    function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function target() { try { return window.FSChart ? window.FSChart.targetYear() : null; } catch (_) { return null; } }
+
+    function row(o) {
+      // o = { year, latest, coming, tag, act: { kind: 'primary'|'secondary'|'status', text, onClick, disabled }, rowClick }
+      var r = el('div', 'v2-yrow' + (o.latest ? ' is-latest' : '') + (o.coming ? ' is-coming' : '') + (o.rowClick ? ' is-clickable' : ''));
+      r.appendChild(el('div', 'v2-yrow-year', String(o.year)));
+      r.appendChild(el('div', 'v2-yrow-tag', o.tag || ''));
+      var act = el('div', 'v2-yrow-act');
+      if (o.act) {
+        if (o.act.kind === 'status') {
+          var st = el('span', 'v2-yrow-status');
+          st.appendChild(el('span', 'v2-yrow-dot'));
+          st.appendChild(document.createTextNode(o.act.text));
+          act.appendChild(st);
+        } else {
+          var b = el('button', 'v2-btn ' + (o.act.kind === 'primary' ? 'v2-btn--primary' : 'v2-btn--secondary'), o.act.text);
+          b.type = 'button';
+          b.disabled = !!o.act.disabled;
+          b.addEventListener('click', function (e) { e.stopPropagation(); if (o.act.onClick) o.act.onClick(); });
+          act.appendChild(b);
+        }
+      }
+      r.appendChild(act);
+      if (o.rowClick) r.addEventListener('click', o.rowClick);
+      return r;
+    }
+
+    /* 1) 已有報告：來源 = #years-grid 的時間軸點 + 當年動作按鈕 */
+    function buildYears() {
+      var host = document.getElementById('v2-years-list');
+      var grid = document.getElementById('years-grid');
+      if (!host || !grid) return;
+      host.innerHTML = '';
+      var cta = grid.querySelector('.yt-cta button');
+      grid.querySelectorAll('.yt-point').forEach(function (p) {
+        var year = (p.querySelector('.yt-year') || {}).textContent || '';
+        var coming = p.classList.contains('coming');
+        var pending = p.classList.contains('pending');
+        var latest = p.classList.contains('current');
+        var o = { year: year, latest: latest, coming: coming, tag: latest ? tx('an.v2Latest') : (coming ? tx('an.comingSoon') : '') };
+        if (coming) { /* 無動作 */ }
+        else if (pending) {
+          o.act = { kind: 'primary', text: cta ? cta.textContent : tx('an.introGenerateBtn').replace('{year}', year), onClick: function () { (cta || p).click(); } };
+        } else {
+          o.act = { kind: 'secondary', text: tx('an.genCardDone'), onClick: function () { p.click(); } };
+          o.rowClick = function () { p.click(); };
+        }
+        host.appendChild(row(o));
+      });
+    }
+
+    /* 2) 生成中：來源 = #gen-cards 的年份卡 */
+    function buildGenerating() {
+      var host = document.getElementById('v2-gen-list');
+      var wrap = document.getElementById('gen-cards');
+      if (!host || !wrap) return;
+      host.innerHTML = '';
+      var cards = Array.prototype.slice.call(wrap.querySelectorAll('.year-card'))
+        .sort(function (a, b) { return Number(a.dataset.year) - Number(b.dataset.year); });
+      var t = target();
+      cards.forEach(function (c) {
+        var year = c.dataset.year;
+        var done = c.dataset.done === 'true';
+        var o = { year: year, latest: String(year) === String(t), tag: String(year) === String(t) ? tx('an.v2Latest') : '' };
+        if (done) {
+          o.act = { kind: 'secondary', text: tx('an.genCardDone'), onClick: function () { c.click(); } };
+          o.rowClick = function () { c.click(); };
+        } else {
+          o.act = { kind: 'status', text: tx('an.genCardGenerating') };
+        }
+        host.appendChild(row(o));
+      });
+    }
+
+    /* 3) 首次生成：來源 = #intro-generate-btn（文字 / 停用狀態同步）*/
+    function buildPitch() {
+      var host = document.getElementById('v2-pitch-list');
+      var btn = document.getElementById('intro-generate-btn');
+      var t = target();
+      if (!host || !btn || t == null) return;
+      host.innerHTML = '';
+      host.appendChild(row({ year: t, latest: true, tag: tx('an.v2Latest'),
+        act: { kind: 'primary', text: btn.textContent, disabled: btn.disabled, onClick: function () { btn.click(); } } }));
+      host.appendChild(row({ year: Number(t) + 1, coming: true, tag: tx('an.comingSoon') }));
+    }
+
+    function init() {
+      var grid = document.getElementById('years-grid');
+      var wrap = document.getElementById('gen-cards');
+      var btn = document.getElementById('intro-generate-btn');
+      if (grid) new MutationObserver(buildYears).observe(grid, { childList: true });
+      if (wrap) new MutationObserver(buildGenerating).observe(wrap, { childList: true });
+      if (btn) new MutationObserver(buildPitch).observe(btn, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+      window.addEventListener('i18n:changed', function () { setTimeout(function () { buildYears(); buildGenerating(); buildPitch(); }, 0); });
+      buildYears(); buildGenerating(); buildPitch();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  })();
+</script>
+
+
+<!-- v2 視覺互動（週期頁共用；只做導覽，不碰資料 / gate）-->
+<script>
+  window.FSV2_PERIOD = {
+    periodParam:   'year',
+    listView:      'view-years',
+    rootViews:     ['view-intro'],
+    listGrid:      'years-grid',
+    explainerDict: 'PALACE_EXPLAINER_ANNUAL',
+    tooltipDict:   'TRANSFORM_TOOLTIP_ANNUAL',
+    enterKey:      'an.v2Enter'
+  };
+</script>
+<script src="fs-v2-period.js"></script>
 
 <script type="module">
   import { supabase, requireAuth, loadReportGlossary } from './components.js';
@@ -1168,10 +1874,28 @@
 
   document.getElementById('intro-generate-btn').addEventListener('click', subscribeAnnual);
   document.getElementById('hub-to-years').addEventListener('click', () => showView('view-years'));
+  document.getElementById('v2-back-list')?.addEventListener('click', () => showView('view-years'));
   document.getElementById('back-to-hub-top').addEventListener('click', () => showView('view-hub'));
   document.getElementById('back-to-hub-bottom').addEventListener('click', () => showView('view-hub'));
   document.addEventListener('click', () => {
     document.querySelectorAll('.tooltip-wrap.open').forEach(w => w.classList.remove('open'));
+  });
+
+  // ── v2 視覺層掛鉤（唯讀 + 導覽）──────────────────────────────
+  //   供 fs-v2-period.js / v2 年份列表使用（宮位切換列、兩段式十二宮、深連結、瀏覽紀錄）。
+  //   開宮位一律走 openDetail（四化 gate 在其中）；載入年份走 loadYear；
+  //   getter 只回免費欄位 composition，不暴露付費欄與 isUnlocked。
+  window.FSChart = Object.freeze({
+    openDetail: (p) => openDetail(p),
+    showView: (id) => showView(id),
+    currentView: () => currentView,
+    currentPalace: () => currentPalace,
+    isReady: () => Object.keys(reportsByPalace).length > 0,
+    getComposition: (p) => reportsByPalace[p]?.composition || null,
+    currentPeriod: () => currentYear,
+    loadPeriod: (y) => loadYear(Number(y)),
+    canOpenPeriod: (y) => (lastYears || []).includes(Number(y)),
+    targetYear: () => currentAnnualTargetYear(),
   });
 
   init();
