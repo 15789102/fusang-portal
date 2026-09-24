@@ -135,6 +135,31 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: auto;
   display: block;
 }
+.fs-brand-text { display: flex; flex-direction: column; gap: 3px; }
+.fs-brand-sub {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+/* 跳至主要內容:平常隱藏,鍵盤 Tab 聚焦時出現 */
+.fs-skip {
+  position: fixed;
+  top: -64px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  color: var(--ink-darkest);
+  border: 1px solid var(--rule);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  transition: top 0.15s;
+}
+.fs-skip:focus { top: 10px; }
+.fs-page:focus { outline: none; }
 .fs-brand-name {
   font-family: var(--font-serif-en);
   font-size: 21px;
@@ -246,6 +271,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .fs-header { padding: 16px 20px; }
   .fs-nav-link { font-size: 13px; }
   .fs-lang-opt { padding: 5px 8px; font-size: 10px; }
+}
+
+/* nav 文字不換行;901–1100px 收窄間距(容納「官網」)*/
+.fs-nav-link, .fs-nav-parent, .fs-lang-opt { white-space: nowrap; }
+@media (min-width: 901px) and (max-width: 1100px) {
+  .fs-header { padding-left: 24px; padding-right: 24px; flex-wrap: nowrap; }
+  .fs-header-nav { gap: 14px; }
+  .fs-brand-name { font-size: 18px; letter-spacing: 0.06em; }
+  .fs-header-brand img { height: 30px; }
+  .fs-nav-link, .fs-nav-parent { font-size: 13px; letter-spacing: 0.04em; }
+  .fs-lang-opt { padding: 6px 8px; }
 }
 
 /* ── nav RWD：≤900px 漢堡下拉 ── */
@@ -397,30 +433,38 @@ function injectHeader(activePage = null) {
   const consultSoonTag = consultOn ? '' : '<span class="fs-nav-soon" data-i18n="navComingSoon"></span>';
 
   // nav 文字以 data-i18n 標記 → 由 applyI18n 填入 / 切換時自動更新
+  // 目前頁 → aria-current(螢幕閱讀器可知所在位置)
+  const cur = (k) => (activePage === k ? ' aria-current="page"' : '');
+
   el.innerHTML = `
+    <a class="fs-skip" href="#fs-main" data-i18n="navSkipToMain"></a>
     <header class="fs-header">
       <div class="fs-header-brand" id="fs-brand">
         <img src="assets/fusangvision_trans_graph_only_0706.png" alt="" />
-        <span class="fs-brand-name">FuSang Vision</span>
+        <span class="fs-brand-text">
+          <span class="fs-brand-name">FuSang Vision</span>
+          <span class="fs-brand-sub" data-i18n="navMySpace"></span>
+        </span>
       </div>
       <button class="fs-nav-toggle" id="fs-nav-toggle" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <nav class="fs-header-nav" id="fs-nav">
         <div class="fs-nav-group" id="fs-charts-group">
           <span class="fs-nav-parent ${['chart','decade','annual','monthly'].includes(activePage) ? 'active' : ''}" id="fs-charts-parent"><span data-i18n="navCharts"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
           <div class="fs-nav-dropdown">
-            <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart" data-i18n="navChart"></span>
-            <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade" data-i18n="navDecade"></span>
-            <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual" data-i18n="navAnnual"></span>
-            <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly" data-i18n="navMonthly"></span>
+            <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart"${cur('chart')} data-i18n="navChart"></span>
+            <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade"${cur('decade')} data-i18n="navDecade"></span>
+            <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual"${cur('annual')} data-i18n="navAnnual"></span>
+            <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly"${cur('monthly')} data-i18n="navMonthly"></span>
           </div>
         </div>
-        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation"><span data-i18n="navConsultation"></span>${consultSoonTag}</span>
-        <span class="fs-nav-link ${activePage === 'pricing' ? 'active' : ''}" data-nav="pricing" data-i18n="navPricing"></span>
+        <span class="fs-nav-link ${activePage === 'consultation' ? 'active' : ''}" data-nav="consultation"${cur('consultation')}><span data-i18n="navConsultation"></span>${consultSoonTag}</span>
+        <span class="fs-nav-link ${activePage === 'pricing' ? 'active' : ''}" data-nav="pricing"${cur('pricing')} data-i18n="navPricing"></span>
+        <a class="fs-nav-link fs-nav-ext" href="https://fusang-vision.com/" target="_blank" rel="noopener" data-i18n="navOfficial"></a>
         <div class="fs-nav-group" id="fs-account-group">
           <span class="fs-nav-parent ${['account','support'].includes(activePage) ? 'active' : ''}" id="fs-account-parent"><span data-i18n="navAccount"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
           <div class="fs-nav-dropdown fs-nav-dropdown-r">
-            <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account" data-i18n="navAccount"></span>
-            <span class="fs-nav-link ${activePage === 'support' ? 'active' : ''}" data-nav="support" data-i18n="navSupport"></span>
+            <span class="fs-nav-link ${activePage === 'account' ? 'active' : ''}" data-nav="account"${cur('account')} data-i18n="navAccount"></span>
+            <span class="fs-nav-link ${activePage === 'support' ? 'active' : ''}" data-nav="support"${cur('support')} data-i18n="navSupport"></span>
             <span class="fs-nav-signout" id="fs-signout" data-i18n="navSignOut"></span>
           </div>
         </div>
@@ -435,6 +479,13 @@ function injectHeader(activePage = null) {
 
   // 填入 / 更新 nav 文字
   I18N.applyI18n(el);
+
+  // 「跳至主要內容」目標:各頁的 .fs-page(全站頁面皆有)
+  const _main = document.querySelector('.fs-page');
+  if (_main) {
+    if (!_main.id) _main.id = 'fs-main';
+    _main.setAttribute('tabindex', '-1');
+  }
 
   // 導航點擊
   document.getElementById('fs-brand').addEventListener('click', () => {
@@ -503,6 +554,16 @@ function injectHeader(activePage = null) {
       if (!_nav.contains(e.target) && !_navToggle.contains(e.target)) { _nav.classList.remove('open'); _navToggle.setAttribute('aria-expanded', 'false'); }
     });
   }
+
+  // Esc:關閉所有下拉與手機選單
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    [_chartsGroup, _accountGroup].forEach((g) => { if (g) g.classList.remove('open'); });
+    if (_nav && _nav.classList.contains('open')) {
+      _nav.classList.remove('open');
+      if (_navToggle) { _navToggle.setAttribute('aria-expanded', 'false'); _navToggle.focus(); }
+    }
+  });
 
   markActiveLang();
   // UI 語言變動(含 header 切換、profile 採用)→ 更新 active 標記
