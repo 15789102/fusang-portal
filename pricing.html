@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <meta charset="UTF-8" />
   <script src="config.js"></script>
   <script src="i18n.js"></script>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>解鎖你的命盤 - FuSang Vision</title>
   <script>
@@ -67,10 +67,10 @@
       'pr.faqQ3':     { 'zh-TW': '流月多久更新一次？', 'zh-CN': '流月多久更新一次？', 'en': 'How often does Monthly update?' },
       'pr.faqA3':     { 'zh-TW': '每個月 1 號自動生成當月的流月，完成後以 email 通知你。不想收到通知，可以在帳戶頁關閉。', 'zh-CN': '每个月 1 号自动生成当月的流月，完成后以 email 通知你。不想收到通知，可以在账户页关闭。', 'en': 'A new Monthly reading is generated on the 1st of each month, and we email you when it is ready. You can turn these emails off on your account page.' },
 
-      'pr.footNote':  { 'zh-TW': '所有付款透過 Stripe 安全處理 · 價格以美元（USD）計價<br>結帳時會依你的所在地，自動換算成當地貨幣顯示與付款；匯率由 Stripe 提供，可能含少量換匯費用。<br>購買後若內容尚未解鎖，回到報告頁重新整理即可顯示。', 'zh-CN': '所有付款透过 Stripe 安全处理 · 价格以美元（USD）计价<br>结账时会依你的所在地，自动换算成当地货币显示与付款；汇率由 Stripe 提供，可能含少量换汇费用。<br>购买后若内容尚未解锁，回到报告页重新整理即可显示。', 'en': "All payments are securely processed by Stripe · prices in USD<br>At checkout, prices are shown and charged in your local currency based on your location. Stripe provides the exchange rate, which may include a small conversion fee.<br>If content hasn't unlocked yet after buying, refresh the report page to display it." },
+      'pr.footNote':  { 'zh-TW': '所有付款透過 Stripe 安全處理 · 價格以美元（USD）計價<br>結帳時會依你的所在地，自動換算成當地貨幣顯示與付款；匯率由 Stripe 提供，可能含少量換匯費用。<br>購買後若內容尚未解鎖，回到報告頁重新整理即可顯示。', 'zh-CN': '所有付款透过 Stripe 安全处理 · 价格以美元（USD）计价<br>结账时会依你的所在地，自动换算成当地货币显示与付款；汇率由 Stripe 提供，可能含少量换汇费用。<br>购买后若内容尚未解锁，回到报告页重新整理即可显示。', 'en': "All payments are securely processed by Stripe · prices in USD<br>At checkout, prices are shown and charged in your local currency based on your location. Stripe provides the exchange rate, which may include a small conversion fee.<br>If content has not unlocked yet after buying, refresh the report page to display it." },
       'pr.checkingOut':{ 'zh-TW': '正在前往結帳…', 'zh-CN': '正在前往结账…', 'en': 'Taking you to checkout…' },
       'pr.noticeAuth':{ 'zh-TW': '請先登入再進行購買。', 'zh-CN': '请先登录再进行购买。', 'en': 'Please sign in before purchasing.' },
-      'pr.noticeError':{ 'zh-TW': '購買流程暫時無法啟動，請稍後再試，或重新整理頁面。若持續發生，請與我們聯繫。', 'zh-CN': '购买流程暂时无法启动，请稍后再试，或重新整理页面。若持续发生，请与我们联系。', 'en': "Checkout couldn't start right now. Please try again shortly or refresh the page. If it keeps happening, contact us." }
+      'pr.noticeError':{ 'zh-TW': '購買流程暫時無法啟動，請稍後再試，或重新整理頁面。若持續發生，請與我們聯繫。', 'zh-CN': '购买流程暂时无法启动，请稍后再试，或重新整理页面。若持续发生，请与我们联系。', 'en': 'Checkout could not start right now. Please try again shortly or refresh the page. If it keeps happening, contact us.' }
     });
   </script>
   <meta name="description" content="Unlock your full Zi Wei Dou Shu reading." />
@@ -78,6 +78,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="fs-v2.css" />
 
   <style>
     .shell { max-width: 1040px; margin: 0 auto; padding: 56px 32px 96px; }
@@ -288,9 +290,145 @@
     }
 
     .pr-foot-note { text-align: center; margin-top: 44px; font-family: var(--font-serif-zh); font-size: 12.5px; color: var(--ink-light); letter-spacing: 0.03em; line-height: 1.8; }
+
+    /* ════════════════════════════════════════════════════════════════
+       ▼ v2 視覺層（設計師 v1.0 語彙）— 以下全部限定 .fs-v2，疊在原有規則之上
+       ════════════════════════════════════════════════════════════════ */
+    body.pricing-page.fs-v2 { background: #ffffff; }
+    .fs-v2 .shell { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 32px 0 96px; }
+
+    /* ── 頁首橫幅 ── */
+    .fs-v2 .pr-head {
+      position: relative; max-width: none; min-height: 179px; margin: 0 0 32px; padding: 32px; overflow: hidden; text-align: left;
+      background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+    }
+    .fs-v2 .pr-ornament { display: none; }
+    .fs-v2 .pr-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+    .fs-v2 .pr-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-sub { max-width: 640px; margin: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* ── 通知 ── */
+    .fs-v2 .pr-notice { max-width: none; margin: 0 0 32px; padding: 14px 20px; background: #fdf5f6; border: 1px solid #e7c2c7; border-radius: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: #a8505c; }
+    .fs-v2 .pr-notice.info { background: var(--v2-tint); border-color: var(--v2-blue-line); color: var(--v2-ink); }
+    .fs-v2 .pr-notice a { color: inherit; border-bottom: 1px solid currentColor; }
+
+    /* ── 四個層次：一列四格 ── */
+    .fs-v2 .pr-layers { margin: 0 0 64px; padding: 0; background: transparent; border: 0; border-radius: 0; }
+    .fs-v2 .pr-ly-title { margin: 0 0 16px; text-align: left; font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-ly-groups { display: block; }
+    .fs-v2 .pr-ly-group,
+    .fs-v2 .pr-ly-group.a { padding: 0; background: transparent; border: 0; border-radius: 0; }
+    .fs-v2 .pr-ly-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: 1px 0 0 1px; counter-reset: ly; }
+    .fs-v2 .pr-ly-chip {
+      position: relative; margin: -1px 0 0 -1px; padding: 24px; text-align: left; overflow: hidden;
+      background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; counter-increment: ly;
+    }
+    .fs-v2 .pr-ly-chip::before { content: counter(ly, upper-roman); display: block; margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .pr-ly-chip::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+      background: url('assets/v2/palace-cloud.webp') right center / auto 180% no-repeat;
+      -webkit-mask-image: linear-gradient(90deg, transparent 35%, #000); mask-image: linear-gradient(90deg, transparent 35%, #000);
+    }
+    .fs-v2 .pr-ly-chip > * { position: relative; z-index: 1; }
+    .fs-v2 .pr-ly-chip .n { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-ly-chip .d { margin-top: 2px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .pr-ly-tag { display: inline-block; margin: 16px 0 0; text-align: left; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--v2-blue); }
+    .fs-v2 .pr-ly-note { margin: 4px 0 0; text-align: left; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* ── 區段標題（I / II）── */
+    .fs-v2 .pr-sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 16px; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .pr-sec-rule { display: contents; }
+    .fs-v2 .pr-sec-rule .ln { display: none; }
+    .fs-v2 .pr-sec-rule .no { grid-row: 1 / span 2; font-family: var(--v2-font-latin); font-style: normal; font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-blue); }
+    .fs-v2 .pr-sec-title { text-align: left; font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-sec-sub { grid-column: 2; margin: 0; text-align: left; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* ── 方案卡 ── */
+    .fs-v2 .pr-card { padding: 40px; background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; box-shadow: none; }
+    .fs-v2 .pr-card.featured { border-color: var(--v2-blue-line); box-shadow: none; }
+    .fs-v2 .pr-card.featured::before {
+      content: ''; position: absolute; inset: 0; left: auto; width: 55%; height: auto; pointer-events: none; opacity: .4;
+      background: url('assets/v2/palace-cloud.webp') right top / auto 150% no-repeat;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%); mask-image: linear-gradient(90deg, transparent, #000 70%);
+    }
+    .fs-v2 .pr-card > *:not(.pr-badge) { position: relative; z-index: 1; }
+    .fs-v2 .pr-badge { position: relative; top: auto; right: auto; z-index: 1; align-self: flex-start; margin: 0 0 16px; padding: 2px 10px; background: var(--v2-tint); border: 1px solid var(--v2-blue-line); border-radius: 0; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--v2-blue); }
+    .fs-v2 .pr-card-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+    .fs-v2 .pr-card-name { margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 28px; line-height: 40px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-card-sub-zh { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .pr-card-pitch { margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .pr-price { gap: 10px; margin: 0 0 4px; }
+    .fs-v2 .pr-price-amount { font-family: var(--v2-font-latin); font-size: 48px; line-height: 60px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-price-unit { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .pr-price-note { min-height: 0; margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; color: var(--v2-faint); }
+
+    /* 功能列：編號 + 分隔線（與流月方案說明同一語彙）*/
+    .fs-v2 .pr-features { gap: 0; margin: 0 0 24px; padding: 0; }
+    .fs-v2 .pr-feature { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: baseline; gap: 8px; padding: 14px 0; border-top: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-feature:last-child { border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .pr-feature .mk { font-family: var(--v2-font-latin); font-style: normal; font-size: 14px; font-weight: 500; color: var(--v2-blue); }
+    .fs-v2 .pr-for { margin: 0; padding: 16px 20px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); border-radius: 0; }
+    .fs-v2 .pr-for-label { margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--v2-ink); }
+    .fs-v2 .pr-for-text { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* 按鈕 → 設計師按鈕 */
+    .fs-v2 .pr-btn {
+      display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; padding: 12px 28px;
+      background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink); border-radius: 0; box-shadow: none; transform: none;
+      font-family: var(--v2-font-cjk); font-size: 15px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+    }
+    .fs-v2 .pr-btn:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
+    .fs-v2 .pr-btn.outline { background: #ffffff; color: var(--v2-ink); }
+    .fs-v2 .pr-btn.outline:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .pr-btn:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .pr-btn:disabled { background: #f7f7f7; color: var(--v2-muted); border-color: #f7f7f7; }
+
+    /* 版位：I 寬卡兩欄；II 同樣兩欄（由 v2 標記的 .pr-wide 包住）*/
+    .fs-v2 .pr-sec-a,
+    .fs-v2 .pr-sec-b { margin: 0 0 64px; }
+    .fs-v2 .pr-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+    .fs-v2 #pr-sec-consult .pr-card { max-width: none !important; margin: 0 !important; }
+
+    /* ── 常見疑問 ── */
+    .fs-v2 .pr-faq { margin: 0 0 40px; }
+    .fs-v2 .pr-faq-title { margin: 0 0 16px; text-align: left; font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-faq-list { max-width: none; background: transparent; border: 0; border-top: 1px solid var(--v2-line); border-radius: 0; }
+    .fs-v2 .pr-faq-item { border-top: 0; border-bottom: 1px solid var(--v2-line); }
+    .fs-v2 .pr-faq-item > summary { padding: 18px 48px 18px 0; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pr-faq-item > summary:hover { color: var(--v2-blue); }
+    .fs-v2 .pr-faq-item > summary::after,
+    .fs-v2 .pr-faq-item[open] > summary::after {
+      content: ''; right: 8px; width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+      transform: translateY(-75%) rotate(45deg); color: var(--v2-muted);
+    }
+    .fs-v2 .pr-faq-item[open] > summary::after { transform: translateY(-25%) rotate(-135deg); }
+    .fs-v2 .pr-faq-item > summary:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .pr-faq-a { max-width: 820px; padding: 0 0 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; letter-spacing: 0; color: var(--v2-muted); }
+
+    .fs-v2 .pr-foot-note { margin: 32px 0 0; text-align: left; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; color: var(--v2-faint); }
+
+    /* ── RWD ── */
+    @media (max-width: 1000px) {
+      .fs-v2 .pr-ly-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .fs-v2 .pr-wide { gap: 32px; }
+    }
+    @media (max-width: 820px) {
+      .fs-v2 .pr-wide { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 799px) {
+      .fs-v2 .shell { padding-top: 16px; }
+      .fs-v2 .pr-head { padding: 24px; min-height: 169px; background-position: 60% center; }
+      .fs-v2 .pr-title { font-size: 28px; line-height: 42px; }
+      .fs-v2 .pr-sub { font-size: 14px; line-height: 24px; }
+      .fs-v2 .pr-card { padding: 28px 20px; }
+      .fs-v2 .pr-card-name { font-size: 24px; line-height: 36px; }
+      .fs-v2 .pr-price-amount { font-size: 40px; line-height: 52px; }
+      .fs-v2 .pr-ly-chip { padding: 16px; }
+      .fs-v2 .pr-ly-chip .n { font-size: 20px; line-height: 30px; }
+    }
   </style>
 </head>
-<body>
+<body class="pricing-page fs-v2">
 
 <div id="site-header"></div>
 
@@ -392,20 +530,26 @@
       </div>
 
       <div class="pr-card" style="max-width: 460px; margin: 0 auto;">
-        <div class="pr-card-eyebrow">Consultation</div>
-        <div class="pr-card-name" data-i18n="pr.c2Name">單獨問事</div>
-        <div class="pr-card-sub-zh" data-i18n="pr.c2Sub">一次問事 · 可追問一次</div>
-        <div class="pr-price">
-          <span class="pr-price-amount" data-price="ticketPrice">$49.90</span>
-          <span class="pr-price-unit" data-i18n="pr.c2Unit">/ 次</span>
+        <div class="pr-wide">
+          <div class="pr-wide-left">
+            <div class="pr-card-eyebrow">Consultation</div>
+            <div class="pr-card-name" data-i18n="pr.c2Name">單獨問事</div>
+            <div class="pr-card-sub-zh" data-i18n="pr.c2Sub">一次問事 · 可追問一次</div>
+            <div class="pr-price">
+              <span class="pr-price-amount" data-price="ticketPrice">$49.90</span>
+              <span class="pr-price-unit" data-i18n="pr.c2Unit">/ 次</span>
+            </div>
+            <div class="pr-price-note" data-i18n="pr.c2PriceNote">單次計費，不自動續訂</div>
+            <a class="pr-btn outline" href="consultation.html" data-i18n="pr.c2Btn">了解單獨問事</a>
+          </div>
+          <div class="pr-wide-right">
+            <ul class="pr-features">
+              <li class="pr-feature"><span class="mk">I</span><span data-i18n="pr.c2F1">由 R.S. Chen 親自解讀你的命盤</span></li>
+              <li class="pr-feature"><span class="mk">II</span><span data-i18n="pr.c2F2">針對你的問題個別撰寫的書面回覆</span></li>
+              <li class="pr-feature"><span class="mk">III</span><span data-i18n="pr.c2F3">收到回覆後 7 天內可追問一次</span></li>
+            </ul>
+          </div>
         </div>
-        <div class="pr-price-note" data-i18n="pr.c2PriceNote">單次計費，不自動續訂</div>
-        <ul class="pr-features">
-          <li class="pr-feature"><span class="mk">I</span><span data-i18n="pr.c2F1">由 R.S. Chen 親自解讀你的命盤</span></li>
-          <li class="pr-feature"><span class="mk">II</span><span data-i18n="pr.c2F2">針對你的問題個別撰寫的書面回覆</span></li>
-          <li class="pr-feature"><span class="mk">III</span><span data-i18n="pr.c2F3">收到回覆後 7 天內可追問一次</span></li>
-        </ul>
-        <a class="pr-btn outline" href="consultation.html" data-i18n="pr.c2Btn">了解單獨問事</a>
       </div>
     </div>
 
