@@ -13,10 +13,13 @@
        window.FSV2_PERIOD = {
          periodParam:   'decade',                    // 網址參數名（?decade=2020）
          listView:      'view-years',                // 週期清單畫面 id
+         rootViews:     ['view-intro'],              // 選用：其他不帶週期參數的起始畫面（記入瀏覽紀錄）
          listGrid:      'years-grid',                // 週期清單容器 id（首次渲染後處理深連結）
          explainerDict: 'PALACE_EXPLAINER_DECADE',   // 十二宮預覽的宮位定義字典（td）
          tooltipDict:   'TRANSFORM_TOOLTIP_DECADE',  // 左欄四化說明字典（td；缺字時退回 TRANSFORM_TOOLTIP）
          enterKey:      'dc.v2Enter',                // 預覽按鈕文案 key（含 {palace}）
+         decorateCard:  function (card, palace) {},  // 選用：十二宮卡的頁面專屬裝飾（monthly：能量細條 / 焦點）
+         previewExtra:  function (palace, box) {},   // 選用：中央預覽的頁面專屬內容（插在進入按鈕之前）
          progress: {                                 // 選用：目前週期的「第 N / 10 年」
            bar: '.decade-bar.current', years: '.decade-bar-years', host: '.decade-bar-right',
            span: 10, key: 'dc.v2Progress'
@@ -35,6 +38,7 @@
      3) 十二宮格：標出本期四化（composition 為免費欄位）
      4) 宮位切換列 / 章節列（含方向鍵）/ 返回頂部 / 左欄四化標籤說明泡泡
      5) 選用：目前週期進度「第 N / 10 年」
+     6) 選用：decorateCard / previewExtra 兩個頁面掛鉤（只做呈現；例外不影響其他功能）
    ============================================================ */
 (function () {
   'use strict';
@@ -47,6 +51,9 @@
   var TF_CLASS = { '化祿': 'lu', '化權': 'quan', '化科': 'ke', '化忌': 'ji' };
   var PARAM = CFG.periodParam || 'period';
   var LIST_VIEW = CFG.listView || 'view-years';
+  // 起始畫面（不帶週期參數的畫面）：清單之外，可另列如 annual 的 view-intro（首次生成 / 生成中）
+  var ROOT_VIEWS = [LIST_VIEW].concat(CFG.rootViews || []);
+  function isRoot(v) { return ROOT_VIEWS.indexOf(v) !== -1; }
 
   function FS() { return window.FSChart || null; }
   function tx(k) { try { return F.t(k); } catch (_) { return ''; } }
@@ -87,6 +94,7 @@
              .forEach(function (s) { box.appendChild(el('span', 'v2-hua v2-hua--' + (TF_CLASS[s.transform] || 'x'), F.transformLabel(s.transform))); });
           card.appendChild(box);
         }
+        if (typeof CFG.decorateCard === 'function') { try { CFG.decorateCard(card, p); } catch (_) {} }
       }
     }
 
@@ -105,6 +113,7 @@
       preview.appendChild(el('h2', 'v2-hp-name', name));
       var tag = el('div', 'v2-hp-tagline'); tag.innerHTML = td('PALACE_TAGLINE', selected); preview.appendChild(tag);
       var ex = el('div', 'v2-hp-explainer'); ex.innerHTML = td(CFG.explainerDict || 'PALACE_EXPLAINER', selected); preview.appendChild(ex);
+      if (typeof CFG.previewExtra === 'function') { try { CFG.previewExtra(selected, preview); } catch (_) {} }
       var btn = el('button', 'v2-hp-enter', (tx(CFG.enterKey) || '{palace}').replace('{palace}', name));
       btn.type = 'button';
       var has = !!(FS() && FS().getComposition(selected));
@@ -112,6 +121,8 @@
       btn.addEventListener('click', function () { if (FS()) FS().openDetail(selected); });
       preview.appendChild(btn);
     }
+    // 頁面可要求重繪（例如 monthly 語言切換後能量標籤文字更新）
+    window.addEventListener('fsv2:hub-refresh', function () { decorateHub(); renderPreview(); });
     function select(p) {
       selected = p;
       if (grid) grid.querySelectorAll('.palace-card').forEach(function (c) { c.classList.toggle('is-selected', c.dataset.v2Palace === p); });
@@ -307,7 +318,7 @@
       var f = FS();
       if (!f) return null;
       var v = f.currentView();
-      if (v === LIST_VIEW) return { view: v, period: null, palace: null };
+      if (isRoot(v)) return { view: v, period: null, palace: null };
       if (v === 'view-hub') return { view: v, period: f.currentPeriod(), palace: null };
       if (v === 'view-detail') return { view: v, period: f.currentPeriod(), palace: f.currentPalace() };
       return null;   // loading / error / 其他（例如 intro、解鎖頁）不記錄
@@ -343,13 +354,13 @@
       // 回傳 Promise：切到目標狀態（必要時先載入該週期）
       var f = FS();
       if (!f) return Promise.resolve();
-      if (!s || s.view === LIST_VIEW) { f.showView(LIST_VIEW); return Promise.resolve(); }
+      if (!s || isRoot(s.view)) { f.showView((s && s.view) || LIST_VIEW); return Promise.resolve(); }
       var go = function () {
         if (s.view === 'view-detail' && s.palace) { f.openDetail(s.palace); select(s.palace); }
         else f.showView('view-hub');
       };
       if (s.period != null && !sameP(f.currentPeriod(), s.period)) {
-        if (!f.canOpenPeriod(s.period)) { f.showView(LIST_VIEW); return Promise.resolve(); }
+        if (!f.canOpenPeriod(s.period)) { if (!isRoot(f.currentView())) f.showView(LIST_VIEW); return Promise.resolve(); }
         return Promise.resolve(f.loadPeriod(s.period)).then(function () { if (f.isReady()) go(); });
       }
       go();
@@ -377,11 +388,15 @@
       var q = new URLSearchParams(window.location.search);
       var per = q.get(PARAM);
       var pal = q.get('palace');
-      var want = { view: LIST_VIEW, period: null, palace: null };
-      if (per != null && per !== '') {
-        var pNum = /^\d+$/.test(per) ? parseInt(per, 10) : per;
-        want = { view: (pal && ORDER.indexOf(pal) !== -1) ? 'view-detail' : 'view-hub', period: pNum, palace: (pal && ORDER.indexOf(pal) !== -1) ? pal : null };
+      // 沒帶週期參數 → 留在 module 目前的起始畫面（清單 / intro），只登記瀏覽紀錄
+      if (per == null || per === '') {
+        var here = stateNow() || { view: LIST_VIEW, period: null, palace: null };
+        history.replaceState({ v2: here }, '', urlOf(here));
+        lastKey = keyOf(here);
+        return;
       }
+      var pNum = /^\d+$/.test(per) ? parseInt(per, 10) : per;
+      var want = { view: (pal && ORDER.indexOf(pal) !== -1) ? 'view-detail' : 'view-hub', period: pNum, palace: (pal && ORDER.indexOf(pal) !== -1) ? pal : null };
       applying = true;
       apply(want).then(function () { settle(want); }, function () { applying = false; });
     }
@@ -395,17 +410,19 @@
       decorateHub();
       renderPreview();
       buildSwitcher();
+      // 同一畫面內切換週期（monthly 的月份切換）不會改 view，也要記入瀏覽紀錄
+      queueSync();
     }).observe(grid, { childList: true });
     if (listGrid) new MutationObserver(function () {
       decorateList();
-      if (listGrid.children.length && FS() && FS().currentView() === LIST_VIEW) onListReady();
+      if (listGrid.children.length && FS() && isRoot(FS().currentView())) onListReady();
     }).observe(listGrid, { childList: true });
     if (titleEl) new MutationObserver(function () { markSelected(); queueSync(); }).observe(titleEl, { childList: true, characterData: true, subtree: true });
     var views = document.querySelectorAll('.view');
     for (var v = 0; v < views.length; v++) new MutationObserver(function () {
       queueSync();
       // 清單畫面首次出現（空清單時 listGrid 不會有子元素）→ 也視為就緒
-      if (!ready && FS() && FS().currentView() === LIST_VIEW) onListReady();
+      if (!ready && FS() && isRoot(FS().currentView())) onListReady();
     }).observe(views[v], { attributes: true, attributeFilter: ['class'] });
     onScroll();
   }
