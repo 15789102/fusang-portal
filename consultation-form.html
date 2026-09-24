@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta charset="UTF-8">
 <script src="config.js"></script>
 <script src="i18n.js"></script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>提交問事 - FuSang Vision</title>
+<link rel="stylesheet" href="fs-v2.css" />
 <style>
   /* 提交問事 — 兩欄版型（共用樣式由 consultation-common.js 注入、已冷藍）*/
   /* 只放寬本頁（提高權重蓋過共用 .cons-wrap 760，不動 common.js）*/
@@ -36,9 +37,27 @@
   .form-right .disclaim li::before { content: '\2713'; left: 0; color: var(--accent-soft); font-weight: 700; }
   .form-right .consent { margin-bottom: 18px; }
   .form-right .cons-btn { margin-top: 4px; }
+
+  /* ════════ v2 視覺層（提交問事）— 限定 .fs-v2；設計師 form 語彙（編號段落 / 細框 / 方格）════════ */
+  body.consult-page.fs-v2 { background: #ffffff; }
+  .fs-v2 .form-2col { gap: 48px; }
+  .fs-v2 .fld-label { gap: 10px; margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 17px; line-height: 26px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .fld-label .fld-n { width: 24px; height: 24px; background: #dbe8fb; color: var(--v2-ink); font-family: var(--v2-font-latin); font-size: 13px; font-weight: 500; }
+  .fs-v2 .form-left .subj-grid { gap: 0; padding: 1px 0 0 1px; margin-bottom: 40px; }
+  .fs-v2 .form-left .subj-opt { margin: -1px 0 0 -1px; padding: 24px 12px; border-radius: 0; background: #ffffff; }
+  .fs-v2 .form-left .subj-opt.sel { position: relative; z-index: 1; background: var(--v2-tint); }
+  .fs-v2 .subj-opt .subj-ic svg { stroke: var(--v2-ink); }
+  .fs-v2 .subj-opt.sel .subj-ic svg { stroke: var(--v2-blue); }
+  .fs-v2 .subj-opt .subj-zh { font-family: var(--v2-font-cjk); font-size: 15px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .subj-opt.sel .subj-zh { color: var(--v2-blue-strong); }
+  .fs-v2 .form-left textarea.cons-input { min-height: 240px; }
+  .fs-v2 .form-right { top: 24px; padding: 28px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); border-radius: 0; }
+  .fs-v2 .form-right .disclaim { background: transparent; border: 0; padding: 0; margin: 0 0 20px; }
+  .fs-v2 .form-right .disclaim-h { margin: 0 0 12px; font-family: var(--v2-font-cjk); font-size: 17px; line-height: 26px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .form-right .disclaim li::before { color: var(--v2-blue); }
 </style>
 </head>
-<body>
+<body class="consult-page fs-v2">
 
 <div id="site-header"></div>
 <div id="consult-nav"></div>
@@ -160,7 +179,7 @@
       (showBanner ? `<div class="banner">${pick(
         '你有一筆尚未完成付款的諮詢，已為你載入內容。完成付款後即進入回覆佇列。',
         '你有一笔尚未完成付款的咨询，已为你载入内容。完成付款后即进入回复队列。',
-        'You have an unpaid consultation. Its details are loaded below — complete payment to enter the reply queue.'
+        'You have an unpaid consultation. Its details are loaded below. Complete payment to enter the reply queue.'
       )}</div>` : '') +
       `<div class="form-2col">` +
         `<div class="form-left">` +
