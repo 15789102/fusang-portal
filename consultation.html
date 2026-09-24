@@ -138,7 +138,27 @@
   .fs-v2 .lp-val { padding: 6px 12px; border-radius: 0; border: 1px solid var(--v2-line); background: #ffffff; font-family: var(--v2-font-cjk); font-size: 13px; letter-spacing: 0; color: var(--v2-ink); }
   .fs-v2 .lp-val svg { stroke: var(--v2-blue); }
 
+  /* 客戶見證（2026-09-24）：原文照登；來源為先前的一對一解讀 */
+  .fs-v2 .lp-secthead h2.zh { margin: 0; }
+  .fs-v2 .lp-secthead .lp-sect-note { margin: 4px 0 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+  .fs-v2 .lp-testis { columns: 3 260px; column-gap: 16px; }
+  .fs-v2 .lp-testi { break-inside: avoid; margin: 0 0 16px; padding: 24px; background: #ffffff; border: 1px solid var(--v2-line); }
+  .fs-v2 .lp-testi:first-child { background: var(--v2-tint); border-color: var(--v2-blue-line); }
+  .fs-v2 .lp-testi-mk { display: block; width: 20px; height: 20px; margin: 0 0 12px; fill: var(--v2-blue); }
+  .fs-v2 .lp-testi-q { margin: 0; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-ink); overflow-wrap: anywhere; }
+  .fs-v2 .lp-testi-by { margin: 12px 0 0; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
+
+  /* 創辦人背景：三格事實數字 + 自述 */
+  .fs-v2 .lp-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 20px; border-top: 1px solid var(--v2-line); border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .lp-fact { padding: 16px 12px 16px 0; }
+  .fs-v2 .lp-fact + .lp-fact { padding-left: 16px; border-left: 1px solid var(--v2-line); }
+  .fs-v2 .lp-fact-n { display: block; font-family: var(--v2-font-latin); font-size: 28px; line-height: 36px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .lp-fact-l { display: block; margin-top: 4px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 20px; color: var(--v2-muted); }
+  .fs-v2 .lp-bio { margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-ink); }
+
   @media (max-width: 799px) {
+    .fs-v2 .lp-testi { padding: 20px; }
+    .fs-v2 .lp-fact-n { font-size: 24px; line-height: 32px; }
     .fs-v2 .lp-hero { padding: 28px 24px; min-height: 0; background-position: 60% center; }
     .fs-v2 .lp-title { font-size: 30px; line-height: 44px; }
     .fs-v2 .lp-actions { flex-direction: column; align-items: stretch; }
@@ -194,6 +214,17 @@
       </div>
     </div>
 
+    <!-- Testimonials（原文照登，來源為先前的一對一解讀）-->
+    <section class="lp-band testimonials" aria-labelledby="testi-heading">
+      <div class="lp-band-in">
+        <div class="lp-secthead">
+          <h2 class="zh" id="testi-heading">問事者怎麼說</h2>
+          <p class="lp-sect-note" id="testi-note"></p>
+        </div>
+        <div class="lp-testis" id="lp-testis"></div>
+      </div>
+    </section>
+
     <!-- Brand story (full-width band) -->
     <div class="lp-band story">
       <div class="lp-band-in">
@@ -206,7 +237,9 @@
             <div class="lp-story-eyebrow" id="story-eyebrow">Brand Story</div>
             <h2 class="lp-story-h2" id="story-h2">探索你的內在天賦</h2>
             <div class="lp-story-h3" id="story-h3">將東方智慧，帶入你真正嚮往的現代生活。</div>
-            <div class="lp-story-founder" id="story-founder">創辦人的話 — R.S. Chen</div>
+            <div class="lp-story-founder" id="story-founder">創辦人的話 — R.S. Chen（Ben）</div>
+            <div class="lp-facts" id="lp-facts"></div>
+            <p class="lp-bio" id="story-bio"></p>
             <div class="lp-values">
               <span class="lp-val"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="val-1">Self-exploration</span></span>
               <span class="lp-val"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 4 5 4 8.5A4 4 0 0 1 8 11.5c0-1.6.8-2.7 1.8-3.6.4 1.9 1.9 1.8 1.9-.4 0-1.4-.2-3-1.7-4.5z"/></svg><span id="val-2">Courage</span></span>
@@ -274,6 +307,38 @@
       en_p: 'After the reply, you may ask one follow-up on the same topic within 7 days, so nothing is left unclear.' },
   ];
 
+  // ── 客戶見證 ─────────────────────────────────────────────────
+  //   zh：原文照登（只做繁轉簡，不改語意）；en：翻譯，並於區段說明註明譯自中文。
+  //   來源：先前的一對一解讀（非目前的書面問事），區段說明如實標示。
+  const TESTIMONIALS = [
+    { zh: '整體都很好！我喜歡會先說明整體狀態、個性，再回應到流年。語氣中也可以感覺得到正向和溫暖。有給予很多自己判斷的方向和可能性，也會建議最後回到自己去做決定！',
+      cn: '整体都很好！我喜欢会先说明整体状态、个性，再回应到流年。语气中也可以感觉得到正向和温暖。有给予很多自己判断的方向和可能性，也会建议最后回到自己去做决定！',
+      en: 'It was great overall! I liked that the reading first explained my overall state and personality, then turned to the year ahead. The tone felt positive and warm. It gave me many directions and possibilities to weigh for myself, and encouraged me to make the final decision on my own!' },
+    { zh: '一開始有點緊張（社恐）但不用露臉的方式加上Ben很親切😊讓整體感受下來很快的能放鬆，也謝謝您讓我問一些奇怪的問題🙏第一次給別人算命就有這麼好的體驗，感恩❤️',
+      cn: '一开始有点紧张（社恐）但不用露脸的方式加上Ben很亲切😊让整体感受下来很快的能放松，也谢谢您让我问一些奇怪的问题🙏第一次给别人算命就有这么好的体验，感恩❤️',
+      en: 'I was a little nervous at first (social anxiety), but not having to show my face, plus how friendly Ben was 😊, helped me relax quickly. Thank you for letting me ask some odd questions 🙏 It was my first reading ever, and such a good experience. Grateful ❤️' },
+    { zh: '謝謝您舉辦這次活動。我跟您聊完覺得很有幫助，也蠻清楚找到了問題的答案或建議！',
+      cn: '谢谢您举办这次活动。我跟您聊完觉得很有帮助，也蛮清楚找到了问题的答案或建议！',
+      en: 'Thank you for hosting this. Talking with you was very helpful, and I came away with clear answers or suggestions for my questions!' },
+    { zh: '很感謝Ben提供這次的機會 真的學到很多也很充實的訪談 讓我可以好好審視自己各方面的狀態！Really appreciate that!! Thanks a lot!!',
+      cn: '很感谢Ben提供这次的机会 真的学到很多也很充实的访谈 让我可以好好审视自己各方面的状态！Really appreciate that!! Thanks a lot!!',
+      en: 'Thank you, Ben, for this opportunity. I learned a lot, and the session was truly rich. It let me take a good look at every part of my life. Really appreciate that!! Thanks a lot!!' },
+    { zh: '能了解自己的命盤還有聽一些人生的建議真的好有趣～',
+      cn: '能了解自己的命盘还有听一些人生的建议真的好有趣～',
+      en: 'Getting to understand my own chart and hear some life advice was so much fun!' },
+    { zh: 'BenBen太讚惹！！感恩～謝謝',
+      cn: 'BenBen太赞惹！！感恩～谢谢',
+      en: 'BenBen, you were amazing!! So grateful, thank you.' },
+  ];
+  const QUOTE_SVG = '<svg class="lp-testi-mk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V12.5C4 8.4 6.2 5.8 10 5l.7 1.6C8.6 7.4 7.6 8.9 7.5 11H10v7zm10 0V12.5c0-4.1 2.2-6.7 6-7.5l.7 1.6c-2.1.8-3.1 2.3-3.2 4.4H20v7z"/></svg>';
+
+  // ── 創辦人背景（事實，不誇大）──────────────────────────────
+  const FACTS = [
+    { n: '2023', zh: '開始研習紫微斗數', cn: '开始研习紫微斗数', en: 'Began studying Zi Wei Dou Shu' },
+    { n: '1:1',  zh: '實體一對一解讀', cn: '实体一对一解读', en: 'In-person, one-on-one readings' },
+    { n: '300+', zh: '位使用者用過線上命財官解析', cn: '位使用者用过线上命财官解析', en: 'People used the online Life, Wealth and Career reading' },
+  ];
+
   // 靜態文字(可重繪：語言切換時重套)
   function applyStaticText() {
     document.title = pick('單獨問事 - FuSang Vision', '单独问事 - FuSang Vision', 'Individual Session - FuSang Vision');
@@ -303,7 +368,27 @@
     document.getElementById('story-eyebrow').textContent = pick('品牌故事', '品牌故事', 'Brand Story');
     document.getElementById('story-h2').textContent      = pick('探索你的內在天賦', '探索你的内在天赋', 'Discover your innate gifts');
     document.getElementById('story-h3').textContent      = pick('將東方智慧，帶入你真正嚮往的現代生活。', '将东方智慧，带入你真正向往的现代生活。', 'Bringing Eastern wisdom into the modern life you long for.');
-    document.getElementById('story-founder').textContent = pick('創辦人的話 — R.S. Chen', '创办人的话 — R.S. Chen', 'A note from the founder: R.S. Chen');
+    document.getElementById('testi-heading').textContent = pick('問事者怎麼說', '问事者怎么说', 'What people say');
+    document.getElementById('testi-note').textContent    = pick(
+      '以下是先前一對一解讀的真實回饋，依原文刊出。',
+      '以下是先前一对一解读的真实回馈，依原文刊出。',
+      'Real feedback from earlier one-on-one readings, translated from the original Chinese.'
+    );
+    const by = pick('一對一解讀回饋', '一对一解读回馈', 'One-on-one reading');
+    document.getElementById('lp-testis').innerHTML = TESTIMONIALS.map((t) =>
+      `<figure class="lp-testi">${QUOTE_SVG}<blockquote class="lp-testi-q">${pick(t.zh, t.cn, t.en)}</blockquote>` +
+      `<figcaption class="lp-testi-by">${by}</figcaption></figure>`
+    ).join('');
+
+    document.getElementById('story-founder').textContent = pick('創辦人的話 — R.S. Chen（Ben）', '创办人的话 — R.S. Chen（Ben）', 'A note from the founder: R.S. Chen (Ben)');
+    document.getElementById('lp-facts').innerHTML = FACTS.map((f) =>
+      `<div class="lp-fact"><span class="lp-fact-n">${f.n}</span><span class="lp-fact-l">${pick(f.zh, f.cn, f.en)}</span></div>`
+    ).join('');
+    document.getElementById('story-bio').textContent = pick(
+      '我是 R.S. Chen，大家都叫我 Ben。2023 年開始學習紫微斗數，先以實體一對一的方式為人解讀命盤；之後推出線上的「命財官解析」，至今已有 300 多位使用者。',
+      '我是 R.S. Chen，大家都叫我 Ben。2023 年开始学习紫微斗数，先以实体一对一的方式为人解读命盘；之后推出线上的「命财官解析」，至今已有 300 多位使用者。',
+      'I am R.S. Chen, and most people call me Ben. I began studying Zi Wei Dou Shu in 2023 and first offered in-person, one-on-one chart readings. Since then, more than 300 people have used my online Life, Wealth and Career reading.'
+    );
     document.getElementById('val-1').textContent = pick('自我探索', '自我探索', 'Self-exploration');
     document.getElementById('val-2').textContent = pick('勇氣', '勇气', 'Courage');
     document.getElementById('val-3').textContent = pick('清晰', '清晰', 'Clarity');
