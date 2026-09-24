@@ -49,7 +49,18 @@
     'dash.consultDesc':{ 'zh-TW': '選定主題、說明處境，由真人為你解盤並書面回覆。', 'zh-CN': '选定主题、说明处境，由真人为你解盘并书面回复。', 'en': 'Choose a topic, describe your situation, and get a written reading from a real person.' },
     'dash.consultCta': { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' },
     'dash.quote':      { 'zh-TW': '你能給世界最大的禮物，就是你的快樂。', 'zh-CN': '你能给世界最大的礼物，就是你的快乐。', 'en': 'The greatest gift you can give the world is your own happiness.' },
-    'dash.broadcast':  { 'zh-TW': '歡迎回到 FuSang Vision', 'zh-CN': '欢迎回到 FuSang Vision', 'en': 'Welcome back to FuSang Vision' }
+    'dash.broadcast':  { 'zh-TW': '歡迎回到 FuSang Vision', 'zh-CN': '欢迎回到 FuSang Vision', 'en': 'Welcome back to FuSang Vision' },
+
+    // ── v2 視覺（設計師 v1.0 文案）──
+    'dash.v2Continue': { 'zh-TW': '繼續閱讀', 'zh-CN': '继续阅读', 'en': 'Continue reading' },
+    'dash.v2Hint':     { 'zh-TW': '本命總覽 / 十二宮 / 宮位解讀', 'zh-CN': '本命总览 / 十二宫 / 宫位解读', 'en': 'Natal Overview / Twelve Palaces / Palace Readings' },
+    'dash.v2Map':      { 'zh-TW': '閱讀地圖', 'zh-CN': '阅读地图', 'en': 'Reading map' },
+    'dash.v2eNatal':   { 'zh-TW': '本命總覽', 'zh-CN': '本命总览', 'en': 'Natal Overview' },
+    'dash.v2eNatalD':  { 'zh-TW': '認識性格、天賦與人生方向', 'zh-CN': '认识性格、天赋与人生方向', 'en': 'Discover your character, gifts and direction.' },
+    'dash.v2ePalaces': { 'zh-TW': '十二宮', 'zh-CN': '十二宫', 'en': 'Twelve Palaces' },
+    'dash.v2ePalacesD':{ 'zh-TW': '探索你關心的生活領域', 'zh-CN': '探索你关心的生活领域', 'en': 'Explore the areas of life that matter to you.' },
+    'dash.v2eReading': { 'zh-TW': '宮位解讀', 'zh-CN': '宫位解读', 'en': 'Palace Readings' },
+    'dash.v2eReadingD':{ 'zh-TW': '從命宮開始，深入理解自己', 'zh-CN': '从命宫开始，深入理解自己', 'en': 'Begin with the Life Palace. Get to know yourself.' }
   });
 </script>
   <link rel="stylesheet" href="fs-v2.css">
@@ -142,7 +153,7 @@
       animation: none;
       opacity: 1;
     }
-    .fs-v2 .dash-broadcast .bc-dot { width: 6px; height: 6px; background: var(--v2-blue); }
+    .fs-v2 .dash-broadcast .bc-dot { display: inline-block; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--v2-blue); }
     .fs-v2 .dash-broadcast .bc-text { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
 
     /* ── 2026 精選 banner（連結不變）── */
@@ -338,10 +349,13 @@
 
     /* 生成中狀態 */
     .fs-v2 .dash-card.is-soon .card-name { color: var(--v2-muted); }
-    .fs-v2 .card-status { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); gap: 8px; }
-    .fs-v2 .card-status .pulse { width: 6px; height: 6px; background: var(--v2-blue); }
+    .fs-v2 .card-status { display: inline-flex; align-items: center; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); gap: 8px; }
+    .fs-v2 .card-status .pulse { display: inline-block; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--v2-blue); }
     .fs-v2 .card-note { margin-top: 8px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
     .fs-v2 .card-refresh {
+      display: inline-block;
+      padding-bottom: 1px;
+      cursor: pointer;
       margin-top: 12px;
       font-family: var(--v2-font-cjk);
       font-size: 12px;
@@ -595,6 +609,115 @@
     @media (prefers-reduced-motion: reduce) {
       .fs-v2 .dash-hero, .fs-v2 .dash-unlock, .fs-v2 .card-status .pulse { animation: none; }
     }
+
+    /* ════════ v2 第二輪：繼續閱讀 / 閱讀地圖 / 本命列 / 鎖列 ════════ */
+
+    /* hero 按鈕 + 提示 */
+    .fs-v2 .v2-hero-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; }
+    .fs-v2 .v2-hero-hint { margin: 0; font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+
+    /* 閱讀地圖：三張入口卡 */
+    .fs-v2 .v2-map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 64px; }
+    .fs-v2 .v2-entry {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+      min-height: 208px; padding: 24px; text-align: center;
+      background: #fff; border: 1px solid var(--v2-line); color: var(--v2-ink);
+      transition: border-color 400ms cubic-bezier(.22,.61,.36,1), background-color 400ms cubic-bezier(.22,.61,.36,1);
+    }
+    .fs-v2 .v2-entry:is(:hover, :focus-visible) { border-color: var(--v2-blue); background: var(--v2-tint-soft); transition-duration: 250ms; }
+    .fs-v2 .v2-entry-icon { position: relative; display: block; width: 48px; height: 48px; margin-bottom: 8px; color: var(--v2-ink); }
+    .fs-v2 .v2-entry-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .fs-v2 .v2-entry-name { font-size: 20px; line-height: 30px; font-weight: 500; }
+    .fs-v2 .v2-entry-desc { font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+    /* 停用（本命生成中）*/
+    .fs-v2 .v2-entry.is-disabled { cursor: not-allowed; opacity: .45; }
+    .fs-v2 .v2-entry.is-disabled:is(:hover, :focus-visible) { border-color: var(--v2-line); background: #fff; }
+
+    /* 入口圖示動畫（設計師規格：hover / 鍵盤聚焦各播一次）*/
+    .fs-v2 .v2-entry-lights rect { fill: var(--v2-blue); opacity: 0; }
+    .fs-v2 .v2-entry-orbit { transform-origin: center; }
+    .fs-v2 .v2-entry-star { transform-box: fill-box; transform-origin: center; }
+    .fs-v2 .v2-entry:not(.is-disabled):is(:hover, :focus-visible) .v2-entry-orbit { animation: v2Orbit 1000ms cubic-bezier(.22,.61,.36,1) both; }
+    .fs-v2 .v2-entry:not(.is-disabled):is(:hover, :focus-visible) .v2-entry-lights rect { animation: v2Cell 650ms ease-in-out var(--cell-delay) both; }
+    .fs-v2 .v2-entry:not(.is-disabled):is(:hover, :focus-visible) .v2-entry-star { animation: v2Twinkle 1300ms ease-in-out both; }
+    @keyframes v2Orbit { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+    @keyframes v2Cell { 0%, 100% { opacity: 0; } 35%, 55% { opacity: .4; } }
+    @keyframes v2Twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); stroke: var(--v2-ink); }
+      25%, 70% { opacity: .45; transform: scale(.9); stroke: var(--v2-blue); }
+      45%, 85% { opacity: 1; transform: scale(1.16); stroke: var(--v2-blue); }
+    }
+
+    /* 本命卡 → 「階段報告」第一列（與大限／流年／流月同格式；DOM 不動，nat-main 攤平）*/
+    .fs-v2 .dash-card--natal {
+      display: grid;
+      grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "kicker name now  en     action"
+        "desc   desc desc desc   action";
+      align-items: center;
+      column-gap: 16px;
+      row-gap: 8px;
+      min-height: 128px;
+      padding: 24px 0;
+      margin-top: 80px;
+      border: 0;
+      border-top: 1px solid var(--v2-line);
+      background: #fff;
+    }
+    .fs-v2 .dash-card--natal::before { content: none; }
+    .fs-v2 .dash-card--natal:hover { border-color: var(--v2-line); background: #fff; }
+    .fs-v2 .dash-card--natal .nat-main,
+    .fs-v2 .dash-card--natal .card-kicker { display: contents; }
+    .fs-v2 .dash-card--natal .card-kicker > span[data-i18n^="dash.k"] {
+      grid-area: kicker; font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500;
+      color: var(--v2-ink); white-space: nowrap; text-transform: none;
+    }
+    .fs-v2 .dash-card--natal .card-kicker > span[data-i18n^="dash.k"]::after { content: '\00a0\00a0·'; }
+    .fs-v2 .dash-card--natal .card-name { grid-area: name; font-size: 20px; line-height: 30px; margin: 0; }
+    .fs-v2 .dash-card--natal .card-name-en { grid-area: en; margin: 0; }
+    .fs-v2 .dash-card--natal .card-desc { grid-area: desc; max-width: none; margin: 0; }
+    .fs-v2 .dash-card--natal .nat-cta { grid-area: action; margin: 0 0 0 32px; padding: 0; justify-self: end; max-width: 320px; }
+    .fs-v2 .dash-card--decade { margin-top: 0; }
+
+    /* 四化解鎖：鎖列版型（外觀由 fs-v2.css §9 統一：白底灰框 + 雲紋 + 線條鎖頭）*/
+    .fs-v2 .dash-unlock { margin-top: 64px; padding: 32px 40px; grid-template-areas: "title btn" "note btn"; }
+    .fs-v2 .u-title { display: flex; align-items: center; }
+
+    @media (max-width: 799px) {
+      .fs-v2 .v2-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 48px; }
+      .fs-v2 .v2-entry { min-height: 184px; padding: 12px 8px; }
+      .fs-v2 .v2-entry-icon { width: 40px; height: 40px; }
+      .fs-v2 .v2-entry-name { font-size: 16px; line-height: 24px; }
+      .fs-v2 .v2-entry-desc { font-size: 12px; line-height: 20px; }
+
+      .fs-v2 .dash-card--natal {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+          "kicker now  action"
+          "name   name action"
+          "en     en   action"
+          "desc   desc desc";
+        column-gap: 12px; row-gap: 4px; min-height: 0; margin-top: 56px; padding: 24px 0;
+      }
+      .fs-v2 .dash-card--natal .card-kicker > span[data-i18n^="dash.k"] { font-size: 14px; line-height: 22px; color: var(--v2-muted); }
+      .fs-v2 .dash-card--natal .card-kicker > span[data-i18n^="dash.k"]::after { content: none; }
+      .fs-v2 .dash-card--natal .card-name { font-size: 18px; line-height: 28px; }
+      .fs-v2 .dash-card--natal .nat-cta { margin-left: 16px; align-self: start; max-width: 50vw; }
+      .fs-v2 .dash-card--natal.is-soon { grid-template-areas: "kicker now now" "name name name" "en en en" "desc desc desc" "action action action"; }
+      .fs-v2 .dash-card--natal.is-soon .nat-cta { margin: 16px 0 0; justify-self: stretch; max-width: none; }
+      .fs-v2 .dash-unlock { padding: 24px 20px; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 .dash-unlock { grid-template-columns: 1fr; grid-template-areas: "title" "note" "btn"; }
+      .fs-v2 .v2-map { grid-template-columns: 1fr; }
+      .fs-v2 .v2-entry { min-height: 168px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fs-v2 .v2-entry .v2-entry-orbit,
+      .fs-v2 .v2-entry .v2-entry-lights rect,
+      .fs-v2 .v2-entry .v2-entry-star { animation: none !important; }
+    }
   </style>
 </head>
 <body class="dash-page fs-v2">
@@ -616,6 +739,11 @@
         <div class="brush-divider"></div>
         <h1 class="dash-title" id="dash-title">歡迎回來，<span class="name" id="dash-name">朋友</span></h1>
         <div class="dash-sub">Your celestial map awaits.</div>
+        <!-- v2：繼續閱讀（有上次閱讀宮位 → 直達該宮；否則捲到本命列）-->
+        <div class="v2-hero-actions">
+          <a class="v2-btn v2-btn--primary" id="v2-continue" href="#card-natal" data-i18n="dash.v2Continue">繼續閱讀</a>
+          <p class="v2-hero-hint" data-i18n="dash.v2Hint">本命總覽 / 十二宮 / 宮位解讀</p>
+        </div>
       </div>
 
       <!-- Broadcast Bar -->
@@ -623,6 +751,13 @@
         <span class="bc-dot"></span>
         <span class="bc-text" data-i18n="dash.broadcast">歡迎回到 FuSang Vision</span>
       </div>
+
+      <!-- v2：閱讀地圖（三入口 → chart.html 對應畫面；本命生成中時停用）-->
+      <nav class="v2-map" id="v2-map" aria-label="Reading map">
+        <a class="v2-entry" href="chart.html"><span class="v2-entry-icon" aria-hidden="true"><svg class="v2-entry-svg v2-entry-orbit" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.76185 14.4187C6.9573 17.2887 5.99992 20.6099 5.99992 24C5.99992 27.3901 6.9573 30.7113 8.76185 33.5813M14.4187 39.2382C17.2887 41.0427 20.6099 42.0001 24 42.0001C27.3901 42.0001 30.7113 41.0427 33.5813 39.2382M39.2381 33.5813C41.0427 30.7113 42.0001 27.3901 42.0001 24C42.0001 20.6099 41.0427 17.2887 39.2381 14.4187M33.5813 8.76185C30.7113 6.9573 27.3901 5.99992 24 5.99992C20.6099 5.99992 17.2887 6.9573 14.4187 8.76185M9.85786 9.85786L13.3934 13.3934M38.1421 9.85786L34.6066 13.3934M38.1421 38.1421L34.6066 34.6066M9.85786 38.1421L13.3934 34.6066M16.2218 16.2218L24 19.7574L31.7782 16.2218L28.2426 24L31.7782 31.7782L24 28.2426L16.2218 31.7782L19.7574 24L16.2218 16.2218Z"/></svg></span><span class="v2-entry-name" data-i18n="dash.v2eNatal">本命總覽</span><span class="v2-entry-desc" data-i18n="dash.v2eNatalD">認識性格、天賦與人生方向</span></a>
+        <a class="v2-entry" href="chart.html?view=hub"><span class="v2-entry-icon" aria-hidden="true"><svg class="v2-entry-svg" viewBox="0 0 48 48" fill="none"><g class="v2-entry-lights"><rect x="6.75" y="6.75" width="7.5" height="7.5" style="--cell-delay:0ms"/><rect x="15.75" y="6.75" width="7.5" height="7.5" style="--cell-delay:65ms"/><rect x="24.75" y="6.75" width="7.5" height="7.5" style="--cell-delay:130ms"/><rect x="33.75" y="6.75" width="7.5" height="7.5" style="--cell-delay:195ms"/><rect x="33.75" y="15.75" width="7.5" height="7.5" style="--cell-delay:260ms"/><rect x="33.75" y="24.75" width="7.5" height="7.5" style="--cell-delay:325ms"/><rect x="33.75" y="33.75" width="7.5" height="7.5" style="--cell-delay:390ms"/><rect x="24.75" y="33.75" width="7.5" height="7.5" style="--cell-delay:455ms"/><rect x="15.75" y="33.75" width="7.5" height="7.5" style="--cell-delay:520ms"/><rect x="6.75" y="33.75" width="7.5" height="7.5" style="--cell-delay:585ms"/><rect x="6.75" y="24.75" width="7.5" height="7.5" style="--cell-delay:650ms"/><rect x="6.75" y="15.75" width="7.5" height="7.5" style="--cell-delay:715ms"/></g><path d="M15 6V42M33 6V42M6 15H42M6 33H42M24 6V15M24 33V42M6 24H15M33 24H42M6 6H42V42H6V6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="v2-entry-name" data-i18n="dash.v2ePalaces">十二宮</span><span class="v2-entry-desc" data-i18n="dash.v2ePalacesD">探索你關心的生活領域</span></a>
+        <a class="v2-entry" href="chart.html?palace=%E5%91%BD%E5%AE%AE"><span class="v2-entry-icon" aria-hidden="true"><svg class="v2-entry-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6H42V42H6V6Z"/><path class="v2-entry-star" d="M15.834 10L17.484 13.85L21.334 15.5L17.484 17.15L15.834 21L14.184 17.15L10.334 15.5L14.184 13.85L15.834 10Z"/></svg></span><span class="v2-entry-name" data-i18n="dash.v2eReading">宮位解讀</span><span class="v2-entry-desc" data-i18n="dash.v2eReadingD">從命宮開始，深入理解自己</span></a>
+      </nav>
 
       <!-- Featured Banner：佔位漸層，美圖後補 -->
       <a class="dash-banner" href="https://fusang-vision.com/blogs/ziwei-knowledge/zi-wei-dou-shu-2026-forecast" target="_blank" rel="noopener noreferrer" aria-label="2026 流年運勢"></a>
@@ -695,7 +830,62 @@
   </div>
 </div>
 
+<!-- v2：返回頂部 -->
+<button type="button" class="v2-back-to-top" id="v2-top" hidden><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5h10M8 13.5V5.5M4.5 9 8 5.5 11.5 9"/></svg><span data-i18n="backToTop">返回頂部</span></button>
+
 <div id="site-footer"></div>
+
+<script>
+  /* ════════════════════════════════════════════════════════════
+     v2 視覺互動（設計師 v1.0）— 獨立 classic script
+     只讀 DOM / localStorage、只做導覽：不讀資料、不碰 sihua_unlocked / 付費牆 / i18n 字典。
+       1) 繼續閱讀：chart.html 記下的「上次閱讀宮位」存在 → 直達該宮；否則捲到本命列。
+       2) 閱讀地圖：本命仍在生成（#card-natal 被 module 加上 .is-soon）→ 三入口停用。
+       3) 返回頂部。
+     ════════════════════════════════════════════════════════════ */
+  (function () {
+    var ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function init() {
+      // 1) 繼續閱讀
+      var cont = document.getElementById('v2-continue');
+      var last = null;
+      try { last = localStorage.getItem('fs_v2_last_palace'); } catch (_) {}
+      if (cont && last && ORDER.indexOf(last) !== -1) cont.setAttribute('href', 'chart.html?palace=' + encodeURIComponent(last));
+      if (cont) cont.addEventListener('click', function (e) {
+        var h = cont.getAttribute('href') || '';
+        if (h.charAt(0) !== '#') return;
+        var t = document.getElementById(h.slice(1));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+      });
+
+      // 2) 閱讀地圖：本命未就緒 → 停用三入口
+      var natal = document.getElementById('card-natal');
+      var entries = document.querySelectorAll('#v2-map .v2-entry');
+      function syncMap() {
+        var off = !!(natal && natal.classList.contains('is-soon'));
+        for (var i = 0; i < entries.length; i++) {
+          entries[i].classList.toggle('is-disabled', off);
+          if (off) { entries[i].setAttribute('aria-disabled', 'true'); entries[i].setAttribute('tabindex', '-1'); }
+          else { entries[i].removeAttribute('aria-disabled'); entries[i].removeAttribute('tabindex'); }
+        }
+      }
+      for (var j = 0; j < entries.length; j++) entries[j].addEventListener('click', function (e) { if (this.classList.contains('is-disabled')) e.preventDefault(); });
+      if (natal) new MutationObserver(syncMap).observe(natal, { attributes: true, attributeFilter: ['class'] });
+      syncMap();
+
+      // 3) 返回頂部
+      var top = document.getElementById('v2-top');
+      if (top) {
+        var onScroll = function () { top.hidden = window.scrollY < 600; };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
+        onScroll();
+      }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  })();
+</script>
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
