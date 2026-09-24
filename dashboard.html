@@ -60,6 +60,7 @@
     'dash.v2ePalaces': { 'zh-TW': '十二宮', 'zh-CN': '十二宫', 'en': 'Twelve Palaces' },
     'dash.v2ePalacesD':{ 'zh-TW': '探索你關心的生活領域', 'zh-CN': '探索你关心的生活领域', 'en': 'Explore the areas of life that matter to you.' },
     'dash.v2eReading': { 'zh-TW': '宮位解讀', 'zh-CN': '宫位解读', 'en': 'Palace Readings' },
+    'dash.howto':      { 'zh-TW': '第一次使用？看看怎麼使用 FuSang', 'zh-CN': '第一次使用？看看如何使用 FuSang', 'en': 'New here? See how to use FuSang' },
     'dash.v2eReadingD':{ 'zh-TW': '從命宮開始，深入理解自己', 'zh-CN': '从命宫开始，深入理解自己', 'en': 'Begin with the Life Palace. Get to know yourself.' }
   });
 </script>
@@ -615,6 +616,10 @@
     /* hero 按鈕 + 提示 */
     .fs-v2 .v2-hero-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; }
     .fs-v2 .v2-hero-hint { margin: 0; font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    /* 使用說明入口（2026-09-24）：小字連結，不佔卡片 */
+    .fs-v2 .v2-hero-howto { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 20px; color: var(--v2-blue); text-decoration: underline; text-underline-offset: 3px; }
+    .fs-v2 .v2-hero-howto:hover { color: var(--v2-blue-strong); }
+    .fs-v2 .v2-hero-howto:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
 
     /* 閱讀地圖：三張入口卡 */
     .fs-v2 .v2-map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 64px; }
@@ -743,6 +748,7 @@
         <div class="v2-hero-actions">
           <a class="v2-btn v2-btn--primary" id="v2-continue" href="#card-natal" data-i18n="dash.v2Continue">繼續閱讀</a>
           <p class="v2-hero-hint" data-i18n="dash.v2Hint">本命總覽 / 十二宮 / 宮位解讀</p>
+          <a class="v2-hero-howto" href="how-to.html" data-i18n="dash.howto">第一次使用？看看怎麼使用 FuSang</a>
         </div>
       </div>
 
