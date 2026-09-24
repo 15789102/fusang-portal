@@ -173,16 +173,16 @@ export function disclaimerHtml() {
     `<li>This is a personal Zi Wei Dou Shu consultation, answered by a human. The more context you give, the more precise the reading.</li>` +
     `<li>Your reply will be written in your registered report language (繁體中文 / 简体中文 / English), matching your report.</li>` +
     `<li><strong>One open consultation at a time.</strong> You can start a new one only after your current consultation is resolved.</li>` +
-    `<li>You'll receive a written reply within <strong>7 days</strong> of payment. After the reply, you may ask <strong>one follow-up within 7 days</strong>; after that the consultation closes.</li>` +
+    `<li>You will receive a written reply within <strong>7 days</strong> of payment. After the reply, you may ask <strong>one follow-up within 7 days</strong>; after that the consultation closes.</li>` +
     `<li>This service provides Zi Wei Dou Shu interpretation only. It is <strong>not</strong> medical, legal, financial, or investment advice.</li>` +
-    `<li><strong>Digital service — all sales are final.</strong> Each consultation is prepared individually for you, so payment is non-refundable once submitted.</li>` +
+    `<li><strong>Digital service. All sales are final.</strong> Each consultation is prepared individually for you, so payment is non-refundable once submitted.</li>` +
     `</ul></div>`;
 }
 
 /* ── 錯誤對應 ── */
 export function mapCreateErr(m) {
   if (m.includes('ticket_in_progress')) return pick('你已有一則進行中的諮詢，請先完成後再提交新問題。', '你已有一则进行中的咨询，请先完成后再提交新问题。', 'You already have an open consultation. Finish it first.');
-  if (m.includes('chart_not_found'))   return pick('找不到你的命盤，請先回儀表板生成。', '找不到你的命盘，请先回仪表板生成。', 'Your chart wasn\'t found. Please generate it from the dashboard first.');
+  if (m.includes('chart_not_found'))   return pick('找不到你的命盤，請先回儀表板生成。', '找不到你的命盘，请先回仪表板生成。', 'Your chart was not found. Please generate it from the dashboard first.');
   if (m.includes('invalid_subject'))   return pick('請選擇一個主題。', '请选择一个主题。', 'Please choose a topic.');
   if (m.includes('empty_content'))     return pick('請填寫你的問題內容。', '请填写你的问题内容。', 'Please describe your question.');
   if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
@@ -193,25 +193,25 @@ export function mapCheckoutErr(code) {
   if (code === 'ticket_not_found')   return pick('找不到對應的諮詢，請重新提交。', '找不到对应的咨询，请重新提交。', 'Consultation not found. Please submit again.');
   if (code === 'missing_ticket_id')  return pick('提交資料不完整，請重試。', '提交资料不完整，请重试。', 'Incomplete request. Please try again.');
   if (code === 'not_authenticated')  return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
-  return pick('前往付款時發生問題，請稍後再試。', '前往付款时发生问题，请稍后再试。', 'Couldn\'t reach checkout. Please try again.');
+  return pick('前往付款時發生問題，請稍後再試。', '前往付款时发生问题，请稍后再试。', 'Could not reach checkout. Please try again.');
 }
 export function mapFollowupErr(m) {
   if (m.includes('followup_exists'))        return pick('每則諮詢僅能追問一次。', '每则咨询仅能追问一次。', 'Only one follow-up per consultation.');
   if (m.includes('followup_window_closed')) return pick('追問期限已過，諮詢已結案。', '追问期限已过，咨询已结案。', 'The follow-up window has closed.');
-  if (m.includes('not_answerable'))         return pick('目前無法追問。', '目前无法追问。', 'Follow-up isn\'t available right now.');
+  if (m.includes('not_answerable'))         return pick('目前無法追問。', '目前无法追问。', 'Follow-up is not available right now.');
   if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
   if (m.includes('empty_content'))          return pick('請填寫追問內容。', '请填写追问内容。', 'Please write your follow-up.');
   return pick('送出追問時發生問題，請稍後再試。', '送出追问时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 export function mapCloseErr(m) {
-  if (m.includes('not_closable'))     return pick('目前無法結案。', '目前无法结案。', 'This consultation can\'t be closed right now.');
+  if (m.includes('not_closable'))     return pick('目前無法結案。', '目前无法结案。', 'This consultation cannot be closed right now.');
   if (m.includes('ticket_not_found')) return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
   if (m.includes('not_authenticated')) return pick('登入狀態已失效，請重新登入。', '登入状态已失效，请重新登入。', 'Your session expired. Please sign in again.');
   return pick('結案時發生問題，請稍後再試。', '结案时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
 }
 export function mapFeedbackErr(m) {
-  if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', '这则咨询已反馈过。', 'You\'ve already given feedback for this consultation.');
-  if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', '目前无法反馈。', 'Feedback isn\'t available for this consultation.');
+  if (m.includes('feedback_exists'))   return pick('這則諮詢已回饋過。', '这则咨询已反馈过。', 'You have already given feedback for this consultation.');
+  if (m.includes('not_feedbackable'))  return pick('目前無法回饋。', '目前无法反馈。', 'Feedback is not available for this consultation.');
   if (m.includes('invalid_rating'))    return pick('請選擇一個選項。', '请选择一个选项。', 'Please choose an option.');
   if (m.includes('ticket_not_found'))  return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
   return pick('送出回饋時發生問題，請稍後再試。', '送出反馈时发生问题，请稍后再试。', 'Something went wrong. Please try again.');
@@ -399,6 +399,137 @@ const CONSULT_CSS = `
   @media (prefers-reduced-motion: reduce) {
     .cons-hero, .cons-card { animation: none; opacity: 1; }
     .status-pill .dot { animation: none; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     ▼ v2 視覺層（設計師 v1.0 語彙）— 限定 body.fs-v2，疊在上方冷藍樣式之上
+       四頁共用：頁首橫幅 / 平面卡片 / 設計師按鈕 / form 語彙 / 狀態標籤
+     ════════════════════════════════════════════════════════════════ */
+  .fs-v2 .cons-wrap, .fs-v2 .consult-nav, .fs-v2 .cons-loading {
+    --ink-darkest: var(--v2-ink); --ink-dark: var(--v2-ink); --ink-mid: var(--v2-muted); --ink-light: var(--v2-faint); --ink-faint: #c4c4c4;
+    --accent-deep: var(--v2-ink); --accent-soft: var(--v2-blue); --accent-pale: var(--v2-blue-line);
+    --rule: var(--v2-line); --rule-soft-2: var(--v2-line-soft); --bg-primary: #ffffff; --bg-soft: var(--v2-tint-soft); --bg-soft-2: var(--v2-tint-soft); --bg-card: #ffffff;
+    --gold: var(--v2-blue); --gold-soft: var(--v2-blue-line);
+  }
+  .fs-v2 .cons-wrap { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 16px 0 96px; }
+  .fs-v2 .fs-page .cons-wrap { max-width: var(--v2-max); }
+
+  /* 頁內導覽（麵包屑）*/
+  .fs-v2 .consult-nav { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); min-height: 48px; margin: 16px auto 0; padding: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; }
+  .fs-v2 .consult-nav a { color: var(--v2-muted); border-bottom: 0; }
+  .fs-v2 .consult-nav a:hover { color: var(--v2-blue); }
+  .fs-v2 .consult-nav .sep { color: var(--v2-faint); }
+  .fs-v2 .consult-nav .cur { color: var(--v2-ink); }
+
+  /* 頁首橫幅 */
+  .fs-v2 .cons-hero {
+    position: relative; min-height: 179px; margin: 0 0 40px; padding: 32px; overflow: hidden; opacity: 1; animation: none;
+    background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  }
+  .fs-v2 .cons-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .cons-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .cons-sub { margin: 0; font-family: var(--v2-font-cjk); font-style: normal; font-size: 16px; line-height: 29px; color: var(--v2-muted); }
+  .fs-v2 .cons-rule { display: none; }
+
+  /* 卡片：平面、細框、直角 */
+  .fs-v2 .cons-card { padding: 32px; margin: 0 0 24px; background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; opacity: 1; animation: none; }
+  .fs-v2 .cons-card::before { content: none; }
+  .fs-v2 .cons-card.soft { background: var(--v2-tint-soft); }
+  .fs-v2 .card-kicker { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .card-h { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .empty-note { font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-muted); }
+  .fs-v2 .link-inline { color: var(--v2-ink); font-weight: 600; border-bottom: 1px solid var(--v2-ink); }
+  .fs-v2 .link-inline:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
+
+  /* 主題選擇（方格）*/
+  .fs-v2 .subj-opt { border-radius: 0; background: #ffffff; border: 1px solid var(--v2-line); color: var(--v2-ink); font-family: var(--v2-font-cjk); transition: border-color .15s, background .15s; }
+  .fs-v2 .subj-opt:hover { border-color: var(--v2-blue); background: var(--v2-tint-soft); }
+  .fs-v2 .subj-opt.sel { border-color: var(--v2-blue); background: var(--v2-tint); box-shadow: inset 0 0 0 1px var(--v2-blue); }
+  .fs-v2 .subj-opt .en { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; color: var(--v2-faint); }
+  .fs-v2 .subj-opt:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+
+  /* 文字框（設計師 form 語彙）*/
+  .fs-v2 .field-label { font-family: var(--v2-font-cjk); font-size: 14px; color: var(--v2-ink); }
+  .fs-v2 .field-hint { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+  .fs-v2 textarea.cons-input { padding: 12px 14px; background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 26px; color: var(--v2-ink); }
+  .fs-v2 textarea.cons-input:focus { outline: none; border-color: var(--v2-blue); box-shadow: 0 0 0 3px var(--v2-tint); }
+  .fs-v2 .char-count { font-family: var(--v2-font-latin); font-size: 12px; color: var(--v2-faint); }
+
+  /* 提交前確認（藍色左線）*/
+  .fs-v2 .disclaim { padding: 20px 24px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); border-radius: 0; }
+  .fs-v2 .disclaim-h { font-family: var(--v2-font-cjk); font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--v2-ink); }
+  .fs-v2 .disclaim li { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
+  .fs-v2 .disclaim li::before { color: var(--v2-blue); }
+  .fs-v2 .disclaim li strong { color: var(--v2-ink); }
+  .fs-v2 .consent input,
+  .fs-v2 .fb-consent input { accent-color: var(--v2-blue); }
+  .fs-v2 .consent span { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; color: var(--v2-ink); }
+  .fs-v2 .fb-consent span { font-family: var(--v2-font-cjk); font-size: 13px; color: var(--v2-muted); }
+
+  /* 按鈕 → 設計師按鈕 */
+  .fs-v2 .cons-btn {
+    min-height: 48px; padding: 12px 28px; border-radius: 0; transform: none;
+    background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink);
+    font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0;
+  }
+  .fs-v2 .cons-btn:hover:not([disabled]) { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; }
+  .fs-v2 .cons-btn.ghost { background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-ink); }
+  .fs-v2 .cons-btn.ghost:hover:not([disabled]) { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+  .fs-v2 .cons-btn[disabled] { opacity: 1; background: #f7f7f7; color: var(--v2-muted); border-color: #f7f7f7; }
+  .fs-v2 .cons-btn:focus-visible,
+  .fs-v2 .btn-sm:focus-visible,
+  .fs-v2 .fb-opt:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+  .fs-v2 .btn-sm { min-height: 40px; padding: 8px 20px; border-radius: 0; font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; }
+  .fs-v2 .btn-sm.confirm { background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink); }
+  .fs-v2 .btn-sm.confirm:hover { background: var(--v2-ink-hover); }
+  .fs-v2 .btn-sm.cancel { background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-ink); }
+  .fs-v2 .btn-sm.cancel:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+
+  /* 狀態標籤 */
+  .fs-v2 .status-pill { padding: 2px 10px; border-radius: 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+  .fs-v2 .status-pill.wait { color: var(--v2-blue); background: var(--v2-tint); border: 1px solid var(--v2-blue-line); }
+  .fs-v2 .status-pill.wait .dot { background: var(--v2-blue); }
+  .fs-v2 .status-pill.done { color: var(--v2-muted); background: #f7f7f7; border: 1px solid var(--v2-line); }
+  .fs-v2 .status-pill.done .dot { background: var(--v2-faint); }
+
+  /* 問答內容 */
+  .fs-v2 .qa-label { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--v2-muted); }
+  .fs-v2 .qa-text { font-family: var(--v2-font-cjk); font-size: 16px; line-height: 30px; color: var(--v2-ink); }
+  .fs-v2 .qa-meta { font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; color: var(--v2-faint); }
+  .fs-v2 .answer-box { padding: 20px 24px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); border-radius: 0; }
+  .fs-v2 .followup-note { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+  .fs-v2 .followup-note strong { color: var(--v2-ink); }
+
+  /* 提示條 / 訊息 */
+  .fs-v2 .banner { padding: 14px 20px; background: var(--v2-tint); border: 1px solid var(--v2-blue-line); border-radius: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-ink); }
+  .fs-v2 .msg { border-radius: 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; }
+  .fs-v2 .msg.err { background: #fdf5f6; color: #a8505c; border: 1px solid #e7c2c7; }
+  .fs-v2 .msg.ok { background: var(--v2-tint); color: var(--v2-ink); border: 1px solid var(--v2-blue-line); }
+  .fs-v2 .form-gate { font-family: var(--v2-font-cjk); font-size: 12px; color: var(--v2-faint); }
+  .fs-v2 .cons-loading { padding: 120px 0; font-family: var(--v2-font-cjk); font-size: 14px; letter-spacing: 0; color: var(--v2-muted); }
+
+  /* 署名 */
+  .fs-v2 .sig { border-top-color: var(--v2-line); }
+  .fs-v2 .sig img { border-radius: 50%; }
+  .fs-v2 .sig-name { font-family: var(--v2-font-latin); font-size: 15px; color: var(--v2-ink); }
+  .fs-v2 .sig-org { font-family: var(--v2-font-latin); font-size: 12px; color: var(--v2-faint); }
+
+  /* 結案 / 回饋 */
+  .fs-v2 .close-link { font-family: var(--v2-font-cjk); font-size: 13px; color: var(--v2-muted); border-bottom-color: var(--v2-line); }
+  .fs-v2 .close-link:hover { color: #a8505c; border-bottom-color: #a8505c; }
+  .fs-v2 .confirm-box { padding: 16px 20px; background: #fdf5f6; border: 1px solid #e7c2c7; border-radius: 0; }
+  .fs-v2 .confirm-text { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-ink); }
+  .fs-v2 .fb-q { font-family: var(--v2-font-cjk); font-size: 17px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .fb-opt { border-radius: 0; background: #ffffff; border: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 14px; color: var(--v2-ink); }
+  .fs-v2 .fb-opt:hover { border-color: var(--v2-blue); background: var(--v2-tint-soft); }
+  .fs-v2 .fb-opt.sel { border-color: var(--v2-blue); background: var(--v2-tint); box-shadow: inset 0 0 0 1px var(--v2-blue); }
+  .fs-v2 .fb-thanks { font-family: var(--v2-font-cjk); font-size: 15px; color: var(--v2-muted); }
+
+  @media (max-width: 799px) {
+    .fs-v2 .cons-hero { padding: 24px; min-height: 169px; background-position: 60% center; }
+    .fs-v2 .cons-title { font-size: 28px; line-height: 42px; }
+    .fs-v2 .cons-sub { font-size: 14px; line-height: 24px; }
+    .fs-v2 .cons-card { padding: 24px 20px; }
   }
 `;
 
