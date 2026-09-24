@@ -45,6 +45,8 @@
 //                              RT 新增 PALACE_EXPLAINER_ANNUAL / TRANSFORM_TOOLTIP_ANNUAL(流年語境,td 取)
 //   ‣ monthly.html           → applyStaticI18n(id→key,共用 UI 在本檔)+ 頁內 addUI(mo.*);
 //                              RT 新增 PALACE_EXPLAINER_MONTHLY / TRANSFORM_TOOLTIP_MONTHLY(流月語境,td 取)
+//   ‣ header v2(2026-09)      → 本檔 UI 區新增共用 key:navMySpace(品牌副標)/ navOfficial(官網)/
+//                              navSkipToMain(跳至主要內容)/ backToTop(返回頂部,dashboard/chart 共用)
 //   ── 新頁遷移後,請在此新增一行:<檔名> → <字典所在> ──
 //
 // ── 新增「頁面」的 i18n(策略 B 步驟)──────────────────────────
@@ -81,6 +83,10 @@
     "navAccount": "帳戶",
     "navSupport": "支援",
     "navSignOut": "登出",
+    "navMySpace": "我的空間",
+    "navOfficial": "官網",
+    "navSkipToMain": "跳至主要內容",
+    "backToTop": "返回頂部",
     "footerTagline": "不是預知命運，<br>而是穩健有意識地走向嚮往的生活",
     "footerPrivacy": "隱私政策",
     "footerDisclaimer": "免責聲明",
@@ -167,6 +173,10 @@
     "navAccount": "账户",
     "navSupport": "支持",
     "navSignOut": "登出",
+    "navMySpace": "我的空间",
+    "navOfficial": "官网",
+    "navSkipToMain": "跳至主要内容",
+    "backToTop": "返回顶部",
     "footerTagline": "不是预知命运，<br>而是稳健有意识地走向向往的生活",
     "footerPrivacy": "隐私政策",
     "footerDisclaimer": "免责声明",
@@ -253,6 +263,10 @@
     "navAccount": "Account",
     "navSupport": "Support",
     "navSignOut": "Sign out",
+    "navMySpace": "My Space",
+    "navOfficial": "Main website",
+    "navSkipToMain": "Skip to main content",
+    "backToTop": "Back to top",
     "footerTagline": "Not foreseeing fate, but moving<br>steadily and consciously toward the life you long for.",
     "footerPrivacy": "Privacy",
     "footerDisclaimer": "Disclaimer",
