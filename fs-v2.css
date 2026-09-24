@@ -14,6 +14,7 @@
    組成：
      §0 字體　§1 Token 重新映射　§2 頁面底　§3 Header　§4 Footer
      §5 共用 v2 元件（v2- 前綴，供試點頁使用）　§6 RWD　§7 減少動態
+     §8 跳至主要內容　§9 鎖定內容（付費牆，設計師語彙 + 雲紋）
    ============================================================ */
 
 /* ── §0 字體：Jost（拉丁）+ Noto Sans TC / SC（Google Fonts 按需子集，不用設計師附的 12MB/17MB ttf）── */
@@ -130,6 +131,9 @@ body.fs-v2 .fs-nav-parent {
   transition: color .15s;
 }
 body.fs-v2 .fs-nav-parent { gap: 8px; }
+body.fs-v2 .fs-nav-link,
+body.fs-v2 .fs-nav-parent,
+body.fs-v2 .fs-lang-opt { white-space: nowrap; }
 body.fs-v2 .fs-nav-link:hover,
 body.fs-v2 .fs-nav-parent:hover { color: var(--v2-blue); }
 body.fs-v2 .fs-nav-link.active,
@@ -340,6 +344,7 @@ body.fs-v2 .v2-back-to-top {
   cursor: pointer;
   transition: color .15s, border-color .15s, background .15s;
 }
+body.fs-v2 .v2-back-to-top[hidden] { display: none; }
 body.fs-v2 .v2-back-to-top:hover { color: var(--v2-blue); border-color: var(--v2-blue); background: var(--v2-tint); }
 
 /* 焦點框 */
@@ -351,6 +356,13 @@ body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline
 @media (max-width: 1270px) {
   body.fs-v2 { --v2-gutter: 40px; }
   body.fs-v2 .fs-header-nav { gap: 8px; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  body.fs-v2 .fs-header { padding-left: 24px; padding-right: 24px; gap: 12px; }
+  body.fs-v2 .fs-header-nav { gap: 0; }
+  body.fs-v2 .fs-nav-link,
+  body.fs-v2 .fs-nav-parent { padding-inline: 8px; }
+  body.fs-v2 .fs-lang-opt { padding-inline: 6px; }
 }
 @media (max-width: 900px) {
   body.fs-v2 .fs-header { height: auto; min-height: 72px; padding-block: 12px; }
@@ -384,6 +396,155 @@ body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline
   body.fs-v2 .v2-back-to-top { width: 60px; height: 64px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
   body.fs-v2 .fs-footer { grid-template-columns: 1fr; }
   body.fs-v2 .fs-footer-links { justify-content: flex-start; gap: 12px; }
+}
+
+/* ── §8 跳至主要內容（v2 外觀）── */
+body.fs-v2 .fs-skip { background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 14px; }
+
+/* ── §9 鎖定內容（付費牆）──
+   設計師語彙：白底、1px 灰框、灰字、黑底主按鈕；右側淡雲紋（宮位格同一素材）。
+   只換外觀：鎖的出現與否完全由各頁 JS（sihua_unlocked / gated view）決定。
+   適用各頁共用的 class：.sec-lock / .seclock / .paywall / .ov-locked-hint / .dash-unlock */
+body.fs-v2 { --v2-lock-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
+
+body.fs-v2 .sec-lock,
+body.fs-v2 .paywall,
+body.fs-v2 .ov-locked-hint,
+body.fs-v2 .dash-unlock {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--v2-line);
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body.fs-v2 .sec-lock::before,
+body.fs-v2 .paywall::before,
+body.fs-v2 .ov-locked-hint::before,
+body.fs-v2 .dash-unlock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('assets/v2/palace-cloud.webp') right center / auto 180% no-repeat;
+  opacity: .32;
+  -webkit-mask-image: linear-gradient(90deg, transparent 25%, #000 85%);
+          mask-image: linear-gradient(90deg, transparent 25%, #000 85%);
+}
+body.fs-v2 .sec-lock > *,
+body.fs-v2 .paywall > *,
+body.fs-v2 .ov-locked-hint > *,
+body.fs-v2 .dash-unlock > * { position: relative; }
+
+/* 線條鎖頭（取代 JS 產生的 🔒 表情符號；文字節點不動，只把字級歸零後以遮罩繪製）*/
+body.fs-v2 .sec-lock-icon,
+body.fs-v2 .paywall-lock,
+body.fs-v2 .u-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  color: transparent;
+  background: var(--v2-muted);
+  border: 0;
+  border-radius: 0;
+  -webkit-mask: var(--v2-lock-svg) center / contain no-repeat;
+          mask: var(--v2-lock-svg) center / contain no-repeat;
+}
+
+/* 段落鎖：一行灰字 */
+body.fs-v2 .sec-lock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 20px 24px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--v2-muted);
+}
+/* 鎖後的內容輪廓：純灰色色塊，無任何文字（付費資料已在伺服器端遮蔽）*/
+body.fs-v2 .seclock:not(:empty)::after {
+  content: '';
+  display: block;
+  height: 176px;
+  margin-top: 12px;
+  border: 1px solid var(--v2-line-soft);
+  background:
+    linear-gradient(#f0f0f0, #f0f0f0) 24px 24px / 22% 14px no-repeat,
+    linear-gradient(#f3f3f3, #f3f3f3) 24px 64px / 34% 10px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 96px / calc(100% - 48px) 8px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 116px / calc(92% - 48px) 8px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 136px / calc(76% - 48px) 8px no-repeat,
+    #ffffff;
+  filter: blur(1.5px);
+  -webkit-mask-image: linear-gradient(#000 40%, transparent);
+          mask-image: linear-gradient(#000 40%, transparent);
+}
+
+/* 底部付費牆：設計師提示框（左對齊標題、灰字說明、右下黑底主按鈕）*/
+body.fs-v2 .paywall {
+  display: grid;
+  justify-items: start;
+  gap: 0;
+  padding: 40px;
+  text-align: left;
+}
+body.fs-v2 .paywall-lock { margin: 0 0 16px; }
+body.fs-v2 .paywall-eyebrow { margin: 0 0 4px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+body.fs-v2 .paywall-title { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+body.fs-v2 .paywall-list { display: flex; flex-direction: column; gap: 8px; max-width: 520px; margin: 0 0 32px; text-align: left; }
+body.fs-v2 .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+body.fs-v2 .paywall-item .mk { flex-shrink: 0; min-width: 24px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; color: var(--v2-faint); }
+body.fs-v2 .paywall-item b { color: var(--v2-ink); font-weight: 600; }
+body.fs-v2 .paywall-cta {
+  justify-self: end;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 180px; min-height: 48px; padding: 12px 28px;
+  background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink); border-radius: 0;
+  font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+body.fs-v2 .paywall-cta:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
+body.fs-v2 .paywall-note { justify-self: end; margin-top: 12px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+
+/* 提示列（總覽後盾 / dashboard 四化解鎖）：設計師「單獨問事」列語彙 */
+body.fs-v2 .ov-locked-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 24px 32px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--v2-muted);
+}
+body.fs-v2 .ov-locked-hint .ov-locked-link {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 180px; min-height: 48px; padding: 12px 28px; margin: 0;
+  background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-ink);
+  font-weight: 600; font-size: 14px; line-height: 22px; white-space: nowrap; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+body.fs-v2 .ov-locked-hint .ov-locked-link:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+
+@media (max-width: 799px) {
+  body.fs-v2 .paywall { padding: 28px 20px; }
+  body.fs-v2 .paywall-cta,
+  body.fs-v2 .paywall-note { justify-self: stretch; text-align: center; }
+  body.fs-v2 .ov-locked-hint { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+  body.fs-v2 .sec-lock::before,
+  body.fs-v2 .paywall::before,
+  body.fs-v2 .ov-locked-hint::before,
+  body.fs-v2 .dash-unlock::before { background-size: auto 140%; opacity: .25; }
 }
 
 /* ── §7 減少動態 ── */
