@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <meta charset="UTF-8" />
   <script src="config.js"></script>
   <script src="i18n.js"></script>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>付款已取消 - FuSang Vision</title>
   <script>
@@ -11,7 +11,7 @@
     window.FSI18N.addUI({
       'pc.docTitle':    { 'zh-TW': '付款已取消 - FuSang Vision', 'zh-CN': '付款已取消 - FuSang Vision', 'en': 'Payment Canceled - FuSang Vision' },
       'pc.title':       { 'zh-TW': '付款已取消', 'zh-CN': '付款已取消', 'en': 'Payment canceled' },
-      'pc.body':        { 'zh-TW': '這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。', 'zh-CN': '这次的购买没有完成，您没有被收取任何费用。<br>随时可以再回来，继续您的阅读。', 'en': "This purchase wasn't completed, and you haven't been charged.<br>Come back anytime to continue your reading." },
+      'pc.body':        { 'zh-TW': '這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。', 'zh-CN': '这次的购买没有完成，您没有被收取任何费用。<br>随时可以再回来，继续您的阅读。', 'en': 'This purchase was not completed, and you have not been charged.<br>Come back anytime to continue your reading.' },
       'pc.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard' },
       'pc.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart' }
     });
@@ -21,6 +21,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="fs-v2.css" />
 
   <style>
     .shell { max-width: 640px; margin: 0 auto; padding: 96px 32px; text-align: center; }
@@ -52,9 +54,78 @@
     .pay-btn.primary:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,54,58,0.18); }
     .pay-btn.ghost { background: transparent; color: var(--ink-mid); border: 1px solid var(--rule); }
     .pay-btn.ghost:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
+
+    /* ════════════════════════════════════════════════════════════════
+       ▼ v2 視覺層（設計師 v1.0 語彙）— 以下全部限定 .fs-v2（payment-success / cancel 共用）
+       ════════════════════════════════════════════════════════════════ */
+    body.pay-page.fs-v2 { background: #ffffff; }
+    .fs-v2 .shell { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 32px 0 96px; text-align: left; }
+    .fs-v2 .pay-ornament { display: none; }
+
+    /* 頁首橫幅：狀態圖示 + 標題 + 說明 */
+    .fs-v2 .pay-hero {
+      position: relative; min-height: 220px; padding: 40px 32px; overflow: hidden;
+      background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+    }
+    .fs-v2 .pay-check,
+    .fs-v2 .pay-mark {
+      width: 48px; height: 48px; margin: 0 0 20px; border-radius: 50%; font-size: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fs-v2 .pay-check { background: var(--v2-blue); border: 0; color: #ffffff; }
+    .fs-v2 .pay-mark { background: #ffffff; border: 1px solid var(--v2-line); color: var(--v2-muted); }
+    .fs-v2 .pay-check svg,
+    .fs-v2 .pay-mark svg { display: block; }
+    .fs-v2 .pay-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+    .fs-v2 .pay-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pay-body { max-width: 640px; margin: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* 提醒（藍色左線）*/
+    .fs-v2 .pay-note {
+      max-width: 820px; margin: 32px 0 0; padding: 16px 20px; text-align: left;
+      background: var(--v2-tint-soft); border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-blue); border-radius: 0;
+      font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted);
+    }
+    .fs-v2 .pay-note strong { color: var(--v2-ink); font-weight: 600; }
+
+    /* 動作 */
+    .fs-v2 .pay-actions { justify-content: flex-start; gap: 12px; margin: 32px 0 0; }
+    .fs-v2 .pay-btn {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 180px; min-height: 48px; padding: 12px 28px;
+      border: 1px solid var(--v2-ink); border-radius: 0; box-shadow: none; transform: none;
+      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .fs-v2 .pay-btn.primary { background: var(--v2-ink); color: #ffffff; }
+    .fs-v2 .pay-btn.primary:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
+    .fs-v2 .pay-btn.ghost { background: #ffffff; color: var(--v2-ink); border-color: var(--v2-ink); }
+    .fs-v2 .pay-btn.ghost:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+    .fs-v2 .pay-btn:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+    .fs-v2 .pay-btn[hidden] { display: none; }
+
+    /* 對帳參考編號 */
+    .fs-v2 .pay-session { margin: 40px 0 0; padding: 16px 0 0; border-top: 1px solid var(--v2-line); font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-faint); overflow-wrap: anywhere; }
+    .fs-v2 .pay-session code { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; color: var(--v2-muted); }
+
+    /* 舊年方案涵蓋清單（2026-09 年方案停售後不再觸發；保留樣式一致）*/
+    .fs-v2 .pay-coverage { max-width: 820px; margin: 32px 0 0; padding: 24px; background: #ffffff; border: 1px solid var(--v2-line); border-radius: 0; }
+    .fs-v2 .pay-cov-title { font-family: var(--v2-font-cjk); font-size: 16px; line-height: 26px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+    .fs-v2 .pay-cov-intro,
+    .fs-v2 .pay-cov-loading,
+    .fs-v2 .pay-cov-fallback { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .pay-cov-chip { border-radius: 0; background: var(--v2-tint-soft); border-color: var(--v2-line); font-family: var(--v2-font-latin); color: var(--v2-ink); }
+
+    @media (max-width: 799px) {
+      .fs-v2 .shell { padding-top: 16px; }
+      .fs-v2 .pay-hero { padding: 28px 24px; min-height: 0; background-position: 60% center; }
+      .fs-v2 .pay-title { font-size: 28px; line-height: 42px; }
+      .fs-v2 .pay-body { font-size: 14px; line-height: 24px; }
+      .fs-v2 .pay-actions { flex-direction: column; align-items: stretch; }
+      .fs-v2 .pay-btn { width: 100%; }
+    }
   </style>
 </head>
-<body>
+<body class="pay-page fs-v2">
 
 <div id="site-header"></div>
 
@@ -62,12 +133,12 @@
   <div class="shell">
     <div class="pay-ornament"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
 
-    <div class="pay-mark">—</div>
-
-    <div class="pay-eyebrow">Payment Canceled</div>
-    <h1 class="pay-title" data-i18n="pc.title">付款已取消</h1>
-
-    <p class="pay-body" data-i18n-html="pc.body">這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。</p>
+    <div class="pay-hero">
+      <div class="pay-mark"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 10h10"/></svg></div>
+      <div class="pay-eyebrow">Payment Canceled</div>
+      <h1 class="pay-title" data-i18n="pc.title">付款已取消</h1>
+      <p class="pay-body" data-i18n-html="pc.body">這次的購買沒有完成，您沒有被收取任何費用。<br>隨時可以再回來，繼續您的閱讀。</p>
+    </div>
 
     <div class="pay-actions">
       <a href="dashboard.html" class="pay-btn primary" data-i18n="pc.btnDashboard">返回儀表板</a>
