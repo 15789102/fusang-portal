@@ -571,6 +571,18 @@ function injectHeader(activePage = null) {
 }
 
 // ─── Footer ──────────────────────────────────────────────────
+// 2026-09-24：連結改指官網正式頁面；「免責聲明」改為「服務條款」
+//   （官網無免責聲明頁，條款頁已涵蓋）。footerTerms 在此 addUI 併入，
+//   不動 i18n.js；舊 key footerDisclaimer 保留在 i18n.js 但已不使用。
+const FOOTER_LINKS = {
+  privacy: 'https://fusang-vision.com/pages/privacy-page',
+  terms:   'https://fusang-vision.com/pages/term-of-service',
+  contact: 'mailto:support@fusang-vision.com',
+};
+I18N.addUI({
+  footerTerms: { 'zh-TW': '服務條款', 'zh-CN': '服务条款', 'en': 'Terms of Service' },
+});
+
 function injectFooter() {
   const el = document.getElementById('site-footer');
   if (!el) return;
@@ -582,9 +594,9 @@ function injectFooter() {
         <span class="fs-footer-brand-name">FuSang Vision</span>
       </div>
       <div class="fs-footer-links">
-        <a href="#" class="fs-footer-link" data-i18n="footerPrivacy"></a>
-        <a href="#" class="fs-footer-link" data-i18n="footerDisclaimer"></a>
-        <a href="mailto:info@fusang-vision.com" class="fs-footer-link" data-i18n="footerContact"></a>
+        <a href="${FOOTER_LINKS.privacy}" class="fs-footer-link" target="_blank" rel="noopener" data-i18n="footerPrivacy"></a>
+        <a href="${FOOTER_LINKS.terms}" class="fs-footer-link" target="_blank" rel="noopener" data-i18n="footerTerms"></a>
+        <a href="${FOOTER_LINKS.contact}" class="fs-footer-link" data-i18n="footerContact"></a>
       </div>
       <div class="fs-footer-copy">© 2026 FuSang Vision · <span data-i18n="footerCopySuffix"></span></div>
     </footer>
