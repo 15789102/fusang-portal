@@ -48,7 +48,7 @@
   //     如此 config.js 載入失敗時 window.CFG 為 undefined → 視同關閉(fail-closed),
   //     不會意外把未開放的購買入口露出來。
   const FEATURE_FLAGS = {
-    CONSULT_ENABLED: false,
+    CONSULT_ENABLED: true,   // 2026-09-24 開放單獨問事（Stripe STRIPE_PRICE_TICKET 與後台回覆流程已確認）
   };
 
   const CONFIGS = {
