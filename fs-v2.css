@@ -1,432 +1,555 @@
 /* ============================================================
-   FuSang Vision — v2 視覺互動（週期報告頁共用：decade / annual / monthly）
-   來源：設計師 v1.0 視覺 + 2026-09 第二輪 UX（比照 chart.html 的 v2 script）
+   FuSang Vision — v2 視覺層 (fs-v2.css)
+   來源：設計師交付 Fusang-Vision-HTML v1.0（2026-09-21）— 只取視覺值，不取架構。
 
-   ⚠ 本檔只做「導覽與呈現」：
-     - 不讀付費欄、不碰 sihua_unlocked / *_gated view / 付費牆判斷、不碰 i18n 字典。
-     - 開宮位 / 切畫面 / 載入週期，一律呼叫各頁 module 提供的唯讀掛鉤 window.FSChart，
-       走原本的 openDetail（含四化 gate）/ showView / loadPeriod。
-     - 任何一步失敗只少掉導覽輔助，不影響頁面原有功能。
+   ⚠ 作用範圍：本檔「每一條」規則都限定在 body.fs-v2 之下。
+     - 頁面 <body> 加上 class="fs-v2" 才生效；未加的頁面完全不受影響。
+     - 不含任何全域元素樣式（body / button / h1…）或設計師的共用 class（.header / .button / .shell）。
+     - 不改 DOM、不碰 JS、不碰 i18n：只覆寫 components.js 注入的 .fs-* 樣式 + 重新映射 design tokens。
 
-   用法（各頁 <body> 內、module 之前）：
-     <script>
-       window.FSV2_PERIOD = {
-         periodParam:   'decade',                    // 網址參數名（?decade=2020）
-         listView:      'view-years',                // 週期清單畫面 id
-         rootViews:     ['view-intro'],              // 選用：其他不帶週期參數的起始畫面（記入瀏覽紀錄）
-         listGrid:      'years-grid',                // 週期清單容器 id（首次渲染後處理深連結）
-         explainerDict: 'PALACE_EXPLAINER_DECADE',   // 十二宮預覽的宮位定義字典（td）
-         tooltipDict:   'TRANSFORM_TOOLTIP_DECADE',  // 左欄四化說明字典（td；缺字時退回 TRANSFORM_TOOLTIP）
-         enterKey:      'dc.v2Enter',                // 預覽按鈕文案 key（含 {palace}）
-         decorateCard:  function (card, palace) {},  // 選用：十二宮卡的頁面專屬裝飾（monthly：能量細條 / 焦點）
-         previewExtra:  function (palace, box) {},   // 選用：中央預覽的頁面專屬內容（插在進入按鈕之前）
-         progress: {                                 // 選用：目前週期的「第 N / 10 年」
-           bar: '.decade-bar.current', years: '.decade-bar-years', host: '.decade-bar-right',
-           span: 10, key: 'dc.v2Progress'
-         }
-       };
-     </script>
-     <script src="fs-v2-period.js"></script>
+   用法（試點頁 <head>，放在頁面自己的 <style> 之前）：
+     <link rel="stylesheet" href="fs-v2.css">
+     <body class="dash-page fs-v2">   ← 原 class 保留，再加 fs-v2
 
-   各頁 module 需提供（唯讀掛鉤）：
-     window.FSChart = { openDetail, showView, currentView, currentPalace, isReady,
-                        getComposition, currentPeriod, loadPeriod, canOpenPeriod }
-
-   功能：
-     1) 瀏覽紀錄 + 網址：清單 → ?{param}=Y → ?{param}=Y&palace=命宮（手機返回鍵可回上一畫面）
-     2) 十二宮兩段式：點宮位 → 中央預覽（宮名 / 標語 / 定義）→「進入…詳情」
-     3) 十二宮格：標出本期四化（composition 為免費欄位）
-     4) 宮位切換列 / 章節列（含方向鍵）/ 返回頂部 / 左欄四化標籤說明泡泡
-     5) 選用：目前週期進度「第 N / 10 年」
-     6) 選用：decorateCard / previewExtra 兩個頁面掛鉤（只做呈現；例外不影響其他功能）
+   組成：
+     §0 字體　§1 Token 重新映射　§2 頁面底　§3 Header　§4 Footer
+     §5 共用 v2 元件（v2- 前綴，供試點頁使用）　§6 RWD　§7 減少動態
+     §8 跳至主要內容　§9 鎖定內容（付費牆，設計師語彙 + 雲紋）
    ============================================================ */
-(function () {
-  'use strict';
-  var CFG = window.FSV2_PERIOD || {};
-  var F = window.FSI18N;
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var ORDER = ['命宮','兄弟宮','夫妻宮','子女宮','財帛宮','疾厄宮','遷移宮','交友宮','官祿宮','田宅宮','福德宮','父母宮'];
-  var ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-  var TF_ORDER = ['化祿','化權','化科','化忌'];
-  var TF_CLASS = { '化祿': 'lu', '化權': 'quan', '化科': 'ke', '化忌': 'ji' };
-  var PARAM = CFG.periodParam || 'period';
-  var LIST_VIEW = CFG.listView || 'view-years';
-  // 起始畫面（不帶週期參數的畫面）：清單之外，可另列如 annual 的 view-intro（首次生成 / 生成中）
-  var ROOT_VIEWS = [LIST_VIEW].concat(CFG.rootViews || []);
-  function isRoot(v) { return ROOT_VIEWS.indexOf(v) !== -1; }
 
-  function FS() { return window.FSChart || null; }
-  function tx(k) { try { return F.t(k); } catch (_) { return ''; } }
-  function td(d, k) { try { return F.td(d, k) || ''; } catch (_) { return ''; } }
-  function smooth() { return reduce ? 'auto' : 'smooth'; }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function seatedTransforms(p) {
-    var c = FS() && FS().getComposition(p);
-    if (!c) return [];
-    var all = [].concat(c.main_stars || [], c.support_stars || [], c.minor_stars || [], c.sha_ji_stars || []);
-    return all.filter(function (s) { return s && typeof s === 'object' && s.transform; });
+/* ── §0 字體：Jost（拉丁）+ Noto Sans TC / SC（Google Fonts 按需子集，不用設計師附的 12MB/17MB ttf）── */
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+/* ── §1 Token 重新映射 ──
+   Ben 現有頁面樣式全用 var(--ink-darkest) 等 token；在 body.fs-v2 上改值，
+   頁面上既有元件即自動換成設計師色系，無需改任何 selector。
+   --t-*（四化語意色）刻意不動。 */
+body.fs-v2 {
+  /* 設計師原生 token（v2 元件直接使用） */
+  --v2-ink: #202020;
+  --v2-ink-hover: #404040;
+  --v2-muted: #686868;
+  --v2-faint: #999999;
+  --v2-line: #dedede;
+  --v2-line-soft: #ededed;
+  --v2-blue: #3b83f6;
+  --v2-blue-strong: #008fff;
+  --v2-blue-line: #a1bfee;
+  --v2-tint: #eff5ff;
+  --v2-tint-soft: #fafdff;
+  --v2-shadow-pop: 0 12px 32px #20202026, 0 3px 8px #2020200d;
+  --v2-gutter: 80px;             /* 設計師 .shell：左右各 80px，最大 1280 */
+  --v2-max: 1280px;
+  --v2-font-latin: Jost, 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+  --v2-font-cjk: 'Noto Sans TC', 'Noto Sans SC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+
+  /* Ben 既有 token → 設計師值 */
+  --bg-primary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-soft: var(--v2-tint);
+  --bg-soft-2: #f7f9fc;
+  --wash-teal: var(--v2-tint);
+  --ink-darkest: var(--v2-ink);
+  --ink-dark: var(--v2-ink);
+  --ink-mid: var(--v2-muted);
+  --ink-light: var(--v2-faint);
+  --ink-faint: #c4c4c4;
+  --accent-deep: var(--v2-ink);   /* 設計師主按鈕 = 墨黑底 */
+  --accent-soft: var(--v2-blue);  /* 強調 / hover / 選中 = 藍 */
+  --accent-pale: #d6e4fd;
+  --silver-deep: var(--v2-muted);
+  --silver-soft: #b5b5b5;
+  --silver-pale: var(--v2-line);
+  --gold: var(--v2-blue);         /* 設計師無金色；付費牆等金色點綴改藍 */
+  --gold-soft: var(--v2-blue-line);
+  --rule: var(--v2-line);
+  --rule-soft-2: var(--v2-line-soft);
+
+  --font-serif-en: var(--v2-font-latin);
+  --font-serif-zh: var(--v2-font-cjk);
+  --font-sans: var(--v2-font-latin);
+
+  font-family: var(--v2-font-cjk);
+  color: var(--v2-ink);
+}
+/* 簡中字形 */
+html[lang="zh-CN"] body.fs-v2 {
+  --v2-font-latin: Jost, 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+  --v2-font-cjk: 'Noto Sans SC', 'Noto Sans TC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+/* 英文：設計師指定整體用 Jost */
+html[lang="en"] body.fs-v2 {
+  --v2-font-cjk: Jost, 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+}
+
+/* ── §2 頁面底：純白，關閉全站水彩背景層 ── */
+html:has(body.fs-v2) { background: #ffffff; }
+body.fs-v2 { background: #ffffff; }
+body.fs-v2 #fs-bg { display: none; }
+
+/* ── §3 Header ──
+   DOM 沿用 components.js（brand｜toggle｜nav[命盤▾ 單獨問事 方案 帳戶▾ 語言]），
+   以 flex order 排成設計師版型：左 brand ／ 中 主選單 ／ 右 語言 + 帳戶。 */
+body.fs-v2 .fs-header {
+  position: relative;               /* 設計師：header 隨捲動離開（不 sticky） */
+  top: auto;
+  height: 104px;
+  padding: 0 max(var(--v2-gutter), calc((100% - var(--v2-max)) / 2));
+  background: #ffffff;
+  border-bottom: 1px solid var(--v2-line-soft);
+  flex-wrap: nowrap;
+  gap: 24px;
+}
+body.fs-v2 .fs-header-brand { gap: 12px; flex: none; }
+body.fs-v2 .fs-header-brand img { width: 50px; height: 37px; object-fit: contain; }
+body.fs-v2 .fs-brand-name {
+  font-family: var(--v2-font-latin);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  letter-spacing: 0;
+  color: var(--v2-ink);
+}
+/* 品牌副標（components.js 加 .fs-brand-sub 後生效；未加時不影響） */
+body.fs-v2 .fs-brand-text { display: flex; flex-direction: column; }
+body.fs-v2 .fs-brand-sub { font-size: 12px; line-height: 20px; margin-top: -4px; color: var(--v2-muted); }
+
+/* display / align-items 不在此設定：沿用 components.js（桌機 flex+center／≤900px 收合、stretch），避免蓋掉漢堡選單 */
+body.fs-v2 .fs-header-nav { flex: 1; gap: 16px; }
+body.fs-v2 #fs-charts-group { margin-left: auto; }          /* 主選單群置中 */
+body.fs-v2 .fs-lang-switch { order: 2; margin-left: auto; } /* 右群：語言 → 帳戶 */
+body.fs-v2 #fs-account-group { order: 3; }
+
+body.fs-v2 .fs-nav-link,
+body.fs-v2 .fs-nav-parent {
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--v2-ink);
+  padding: 12px;
+  transition: color .15s;
+}
+body.fs-v2 .fs-nav-parent { gap: 8px; }
+body.fs-v2 .fs-nav-link,
+body.fs-v2 .fs-nav-parent,
+body.fs-v2 .fs-lang-opt { white-space: nowrap; }
+body.fs-v2 .fs-nav-link:hover,
+body.fs-v2 .fs-nav-parent:hover { color: var(--v2-blue); }
+body.fs-v2 .fs-nav-link.active,
+body.fs-v2 .fs-nav-parent.active { color: var(--v2-ink); font-weight: 600; }
+body.fs-v2 .fs-nav-link.active::after { display: none; }
+
+/* 下拉箭頭：同一條 path 改填色 → 設計師的實心三角 */
+body.fs-v2 .fs-nav-caret { width: 14px; height: 14px; fill: currentColor; stroke: currentColor; stroke-width: 1; }
+
+/* 「即將推出」：設計師為灰字「單獨問事 · 即將推出」，非膠囊標籤 */
+body.fs-v2 .fs-nav-link:has(.fs-nav-soon) { color: var(--v2-faint); }
+body.fs-v2 .fs-nav-link:has(.fs-nav-soon):hover { color: var(--v2-muted); }
+body.fs-v2 .fs-nav-soon {
+  margin-left: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline;
+}
+body.fs-v2 .fs-nav-soon::before { content: '\00a0·\00a0'; }
+
+/* 下拉面板：白底、無框、雙層陰影、直角、右對齊 */
+body.fs-v2 .fs-nav-dropdown {
+  top: calc(100% + 4px);
+  left: auto;
+  right: 0;
+  min-width: 192px;
+  padding: 8px;
+  background: #ffffff;
+  border: 0;
+  border-radius: 0;
+  box-shadow: var(--v2-shadow-pop);
+}
+body.fs-v2 .fs-nav-dropdown .fs-nav-link,
+body.fs-v2 .fs-nav-dropdown .fs-nav-signout {
+  display: flex;
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--v2-ink);
+  white-space: nowrap;
+  border: 0;
+  margin: 0;
+}
+body.fs-v2 .fs-nav-dropdown .fs-nav-link:hover,
+body.fs-v2 .fs-nav-dropdown .fs-nav-signout:hover { background: var(--v2-tint); color: var(--v2-ink); }
+body.fs-v2 .fs-nav-dropdown .fs-nav-link.active { color: var(--v2-blue); font-weight: 600; }
+body.fs-v2 .fs-nav-dropdown .fs-nav-signout { border-top: 1px solid var(--v2-line-soft); margin-top: 4px; }
+
+/* 語言切換：保留三顆按鈕（行為不變），改為設計師的純文字樣式 */
+body.fs-v2 .fs-lang-switch { border: 0; border-radius: 0; gap: 4px; overflow: visible; }
+body.fs-v2 .fs-lang-opt {
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: 22px;
+  padding: 12px 8px;
+  color: var(--v2-muted);
+  background: transparent;
+}
+body.fs-v2 .fs-lang-opt + .fs-lang-opt { border-left: 0; }
+body.fs-v2 .fs-lang-opt:hover { color: var(--v2-blue); }
+body.fs-v2 .fs-lang-opt.active { background: transparent; color: var(--v2-ink); font-weight: 600; }
+
+body.fs-v2 .fs-nav-toggle { color: var(--v2-ink); }
+
+/* ── §4 Footer：設計師版型（左品牌字 ／ 右連結；版權字置於下方）── */
+body.fs-v2 .fs-footer {
+  width: calc(100% - 2 * var(--v2-gutter));
+  max-width: var(--v2-max);
+  margin: 40px auto 0;
+  padding: 24px 0;
+  min-height: 80px;
+  background: transparent;
+  border-top: 1px solid var(--v2-line);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 24px;
+  row-gap: 4px;
+  text-align: left;
+}
+body.fs-v2 .fs-footer-brand { justify-content: flex-start; }
+body.fs-v2 .fs-footer-brand img { display: none; }
+body.fs-v2 .fs-footer-brand-name {
+  font-family: var(--v2-font-latin);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--v2-ink);
+}
+body.fs-v2 .fs-footer-links { justify-content: flex-end; gap: 16px; }
+body.fs-v2 .fs-footer-link {
+  font-family: var(--v2-font-cjk);
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--v2-muted);
+  padding: 8px 0;
+}
+body.fs-v2 .fs-footer-link:hover { color: var(--v2-blue); }
+body.fs-v2 .fs-footer-copy {
+  grid-column: 1 / -1;
+  font-family: var(--v2-font-latin);
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--v2-faint);
+}
+
+/* ── §5 共用 v2 元件（v2- 前綴，不與 Ben 或設計師任何 class 同名）── */
+
+/* 內容容器：對應設計師 .shell */
+body.fs-v2 .v2-shell { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin-inline: auto; }
+
+/* 小標（eyebrow） */
+body.fs-v2 .v2-eyebrow {
+  font-family: var(--v2-font-latin);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--v2-muted);
+}
+
+/* 按鈕：對應設計師 .button.primary / .button.secondary */
+body.fs-v2 .v2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+  border: 1px solid var(--v2-ink);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+body.fs-v2 .v2-btn--primary { background: var(--v2-ink); color: #ffffff; }
+body.fs-v2 .v2-btn--primary:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); }
+body.fs-v2 .v2-btn--secondary { background: #ffffff; color: var(--v2-ink); }
+body.fs-v2 .v2-btn--secondary:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
+body.fs-v2 .v2-btn:disabled,
+body.fs-v2 .v2-btn[aria-disabled="true"] { background: #f7f7f7; color: var(--v2-muted); border-color: #f7f7f7; cursor: not-allowed; }
+
+/* 頁首橫幅：對應設計師 .banner（右側銀杏水彩） */
+body.fs-v2 .v2-banner { position: relative; min-height: 179px; padding: 32px; overflow: hidden; }
+body.fs-v2 .v2-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  pointer-events: none;
+}
+body.fs-v2 .v2-banner > * { position: relative; }
+body.fs-v2 .v2-banner h1 { font-size: 36px; line-height: 50px; font-weight: 500; }
+body.fs-v2 .v2-banner p { color: var(--v2-muted); }
+
+/* 宮位圖示：mask 上色（灰 → 選中藍）。
+   用法：<span class="v2-palace-icon" style="--icon-url:url(assets/v2/palaces/palace-07.svg)"></span>
+   檔名序號 = chart.html PALACE_ORDER 索引（00 命宮 … 07 交友宮 … 11 父母宮） */
+body.fs-v2 .v2-palace-icon {
+  display: block;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--v2-faint);
+  -webkit-mask: var(--icon-url) center / contain no-repeat;
+          mask: var(--icon-url) center / contain no-repeat;
+}
+body.fs-v2 .v2-palace-icon.is-selected,
+body.fs-v2 .is-selected > .v2-palace-icon { background: var(--v2-blue); }
+
+/* 回到頂部 */
+body.fs-v2 .v2-back-to-top {
+  position: fixed;
+  right: 12px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 15;
+  width: 64px;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border: 1px solid var(--v2-line);
+  background: #ffffff;
+  color: var(--v2-muted);
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+body.fs-v2 .v2-back-to-top[hidden] { display: none; }
+body.fs-v2 .v2-back-to-top:hover { color: var(--v2-blue); border-color: var(--v2-blue); background: var(--v2-tint); }
+
+/* 焦點框 */
+body.fs-v2 a:focus-visible,
+body.fs-v2 button:focus-visible,
+body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 4px; }
+
+/* ── §6 RWD（斷點沿用設計師：1270 / 1000 / 799；header 漢堡沿用 Ben 的 900）── */
+@media (max-width: 1270px) {
+  body.fs-v2 { --v2-gutter: 40px; }
+  body.fs-v2 .fs-header-nav { gap: 8px; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  body.fs-v2 .fs-header { padding-left: 24px; padding-right: 24px; gap: 12px; }
+  body.fs-v2 .fs-header-nav { gap: 0; }
+  body.fs-v2 .fs-nav-link,
+  body.fs-v2 .fs-nav-parent { padding-inline: 8px; }
+  body.fs-v2 .fs-lang-opt { padding-inline: 6px; }
+}
+@media (max-width: 900px) {
+  body.fs-v2 .fs-header { height: auto; min-height: 72px; padding-block: 12px; }
+  body.fs-v2 .fs-header-nav {
+    background: #ffffff;
+    border-bottom: 1px solid var(--v2-line-soft);
+    box-shadow: var(--v2-shadow-pop);
+    padding: 6px var(--v2-gutter) 18px;
+    gap: 0;
   }
+  body.fs-v2 #fs-charts-group,
+  body.fs-v2 .fs-lang-switch { margin-left: 0; }
+  body.fs-v2 .fs-lang-switch { order: 4; }   /* 手機維持原順序：語言在最下 */
+  body.fs-v2 .fs-header-nav .fs-nav-link,
+  body.fs-v2 .fs-nav-parent { padding: 14px 2px; border-bottom: 1px solid var(--v2-line-soft); font-size: 15px; }
+  body.fs-v2 .fs-nav-dropdown { position: static; box-shadow: none; padding: 0 0 0 16px; min-width: 0; }
+  body.fs-v2 .fs-nav-dropdown .fs-nav-link,
+  body.fs-v2 .fs-nav-dropdown .fs-nav-signout { padding: 13px 2px; }
+  body.fs-v2 .fs-nav-dropdown .fs-nav-signout { border-top: 0; border-bottom: 1px solid var(--v2-line-soft); margin-top: 0; }
+  body.fs-v2 .fs-lang-switch { margin-top: 14px; }
+}
+@media (max-width: 799px) {
+  body.fs-v2 { --v2-gutter: 20px; }
+  body.fs-v2 .fs-header-brand img { width: 40px; height: 30px; }
+  body.fs-v2 .fs-brand-name { font-size: 18px; }
+  body.fs-v2 .v2-btn { min-width: 132px; padding-inline: 16px; }
+  body.fs-v2 .v2-banner { padding: 24px; min-height: 169px; }
+  body.fs-v2 .v2-banner h1 { font-size: 28px; line-height: 42px; }
+  body.fs-v2 .v2-banner p { font-size: 14px; line-height: 24px; }
+  body.fs-v2 .v2-banner::before { background-position: 60% center; }
+  body.fs-v2 .v2-back-to-top { width: 60px; height: 64px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+  body.fs-v2 .fs-footer { grid-template-columns: 1fr; }
+  body.fs-v2 .fs-footer-links { justify-content: flex-start; gap: 12px; }
+}
 
-  function init() {
-    var grid = document.getElementById('palace-grid');
-    var sw = document.getElementById('v2-palace-switcher');
-    var titleEl = document.getElementById('detail-title-zh');
-    var listGrid = CFG.listGrid ? document.getElementById(CFG.listGrid) : null;
-    var selected = '命宮';
+/* ── §8 跳至主要內容（v2 外觀）── */
+body.fs-v2 .fs-skip { background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-line); font-family: var(--v2-font-cjk); font-size: 14px; }
 
-    /* ── 3) 十二宮格：本期四化標 + 可聚焦 ── */
-    function decorateHub() {
-      if (!grid) return;
-      var cards = grid.querySelectorAll('.palace-card');
-      for (var i = 0; i < cards.length; i++) {
-        var card = cards[i], p = ORDER[i];
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'button');
-        card.dataset.v2Palace = p;
-        card.classList.toggle('is-selected', p === selected);
-        card.classList.toggle('is-empty', !(FS() && FS().getComposition(p)));
-        var old = card.querySelector('.v2-hub-hua');
-        if (old) old.remove();
-        var tfs = seatedTransforms(p);
-        if (tfs.length) {
-          var box = el('div', 'v2-hub-hua');
-          tfs.sort(function (a, b) { return TF_ORDER.indexOf(a.transform) - TF_ORDER.indexOf(b.transform); })
-             .forEach(function (s) { box.appendChild(el('span', 'v2-hua v2-hua--' + (TF_CLASS[s.transform] || 'x'), F.transformLabel(s.transform))); });
-          card.appendChild(box);
-        }
-        if (typeof CFG.decorateCard === 'function') { try { CFG.decorateCard(card, p); } catch (_) {} }
-      }
-    }
+/* ── §9 鎖定內容（付費牆）──
+   設計師語彙：白底、1px 灰框、灰字、黑底主按鈕；右側淡雲紋（宮位格同一素材）。
+   只換外觀：鎖的出現與否完全由各頁 JS（sihua_unlocked / gated view）決定。
+   適用各頁共用的 class：.sec-lock / .seclock / .paywall / .ov-locked-hint / .dash-unlock */
+body.fs-v2 { --v2-lock-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
 
-    /* ── 2) 十二宮兩段式：中央預覽 ── */
-    var preview = el('div', 'v2-hub-preview');
-    preview.setAttribute('aria-live', 'polite');
-    function renderPreview() {
-      if (!grid || !grid.querySelector('.palace-card')) return;
-      if (preview.parentNode !== grid) grid.appendChild(preview);
-      var i = ORDER.indexOf(selected);
-      var card = grid.querySelectorAll('.palace-card')[i];
-      var nm = card && card.querySelector('.palace-card-name');
-      var name = nm ? nm.textContent : selected;
-      preview.innerHTML = '';
-      preview.appendChild(el('div', 'v2-hp-index', ROMAN[i] + ' / XII'));
-      preview.appendChild(el('h2', 'v2-hp-name', name));
-      var tag = el('div', 'v2-hp-tagline'); tag.innerHTML = td('PALACE_TAGLINE', selected); preview.appendChild(tag);
-      var ex = el('div', 'v2-hp-explainer'); ex.innerHTML = td(CFG.explainerDict || 'PALACE_EXPLAINER', selected); preview.appendChild(ex);
-      if (typeof CFG.previewExtra === 'function') { try { CFG.previewExtra(selected, preview); } catch (_) {} }
-      var btn = el('button', 'v2-hp-enter', (tx(CFG.enterKey) || '{palace}').replace('{palace}', name));
-      btn.type = 'button';
-      var has = !!(FS() && FS().getComposition(selected));
-      btn.disabled = !has;
-      btn.addEventListener('click', function () { if (FS()) FS().openDetail(selected); });
-      preview.appendChild(btn);
-    }
-    // 頁面可要求重繪（例如 monthly 語言切換後能量標籤文字更新）
-    window.addEventListener('fsv2:hub-refresh', function () { decorateHub(); renderPreview(); });
-    function select(p) {
-      selected = p;
-      if (grid) grid.querySelectorAll('.palace-card').forEach(function (c) { c.classList.toggle('is-selected', c.dataset.v2Palace === p); });
-      renderPreview();
-    }
-    if (grid) {
-      // 攔截宮位卡點擊（capture）：第一下＝選取預覽；再點已選取的宮＝進入詳情
-      grid.addEventListener('click', function (e) {
-        var card = e.target.closest && e.target.closest('.palace-card');
-        if (!card || !grid.contains(card)) return;
-        e.stopPropagation();
-        var p = card.dataset.v2Palace;
-        if (!p) return;
-        if (p === selected && card.classList.contains('is-selected') && preview.parentNode === grid) {
-          if (FS() && FS().getComposition(p)) FS().openDetail(p);
-          return;
-        }
-        select(p);
-        if (window.matchMedia('(max-width: 599px)').matches) preview.scrollIntoView({ behavior: smooth(), block: 'start' });
-      }, true);
-      grid.addEventListener('keydown', function (e) {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        var card = e.target.closest && e.target.closest('.palace-card');
-        if (!card) return;
-        e.preventDefault();
-        card.click();
-      });
-    }
+body.fs-v2 .sec-lock,
+body.fs-v2 .paywall,
+body.fs-v2 .ov-locked-hint,
+body.fs-v2 .dash-unlock {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--v2-line);
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body.fs-v2 .sec-lock::before,
+body.fs-v2 .paywall::before,
+body.fs-v2 .ov-locked-hint::before,
+body.fs-v2 .dash-unlock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('assets/v2/palace-cloud.webp') right center / auto 180% no-repeat;
+  opacity: .32;
+  -webkit-mask-image: linear-gradient(90deg, transparent 25%, #000 85%);
+          mask-image: linear-gradient(90deg, transparent 25%, #000 85%);
+}
+body.fs-v2 .sec-lock > *,
+body.fs-v2 .paywall > *,
+body.fs-v2 .ov-locked-hint > *,
+body.fs-v2 .dash-unlock > * { position: relative; }
 
-    /* ── 4a) 宮位切換列 ── */
-    function markSelected() {
-      if (!sw || !titleEl) return;
-      var cur = ORDER.indexOf((titleEl.textContent || '').trim());
-      var items = sw.querySelectorAll('.v2-sw-item');
-      for (var i = 0; i < items.length; i++) {
-        var on = (i === cur);
-        items[i].classList.toggle('is-selected', on);
-        if (on) items[i].setAttribute('aria-current', 'page'); else items[i].removeAttribute('aria-current');
-        var ic = items[i].querySelector('.v2-palace-icon');
-        if (ic) ic.classList.toggle('is-selected', on);
-      }
-    }
-    function buildSwitcher() {
-      if (!grid || !sw) return;
-      var cards = grid.querySelectorAll('.palace-card');
-      sw.innerHTML = '';
-      for (var i = 0; i < cards.length; i++) {
-        (function (idx, card) {
-          var b = el('button', 'v2-sw-item');
-          b.type = 'button';
-          var ic = el('span', 'v2-palace-icon');
-          ic.setAttribute('aria-hidden', 'true');
-          ic.style.setProperty('--icon-url', 'url(assets/v2/palaces/palace-' + (idx < 10 ? '0' : '') + idx + '.svg)');
-          var nm = card.querySelector('.palace-card-name');
-          b.appendChild(ic);
-          b.appendChild(el('span', '', nm ? nm.textContent : ''));
-          if (!(FS() && FS().getComposition(ORDER[idx]))) b.disabled = true;
-          b.addEventListener('click', function () { if (FS()) FS().openDetail(ORDER[idx]); });
-          sw.appendChild(b);
-        })(i, cards[i]);
-      }
-      markSelected();
-    }
+/* 線條鎖頭（取代 JS 產生的 🔒 表情符號；文字節點不動，只把字級歸零後以遮罩繪製）*/
+body.fs-v2 .sec-lock-icon,
+body.fs-v2 .paywall-lock,
+body.fs-v2 .u-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  color: transparent;
+  background: var(--v2-muted);
+  border: 0;
+  border-radius: 0;
+  -webkit-mask: var(--v2-lock-svg) center / contain no-repeat;
+          mask: var(--v2-lock-svg) center / contain no-repeat;
+}
 
-    /* ── 4b) 左欄四化標籤說明 ── */
-    var stars = document.getElementById('detail-stars-line');
-    var tip = el('div', 'v2-tip');
-    tip.setAttribute('role', 'tooltip');
-    tip.hidden = true;
-    document.body.appendChild(tip);
-    function hideTip() { tip.hidden = true; }
-    function prepTags() {
-      if (!stars) return;
-      stars.querySelectorAll('.transform-tag').forEach(function (t) { t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); });
-    }
-    function showTip(tag) {
-      var tf = TF_ORDER.filter(function (k) { return tag.classList.contains(k); })[0];
-      var d = tf && (td(CFG.tooltipDict || 'TRANSFORM_TOOLTIP', tf) || td('TRANSFORM_TOOLTIP', tf));
-      if (!d) return;
-      tip.innerHTML = '';
-      var t = el('div', 'v2-tip-title'); t.innerHTML = d.title || ''; tip.appendChild(t);
-      var b = el('p', 'v2-tip-body'); b.innerHTML = d.body || ''; tip.appendChild(b);
-      tip.hidden = false;
-      var r = tag.getBoundingClientRect();
-      var w = Math.min(280, window.innerWidth - 32);
-      tip.style.width = w + 'px';
-      tip.style.left = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 16)) + window.scrollX + 'px';
-      tip.style.top = (r.bottom + 10 + window.scrollY) + 'px';
-    }
-    if (stars) {
-      stars.addEventListener('click', function (e) {
-        var tag = e.target.closest && e.target.closest('.transform-tag');
-        if (!tag) return;
-        e.stopPropagation();
-        if (!tip.hidden && tip._for === tag) { hideTip(); return; }
-        tip._for = tag; showTip(tag);
-      });
-      stars.addEventListener('keydown', function (e) {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('transform-tag')) { e.preventDefault(); e.target.click(); }
-      });
-      new MutationObserver(function () { hideTip(); prepTags(); }).observe(stars, { childList: true });
-    }
-    document.addEventListener('click', function (e) { if (!tip.contains(e.target)) hideTip(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideTip(); });
-    window.addEventListener('resize', hideTip);
+/* 段落鎖：一行灰字 */
+body.fs-v2 .sec-lock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 20px 24px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--v2-muted);
+}
+/* 鎖後的內容輪廓：純灰色色塊，無任何文字（付費資料已在伺服器端遮蔽）*/
+body.fs-v2 .seclock:not(:empty)::after {
+  content: '';
+  display: block;
+  height: 176px;
+  margin-top: 12px;
+  border: 1px solid var(--v2-line-soft);
+  background:
+    linear-gradient(#f0f0f0, #f0f0f0) 24px 24px / 22% 14px no-repeat,
+    linear-gradient(#f3f3f3, #f3f3f3) 24px 64px / 34% 10px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 96px / calc(100% - 48px) 8px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 116px / calc(92% - 48px) 8px no-repeat,
+    linear-gradient(#f5f5f5, #f5f5f5) 24px 136px / calc(76% - 48px) 8px no-repeat,
+    #ffffff;
+  filter: blur(1.5px);
+  -webkit-mask-image: linear-gradient(#000 40%, transparent);
+          mask-image: linear-gradient(#000 40%, transparent);
+}
 
-    /* ── 4c) 章節列：捲動導覽 + 目前段落 + 方向鍵 ── */
-    function sectionOf(id) {
-      var t = document.getElementById(id);
-      if (!t) return null;
-      return (t.closest && t.closest('.section')) || t;
-    }
-    var tabs = document.getElementById('v2-chapter-tabs');
-    var tabLinks = tabs ? tabs.querySelectorAll('[data-v2-target]') : [];
-    Array.prototype.forEach.call(tabLinks, function (a) {
-      a.addEventListener('click', function (e) {
-        e.preventDefault();
-        var t = sectionOf(a.getAttribute('data-v2-target'));
-        if (t) t.scrollIntoView({ behavior: smooth(), block: 'start' });
-      });
-    });
-    if (tabs) tabs.addEventListener('keydown', function (e) {
-      var list = Array.prototype.slice.call(tabLinks);
-      var i = list.indexOf(document.activeElement);
-      if (i < 0) return;
-      var n = null;
-      if (e.key === 'ArrowRight') n = (i + 1) % list.length;
-      else if (e.key === 'ArrowLeft') n = (i - 1 + list.length) % list.length;
-      else if (e.key === 'Home') n = 0;
-      else if (e.key === 'End') n = list.length - 1;
-      if (n === null) return;
-      e.preventDefault();
-      list[n].focus();
-      list[n].click();
-    });
-    function updateTabs() {
-      var view = document.getElementById('view-detail');
-      if (!tabs || !view || !view.classList.contains('active')) return;
-      var offset = tabs.getBoundingClientRect().height + 24;
-      var cur = 0;
-      for (var j = 0; j < tabLinks.length; j++) {
-        var t = sectionOf(tabLinks[j].getAttribute('data-v2-target'));
-        if (t && t.getBoundingClientRect().top - offset <= 1) cur = j;
-      }
-      for (var k = 0; k < tabLinks.length; k++) tabLinks[k].classList.toggle('is-selected', k === cur);
-    }
+/* 底部付費牆：設計師提示框（左對齊標題、灰字說明、右下黑底主按鈕）*/
+body.fs-v2 .paywall {
+  display: grid;
+  justify-items: start;
+  gap: 0;
+  padding: 40px;
+  text-align: left;
+}
+body.fs-v2 .paywall-lock { margin: 0 0 16px; }
+body.fs-v2 .paywall-eyebrow { margin: 0 0 4px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+body.fs-v2 .paywall-title { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+body.fs-v2 .paywall-list { display: flex; flex-direction: column; gap: 8px; max-width: 520px; margin: 0 0 32px; text-align: left; }
+body.fs-v2 .paywall-item { display: flex; align-items: baseline; gap: 12px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+body.fs-v2 .paywall-item .mk { flex-shrink: 0; min-width: 24px; font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; color: var(--v2-faint); }
+body.fs-v2 .paywall-item b { color: var(--v2-ink); font-weight: 600; }
+body.fs-v2 .paywall-cta {
+  justify-self: end;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 180px; min-height: 48px; padding: 12px 28px;
+  background: var(--v2-ink); color: #ffffff; border: 1px solid var(--v2-ink); border-radius: 0;
+  font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; text-transform: none;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+body.fs-v2 .paywall-cta:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); transform: none; box-shadow: none; }
+body.fs-v2 .paywall-note { justify-self: end; margin-top: 12px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
 
-    /* ── 返回頂部 ── */
-    var topBtn = document.getElementById('v2-top');
-    if (topBtn) topBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: smooth() }); });
-    var ticking = false;
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        ticking = false;
-        updateTabs();
-        if (topBtn) topBtn.hidden = window.scrollY < 600;
-      });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+/* 提示列（總覽後盾 / dashboard 四化解鎖）：設計師「單獨問事」列語彙 */
+body.fs-v2 .ov-locked-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 24px 32px;
+  font-family: var(--v2-font-cjk);
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--v2-muted);
+}
+body.fs-v2 .ov-locked-hint .ov-locked-link {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 180px; min-height: 48px; padding: 12px 28px; margin: 0;
+  background: #ffffff; color: var(--v2-ink); border: 1px solid var(--v2-ink);
+  font-weight: 600; font-size: 14px; line-height: 22px; white-space: nowrap; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+body.fs-v2 .ov-locked-hint .ov-locked-link:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
 
-    /* ── 5) 目前週期進度（第 N / 10 年）── */
-    function decorateList() {
-      var pc = CFG.progress;
-      if (!pc || !listGrid) return;
-      var bar = listGrid.querySelector(pc.bar);
-      if (!bar || bar.querySelector('.v2-progress')) return;
-      var yrs = bar.querySelector(pc.years);
-      var m = yrs && (yrs.textContent || '').match(/(\d{4})/);
-      if (!m) return;
-      var n = new Date().getFullYear() - parseInt(m[1], 10) + 1;
-      var span = pc.span || 10;
-      if (n < 1 || n > span) return;
-      var host = bar.querySelector(pc.host) || bar;
-      var box = el('span', 'v2-progress');
-      box.appendChild(el('span', 'v2-progress-text', (tx(pc.key) || '{n} / {t}').replace('{n}', n).replace('{t}', span)));
-      var track = el('span', 'v2-progress-track');
-      var fill = el('span', 'v2-progress-fill');
-      fill.style.width = Math.round(n / span * 100) + '%';
-      track.appendChild(fill);
-      box.appendChild(track);
-      host.appendChild(box);
-    }
+@media (max-width: 799px) {
+  body.fs-v2 .paywall { padding: 28px 20px; }
+  body.fs-v2 .paywall-cta,
+  body.fs-v2 .paywall-note { justify-self: stretch; text-align: center; }
+  body.fs-v2 .ov-locked-hint { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+  body.fs-v2 .sec-lock::before,
+  body.fs-v2 .paywall::before,
+  body.fs-v2 .ov-locked-hint::before,
+  body.fs-v2 .dash-unlock::before { background-size: auto 140%; opacity: .25; }
+}
 
-    /* ── 1) 瀏覽紀錄 + 網址 ── */
-    var ready = false;
-    var applying = false;
-    var lastKey = null;
-    var syncQueued = false;
-    function stateNow() {
-      var f = FS();
-      if (!f) return null;
-      var v = f.currentView();
-      if (isRoot(v)) return { view: v, period: null, palace: null };
-      if (v === 'view-hub') return { view: v, period: f.currentPeriod(), palace: null };
-      if (v === 'view-detail') return { view: v, period: f.currentPeriod(), palace: f.currentPalace() };
-      return null;   // loading / error / 其他（例如 intro、解鎖頁）不記錄
-    }
-    function keyOf(s) { return s.view + '|' + (s.period == null ? '' : s.period) + '|' + (s.palace || ''); }
-    function urlOf(s) {
-      var u = new URL(window.location.href);
-      u.searchParams.delete(PARAM);
-      u.searchParams.delete('palace');
-      if (s.period != null && (s.view === 'view-hub' || s.view === 'view-detail')) u.searchParams.set(PARAM, String(s.period));
-      if (s.view === 'view-detail' && s.palace) u.searchParams.set('palace', s.palace);
-      return u.pathname + u.search + u.hash;
-    }
-    function sync() {
-      syncQueued = false;
-      if (!ready) return;
-      var s = stateNow();
-      if (!s) return;
-      var k = keyOf(s);
-      if (k === lastKey) return;
-      if (applying) history.replaceState({ v2: s }, '', urlOf(s));
-      else history.pushState({ v2: s }, '', urlOf(s));
-      lastKey = k;
-    }
-    function queueSync() {
-      onScroll();
-      if (syncQueued) return;
-      syncQueued = true;
-      requestAnimationFrame(sync);
-    }
-    function sameP(a, b) { return String(a) === String(b); }
-    function apply(s) {
-      // 回傳 Promise：切到目標狀態（必要時先載入該週期）
-      var f = FS();
-      if (!f) return Promise.resolve();
-      if (!s || isRoot(s.view)) { f.showView((s && s.view) || LIST_VIEW); return Promise.resolve(); }
-      var go = function () {
-        if (s.view === 'view-detail' && s.palace) { f.openDetail(s.palace); select(s.palace); }
-        else f.showView('view-hub');
-      };
-      if (s.period != null && !sameP(f.currentPeriod(), s.period)) {
-        if (!f.canOpenPeriod(s.period)) { if (!isRoot(f.currentView())) f.showView(LIST_VIEW); return Promise.resolve(); }
-        return Promise.resolve(f.loadPeriod(s.period)).then(function () { if (f.isReady()) go(); });
-      }
-      go();
-      return Promise.resolve();
-    }
-    function settle(s) {
-      requestAnimationFrame(function () {
-        var now = stateNow() || s;
-        history.replaceState({ v2: now }, '', urlOf(now));
-        lastKey = keyOf(now);
-        applying = false;
-      });
-    }
-    window.addEventListener('popstate', function (e) {
-      var s = (e.state && e.state.v2) || { view: LIST_VIEW, period: null, palace: null };
-      applying = true;
-      hideTip();
-      apply(s).then(function () { settle(s); }, function () { applying = false; });
-    });
-
-    /* 首次清單就緒 → 處理深連結 */
-    function onListReady() {
-      if (ready || !FS()) return;
-      ready = true;
-      var q = new URLSearchParams(window.location.search);
-      var per = q.get(PARAM);
-      var pal = q.get('palace');
-      // 沒帶週期參數 → 留在 module 目前的起始畫面（清單 / intro），只登記瀏覽紀錄
-      if (per == null || per === '') {
-        var here = stateNow() || { view: LIST_VIEW, period: null, palace: null };
-        history.replaceState({ v2: here }, '', urlOf(here));
-        lastKey = keyOf(here);
-        return;
-      }
-      var pNum = /^\d+$/.test(per) ? parseInt(per, 10) : per;
-      var want = { view: (pal && ORDER.indexOf(pal) !== -1) ? 'view-detail' : 'view-hub', period: pNum, palace: (pal && ORDER.indexOf(pal) !== -1) ? pal : null };
-      applying = true;
-      apply(want).then(function () { settle(want); }, function () { applying = false; });
-    }
-
-    /* 觀察 module 重建的區塊（首次載入、切換週期、語言切換都會重建）*/
-    if (grid) new MutationObserver(function (muts) {
-      var rebuilt = muts.some(function (m) {
-        return Array.prototype.some.call(m.addedNodes, function (n) { return n.classList && n.classList.contains('palace-card'); });
-      });
-      if (!rebuilt) return;
-      decorateHub();
-      renderPreview();
-      buildSwitcher();
-      // 同一畫面內切換週期（monthly 的月份切換）不會改 view，也要記入瀏覽紀錄
-      queueSync();
-    }).observe(grid, { childList: true });
-    if (listGrid) new MutationObserver(function () {
-      decorateList();
-      if (listGrid.children.length && FS() && isRoot(FS().currentView())) onListReady();
-    }).observe(listGrid, { childList: true });
-    if (titleEl) new MutationObserver(function () { markSelected(); queueSync(); }).observe(titleEl, { childList: true, characterData: true, subtree: true });
-    var views = document.querySelectorAll('.view');
-    for (var v = 0; v < views.length; v++) new MutationObserver(function () {
-      queueSync();
-      // 清單畫面首次出現（空清單時 listGrid 不會有子元素）→ 也視為就緒
-      if (!ready && FS() && isRoot(FS().currentView())) onListReady();
-    }).observe(views[v], { attributes: true, attributeFilter: ['class'] });
-    onScroll();
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
-})();
+/* ── §7 減少動態 ── */
+@media (prefers-reduced-motion: reduce) {
+  body.fs-v2 *,
+  body.fs-v2 *::before,
+  body.fs-v2 *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
