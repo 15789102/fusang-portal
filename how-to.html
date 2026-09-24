@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta charset="UTF-8">
 <script src="config.js"></script>
 <script src="i18n.js"></script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>怎麼使用 FuSang - FuSang Vision</title>
 <script>
@@ -12,103 +12,149 @@
   //     一律使用 i18n.js 共用區 navChart / navDecade / navAnnual / navMonthly / navCharts
   //     的「現值」,不自創別名(例:nav 現值為「大限」,不可寫成「大限盤」)。
   //     日後若共用區那些 key 的值有變動,本檔對應字串必須同步更新。
+  //   ⚠ 流月用語對齊 monthly.html：「開啟每月流月」(mo.enableTitle)、「追蹤議題解析」(mo.personalTitle)。
   //   裝飾性英文 eyebrow 刻意保留靜態(比照 support.html)。
+  //   2026-09-24 v2 改版：內容對齊現行流程(生成時間/寄信/兩段式宮位/追蹤議題/農曆適用日期)+ 第三步。
   window.FSI18N.addUI({
     'ht.docTitle': { 'zh-TW': '怎麼使用 FuSang - FuSang Vision', 'zh-CN': '如何使用 FuSang - FuSang Vision', 'en': 'How to Use FuSang - FuSang Vision' },
     'ht.title':    { 'zh-TW': '怎麼使用 FuSang', 'zh-CN': '如何使用 FuSang', 'en': 'How to Use FuSang' },
-    'ht.sub':      { 'zh-TW': 'FuSang 提供四層報告：本命、大限、流年、流月。這頁說明怎麼一步步使用。', 'zh-CN': 'FuSang 提供四层报告：本命、大限、流年、流月。这页说明怎么一步步使用。', 'en': 'FuSang offers four layers of reading: Natal, Decade, Annual, and Monthly. Here\u2019s how to use each step.' },
+    'ht.sub':      { 'zh-TW': 'FuSang 提供四層報告：本命、大限、流年、流月。這頁說明怎麼一步步使用。', 'zh-CN': 'FuSang 提供四层报告：本命、大限、流年、流月。这页说明怎么一步步使用。', 'en': 'FuSang offers four layers of reading: Natal, Decade, Annual, and Monthly. This page walks you through each step.' },
 
     // ── 順序規則帶 ──
     'ht.ruleLabel': { 'zh-TW': '順序', 'zh-CN': '顺序', 'en': 'Order' },
-    'ht.rule':      { 'zh-TW': '使用上只有一個順序——先完成本命盤，其餘三層才能開啟；本命完成後，大限、流年、流月可以同時開啟，不必照順序。', 'zh-CN': '使用上只有一个顺序——先完成本命盘，其余三层才能开启；本命完成后，大限、流年、流月可以同时开启，不必按顺序。', 'en': 'There\u2019s only one rule of order \u2014 complete your Natal chart first, and the other three unlock. Once your Natal chart is ready, Decade, Annual, and Monthly can all be opened at once, in any order.' },
+    'ht.rule':      { 'zh-TW': '使用上只有一個順序：先完成本命盤，其餘三層才能開啟。本命完成後，大限、流年、流月可以同時開啟，不必照順序。', 'zh-CN': '使用上只有一个顺序：先完成本命盘，其余三层才能开启。本命完成后，大限、流年、流月可以同时开启，不必按顺序。', 'en': 'There is only one rule of order. Complete your Natal chart first, and the other three unlock. After that, Decade, Annual, and Monthly can all be opened at once, in any order.' },
 
     // ── 第一步 ──
     'ht.s1Label':    { 'zh-TW': '第一步', 'zh-CN': '第一步', 'en': 'Step 1' },
     'ht.s1Title':    { 'zh-TW': '生成並查看你的本命盤', 'zh-CN': '生成并查看你的本命盘', 'en': 'Generate and read your Natal chart' },
-    'ht.s1Body':     { 'zh-TW': '填寫出生資料（日期、時間、地點）後，系統會生成你的本命盤。本命盤的生成需要約 20 分鐘，完成後就可以開始查看。', 'zh-CN': '填写出生资料（日期、时间、地点）后，系统会生成你的本命盘。本命盘的生成需要约 20 分钟，完成后就可以开始查看。', 'en': 'After you enter your birth details (date, time, place), the system generates your Natal chart. Generating the Natal chart takes about 20 minutes; once it\u2019s ready, you can start reading.' },
+    'ht.s1Body':     { 'zh-TW': '填寫出生資料（日期、時間、地點）後，系統會生成你的本命盤，約需 15–20 分鐘。完成後我們會寄信通知你，就可以開始查看。', 'zh-CN': '填写出生资料（日期、时间、地点）后，系统会生成你的本命盘，约需 15–20 分钟。完成后我们会寄信通知你，就可以开始查看。', 'en': 'After you enter your birth details (date, time, and place), the system generates your Natal chart. This takes about 15 to 20 minutes. We will email you when it is ready, and you can start reading.' },
     'ht.s1HowLabel': { 'zh-TW': '查看方式', 'zh-CN': '查看方式', 'en': 'How to view it' },
     'ht.s1How1':     { 'zh-TW': '在上方導覽列打開「命盤」選單', 'zh-CN': '在上方导航栏打开「命盘」菜单', 'en': 'Open the Charts menu in the top navigation' },
     'ht.s1How2':     { 'zh-TW': '命盤 → 本命盤', 'zh-CN': '命盘 → 本命盘', 'en': 'Charts → Natal' },
-    'ht.s1How3':     { 'zh-TW': '點擊每個宮位，就能看到該宮位的解讀', 'zh-CN': '点击每个宫位，就能看到该宫位的解读', 'en': 'Click any palace to see its reading' },
+    'ht.s1How3':     { 'zh-TW': '點擊宮位，命盤中間會先顯示該宮位的摘要', 'zh-CN': '点击宫位，命盘中间会先显示该宫位的摘要', 'en': 'Click a palace, and its summary appears in the center of the chart' },
+    'ht.s1How4':     { 'zh-TW': '再從摘要進入該宮位的完整解讀', 'zh-CN': '再从摘要进入该宫位的完整解读', 'en': 'From the summary, open the full reading for that palace' },
     'ht.s1Foot':     { 'zh-TW': '本命盤是一切的基礎，也是解鎖其餘三層的第一步。', 'zh-CN': '本命盘是一切的基础，也是解锁其余三层的第一步。', 'en': 'The Natal chart is the foundation of everything, and the first step to unlocking the other three layers.' },
 
     // ── 第二步 ──
     'ht.s2Label': { 'zh-TW': '第二步', 'zh-CN': '第二步', 'en': 'Step 2' },
     'ht.s2Title': { 'zh-TW': '開啟大限、流年、流月', 'zh-CN': '开启大限、流年、流月', 'en': 'Open Decade, Annual, and Monthly' },
-    'ht.s2Body':  { 'zh-TW': '本命盤完成後，「命盤」選單會出現其餘三層的入口——這是很多人容易錯過的地方：如果你只看了本命，別忘了還有三層可以開啟。而且這三層可以同時開啟，不必照順序。', 'zh-CN': '本命盘完成后，「命盘」菜单会出现其余三层的入口——这是很多人容易错过的地方：如果你只看了本命，别忘了还有三层可以开启。而且这三层可以同时开启，不必按顺序。', 'en': 'Once your Natal chart is complete, the Charts menu reveals the other three layers \u2014 this is where many people miss out: if you\u2019ve only read your Natal chart, don\u2019t forget there are three more layers to open. And these three can be opened at the same time, in any order.' },
+    'ht.s2Body':  { 'zh-TW': '本命盤完成後，「命盤」選單會出現其餘三層的入口。這是很多人容易錯過的地方：如果你只看了本命，別忘了還有三層可以開啟，而且可以同時開啟，不必照順序。', 'zh-CN': '本命盘完成后，「命盘」菜单会出现其余三层的入口。这是很多人容易错过的地方：如果你只看了本命，别忘了还有三层可以开启，而且可以同时开启，不必按顺序。', 'en': 'Once your Natal chart is complete, the Charts menu shows the other three layers. Many people miss this step. If you have only read your Natal chart, there are three more layers waiting, and you can open them all at once, in any order.' },
 
     // ── 三層卡片(名稱與路徑必須等同 nav 現值,見檔頭警告)──
     'ht.lyDecadeName': { 'zh-TW': '大限', 'zh-CN': '大限', 'en': 'Decade' },
     'ht.lyDecadePath': { 'zh-TW': '命盤 → 大限', 'zh-CN': '命盘 → 大限', 'en': 'Charts → Decade' },
-    'ht.lyDecadeBody': { 'zh-TW': '在「命盤」選單點擊大限，開啟每個十年的解讀，看見你人生不同十年階段的重心與節奏。', 'zh-CN': '在「命盘」菜单点击大限，开启每个十年的解读，看见你人生不同十年阶段的重心与节奏。', 'en': 'Open Charts → Decade to open the reading for each ten-year period, and see the focus and rhythm of the different decades of your life.' },
+    'ht.lyDecadeBody': { 'zh-TW': '開啟每個十年的解讀，看見你人生不同十年階段的重心與節奏。', 'zh-CN': '开启每个十年的解读，看见你人生不同十年阶段的重心与节奏。', 'en': 'Open the reading for each ten-year period, and see the focus and rhythm of each decade of your life.' },
 
     'ht.lyAnnualName': { 'zh-TW': '流年', 'zh-CN': '流年', 'en': 'Annual' },
     'ht.lyAnnualPath': { 'zh-TW': '命盤 → 流年', 'zh-CN': '命盘 → 流年', 'en': 'Charts → Annual' },
-    'ht.lyAnnualBody': { 'zh-TW': '在「命盤」選單點擊流年，開啟當前年度的解讀，看見這一年哪些領域比較活躍、重心落在哪裡。', 'zh-CN': '在「命盘」菜单点击流年，开启当前年度的解读，看见这一年哪些领域比较活跃、重心落在哪里。', 'en': 'Open Charts → Annual to open the reading for the current year, and see which areas are more active this year and where the focus lies.' },
+    'ht.lyAnnualBody': { 'zh-TW': '開啟當前年度的解讀，看見這一年哪些領域比較活躍、重心落在哪裡。', 'zh-CN': '开启当前年度的解读，看见这一年哪些领域比较活跃、重心落在哪里。', 'en': 'Open the reading for the current year, and see which areas are more active and where the focus lies.' },
 
     'ht.lyMonthlyName': { 'zh-TW': '流月', 'zh-CN': '流月', 'en': 'Monthly' },
     'ht.lyMonthlyTag':  { 'zh-TW': '最重要', 'zh-CN': '最重要', 'en': 'Most important' },
     'ht.lyMonthlyPath': { 'zh-TW': '命盤 → 流月', 'zh-CN': '命盘 → 流月', 'en': 'Charts → Monthly' },
-    'ht.lyMonthlyBody': { 'zh-TW': '在「命盤」選單點擊流月——這是最個人化的一層。開啟流月後，每個月 1 號會為你生成新的解讀，針對你的命盤看見當月的重心；解鎖四化後，流月同樣包含完整的四化解讀。你還可以留下一個問題，讓每月的解讀持續追蹤它。', 'zh-CN': '在「命盘」菜单点击流月——这是最个人化的一层。开启流月后，每个月 1 号会为你生成新的解读，针对你的命盘看见当月的重心；解锁四化后，流月同样包含完整的四化解读。你还可以留下一个问题，让每月的解读持续追踪它。', 'en': 'Open Charts → Monthly. This is the most personal layer. Once you turn it on, a new reading tailored to your chart is generated on the 1st of each month, showing where that month is focused. After unlocking the four transformations, Monthly includes the full transformation reading too. You can also leave one question for the monthly readings to keep tracking over time.' }
+    'ht.lyMonthlyBody': { 'zh-TW': '這是最個人化的一層。開啟每月流月後，每月 1 號會為你生成新一期的解讀並寄到你的信箱，看見當月的重心；解鎖四化後，流月同樣包含完整的四化解讀。你也可以為宮位設定想追蹤的議題，每期的「追蹤議題解析」會持續回應它。', 'zh-CN': '这是最个人化的一层。开启每月流月后，每月 1 号会为你生成新一期的解读并寄到你的邮箱，看见当月的重心；解锁四化后，流月同样包含完整的四化解读。你也可以为宫位设定想追踪的议题，每期的「追踪议题解析」会持续回应它。', 'en': 'This is the most personal layer. Once you turn on monthly readings, a new reading is generated on the 1st of each month and sent to your inbox, showing where that month is focused. After unlocking the four transformations, Monthly includes the full transformation reading too. You can also set a focus you want to track for a palace, and each issue of Your Tracked Focus will keep responding to it.' },
+    'ht.lyMonthlyNote': { 'zh-TW': '流月依農曆月份計算，所以每期的適用期間不會剛好是國曆的 1 號到月底。流月頁上會標出實際適用的國曆日期。', 'zh-CN': '流月依农历月份计算，所以每期的适用期间不会刚好是公历的 1 号到月底。流月页上会标出实际适用的公历日期。', 'en': 'Monthly readings follow the lunar calendar, so each period does not run exactly from the 1st to the end of a calendar month. The Monthly page shows the exact dates each reading covers.' },
+
+    // ── 第三步：更進一步 ──
+    'ht.s3Label': { 'zh-TW': '第三步', 'zh-CN': '第三步', 'en': 'Step 3' },
+    'ht.s3Title': { 'zh-TW': '更進一步', 'zh-CN': '更进一步', 'en': 'Go further' },
+    'ht.s3Body':  { 'zh-TW': '四層都看過之後，如果想看得更完整，或有一個想慎重處理的問題，可以從這裡開始。', 'zh-CN': '四层都看过之后，如果想看得更完整，或有一个想慎重处理的问题，可以从这里开始。', 'en': 'After reading all four layers, start here if you want the complete picture, or if you have one question that deserves careful attention.' },
+    'ht.xSihuaName':  { 'zh-TW': '解鎖四化', 'zh-CN': '解锁四化', 'en': 'Unlock the four transformations' },
+    'ht.xSihuaBody':  { 'zh-TW': '一次解鎖，本命、大限、流年、流月都會加上四化解讀，看懂能量如何流動、該往哪裡使力。', 'zh-CN': '一次解锁，本命、大限、流年、流月都会加上四化解读，看懂能量如何流动、该往哪里使力。', 'en': 'One unlock adds the transformation reading to Natal, Decade, Annual, and Monthly, so you can see how your energy moves and where to put your effort.' },
+    'ht.xSihuaCta':   { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans' },
+    'ht.xSihuaOwned': { 'zh-TW': '你已解鎖全部四化，四層報告都已包含四化解讀。', 'zh-CN': '你已解锁全部四化，四层报告都已包含四化解读。', 'en': 'You have unlocked all four transformations. Every layer already includes them.' },
+    'ht.xConsultName': { 'zh-TW': '單獨問事', 'zh-CN': '单独问事', 'en': 'Individual Session' },
+    'ht.xConsultBody': { 'zh-TW': '選定主題、說明處境，由 R.S. Chen 親自解讀你的命盤並書面回覆，收到回覆後 7 天內可追問一次。', 'zh-CN': '选定主题、说明处境，由 R.S. Chen 亲自解读你的命盘并书面回复，收到回复后 7 天内可追问一次。', 'en': 'Choose a topic and describe your situation. R.S. Chen reads your chart personally and replies in writing, and you may ask one follow-up within 7 days.' },
+    'ht.xConsultCta':  { 'zh-TW': '前往問事', 'zh-CN': '前往问事', 'en': 'Go to consultation' }
   });
 </script>
+<link rel="stylesheet" href="fs-v2.css" />
 <style>
-  .ht-wrap { max-width: 760px; margin: 0 auto; padding: 44px 32px 64px; }
-  @media (max-width: 640px) { .ht-wrap { padding: 32px 20px 48px; } }
+  /* ════════ how-to（v2）— 版型比照 support.html：橫幅 + 左標籤右內容的分區 ════════ */
+  body.howto-page.fs-v2 { background: #ffffff; }
+  .fs-v2 .ht-wrap { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 32px 0 96px; }
 
-  .ht-hero { text-align: center; margin-bottom: 40px; }
-  .ht-eyebrow { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.75; margin-bottom: 14px; }
-  .ht-title { font-family: var(--font-serif-zh); font-weight: 700; font-size: clamp(30px, 5vw, 44px); color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 14px; }
-  .ht-sub { font-family: var(--font-serif-zh); font-size: 15px; color: var(--ink-mid); line-height: 1.8; max-width: 520px; margin: 0 auto; }
+  /* 橫幅 */
+  .fs-v2 .ht-hero {
+    position: relative; min-height: 179px; margin: 0 0 32px; padding: 32px; overflow: hidden;
+    background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  }
+  .fs-v2 .ht-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .ht-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .ht-sub { max-width: 640px; margin: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; color: var(--v2-muted); }
 
-  /* ── 順序規則帶 ── */
-  .ht-rule { display: flex; align-items: flex-start; gap: 16px; padding: 22px 26px; background: var(--bg-soft-2); border-radius: 14px; margin-bottom: 40px; }
-  .ht-rule-label { flex: 0 0 auto; font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.85; padding-top: 4px; }
-  .ht-rule-text { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-dark); }
-  @media (max-width: 640px) { .ht-rule { flex-direction: column; gap: 8px; padding: 20px; } .ht-rule-label { padding-top: 0; } }
+  /* 順序規則：淡藍提示 */
+  .fs-v2 .ht-rule { display: grid; grid-template-columns: 240px minmax(0, 1fr); column-gap: 48px; margin: 0 0 32px; padding: 20px 24px; background: var(--v2-tint); border-left: 2px solid var(--v2-blue); }
+  .fs-v2 .ht-rule-label { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; font-weight: 600; color: var(--v2-blue); }
+  .fs-v2 .ht-rule-text { font-family: var(--v2-font-cjk); font-size: 15px; line-height: 26px; color: var(--v2-ink); }
 
-  /* ── 步驟卡 ── */
-  .ht-steps { display: flex; flex-direction: column; gap: 20px; }
-  .ht-step { background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; padding: 28px 30px; }
-  @media (max-width: 640px) { .ht-step { padding: 24px 20px; } }
-  .ht-step-label { font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-soft); opacity: 0.85; margin-bottom: 10px; }
-  .ht-step-title { font-family: var(--font-serif-zh); font-size: 19px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.02em; margin-bottom: 14px; }
-  .ht-step-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-mid); }
+  /* 分區：左 步驟 ｜ 右 內容 */
+  .fs-v2 .ht-step { display: grid; grid-template-columns: 240px minmax(0, 1fr); column-gap: 48px; padding: 32px 0; border-top: 1px solid var(--v2-line); }
+  .fs-v2 .ht-step:last-child { border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .ht-step-side { margin: 0; }
+  .fs-v2 .ht-step-n { display: block; font-family: var(--v2-font-latin); font-size: 28px; line-height: 36px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .ht-step-label { display: block; margin-top: 4px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; color: var(--v2-muted); }
+  .fs-v2 .ht-step-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 22px; line-height: 34px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .ht-step-body { max-width: 760px; margin: 0; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-muted); }
 
-  /* ── 查看方式清單 ── */
-  .ht-how { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--rule-soft-2); }
-  .ht-how-label { font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 14px; }
-  .ht-how-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
-  .ht-how-list li { display: flex; align-items: flex-start; gap: 12px; font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.8; color: var(--ink-mid); }
-  .ht-how-n { flex: 0 0 auto; width: 21px; height: 21px; margin-top: 2px; border-radius: 50%; background: var(--bg-soft); color: var(--accent-soft); font-family: var(--font-sans); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  /* 查看方式 */
+  .fs-v2 .ht-how { margin: 24px 0 0; max-width: 760px; }
+  .fs-v2 .ht-how-label { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; font-weight: 600; color: var(--v2-ink); }
+  .fs-v2 .ht-how-list { list-style: none; margin: 0; padding: 0; }
+  .fs-v2 .ht-how-list li { display: grid; grid-template-columns: 32px minmax(0, 1fr); align-items: baseline; padding: 12px 0; border-top: 1px solid var(--v2-line-soft); font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; color: var(--v2-ink); }
+  .fs-v2 .ht-how-list li:last-child { border-bottom: 1px solid var(--v2-line-soft); }
+  .fs-v2 .ht-how-n { font-family: var(--v2-font-latin); font-size: 14px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .ht-step-foot { max-width: 760px; margin: 20px 0 0; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 26px; color: var(--v2-ink); }
 
-  .ht-step-foot { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule-soft-2); font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.85; color: var(--ink-dark); }
+  /* 三層 / 更進一步：格線卡 */
+  .fs-v2 .ht-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 24px 0 0; padding: 1px 0 0 1px; }
+  .fs-v2 .ht-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fs-v2 .ht-card { position: relative; display: flex; flex-direction: column; margin: -1px 0 0 -1px; padding: 24px; background: #ffffff; border: 1px solid var(--v2-line); }
+  .fs-v2 .ht-card.is-key { z-index: 1; background: var(--v2-tint); border-color: var(--v2-blue-line); }
+  .fs-v2 .ht-card-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0 0 4px; }
+  .fs-v2 .ht-card-name { font-family: var(--v2-font-cjk); font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .ht-card-tag { padding: 2px 8px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 18px; color: #ffffff; background: var(--v2-blue); }
+  .fs-v2 .ht-card-path { display: block; margin: 0 0 12px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 20px; color: var(--v2-faint); }
+  .fs-v2 .ht-card-body { margin: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; color: var(--v2-muted); }
+  .fs-v2 .ht-card-note { margin: 16px 0 0; padding: 12px 0 0; border-top: 1px solid var(--v2-blue-line); font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-ink); }
+  .fs-v2 .ht-card-act { margin-top: auto; padding-top: 20px; }
+  .fs-v2 .ht-card-act .v2-btn { text-decoration: none; }
+  .fs-v2 .ht-card-owned { margin: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .ht-card-soon { display: inline-block; padding: 4px 10px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 20px; color: var(--v2-blue); border: 1px solid var(--v2-blue-line); background: var(--v2-tint); }
 
-  /* ── 三層卡片 ── */
-  .ht-layers { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
-  .ht-layer { border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; background: var(--bg-card); }
-  .ht-layer.is-key { border-color: var(--accent-pale); background: linear-gradient(180deg, var(--wash-teal) 0%, #ffffff 60%); }
-  .ht-layer-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
-  .ht-layer-name { font-family: var(--font-serif-zh); font-size: 16px; font-weight: 600; color: var(--ink-darkest); letter-spacing: 0.03em; }
-  .ht-layer-tag { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold-soft); border-radius: 999px; padding: 3px 9px; }
-  .ht-layer-path { font-family: var(--font-sans); font-size: 11.5px; letter-spacing: 0.06em; color: var(--silver-deep); background: var(--bg-soft); border-radius: 999px; padding: 4px 11px; }
-  .ht-layer-body { font-family: var(--font-serif-zh); font-size: 14.5px; line-height: 1.9; color: var(--ink-mid); }
+  @media (max-width: 1099px) {
+    .fs-v2 .ht-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 799px) {
+    .fs-v2 .ht-wrap { padding-top: 16px; }
+    .fs-v2 .ht-hero { padding: 24px; min-height: 169px; background-position: 60% center; }
+    .fs-v2 .ht-title { font-size: 28px; line-height: 42px; }
+    .fs-v2 .ht-sub { font-size: 14px; line-height: 24px; }
+    .fs-v2 .ht-rule { grid-template-columns: minmax(0, 1fr); row-gap: 4px; padding: 16px 20px; }
+    .fs-v2 .ht-step { grid-template-columns: minmax(0, 1fr); padding: 24px 0; }
+    .fs-v2 .ht-step-side { display: flex; align-items: baseline; gap: 12px; margin: 0 0 8px; }
+    .fs-v2 .ht-step-n { font-size: 22px; line-height: 30px; }
+    .fs-v2 .ht-step-label { margin: 0; }
+    .fs-v2 .ht-step-title { font-size: 20px; line-height: 30px; }
+    .fs-v2 .ht-card { padding: 20px; }
+    .fs-v2 .ht-card-act .v2-btn { width: 100%; }
+  }
 </style>
 </head>
 
-<body>
+<body class="howto-page fs-v2">
 
 <script>window.FS_ACTIVE_PAGE = 'howto';</script>
 
 <div id="site-header"></div>
 
-<div class="fs-page">
+<main class="fs-page" id="fs-main" tabindex="-1">
   <div class="ht-wrap">
 
     <div class="ht-hero">
-      <div class="ht-eyebrow">How to Use</div>
-      <h1 class="ht-title" data-i18n="ht.title"></h1>
-      <div class="ht-sub" data-i18n="ht.sub"></div>
+      <p class="ht-eyebrow">How to Use</p>
+      <h1 class="ht-title" data-i18n="ht.title">怎麼使用 FuSang</h1>
+      <p class="ht-sub" data-i18n="ht.sub"></p>
     </div>
 
     <div class="ht-rule">
@@ -119,80 +165,123 @@
     <div class="ht-steps">
 
       <!-- 第一步 -->
-      <section class="ht-step">
-        <div class="ht-step-label" data-i18n="ht.s1Label"></div>
-        <h2 class="ht-step-title" data-i18n="ht.s1Title"></h2>
-        <div class="ht-step-body" data-i18n="ht.s1Body"></div>
-
-        <div class="ht-how">
-          <div class="ht-how-label" data-i18n="ht.s1HowLabel"></div>
-          <ul class="ht-how-list">
-            <li><span class="ht-how-n">1</span><span data-i18n="ht.s1How1"></span></li>
-            <li><span class="ht-how-n">2</span><span data-i18n="ht.s1How2"></span></li>
-            <li><span class="ht-how-n">3</span><span data-i18n="ht.s1How3"></span></li>
-          </ul>
+      <section class="ht-step" aria-labelledby="ht-s1-title">
+        <p class="ht-step-side"><span class="ht-step-n">01</span><span class="ht-step-label" data-i18n="ht.s1Label"></span></p>
+        <div>
+          <h2 class="ht-step-title" id="ht-s1-title" data-i18n="ht.s1Title"></h2>
+          <p class="ht-step-body" data-i18n="ht.s1Body"></p>
+          <div class="ht-how">
+            <h3 class="ht-how-label" data-i18n="ht.s1HowLabel"></h3>
+            <ol class="ht-how-list">
+              <li><span class="ht-how-n">1</span><span data-i18n="ht.s1How1"></span></li>
+              <li><span class="ht-how-n">2</span><span data-i18n="ht.s1How2"></span></li>
+              <li><span class="ht-how-n">3</span><span data-i18n="ht.s1How3"></span></li>
+              <li><span class="ht-how-n">4</span><span data-i18n="ht.s1How4"></span></li>
+            </ol>
+          </div>
+          <p class="ht-step-foot" data-i18n="ht.s1Foot"></p>
         </div>
-
-        <div class="ht-step-foot" data-i18n="ht.s1Foot"></div>
       </section>
 
       <!-- 第二步 -->
-      <section class="ht-step">
-        <div class="ht-step-label" data-i18n="ht.s2Label"></div>
-        <h2 class="ht-step-title" data-i18n="ht.s2Title"></h2>
-        <div class="ht-step-body" data-i18n="ht.s2Body"></div>
-
-        <div class="ht-layers">
-
-          <div class="ht-layer">
-            <div class="ht-layer-head">
-              <span class="ht-layer-name" data-i18n="ht.lyDecadeName"></span>
-              <span class="ht-layer-path" data-i18n="ht.lyDecadePath"></span>
+      <section class="ht-step" aria-labelledby="ht-s2-title">
+        <p class="ht-step-side"><span class="ht-step-n">02</span><span class="ht-step-label" data-i18n="ht.s2Label"></span></p>
+        <div>
+          <h2 class="ht-step-title" id="ht-s2-title" data-i18n="ht.s2Title"></h2>
+          <p class="ht-step-body" data-i18n="ht.s2Body"></p>
+          <div class="ht-grid">
+            <div class="ht-card">
+              <div class="ht-card-head"><h3 class="ht-card-name" data-i18n="ht.lyDecadeName"></h3></div>
+              <span class="ht-card-path" data-i18n="ht.lyDecadePath"></span>
+              <p class="ht-card-body" data-i18n="ht.lyDecadeBody"></p>
             </div>
-            <div class="ht-layer-body" data-i18n="ht.lyDecadeBody"></div>
-          </div>
-
-          <div class="ht-layer">
-            <div class="ht-layer-head">
-              <span class="ht-layer-name" data-i18n="ht.lyAnnualName"></span>
-              <span class="ht-layer-path" data-i18n="ht.lyAnnualPath"></span>
+            <div class="ht-card">
+              <div class="ht-card-head"><h3 class="ht-card-name" data-i18n="ht.lyAnnualName"></h3></div>
+              <span class="ht-card-path" data-i18n="ht.lyAnnualPath"></span>
+              <p class="ht-card-body" data-i18n="ht.lyAnnualBody"></p>
             </div>
-            <div class="ht-layer-body" data-i18n="ht.lyAnnualBody"></div>
-          </div>
-
-          <div class="ht-layer is-key">
-            <div class="ht-layer-head">
-              <span class="ht-layer-name" data-i18n="ht.lyMonthlyName"></span>
-              <span class="ht-layer-tag" data-i18n="ht.lyMonthlyTag"></span>
-              <span class="ht-layer-path" data-i18n="ht.lyMonthlyPath"></span>
+            <div class="ht-card is-key">
+              <div class="ht-card-head">
+                <h3 class="ht-card-name" data-i18n="ht.lyMonthlyName"></h3>
+                <span class="ht-card-tag" data-i18n="ht.lyMonthlyTag"></span>
+              </div>
+              <span class="ht-card-path" data-i18n="ht.lyMonthlyPath"></span>
+              <p class="ht-card-body" data-i18n="ht.lyMonthlyBody"></p>
+              <p class="ht-card-note" data-i18n="ht.lyMonthlyNote"></p>
             </div>
-            <div class="ht-layer-body" data-i18n="ht.lyMonthlyBody"></div>
           </div>
+        </div>
+      </section>
 
+      <!-- 第三步：更進一步 -->
+      <section class="ht-step" aria-labelledby="ht-s3-title">
+        <p class="ht-step-side"><span class="ht-step-n">03</span><span class="ht-step-label" data-i18n="ht.s3Label"></span></p>
+        <div>
+          <h2 class="ht-step-title" id="ht-s3-title" data-i18n="ht.s3Title"></h2>
+          <p class="ht-step-body" data-i18n="ht.s3Body"></p>
+          <div class="ht-grid ht-grid--2">
+            <div class="ht-card" id="ht-x-sihua">
+              <div class="ht-card-head"><h3 class="ht-card-name" data-i18n="ht.xSihuaName"></h3></div>
+              <p class="ht-card-body" data-i18n="ht.xSihuaBody"></p>
+              <div class="ht-card-act" id="ht-sihua-act">
+                <a class="v2-btn v2-btn--secondary" href="pricing.html" data-i18n="ht.xSihuaCta"></a>
+              </div>
+              <div class="ht-card-act" id="ht-sihua-owned" hidden>
+                <p class="ht-card-owned" data-i18n="ht.xSihuaOwned"></p>
+              </div>
+            </div>
+            <div class="ht-card" id="ht-x-consult">
+              <div class="ht-card-head"><h3 class="ht-card-name" data-i18n="ht.xConsultName"></h3></div>
+              <p class="ht-card-body" data-i18n="ht.xConsultBody"></p>
+              <div class="ht-card-act" id="ht-consult-act" hidden>
+                <a class="v2-btn v2-btn--secondary" href="consultation.html" data-i18n="ht.xConsultCta"></a>
+              </div>
+              <div class="ht-card-act" id="ht-consult-soon" hidden>
+                <span class="ht-card-soon" data-i18n="navComingSoon"></span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
     </div>
   </div>
-</div>
+</main>
 
 <div id="site-footer"></div>
 
 <script type="module">
   // 純說明頁:不呼叫 requireAuth(PM 決策 D4,未登入可直達;供 Brevo 再行銷信連入)。
-  // 僅以 side-effect import 觸發 components.js 的 initComponents(header / footer / 背景層)。
-  import './components.js';
+  import { supabase, getSession } from './components.js';
 
   const F = window.FSI18N;
 
-  // 靜態內容(data-i18n)由 i18n.js 的 applyI18n 自動填入與重譯;
-  // 此處只補非 data-i18n 的 document.title。
-  function applyLangUi() {
-    document.title = F.t('ht.docTitle');
-  }
+  // 靜態內容(data-i18n)由 i18n.js 的 applyI18n 自動填入與重譯;此處只補 document.title。
+  function applyLangUi() { document.title = F.t('ht.docTitle'); }
   applyLangUi();
   document.addEventListener('DOMContentLoaded', applyLangUi);
   window.addEventListener('i18n:changed', applyLangUi);
+
+  // 單獨問事：CONSULT_ENABLED 明確為 true 才顯示入口，否則顯示「即將推出」(fail-closed)
+  const consultOn = !!(window.CFG && window.CFG.CONSULT_ENABLED === true);
+  document.getElementById(consultOn ? 'ht-consult-act' : 'ht-consult-soon').hidden = false;
+
+  // 四化：已登入且已解鎖 → 改顯示說明。只讀；未登入或讀取失敗 → 維持「查看方案」。
+  (async () => {
+    try {
+      const session = await getSession();
+      if (!session) return;
+      const { data, error } = await supabase
+        .from('user_profiles').select('sihua_unlocked')
+        .eq('id', session.user.id).maybeSingle();
+      if (!error && data && data.sihua_unlocked === true) {
+        document.getElementById('ht-sihua-act').hidden = true;
+        document.getElementById('ht-sihua-owned').hidden = false;
+      }
+    } catch (e) {
+      console.warn('[how-to] sihua check skipped:', e?.message || e);
+    }
+  })();
 </script>
 
 </body>
