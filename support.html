@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta charset="UTF-8">
 <script src="config.js"></script>
 <script src="i18n.js"></script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>支援 - FuSang Vision</title>
+<link rel="stylesheet" href="fs-v2.css" />
 <style>
   .sup-wrap { max-width: 760px; margin: 0 auto; padding: 44px 32px 64px; }
   @media (max-width: 640px) { .sup-wrap { padding: 32px 20px 48px; } }
@@ -30,10 +31,60 @@
   .sup-contact-mail:hover { border-color: var(--accent-soft); }
 
   .sup-loading { text-align: center; padding: 60px 20px; font-family: var(--font-serif-zh); color: var(--ink-light); }
+
+  /* ════════════════════════════════════════════════════════════════
+     ▼ v2 視覺層（設計師 v1.0 語彙）— 以下全部限定 .fs-v2
+     ════════════════════════════════════════════════════════════════ */
+  body.support-page.fs-v2 { background: #ffffff; }
+  .fs-v2 .sup-wrap { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 32px 0 96px; }
+  .fs-v2 .sup-hero {
+    position: relative; min-height: 179px; margin: 0 0 40px; padding: 32px; overflow: hidden; text-align: left;
+    background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  }
+  .fs-v2 .sup-eyebrow { margin: 0 0 8px; opacity: 1; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .sup-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .sup-sub { max-width: 640px; margin: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; letter-spacing: 0; color: var(--v2-muted); }
+
+  /* 常見問題：左 區段名稱 ｜ 右 題目列（與帳戶頁同一套分區語彙）*/
+  .fs-v2 .sup-section { display: grid; grid-template-columns: 240px minmax(0, 1fr); column-gap: 48px; padding: 32px 0; border-top: 1px solid var(--v2-line); }
+  .fs-v2 .sup-section:last-child { border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .sup-section-label { margin: 0; font-family: var(--v2-font-cjk); font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .sup-faq { gap: 0; }
+  .fs-v2 .faq-item { background: transparent; border: 0; border-bottom: 1px solid var(--v2-line-soft); border-radius: 0; }
+  .fs-v2 .faq-item:first-child .faq-q { padding-top: 0; }
+  .fs-v2 .faq-item:last-child { border-bottom: 0; }
+  .fs-v2 .faq-q {
+    width: 100%; padding: 18px 0; margin: 0; background: none; border: 0; text-align: left; cursor: pointer;
+    font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink);
+  }
+  .fs-v2 .faq-q:hover { color: var(--v2-blue); }
+  .fs-v2 .faq-q:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+  .fs-v2 .faq-q .faq-ic { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.5; color: var(--v2-muted); }
+  .fs-v2 .faq-a-inner { max-width: 820px; padding: 0 0 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; letter-spacing: 0; color: var(--v2-muted); }
+
+  /* 聯絡我們 */
+  .fs-v2 .sup-contact { margin: 0; padding: 0; text-align: left; background: transparent; border-radius: 0; }
+  .fs-v2 .sup-contact-label { display: none; }
+  .fs-v2 .sup-contact-desc { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+  .fs-v2 .sup-contact-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .fs-v2 .sup-contact-mail { font-family: var(--v2-font-latin); font-size: 18px; line-height: 28px; color: var(--v2-ink); border-bottom: 1px solid var(--v2-ink); padding-bottom: 1px; }
+  .fs-v2 .sup-contact-mail:hover { color: var(--v2-blue); border-bottom-color: var(--v2-blue); }
+  .fs-v2 .sup-contact-btn { text-decoration: none; }
+
+  @media (max-width: 799px) {
+    .fs-v2 .sup-wrap { padding-top: 16px; }
+    .fs-v2 .sup-hero { padding: 24px; min-height: 169px; background-position: 60% center; }
+    .fs-v2 .sup-title { font-size: 28px; line-height: 42px; }
+    .fs-v2 .sup-sub { font-size: 14px; line-height: 24px; }
+    .fs-v2 .sup-section { grid-template-columns: minmax(0, 1fr); padding: 24px 0; }
+    .fs-v2 .sup-section-label { margin: 0 0 12px; font-size: 16px; line-height: 26px; }
+    .fs-v2 .sup-contact-btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .fs-v2 .faq-a { transition: none; } }
 </style>
 </head>
 
-<body>
+<body class="support-page fs-v2">
 
 <script>window.FS_ACTIVE_PAGE = 'support';</script>
 
@@ -47,12 +98,23 @@
       <div class="sup-sub" id="sup-sub">常見問題與聯絡方式。</div>
     </div>
 
-    <div class="sup-faq" id="sup-faq"></div>
+    <!-- v2：分區列（左 區段名稱 ｜ 右 內容）-->
+    <section class="sup-section">
+      <h2 class="sup-section-label" id="sup-faq-label">常見問題</h2>
+      <div class="sup-faq" id="sup-faq"></div>
+    </section>
 
-    <div class="sup-contact">
-      <div class="sup-contact-label" id="sup-contact-label">聯絡我們</div>
-      <a class="sup-contact-mail" href="mailto:support@fusang-vision.com">support@fusang-vision.com</a>
-    </div>
+    <section class="sup-section">
+      <h2 class="sup-section-label" id="sup-contact-title">聯絡我們</h2>
+      <div class="sup-contact">
+        <div class="sup-contact-label" id="sup-contact-label">聯絡我們</div>
+        <p class="sup-contact-desc" id="sup-contact-desc">找不到答案嗎？寫信給我們，我們會盡快回覆。</p>
+        <div class="sup-contact-row">
+          <a class="sup-contact-mail" href="mailto:support@fusang-vision.com">support@fusang-vision.com</a>
+          <a class="v2-btn v2-btn--secondary sup-contact-btn" id="sup-contact-btn" href="mailto:support@fusang-vision.com">寄信給我們</a>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -70,10 +132,10 @@
     {
       q_tw: '付款失敗或無法完成付款怎麼辦？',
       q_cn: '付款失败或无法完成付款怎么办？',
-      q_en: 'What if my payment fails or won\'t go through?',
+      q_en: 'What if my payment fails or does not go through?',
       a_tw: '若付款沒有成功，你的問事不會送出、也不會被扣款。請確認卡片資訊與額度後再試一次；若仍無法完成，來信 support@fusang-vision.com，我們會協助你。另提醒：單獨問事為數位定製服務，付款成功後恕不退款。',
       a_cn: '若付款没有成功，你的问事不会送出、也不会被扣款。请确认卡片信息与额度后再试一次；若仍无法完成，来信 support@fusang-vision.com，我们会协助你。另提醒：单独问事为数字定制服务，付款成功后恕不退款。',
-      a_en: 'If a payment doesn\'t go through, your question isn\'t submitted and you aren\'t charged. Check your card details and limit, then try again. If it still won\'t complete, email support@fusang-vision.com and we\'ll help. Note: a consultation is a bespoke digital service and is non-refundable once payment succeeds.',
+      a_en: 'If a payment does not go through, your question is not submitted and you are not charged. Check your card details and limit, then try again. If it still will not complete, email support@fusang-vision.com and we will help. Note: a consultation is a bespoke digital service and is non-refundable once payment succeeds.',
     },
     {
       q_tw: '這項服務能取代專業意見嗎？',
@@ -81,7 +143,7 @@
       q_en: 'Can this service replace professional advice?',
       a_tw: '不能。本服務僅提供紫微斗數命理解讀，不構成、也不能取代醫療、法律、財務或投資等專業建議。涉及專業判斷的事項，請諮詢相關領域的合格專業人士。我們陪你看見自己的天生特質與傾向，最終的決定與行動仍在你自己手上。',
       a_cn: '不能。本服务仅提供紫微斗数命理解读，不构成、也不能取代医疗、法律、财务或投资等专业建议。涉及专业判断的事项，请咨询相关领域的合格专业人士。我们陪你看见自己的天生特质与倾向，最终的决定与行动仍在你自己手上。',
-      a_en: 'No. This service offers Zi Wei Dou Shu interpretation only. It does not constitute, and cannot replace, medical, legal, financial, or investment advice. For anything requiring professional judgement, please consult a qualified professional in that field. We help you see your innate tendencies — the decisions and actions remain yours.',
+      a_en: 'No. This service offers Zi Wei Dou Shu interpretation only. It does not constitute, and cannot replace, medical, legal, financial, or investment advice. For anything requiring professional judgement, please consult a qualified professional in that field. We help you see your innate tendencies, and the decisions and actions remain yours.',
     },
     {
       q_tw: '回覆需要多久？可以追問嗎？',
@@ -89,7 +151,7 @@
       q_en: 'How long until I get a reply? Can I follow up?',
       a_tw: '付款後 7 天內，你會收到書面回覆並收到 Email 通知。收到回覆後，7 天內可針對原議題追問一次；追問回覆完成後，該諮詢即結案。',
       a_cn: '付款后 7 天内，你会收到书面回复并收到 Email 通知。收到回复后，7 天内可针对原议题追问一次；追问回复完成后，该咨询即结案。',
-      a_en: 'You\'ll receive a written reply within 7 days of payment, with an email notification. After the reply, you may ask one follow-up on the same topic within 7 days; once that follow-up is answered, the consultation closes.',
+      a_en: 'You will receive a written reply within 7 days of payment, with an email notification. After the reply, you may ask one follow-up on the same topic within 7 days; once that follow-up is answered, the consultation closes.',
     },
   ];
 
@@ -99,18 +161,23 @@
     document.getElementById('sup-title').textContent = pick('支援中心', '支持中心', 'Support Center');
     document.getElementById('sup-sub').textContent = pick('常見問題與聯絡方式。', '常见问题与联系方式。', 'Frequently asked questions and how to reach us.');
     document.getElementById('sup-contact-label').textContent = pick('聯絡我們', '联系我们', 'Contact us');
+    document.getElementById('sup-contact-title').textContent = pick('聯絡我們', '联系我们', 'Contact us');
+    document.getElementById('sup-faq-label').textContent = pick('常見問題', '常见问题', 'FAQ');
+    document.getElementById('sup-contact-desc').textContent = pick('找不到答案嗎？寫信給我們，我們會盡快回覆。', '找不到答案吗？写信给我们，我们会尽快回复。', 'Could not find an answer? Email us and we will get back to you soon.');
+    document.getElementById('sup-contact-btn').textContent = pick('寄信給我們', '发邮件给我们', 'Email us');
 
     const faq = document.getElementById('sup-faq');
     const openIdx = [...faq.querySelectorAll('.faq-item')].reduce((acc, it, i) => (it.classList.contains('open') ? i : acc), -1);
     faq.innerHTML = FAQS.map((f, i) =>
       `<div class="faq-item${i === openIdx ? ' open' : ''}" data-i="${i}">` +
-        `<div class="faq-q"><span>${pick(f.q_tw, f.q_cn, f.q_en)}</span>` +
-        `<svg class="faq-ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>` +
-        `<div class="faq-a"><div class="faq-a-inner">${pick(f.a_tw, f.a_cn, f.a_en)}</div></div>` +
+        `<button type="button" class="faq-q" aria-expanded="${i === openIdx}" aria-controls="faq-a-${i}"><span>${pick(f.q_tw, f.q_cn, f.q_en)}</span>` +
+        `<svg class="faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>` +
+        `<div class="faq-a" id="faq-a-${i}" role="region"><div class="faq-a-inner">${pick(f.a_tw, f.a_cn, f.a_en)}</div></div>` +
       `</div>`
     ).join('');
     faq.querySelectorAll('.faq-item').forEach((it) => {
-      it.querySelector('.faq-q').addEventListener('click', () => it.classList.toggle('open'));
+      const q = it.querySelector('.faq-q');
+      q.addEventListener('click', () => { const on = it.classList.toggle('open'); q.setAttribute('aria-expanded', String(on)); });
     });
   }
 
