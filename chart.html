@@ -7,26 +7,26 @@
     // chart 專屬 UI 字典(策略 B):cutover 時 applyStaticI18n 未涵蓋的 JS 動態 UI 字串。
     // 這些是付費牆/空狀態 chrome(走 tx=UI 語言);切換由 rerender() 重跑對應 render。
     window.FSI18N.addUI({
-      'chart.docTitle':     { 'zh-TW': '我的本命盤 - FuSang Vision', 'zh-CN': '我的本命盘 - FuSang Vision', 'en': 'My Natal Chart - FuSang Vision' },
-      'chart.secLock':      { 'zh-TW': '解鎖後可見', 'zh-CN': '解锁后可见', 'en': 'Unlock to view' },
-      'chart.noContent':    { 'zh-TW': '(尚無內容)', 'zh-CN': '(尚无内容)', 'en': '(No content yet)' },
-      'chart.feedLockHint': { 'zh-TW': '這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。', 'zh-CN': '这部分需要完整解读才能看见——它会告诉你，哪些领域正以资源、主导与名声在背后支持你。', 'en': 'This part becomes visible with the full reading — it shows which areas support you through resources, influence, and reputation.' },
-      'chart.feedUnlock':   { 'zh-TW': '查看方案 →', 'zh-CN': '查看方案 →', 'en': 'View plans →' },
-      'chart.hubToOverview':{ 'zh-TW': '← 總覽', 'zh-CN': '← 总览', 'en': '← Overview' },
-      'chart.errDefault':   { 'zh-TW': '發生了一點問題，請稍後再試。', 'zh-CN': '发生了一点问题，请稍后再试。', 'en': 'Something went wrong. Please try again later.' },
-      'chart.paywallTitle': { 'zh-TW': '解鎖完整分析', 'zh-CN': '解锁完整分析', 'en': 'Unlock the full reading' },
-      'chart.paywallItem1': { 'zh-TW': '<b>能量飛入</b>　哪些資源正在幫助你、推動你。', 'zh-CN': '<b>能量飞入</b>　哪些资源正在帮助你、推动你。', 'en': '<b>Inflowing energy</b> — which resources are helping and driving you.' },
-      'chart.paywallItem2': { 'zh-TW': '<b>能量飛出</b>　你正在影響、推動哪些面向。', 'zh-CN': '<b>能量飞出</b>　你正在影响、推动哪些面向。', 'en': "<b>Outflowing energy</b> — which areas you're influencing and driving." },
-      'chart.paywallItem3': { 'zh-TW': '<b>專屬行動建議</b>', 'zh-CN': '<b>专属行动建议</b>', 'en': '<b>Tailored guidance</b>' },
-      'chart.paywallCta':   { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans' },
-      'chart.paywallNote':  { 'zh-TW': '已購買？回此頁重新整理即可顯示', 'zh-CN': '已购买？回此页刷新即可显示', 'en': 'Already purchased? Refresh this page to display it.' },
+      'chart.docTitle':     { 'zh-TW': '我的本命盤 - FuSang Vision', 'zh-CN': '我的本命盘 - FuSang Vision', 'en': 'My Natal Chart - FuSang Vision', 'ja': '本命盤 - FuSang Vision' },
+      'chart.secLock':      { 'zh-TW': '解鎖後可見', 'zh-CN': '解锁后可见', 'en': 'Unlock to view', 'ja': '解除すると表示されます' },
+      'chart.noContent':    { 'zh-TW': '(尚無內容)', 'zh-CN': '(尚无内容)', 'en': '(No content yet)', 'ja': '（まだ内容がありません）' },
+      'chart.feedLockHint': { 'zh-TW': '這部分需要完整解讀才能看見——它會告訴你，哪些領域正以資源、主導與名聲在背後支持你。', 'zh-CN': '这部分需要完整解读才能看见——它会告诉你，哪些领域正以资源、主导与名声在背后支持你。', 'en': 'This part becomes visible with the full reading — it shows which areas support you through resources, influence, and reputation.', 'ja': 'この部分は完全解読で見られるようになります——どの領域が、資源・主導・名声を通してあなたを後ろから支えているのかがわかります。' },
+      'chart.feedUnlock':   { 'zh-TW': '查看方案 →', 'zh-CN': '查看方案 →', 'en': 'View plans →', 'ja': 'プランを見る →' },
+      'chart.hubToOverview':{ 'zh-TW': '← 總覽', 'zh-CN': '← 总览', 'en': '← Overview', 'ja': '← 概要' },
+      'chart.errDefault':   { 'zh-TW': '發生了一點問題，請稍後再試。', 'zh-CN': '发生了一点问题，请稍后再试。', 'en': 'Something went wrong. Please try again later.', 'ja': '問題が発生しました。しばらくしてから再度お試しください。' },
+      'chart.paywallTitle': { 'zh-TW': '解鎖完整分析', 'zh-CN': '解锁完整分析', 'en': 'Unlock the full reading', 'ja': '完全な解説をひらく' },
+      'chart.paywallItem1': { 'zh-TW': '<b>能量飛入</b>　哪些資源正在幫助你、推動你。', 'zh-CN': '<b>能量飞入</b>　哪些资源正在帮助你、推动你。', 'en': '<b>Inflowing energy</b> — which resources are helping and driving you.', 'ja': '<b>飛入するエネルギー</b>　どんな資源があなたを助け、後押ししているか。' },
+      'chart.paywallItem2': { 'zh-TW': '<b>能量飛出</b>　你正在影響、推動哪些面向。', 'zh-CN': '<b>能量飞出</b>　你正在影响、推动哪些面向。', 'en': "<b>Outflowing energy</b> — which areas you're influencing and driving.", 'ja': '<b>飛出するエネルギー</b>　あなたがどの側面に影響を与え、動かしているか。' },
+      'chart.paywallItem3': { 'zh-TW': '<b>專屬行動建議</b>', 'zh-CN': '<b>专属行动建议</b>', 'en': '<b>Tailored guidance</b>', 'ja': '<b>あなただけの行動アドバイス</b>' },
+      'chart.paywallCta':   { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans', 'ja': 'プランを見る' },
+      'chart.paywallNote':  { 'zh-TW': '已購買？回此頁重新整理即可顯示', 'zh-CN': '已购买？回此页刷新即可显示', 'en': 'Already purchased? Refresh this page to display it.', 'ja': 'ご購入済みの場合は、このページを再読み込みすると表示されます' },
       // ── v2 視覺（設計師 v1.0 文案；設計稿沒有的句子依文案規則草擬）──
-      'chart.v2Enter':        { 'zh-TW': '進入{palace}詳情', 'zh-CN': '进入{palace}详情', 'en': 'Read the {palace}' },
-      'chart.v2GridNote':     { 'zh-TW': 'I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。', 'zh-CN': 'I–XII 为宫位索引编号；个人命盘资料以详细解读为准。', 'en': 'I–XII identify the palaces. See the detailed reading for your personal chart information.' },
-      'chart.v2BackOverview': { 'zh-TW': '返回本命總覽', 'zh-CN': '返回本命总览', 'en': 'Back to natal overview' },
-      'chart.v2IntroLabel':   { 'zh-TW': '導讀', 'zh-CN': '导读', 'en': 'Introduction' },
-      'chart.v2IntroMore':    { 'zh-TW': '展開閱讀', 'zh-CN': '展开阅读', 'en': 'Read more' },
-      'chart.v2IntroLess':    { 'zh-TW': '收起', 'zh-CN': '收起', 'en': 'Show less' }
+      'chart.v2Enter':        { 'zh-TW': '進入{palace}詳情', 'zh-CN': '进入{palace}详情', 'en': 'Read the {palace}', 'ja': '{palace}の詳細へ' },
+      'chart.v2GridNote':     { 'zh-TW': 'I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。', 'zh-CN': 'I–XII 为宫位索引编号；个人命盘资料以详细解读为准。', 'en': 'I–XII identify the palaces. See the detailed reading for your personal chart information.', 'ja': 'I〜XII は宮の索引番号です。個人の命盤データは、詳しい解説をご確認ください。' },
+      'chart.v2BackOverview': { 'zh-TW': '返回本命總覽', 'zh-CN': '返回本命总览', 'en': 'Back to natal overview', 'ja': '本命の概要に戻る' },
+      'chart.v2IntroLabel':   { 'zh-TW': '導讀', 'zh-CN': '导读', 'en': 'Introduction', 'ja': 'はじめに' },
+      'chart.v2IntroMore':    { 'zh-TW': '展開閱讀', 'zh-CN': '展开阅读', 'en': 'Read more', 'ja': '続きを読む' },
+      'chart.v2IntroLess':    { 'zh-TW': '收起', 'zh-CN': '收起', 'en': 'Show less', 'ja': '閉じる' }
     });
   </script>
   <meta charset="UTF-8" />
