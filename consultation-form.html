@@ -232,7 +232,8 @@
 
       const missing = [];
       if (!selected) missing.push(pick('選擇主題', '选择主题', 'choose a topic'));
-      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `再写 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`));
+      if (len < MIN_CHARS) missing.push(pick(`再寫 ${MIN_CHARS - len} 字`, `再写 ${MIN_CHARS - len} 字`, `write ${MIN_CHARS - len} more character${MIN_CHARS - len === 1 ? '' : 's'}`,
+          `あと ${MIN_CHARS - len} 文字`));
       if (!consentEl.checked) missing.push(pick('勾選同意聲明', '勾选同意声明', 'agree to the terms'));
 
       gate.textContent = ready ? '' : (pick('尚需：', '尚需：', 'To submit: ') + missing.join(pick('、', '、', ', ')));
