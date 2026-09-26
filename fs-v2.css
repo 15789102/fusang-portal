@@ -42,8 +42,8 @@ body.fs-v2 {
   --v2-shadow-pop: 0 12px 32px #20202026, 0 3px 8px #2020200d;
   --v2-gutter: 80px;             /* 設計師 .shell：左右各 80px，最大 1280 */
   --v2-max: 1280px;
-  --v2-font-latin: Jost, 'Noto Sans TC', 'Noto Sans SC', sans-serif;
-  --v2-font-cjk: 'Noto Sans TC', 'Noto Sans SC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --v2-font-latin: Jost, 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', sans-serif;
+  --v2-font-cjk: 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', 'PingFang TC', 'Microsoft JhengHei', sans-serif;   /* KR 殿後：只補諺文字形 */
 
   /* Ben 既有 token → 設計師值 */
   --bg-primary: #ffffff;
@@ -76,18 +76,22 @@ body.fs-v2 {
 }
 /* 簡中字形 */
 html[lang="zh-CN"] body.fs-v2 {
-  --v2-font-latin: Jost, 'Noto Sans SC', 'Noto Sans TC', sans-serif;
-  --v2-font-cjk: 'Noto Sans SC', 'Noto Sans TC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --v2-font-latin: Jost, 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans KR', sans-serif;
+  --v2-font-cjk: 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans KR', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 /* 英文：設計師指定整體用 Jost */
 html[lang="en"] body.fs-v2 {
-  --v2-font-cjk: Jost, 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+  --v2-font-cjk: Jost, 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', sans-serif;
 }
-/* 韓文：諺文用 Noto Sans KR；漢字註記（如 도화(桃花)）退 Noto Sans TC。
-   keep-all：韓文以詞（띄어쓰기）為單位換行，避免一個詞被拆成兩行 */
+/* 韓文：諺文用 Noto Sans KR；漢字註記（如 도화(桃花)）退 Noto Sans TC。 */
 html[lang="ko"] body.fs-v2 {
   --v2-font-latin: Jost, 'Noto Sans KR', 'Noto Sans TC', sans-serif;
   --v2-font-cjk: 'Noto Sans KR', 'Noto Sans TC', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+/* 韓文換行：以詞（띄어쓰기）為單位，避免一個詞被拆成兩行。
+   用 :lang(ko) 而非掛在 body：報告頁 <html lang> 跟報告語言，介面韓文 + 中文報告時，
+   i18n.js 只在翻成韓文的節點標 lang="ko"，keep-all 不會作用到中文報告內文。 */
+body.fs-v2 :lang(ko), html[lang="ko"] body.fs-v2 {
   word-break: keep-all;
   overflow-wrap: break-word;
 }
@@ -585,6 +589,12 @@ body.fs-v2 .v2-auth-lang button {
 body.fs-v2 .v2-auth-lang button:hover { color: var(--v2-blue); }
 body.fs-v2 .v2-auth-lang button.active { color: var(--v2-ink); font-weight: 600; }
 body.fs-v2 .v2-auth-lang button:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+/* 五語（加 한국어）後手機寬度擠：語言列不縮、按鈕不拆字並縮小間距，品牌區讓出寬度 */
+@media (max-width: 480px) {
+  body.fs-v2 .v2-auth-lang { gap: 0; flex-shrink: 0; }
+  body.fs-v2 .v2-auth-brand { min-width: 0; gap: 8px; }
+  body.fs-v2 .v2-auth-lang button { padding: 6px 4px; font-size: 12px; white-space: nowrap; }
+}
 
 body.fs-v2 .v2-auth-stage {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); align-items: center; gap: 64px;
