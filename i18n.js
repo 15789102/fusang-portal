@@ -469,10 +469,10 @@
     "compTrines": "삼방",
     "emptyNoStar": "(별 없음)",
     "emptyNoMainStar": "(주성 없음)",
-    "dirIn": "들어옴",
-    "dirOut": "나감",
-    "energyEmptyIn": "이 궁으로 들어오는 에너지가 없어요",
-    "energyEmptyOut": "이 궁에서 나가는 에너지가 없어요",
+    "dirIn": "유입",
+    "dirOut": "유출",
+    "energyEmptyIn": "이 궁에 유입되는 에너지가 없어요",
+    "energyEmptyOut": "이 궁에서 유출되는 에너지가 없어요",
     "errJobFail": "명반 데이터를 불러오지 못했어요: ",
     "errNotReady": "명반이 아직 준비 중이에요. 몇 분 후에 다시 확인해 주세요.",
     "errNoPalace": "명반의 궁 내용을 찾을 수 없어요.",
@@ -483,11 +483,11 @@
     "loadingTitle": "명반을 불러오고 있어요",
     "palaceExplainerLabel": "이 궁에 대하여",
     "compositionLabel": "구성",
-    "secInflowTitle": "들어오는 에너지",
-    "secOutflowTitle": "나가는 에너지",
+    "secInflowTitle": "유입 에너지",
+    "secOutflowTitle": "유출 에너지",
     "secSuggestTitle": "조언",
-    "sectionInflowDesc": "<strong>들어오는 에너지</strong>—다른 궁의 별이 사화의 형태로 이 궁에 흘러듭니다. 삶의 어떤 부분이 당신의 이 영역을 <strong>채워 주고, 밀어 주고, 이끌고</strong> 있는지를 보여 줘요.",
-    "sectionOutflowDesc": "<strong>나가는 에너지</strong>—이 궁의 에너지가 사화의 형태로 다른 궁으로 흘러갑니다. 당신의 이 영역이 삶의 어떤 부분에 <strong>영향을 주고, 기여하고, 끌어당기고</strong> 있는지를 보여 줘요.",
+    "sectionInflowDesc": "<strong>유입 에너지</strong>—다른 궁의 별이 사화의 형태로 이 궁에 흘러듭니다. 삶의 어떤 부분이 당신의 이 영역을 <strong>채워 주고, 밀어 주고, 이끌고</strong> 있는지를 보여 줘요.",
+    "sectionOutflowDesc": "<strong>유출 에너지</strong>—이 궁의 에너지가 사화의 형태로 다른 궁으로 흘러갑니다. 당신의 이 영역이 삶의 어떤 부분에 <strong>영향을 주고, 기여하고, 끌어당기고</strong> 있는지를 보여 줘요.",
     "errTitle": "명반을 불러올 수 없어요",
     "btnBackDashboard": "대시보드로 돌아가기",
     "ovEyebrow": "개요",
@@ -2130,8 +2130,20 @@
       if ((k = el.getAttribute('data-i18n-placeholder')) !== null && k !== '') el.setAttribute('placeholder', t(k));
       if ((k = el.getAttribute('data-i18n-title')) !== null && k !== '')       el.setAttribute('title', t(k));
       if ((k = el.getAttribute('data-i18n-aria-label')) !== null && k !== '')  el.setAttribute('aria-label', t(k));
+      tagKo(el);
     }
   }
+  // ko 專用:報告頁的 <html lang> 跟報告語言(可能是 zh-TW),介面切韓文時,
+  //   在已翻成韓文的節點標 lang="ko",讓 fs-v2.css 的 :lang(ko) 換行規則(keep-all)只作用在韓文上、
+  //   不影響中文報告內文。只在 ko 介面時標記;切離 ko 時移除自己標的,其他語言行為不變。
+  function tagKo(el) {
+    if (_uiLang === 'ko') {
+      if (!el.hasAttribute('lang')) { el.setAttribute('lang', 'ko'); el.setAttribute('data-i18n-lang', ''); }
+    } else if (el.hasAttribute('data-i18n-lang')) {
+      el.removeAttribute('lang'); el.removeAttribute('data-i18n-lang');
+    }
+  }
+
 
   // ── 語言 getter / setter ────────────────────────────────────
   function getUILang()     { return _uiLang; }
