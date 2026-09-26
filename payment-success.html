@@ -9,22 +9,22 @@
   <script>
     // payment-success 專屬 UI 字典(策略 B;登入頁,用 header 切換鈕)
     window.FSI18N.addUI({
-      'ps.docTitle':    { 'zh-TW': '付款完成 - FuSang Vision', 'zh-CN': '付款完成 - FuSang Vision', 'en': 'Payment Complete - FuSang Vision', 'ja': 'お支払い完了 - FuSang Vision' },
-      'ps.title':       { 'zh-TW': '付款完成，謝謝您', 'zh-CN': '付款完成，谢谢您', 'en': 'Payment complete. Thank you.', 'ja': 'お支払い完了' },
-      'ps.body':        { 'zh-TW': '您的購買已經完成，內容正在為您開啟。', 'zh-CN': '您的购买已经完成，内容正在为您开启。', 'en': 'Your purchase is complete and your content is being unlocked.', 'ja': 'ありがとうございます。ご購入が完了し、コンテンツのロックを解除しています。' },
-      'ps.note':        { 'zh-TW': '<strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。', 'zh-CN': '<strong>内容尚未解锁？</strong>系统正在为您更新权限，通常只需几秒钟。若您前往报告页后仍看到锁定状态，请<strong>刷新页面</strong>即可显示完整内容。', 'en': '<strong>Content not unlocked yet?</strong> We are updating your access, which usually takes just a few seconds. If a report page still shows as locked, please <strong>refresh the page</strong> to reveal the full content.', 'ja': '<strong>まだロックが解除されていませんか？</strong>現在、アクセス権限を更新しています。通常は数秒で完了します。レポートページがロック表示のままの場合は、<strong>ページを再読み込み</strong>すると全文が表示されます。' },
-      'ps.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart', 'ja': '命盤を見る' },
-      'ps.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard', 'ja': 'ダッシュボードに戻る' },
+      'ps.docTitle':    { 'zh-TW': '付款完成 - FuSang Vision', 'zh-CN': '付款完成 - FuSang Vision', 'en': 'Payment Complete - FuSang Vision', 'ja': 'お支払い完了 - FuSang Vision', 'ko': '결제 완료 - FuSang Vision' },
+      'ps.title':       { 'zh-TW': '付款完成，謝謝您', 'zh-CN': '付款完成，谢谢您', 'en': 'Payment complete. Thank you.', 'ja': 'お支払い完了', 'ko': '결제 완료, 감사합니다' },
+      'ps.body':        { 'zh-TW': '您的購買已經完成，內容正在為您開啟。', 'zh-CN': '您的购买已经完成，内容正在为您开启。', 'en': 'Your purchase is complete and your content is being unlocked.', 'ja': 'ありがとうございます。ご購入が完了し、コンテンツのロックを解除しています。', 'ko': '구매가 완료되었어요. 콘텐츠를 열어 드리고 있어요.' },
+      'ps.note':        { 'zh-TW': '<strong>內容尚未解鎖？</strong>系統正在為您更新權限，通常只需幾秒鐘。若您前往報告頁後仍看到鎖定狀態，請<strong>重新整理頁面</strong>即可顯示完整內容。', 'zh-CN': '<strong>内容尚未解锁？</strong>系统正在为您更新权限，通常只需几秒钟。若您前往报告页后仍看到锁定状态，请<strong>刷新页面</strong>即可显示完整内容。', 'en': '<strong>Content not unlocked yet?</strong> We are updating your access, which usually takes just a few seconds. If a report page still shows as locked, please <strong>refresh the page</strong> to reveal the full content.', 'ja': '<strong>まだロックが解除されていませんか？</strong>現在、アクセス権限を更新しています。通常は数秒で完了します。レポートページがロック表示のままの場合は、<strong>ページを再読み込み</strong>すると全文が表示されます。', 'ko': '<strong>아직 잠금 해제되지 않았나요?</strong> 시스템에서 권한을 업데이트하고 있으며, 보통 몇 초면 끝나요. 리포트 페이지에서 여전히 잠겨 있다면 <strong>페이지를 새로 고침</strong>하면 전체 내용이 표시돼요.' },
+      'ps.btnChart':    { 'zh-TW': '前往我的命盤', 'zh-CN': '前往我的命盘', 'en': 'Go to my chart', 'ja': '命盤を見る', 'ko': '내 명반으로 가기' },
+      'ps.btnDashboard':{ 'zh-TW': '返回儀表板', 'zh-CN': '返回仪表板', 'en': 'Back to dashboard', 'ja': 'ダッシュボードに戻る', 'ko': '대시보드로 돌아가기' },
       // v2：單獨問事付款也落在本頁 → 開放時多一個「我的問事紀錄」
-      'ps.btnConsult':  { 'zh-TW': '我的問事紀錄', 'zh-CN': '我的问事记录', 'en': 'My consultations', 'ja': '個別相談の履歴' },
+      'ps.btnConsult':  { 'zh-TW': '我的問事紀錄', 'zh-CN': '我的问事记录', 'en': 'My consultations', 'ja': '個別相談の履歴', 'ko': '내 상담 기록' },
 
       // ── Task 16 新增：年方案涵蓋清單（僅 ?product=annual_pack 時顯示）──
       //   文案符前台規則：如實、不安撫、無戲劇隱喻。
-      'ps.covTitle':    { 'zh-TW': '本次購買涵蓋的月份', 'zh-CN': '本次购买涵盖的月份', 'en': 'Months covered by this purchase', 'ja': '今回のご購入の対象月' },
-      'ps.covIntro':    { 'zh-TW': '以下月份已納入你的方案，可隨選解鎖。涵蓋範圍從你現有範圍之後接續，可能包含已經過去的月份。', 'zh-CN': '以下月份已纳入你的方案，可随选解锁。涵盖范围从你现有范围之后接续，可能包含已经过去的月份。', 'en': 'These months are now included in your plan and can be unlocked on demand. Coverage continues from your existing range and may include months that have already passed.', 'ja': '以下の月があなたのプランに含まれ、必要に応じてロックを解除できます。対象期間は現在の範囲の続きから始まるため、すでに過ぎた月が含まれる場合があります。' },
-      'ps.covLoading':  { 'zh-TW': '正在確認你的涵蓋月份…', 'zh-CN': '正在确认你的涵盖月份…', 'en': 'Confirming your covered months…', 'ja': '対象月を確認しています…' },
-      'ps.covPast':     { 'zh-TW': '已過去', 'zh-CN': '已过去', 'en': 'Past', 'ja': '経過済み' },
-      'ps.covFallback': { 'zh-TW': '你的涵蓋月份仍在建立中。稍後可於「我的流月」查看完整清單。', 'zh-CN': '你的涵盖月份仍在建立中。稍后可于「我的流月」查看完整清单。', 'en': 'Your covered months are still being set up. You can view the full list later under "My Monthly Chart".', 'ja': '対象月はまだ準備中です。後ほど「流月」ページで一覧をご確認いただけます。' }
+      'ps.covTitle':    { 'zh-TW': '本次購買涵蓋的月份', 'zh-CN': '本次购买涵盖的月份', 'en': 'Months covered by this purchase', 'ja': '今回のご購入の対象月', 'ko': '이번 구매에 포함된 달' },
+      'ps.covIntro':    { 'zh-TW': '以下月份已納入你的方案，可隨選解鎖。涵蓋範圍從你現有範圍之後接續，可能包含已經過去的月份。', 'zh-CN': '以下月份已纳入你的方案，可随选解锁。涵盖范围从你现有范围之后接续，可能包含已经过去的月份。', 'en': 'These months are now included in your plan and can be unlocked on demand. Coverage continues from your existing range and may include months that have already passed.', 'ja': '以下の月があなたのプランに含まれ、必要に応じてロックを解除できます。対象期間は現在の範囲の続きから始まるため、すでに過ぎた月が含まれる場合があります。', 'ko': '아래 달이 요금제에 포함되었으며, 원할 때 잠금 해제할 수 있어요. 포함 기간은 기존 범위 다음부터 이어지며, 이미 지난 달이 포함될 수 있어요.' },
+      'ps.covLoading':  { 'zh-TW': '正在確認你的涵蓋月份…', 'zh-CN': '正在确认你的涵盖月份…', 'en': 'Confirming your covered months…', 'ja': '対象月を確認しています…', 'ko': '포함된 달을 확인하고 있어요…' },
+      'ps.covPast':     { 'zh-TW': '已過去', 'zh-CN': '已过去', 'en': 'Past', 'ja': '経過済み', 'ko': '지남' },
+      'ps.covFallback': { 'zh-TW': '你的涵蓋月份仍在建立中。稍後可於「我的流月」查看完整清單。', 'zh-CN': '你的涵盖月份仍在建立中。稍后可于「我的流月」查看完整清单。', 'en': 'Your covered months are still being set up. You can view the full list later under "My Monthly Chart".', 'ja': '対象月はまだ準備中です。後ほど「流月」ページで一覧をご確認いただけます。', 'ko': '포함된 달을 아직 준비하고 있어요. 잠시 후 ‘나의 유월’에서 전체 목록을 확인할 수 있어요.' }
     });
   </script>
   <meta name="description" content="Payment successful." />
