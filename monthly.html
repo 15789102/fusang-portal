@@ -1264,7 +1264,8 @@
       .fs-v2 .v2-palace-switcher { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
       .fs-v2 .v2-sw-item { height: 52px; font-size: 13px; }
       .fs-v2 #view-detail > .palace-head { margin-top: 24px; }
-      .fs-v2 .v2-basis { position: static; margin-top: 24px; padding: 0 0 24px; border-right: 0; border-bottom: 1px solid var(--v2-line); }
+      /* 2026-09-25 修正：原選擇器權重低於桌機的 #view-detail > .v2-basis（sticky），手機仍被定住而蓋住內文 */
+      .fs-v2 #view-detail > .v2-basis { position: static; margin-top: 24px; padding: 0 0 24px; border-right: 0; border-bottom: 1px solid var(--v2-line); }
       .fs-v2 #view-detail > .v2-reader { margin-top: 24px; }
       .fs-v2 .v2-chapter-tabs button { font-size: 12px; }
       .fs-v2 .prose,
