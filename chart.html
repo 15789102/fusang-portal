@@ -779,6 +779,9 @@
     .fs-v2 .palace-explainer-body .domain-keyword { color: var(--v2-ink); font-weight: 500; }
     .fs-v2 .palace-stars-line { margin: -16px 0 0; font-size: 14px; line-height: 26px; letter-spacing: 0; color: var(--v2-ink); }
     .fs-v2 .palace-stars-line .sep { color: var(--v2-faint); margin: 0 6px; }
+    /* 2026-09-26：每顆星（含四化標）不拆行，星與星之間可換行；英文星名不再撐出左欄 */
+    .fs-v2 .palace-stars-line .v2-star { white-space: nowrap; }
+    .fs-v2 .palace-stars-line .sep { margin: 0 2px; }
     .fs-v2 .palace-stars-line .transform-tag { font-family: var(--v2-font-cjk); font-size: 11px; line-height: 16px; padding: 1px 6px; letter-spacing: 0; border-radius: 0; vertical-align: 1px; }
 
     /* 右欄：章節列 + 內文 */
@@ -826,6 +829,12 @@
     .fs-v2 .info-dot { font-family: var(--v2-font-latin); font-style: normal; }
     .fs-v2 .tooltip-body { border-radius: 0; background: var(--v2-ink); color: #fff; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; box-shadow: var(--v2-shadow-pop); }
     .fs-v2 .tooltip-body::after { border-top-color: var(--v2-ink); }
+    /* 2026-09-26：四化卡說明泡泡改為對齊標籤左緣（原本以標籤置中，手機上標籤靠左時會超出螢幕左緣被切掉）*/
+    .fs-v2 .transform-card-head .tooltip-body { left: 0; width: min(280px, calc(100vw - 48px)); transform: translateY(4px); }
+    .fs-v2 .transform-card-head .tooltip-wrap:hover .tooltip-body,
+    .fs-v2 .transform-card-head .tooltip-wrap:focus-within .tooltip-body,
+    .fs-v2 .transform-card-head .tooltip-wrap.open .tooltip-body { transform: translateY(0); }
+    .fs-v2 .transform-card-head .tooltip-body::after { left: 28px; transform: translateX(-50%); }
     .fs-v2 .tooltip-body p { color: #e6e6e6; }
     .fs-v2 .transform-card-en { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
     .fs-v2 .transform-card-body { padding: 24px; }
@@ -1349,7 +1358,34 @@
         btn.type = 'button';
         btn.addEventListener('click', function () { if (FS()) FS().openDetail(selected); });
         preview.appendChild(btn);
+        fitPreview(preview);
       }
+
+      /* 2026-09-26：中央預覽高度固定，說明依剩餘空間決定行數（避免被擠成半行；一行都放不下才隱藏）*/
+      function fitPreview(pv) {
+        var ex = pv && pv.querySelector('.v2-hp-explainer');
+        if (!ex || !pv.isConnected) return;
+        ex.style.display = ''; ex.style.webkitLineClamp = ''; ex.style.flexShrink = '';
+        if (!pv.offsetParent || pv.clientHeight === 0) return;   // 看不見時不量（會量到 0），等可見後由 ResizeObserver 重算
+        ex.style.flexShrink = '0';
+        var max = parseInt(getComputedStyle(ex).webkitLineClamp, 10);
+        if (!(max > 0)) max = 4;
+        function fits() {
+          var pcs = getComputedStyle(pv);
+          var avail = pv.clientHeight - parseFloat(pcs.paddingTop) - parseFloat(pcs.paddingBottom);
+          var kids = Array.prototype.filter.call(pv.children, function (k) { return getComputedStyle(k).display !== 'none'; });
+          var sum = (parseFloat(pcs.rowGap) || 0) * Math.max(0, kids.length - 1);
+          kids.forEach(function (k) { var m = getComputedStyle(k); sum += k.getBoundingClientRect().height + parseFloat(m.marginTop) + parseFloat(m.marginBottom); });
+          return sum <= avail + 1;
+        }
+        for (var n = max; n >= 1; n--) { ex.style.webkitLineClamp = String(n); if (fits()) return; }
+        ex.style.display = 'none';
+      }
+      var fitQueued = false;
+      function refit() { if (fitQueued) return; fitQueued = true; requestAnimationFrame(function () { fitQueued = false; fitPreview(preview); }); }
+      window.addEventListener('resize', refit);
+      if (window.ResizeObserver) new ResizeObserver(refit).observe(preview);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
       function select(p) {
         selected = p;
         if (grid) grid.querySelectorAll('.palace-card').forEach(function (c) { c.classList.toggle('is-selected', c.dataset.v2Palace === p); });
@@ -1871,7 +1907,7 @@
     (comp?.support_stars || []).forEach(pushStar);
     (comp?.sha_ji_stars || []).forEach(pushStar);
     (comp?.minor_stars || []).forEach(pushStar);
-    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : `<span style="color:var(--ink-light);font-style:italic;">${tx('emptyNoStar')}</span>`;
+    el.innerHTML = parts.length ? parts.map(h => '<span class="v2-star">' + h + '</span>').join('\u00a0<span class="sep">·</span> ') : `<span style="color:var(--ink-light);font-style:italic;">${tx('emptyNoStar')}</span>`;
   }
 
   function renderAnalysis(text) {
