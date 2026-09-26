@@ -1285,8 +1285,8 @@
   // ── 靜態 UI 字串套用(id→key);document.title 一併更新 ──
   function applyStaticI18n() {
     document.title = tx('an.docTitle');
-    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
-    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) { el.textContent = tx(key); if (window.FSI18N.tagKo) window.FSI18N.tagKo(el); } };
+    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) { el.innerHTML = tx(key); if (window.FSI18N.tagKo) window.FSI18N.tagKo(el); } };
     // loading(預設,未選年份時)
     setText('loading-title', 'an.loadingTitle');
     setText('loading-sub', 'an.loadingSub');

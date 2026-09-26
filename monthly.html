@@ -2680,8 +2680,8 @@
   // ── 靜態 UI 字串套用(id→key);document.title 一併更新 ──
   function applyStaticI18n() {
     document.title = tx('mo.docTitle');
-    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
-    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = tx(key); };
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) { el.textContent = tx(key); if (window.FSI18N.tagKo) window.FSI18N.tagKo(el); } };
+    const setHtml = (id, key) => { const el = document.getElementById(id); if (el) { el.innerHTML = tx(key); if (window.FSI18N.tagKo) window.FSI18N.tagKo(el); } };
     // loading
     setText('loading-title', 'mo.loadingTitle');
     setText('loading-sub', 'mo.loadingSub');
@@ -4324,7 +4324,7 @@
   }
 
   function ulApplyStaticI18n() {
-    const setText = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = tx(key); };
+    const setText = (id, key) => { const el = document.getElementById(id); if (el) { el.textContent = tx(key); if (window.FSI18N.tagKo) window.FSI18N.tagKo(el); } };
     setText('ul-back', 'mo.ulBack');
     const inForm = (ulStep === 'form' && !!ulPick);
     setText('ul-sub', inForm ? 'mo.ulFormSub' : 'mo.ulSub');
