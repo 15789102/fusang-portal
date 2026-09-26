@@ -120,7 +120,34 @@
       btn.disabled = !has;
       btn.addEventListener('click', function () { if (FS()) FS().openDetail(selected); });
       preview.appendChild(btn);
+      fitPreview(preview);
     }
+
+    /* 2026-09-26：中央預覽高度固定，說明依剩餘空間決定行數（避免被擠成半行；一行都放不下才隱藏）*/
+    function fitPreview(pv) {
+      var ex = pv && pv.querySelector('.v2-hp-explainer');
+      if (!ex || !pv.isConnected) return;
+      ex.style.display = ''; ex.style.webkitLineClamp = ''; ex.style.flexShrink = '';
+      if (!pv.offsetParent || pv.clientHeight === 0) return;   // 看不見時不量（會量到 0），等可見後由 ResizeObserver 重算
+      ex.style.flexShrink = '0';
+      var max = parseInt(getComputedStyle(ex).webkitLineClamp, 10);
+      if (!(max > 0)) max = 4;
+      function fits() {
+        var pcs = getComputedStyle(pv);
+        var avail = pv.clientHeight - parseFloat(pcs.paddingTop) - parseFloat(pcs.paddingBottom);
+        var kids = Array.prototype.filter.call(pv.children, function (k) { return getComputedStyle(k).display !== 'none'; });
+        var sum = (parseFloat(pcs.rowGap) || 0) * Math.max(0, kids.length - 1);
+        kids.forEach(function (k) { var m = getComputedStyle(k); sum += k.getBoundingClientRect().height + parseFloat(m.marginTop) + parseFloat(m.marginBottom); });
+        return sum <= avail + 1;
+      }
+      for (var n = max; n >= 1; n--) { ex.style.webkitLineClamp = String(n); if (fits()) return; }
+      ex.style.display = 'none';
+    }
+    var fitQueued = false;
+    function refit() { if (fitQueued) return; fitQueued = true; requestAnimationFrame(function () { fitQueued = false; fitPreview(preview); }); }
+    window.addEventListener('resize', refit);
+    if (window.ResizeObserver) new ResizeObserver(refit).observe(preview);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
     // 頁面可要求重繪（例如 monthly 語言切換後能量標籤文字更新）
     window.addEventListener('fsv2:hub-refresh', function () { decorateHub(); renderPreview(); });
     function select(p) {
