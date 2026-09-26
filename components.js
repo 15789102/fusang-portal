@@ -11,7 +11,7 @@
 //
 // 提供:
 //   - 共用 design tokens CSS(自動注入 <head>)
-//   - Header(Logo 左 + 導航右 + 語言切換:繁中/简中/EN/日本語)
+//   - Header(Logo 左 + 導航右 + 語言切換:繁中/简中/EN/日本語/한국어)
 //   - Footer(標語 + 連結 + 版權)
 //   - Supabase client(window.fsSupabase)
 //   - requireAuth() / getSession() / signOut()
@@ -473,6 +473,7 @@ function injectHeader(activePage = null) {
           <button class="fs-lang-opt" data-lang="zh-CN">简中</button>
           <button class="fs-lang-opt" data-lang="en">EN</button>
           <button class="fs-lang-opt" data-lang="ja" lang="ja">日本語</button>
+          <button class="fs-lang-opt" data-lang="ko" lang="ko">한국어</button>
         </span>
       </nav>
     </header>
@@ -581,7 +582,7 @@ const FOOTER_LINKS = {
   contact: 'mailto:support@fusang-vision.com',
 };
 I18N.addUI({
-  footerTerms: { 'zh-TW': '服務條款', 'zh-CN': '服务条款', 'en': 'Terms of Service', 'ja': '利用規約' },
+  footerTerms: { 'zh-TW': '服務條款', 'zh-CN': '服务条款', 'en': 'Terms of Service', 'ja': '利用規約', 'ko': '이용약관' },
 });
 
 function injectFooter() {
