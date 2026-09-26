@@ -580,6 +580,9 @@
     .fs-v2 .palace-explainer-body .domain-keyword { color: var(--v2-ink); font-weight: 500; }
     .fs-v2 .palace-stars-line { margin: -16px 0 0; font-size: 14px; line-height: 26px; letter-spacing: 0; color: var(--v2-ink); }
     .fs-v2 .palace-stars-line .sep { color: var(--v2-faint); margin: 0 6px; }
+    /* 2026-09-26：每顆星（含四化標）不拆行，星與星之間可換行；英文星名不再撐出左欄 */
+    .fs-v2 .palace-stars-line .v2-star { white-space: nowrap; }
+    .fs-v2 .palace-stars-line .sep { margin: 0 2px; }
     .fs-v2 .palace-stars-line .transform-tag { font-family: var(--v2-font-cjk); font-size: 11px; line-height: 16px; padding: 1px 6px; letter-spacing: 0; border-radius: 0; vertical-align: 1px; }
 
     /* 右欄：章節列 + 內文 */
@@ -627,6 +630,12 @@
     .fs-v2 .info-dot { font-family: var(--v2-font-latin); font-style: normal; }
     .fs-v2 .tooltip-body { border-radius: 0; background: var(--v2-ink); color: #fff; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; box-shadow: var(--v2-shadow-pop); }
     .fs-v2 .tooltip-body::after { border-top-color: var(--v2-ink); }
+    /* 2026-09-26：四化卡說明泡泡改為對齊標籤左緣（原本以標籤置中，手機上標籤靠左時會超出螢幕左緣被切掉）*/
+    .fs-v2 .transform-card-head .tooltip-body { left: 0; width: min(280px, calc(100vw - 48px)); transform: translateY(4px); }
+    .fs-v2 .transform-card-head .tooltip-wrap:hover .tooltip-body,
+    .fs-v2 .transform-card-head .tooltip-wrap:focus-within .tooltip-body,
+    .fs-v2 .transform-card-head .tooltip-wrap.open .tooltip-body { transform: translateY(0); }
+    .fs-v2 .transform-card-head .tooltip-body::after { left: 28px; transform: translateX(-50%); }
     .fs-v2 .tooltip-body p { color: #e6e6e6; }
     .fs-v2 .transform-card-en { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; letter-spacing: 0; color: var(--v2-muted); }
     .fs-v2 .transform-card-body { padding: 24px; }
@@ -1536,7 +1545,7 @@
     (comp?.support_stars || []).forEach(pushStar);
     (comp?.sha_ji_stars || []).forEach(pushStar);
     (comp?.minor_stars || []).forEach(pushStar);
-    el.innerHTML = parts.length ? parts.join('<span class="sep">·</span>') : `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('emptyNoStar'))}</span>`;
+    el.innerHTML = parts.length ? parts.map(h => '<span class="v2-star">' + h + '</span>').join('\u00a0<span class="sep">·</span> ') : `<span style="color:var(--ink-light);font-style:italic;">${escapeHtml(tx('emptyNoStar'))}</span>`;
   }
 
   function renderAnalysis(text) {
