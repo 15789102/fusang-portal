@@ -2227,6 +2227,7 @@
     palaceLabelUI: palaceLabelUI,         // 宮位名(UI 語言);報告內容仍用 palaceLabel
     starLabel: starLabel,
     transformLabel: transformLabel,
-    applyI18n: applyI18n
+    applyI18n: applyI18n,
+    tagKo: tagKo                          // 頁面以 JS 寫入的 UI 字串(setText/setHtml)也標 lang="ko"
   };
 })();
