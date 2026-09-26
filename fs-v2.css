@@ -19,6 +19,8 @@
 
 /* ── §0 字體：Jost（拉丁）+ Noto Sans TC / SC（Google Fonts 按需子集，不用設計師附的 12MB/17MB ttf）── */
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+/* 韓文（ko）：Noto Sans TC/SC 不含諺文，另載 Noto Sans KR（unicode-range 子集，只有出現韓文時才下載） */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
 
 /* ── §1 Token 重新映射 ──
    Ben 現有頁面樣式全用 var(--ink-darkest) 等 token；在 body.fs-v2 上改值，
@@ -80,6 +82,14 @@ html[lang="zh-CN"] body.fs-v2 {
 /* 英文：設計師指定整體用 Jost */
 html[lang="en"] body.fs-v2 {
   --v2-font-cjk: Jost, 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+}
+/* 韓文：諺文用 Noto Sans KR；漢字註記（如 도화(桃花)）退 Noto Sans TC。
+   keep-all：韓文以詞（띄어쓰기）為單位換行，避免一個詞被拆成兩行 */
+html[lang="ko"] body.fs-v2 {
+  --v2-font-latin: Jost, 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+  --v2-font-cjk: 'Noto Sans KR', 'Noto Sans TC', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ── §2 頁面底：純白，關閉全站水彩背景層 ── */
