@@ -64,6 +64,13 @@
       "dc.v2Progress":      { "zh-TW": "第 {n} / {t} 年", "zh-CN": "第 {n} / {t} 年", "en": "Year {n} of {t}", 'ja': '{t}年のうち{n}年目', 'ko': '{t}년 중 {n}년째' },
       // 2026-10-02：十二宮改地支固定排法；地支資料異常時的明顯提示（ja/ko 為機翻，待語言專家校對）
       "dc.v2BranchError":   { "zh-TW": "這個大限的地支資料有誤，十二宮暫時無法依傳統盤面位置排列。請來信 support@fusang-vision.com，我們會盡快處理。", "zh-CN": "这个大限的地支资料有误，十二宫暂时无法依传统盘面位置排列。请来信 support@fusang-vision.com，我们会尽快处理。", "en": "The earthly branch data for this Major Limit has an error, so the twelve palaces cannot be shown in their traditional positions for now. Please email support@fusang-vision.com and we will fix it as soon as possible.", 'ja': 'この大限の地支データに誤りがあるため、十二宮を伝統的な盤面の位置に並べられません。support@fusang-vision.com までご連絡ください。早急に対応いたします。', 'ko': '이 대한의 지지 데이터에 오류가 있어 12궁을 전통 명반 위치에 배치할 수 없어요. support@fusang-vision.com 으로 연락 주시면 빠르게 처리해 드릴게요.' },
+      // 2026-10-02：疊宮（點選一宮時顯示本命落在同一地支的宮位；ja/ko 為機翻，待語言專家校對）
+      // 說明句跟 UI 語言；{palace} 與各層宮名跟報告語言（雙軌，同 v2Enter）
+      "dc.stackHead":       { "zh-TW": "這個大限走到{palace}，這一格同時是：", "zh-CN": "这个大限走到{palace}，这一格同时是：", "en": "In this Major Limit you are in the {palace}. This position is also:", 'ja': 'この大限では{palace}に入ります。この位置は同時に：', 'ko': '이번 대한은 {palace}에 있어요. 이 자리는 동시에:' },
+      "dc.stackDecade":     { "zh-TW": "大限", "zh-CN": "大限", "en": "Major Limit", 'ja': '大限', 'ko': '대한' },
+      "dc.stackNatal":      { "zh-TW": "本命", "zh-CN": "本命", "en": "Natal", 'ja': '本命', 'ko': '선천' },
+      "dc.stackRoleDecade": { "zh-TW": "這十年你走到這裡", "zh-CN": "这十年你走到这里", "en": "Where you are for these ten years", 'ja': 'この10年のあなたはここにいます', 'ko': '이 10년 동안 당신이 머무는 자리예요' },
+      "dc.stackRoleNatal":  { "zh-TW": "你天生在這一格的底色", "zh-CN": "你天生在这一格的底色", "en": "Your innate foundation in this position", 'ja': 'この位置に生まれ持った、あなたの土台です', 'ko': '이 자리에 타고난 당신의 바탕이에요' },
       "dc.v2BackList":      { "zh-TW": "返回大限清單", "zh-CN": "返回大限清单", "en": "Back to all Major Limits", 'ja': '大限の一覧に戻る', 'ko': '대한 목록으로 돌아가기' },
       "dc.genErr401":       { "zh-TW": "登入狀態已過期，請重新登入後再試。", "zh-CN": "登录状态已过期，请重新登录后再试。", "en": "Your session has expired. Please sign in again.", 'ja': 'ログインの有効期限が切れました。もう一度ログインしてからお試しください。', 'ko': '로그인이 만료되었어요. 다시 로그인한 후 시도해 주세요.' },
       "dc.genErr403":       { "zh-TW": "無法製作：此命盤不屬於目前登入的帳號。", "zh-CN": "无法制作：此命盘不属于目前登录的账号。", "en": "Can't create: this chart doesn't belong to the account you're signed in with.", 'ja': '作成できません：この命盤は、現在ログイン中のアカウントのものではありません。', 'ko': '만들 수 없어요: 이 명반은 현재 로그인한 계정의 명반이 아니에요.' },
@@ -538,6 +545,26 @@
     .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua { padding-right: 3em; }
     @media (max-width: 1000px) { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 16px; bottom: 16px; } }
     @media (max-width: 799px)  { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 8px; bottom: 10px; font-size: 12px; } }
+    /* 2026-10-02：疊宮。格子內：選取時才顯示本命宮名（一行）；中央預覽：兩層列表 */
+    .fs-v2 #palace-grid .palace-card .v2-stack { display: none; flex-shrink: 0; margin-top: 2px; padding-right: 3em; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 18px; color: var(--v2-blue-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fs-v2 #palace-grid .palace-card.is-selected .v2-stack { display: block; }
+    .fs-v2 #palace-grid .palace-card.is-selected .palace-card-stars { flex-shrink: 0; }
+    .fs-v2 .v2-stack-box { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .fs-v2 .v2-stack-head { font-size: 12px; line-height: 18px; color: var(--v2-muted); }
+    .fs-v2 .v2-stack-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 10px; padding: 6px 10px; background: var(--v2-tint); font-size: 13px; line-height: 20px; }
+    .fs-v2 .v2-stack-row .lv { font-size: 12px; color: var(--v2-muted); min-width: 3em; }
+    .fs-v2 .v2-stack-row .pl { font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-stack-row .rl { grid-column: 1 / -1; font-size: 12px; line-height: 18px; color: var(--v2-muted); }   /* 說明在第二行，可換行（各語言長度不同）*/
+    .fs-v2 .v2-stack-row.is-current { background: transparent; border-left: 2px solid var(--v2-blue); }
+    .fs-v2 .v2-stack-row.is-current .pl { color: var(--v2-blue-strong); }
+    @media (max-width: 799px) {
+      .fs-v2 #palace-grid .palace-card.is-selected .v2-stack { display: none; }   /* 小格子不塞，交給中央預覽 */
+      .fs-v2 .v2-stack-row { padding: 4px 8px; column-gap: 8px; font-size: 12px; }
+      .fs-v2 .v2-stack-row .rl { display: none; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 .v2-stack-row .rl { display: block; }   /* 手機預覽自成一列、高度不受限，可放回說明 */
+    }
     /* 中央：裝飾（雲紋 + 品牌花） */
     .fs-v2 #palace-grid::before {
       content: '';
@@ -1561,23 +1588,109 @@
     document.getElementById('loading-title').textContent = tx('dc.loadingRangeTitle').replace('{range}', range);
     document.getElementById('loading-sub').textContent = tx('dc.loadingRangeSub');
 
-    const { data: reports, error } = await supabase
-      .from(DECADE_TABLE)
-      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, decade_year_start')
-      .eq('chart_session_id', chartSessionId)
-      .eq('language', 'zh-TW')
-      .eq('decade_year_start', startYear);
+    const [{ data: reports, error }, stackRows] = await Promise.all([
+      supabase
+        .from(DECADE_TABLE)
+        .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, decade_year_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('language', 'zh-TW')
+        .eq('decade_year_start', startYear),
+      loadStackRows(startYear),
+    ]);
 
     if (error) { showError(tx('dc.errReportsFail').replace('{range}', range) + error.message); return; }
     if (!reports || reports.length === 0) { showError(tx('dc.errNoContent').replace('{range}', range)); return; }
 
     reportsByPalace = {};
     for (const row of reports) reportsByPalace[row.palace_name] = row;
+    stackByPalace = buildStack(stackRows, startYear);
 
     setHubHeader(startYear);
     renderHub();
     showView('view-hub');
   }
+
+  // ── 2026-10-02：疊宮（大限頁：疊本命）─────────────────────────────
+  // 資料：ziwei_charts 該大限的 decade 列（valid_year_start = 大限起始年，同報告的 decade_year_start）
+  //       chart_data.palaces（以宮名為 key，palaces[宮].layers.{decade,natal}.branch）；以地支對齊。
+  // 只採用「大限層 12 宮地支與報告完全一致」的那一列；找不到就不顯示疊宮並 console.error。
+  // 只做呈現：任何異常都只讓疊宮不顯示，不影響大限本身的內容。
+  let stackByPalace = {};   // { 大限宮名: { natal: 本命宮名|null } }
+
+  async function loadStackRows(startYear) {
+    try {
+      const { data, error } = await supabase
+        .from('ziwei_charts')
+        .select('id, palaces:chart_data->palaces')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_type', 'decade')
+        .eq('valid_year_start', startYear)
+        .limit(3);
+      if (error) { console.error('[decade] 疊宮資料查詢失敗', error.message); return []; }
+      return data || [];
+    } catch (e) { console.error('[decade] 疊宮資料查詢失敗', e); return []; }
+  }
+
+  function buildStack(rows, startYear) {
+    const reportBranch = p => String(reportsByPalace[p]?.composition?.branch || '').trim();
+    const matches = (rows || []).filter(r => r && r.palaces && PALACE_ORDER.every(p => {
+      const b = reportBranch(p);
+      return b && r.palaces[p]?.layers?.decade?.branch === b;
+    }));
+    if (matches.length !== 1) {
+      console.error('[decade] 找不到唯一一列與大限報告地支一致的排盤資料，不顯示疊宮', { startYear, rows: (rows || []).length, matched: matches.length });
+      return {};
+    }
+    const natalByBranch = {};
+    for (const [p, v] of Object.entries(matches[0].palaces)) {
+      const b = v?.layers?.natal?.branch;
+      if (b) natalByBranch[b] = p;
+    }
+    const out = {};
+    for (const p of PALACE_ORDER) out[p] = { natal: natalByBranch[reportBranch(p)] || null };
+    return out;
+  }
+
+  function shortPalace(name) {
+    return String(palaceLabel(name) || name).replace(/^Palace of /, '').replace(/(宮|宫|궁)$/, '');
+  }
+
+  // 格子：選取時才顯示（CSS 控制）
+  window.FSV2_PERIOD.decorateCard = function (card, p) {
+    card.querySelectorAll('.v2-stack').forEach(n => n.remove());
+    const st = stackByPalace[p];
+    if (!st || !st.natal || !card.dataset.branch) return;
+    const box = document.createElement('div');
+    box.className = 'v2-stack';
+    const line = document.createElement('span');
+    line.textContent = tx('dc.stackNatal') + ' ' + shortPalace(st.natal);
+    box.appendChild(line);
+    const stars = card.querySelector('.palace-card-stars');
+    card.insertBefore(box, stars ? stars.nextSibling : null);
+  };
+
+  // 中央預覽：兩層列表（插在「進入詳情」按鈕之前）
+  window.FSV2_PERIOD.previewExtra = function (p, preview) {
+    const st = stackByPalace[p];
+    if (!st || !st.natal) return;
+    const box = document.createElement('div');
+    box.className = 'v2-stack-box';
+    const head = document.createElement('div');
+    head.className = 'v2-stack-head';
+    head.textContent = (tx('dc.stackHead') || '').replace('{palace}', palaceLabel(p));
+    box.appendChild(head);
+    [['dc.stackDecade', p, 'dc.stackRoleDecade', true], ['dc.stackNatal', st.natal, 'dc.stackRoleNatal', false]]
+      .forEach(([lvKey, palace, roleKey, cur]) => {
+        const row = document.createElement('div');
+        row.className = 'v2-stack-row' + (cur ? ' is-current' : '');
+        const lv = document.createElement('span'); lv.className = 'lv'; lv.textContent = tx(lvKey);
+        const pl = document.createElement('span'); pl.className = 'pl'; pl.textContent = palaceLabel(palace);
+        const rl = document.createElement('span'); rl.className = 'rl'; rl.textContent = tx(roleKey);
+        row.append(lv, pl, rl);
+        box.appendChild(row);
+      });
+    preview.appendChild(box);
+  };
 
   // 2026-10-02：十二宮地支固定排法（同 chart.html）。每宮地支取自 composition.branch；
   // 12 宮必須是 12 個互不重複的地支，否則不定位並明顯報錯（noisy failure，不靜默擺格子）。
