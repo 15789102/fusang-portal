@@ -209,6 +209,8 @@
       "mo.v2FocusBadge": {"zh-TW": "焦點", "zh-CN": "焦点", "en": "Focus", 'ja': '注目', 'ko': '초점'},
       "mo.v2Enter": {"zh-TW": "進入{palace}詳情", "zh-CN": "进入{palace}详情", "en": "Read the {palace}", 'ja': '{palace}の詳細へ', 'ko': '{palace} 자세히 보기'},
       "mo.v2GridNote": {"zh-TW": "卡片下方細條：右側（藍）是助力與順流，左側（紅）是張力與需要用心之處；長度相對於你本月其他宮位，不是吉凶評分。", "zh-CN": "卡片下方细条：右侧（蓝）是助力与顺流，左侧（红）是张力与需要用心之处；长度相对于你本月其他宫位，不是吉凶评分。", "en": "The thin bar on each card: the right side (blue) shows support and flow, and the left side (red) shows tension and where care is needed. Length is relative to your other palaces this month, not a score.", 'ja': 'カード下の細いバー：右側（青）は助力と流れの良さ、左側（赤）は張りと心を配りたい点です。長さは今月のほかの宮と比べた相対的なもので、吉凶の点数ではありません。', 'ko': '카드 아래 가는 막대: 오른쪽(파랑)은 도움과 순조로운 흐름, 왼쪽(빨강)은 긴장과 마음을 써야 할 부분이에요. 길이는 이번 달 다른 궁과 비교한 상대값이며, 길흉 점수가 아니에요.'},
+      // 2026-10-02：十二宮改地支固定排法；地支資料異常時的明顯提示（ja/ko 為機翻，待語言專家校對）
+      "mo.v2BranchError": {"zh-TW": "這個流月的地支資料有誤，十二宮暫時無法依傳統盤面位置排列。請來信 support@fusang-vision.com，我們會盡快處理。", "zh-CN": "这个流月的地支资料有误，十二宫暂时无法依传统盘面位置排列。请来信 support@fusang-vision.com，我们会尽快处理。", "en": "The earthly branch data for this Monthly Chart has an error, so the twelve palaces cannot be shown in their traditional positions for now. Please email support@fusang-vision.com and we will fix it as soon as possible.", 'ja': 'この流月の地支データに誤りがあるため、十二宮を伝統的な盤面の位置に並べられません。support@fusang-vision.com までご連絡ください。早急に対応いたします。', 'ko': '이 유월의 지지 데이터에 오류가 있어 12궁을 전통 명반 위치에 배치할 수 없어요. support@fusang-vision.com 으로 연락 주시면 빠르게 처리해 드릴게요.'},
       "mo.v2BackList": {"zh-TW": "返回流月清單", "zh-CN": "返回流月清单", "en": "Back to all months", 'ja': '流月の一覧に戻る', 'ko': '월운 목록으로 돌아가기'},
       "mo.v2Energy": {"zh-TW": "完整能量分布（12 宮對照）", "zh-CN": "完整能量分布（12 宫对照）", "en": "Full energy distribution (all 12 palaces)", 'ja': 'エネルギー分布の全体（十二宮の比較）', 'ko': '전체 에너지 분포(12궁 비교)'},
       "mo.v2Tension": {"zh-TW": "張力", "zh-CN": "张力", "en": "Tension", 'ja': '張り', 'ko': '긴장'},
@@ -1013,19 +1015,48 @@
       margin: 0;
       padding: 1px 0 0 1px;
     }
-    /* 順序 = PALACE_ORDER（命 兄 夫 子 財 疾 遷 交 官 田 福 父）→ 傳統命盤逆時針環狀 */
-    .fs-v2 #palace-grid .palace-card:nth-child(1)  { grid-area: 1 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(2)  { grid-area: 1 / 2; }
-    .fs-v2 #palace-grid .palace-card:nth-child(3)  { grid-area: 1 / 3; }
-    .fs-v2 #palace-grid .palace-card:nth-child(4)  { grid-area: 1 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(5)  { grid-area: 2 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(6)  { grid-area: 3 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(7)  { grid-area: 4 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(8)  { grid-area: 4 / 3; }
-    .fs-v2 #palace-grid .palace-card:nth-child(9)  { grid-area: 4 / 2; }
-    .fs-v2 #palace-grid .palace-card:nth-child(10) { grid-area: 4 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(11) { grid-area: 3 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(12) { grid-area: 2 / 1; }
+    /* 2026-10-02：地支固定排法（傳統紫微盤）。位置依每宮 data-branch 決定，宮位名落在對應地支格；
+       DOM 順序仍為 PALACE_ORDER（v2 period script、宮位圖示依 DOM 順序對應，不受影響）。
+       巳 午 未 申
+       辰       酉
+       卯       戌
+       寅 丑 子 亥 */
+    .fs-v2 #palace-grid .palace-card[data-branch="巳"] { grid-area: 1 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="午"] { grid-area: 1 / 2; }
+    .fs-v2 #palace-grid .palace-card[data-branch="未"] { grid-area: 1 / 3; }
+    .fs-v2 #palace-grid .palace-card[data-branch="申"] { grid-area: 1 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="酉"] { grid-area: 2 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="戌"] { grid-area: 3 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="亥"] { grid-area: 4 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="子"] { grid-area: 4 / 3; }
+    .fs-v2 #palace-grid .palace-card[data-branch="丑"] { grid-area: 4 / 2; }
+    .fs-v2 #palace-grid .palace-card[data-branch="寅"] { grid-area: 4 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="卯"] { grid-area: 3 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="辰"] { grid-area: 2 / 1; }
+    /* 地支資料異常（noisy fallback）：不定位，12 宮依序自動填入外圈，並顯示 #hub-branch-error */
+    .fs-v2 #palace-grid.is-branch-invalid .palace-card { grid-column: auto; grid-row: auto; }
+    .fs-v2 .v2-branch-error { margin: 0 0 16px; padding: 12px 16px; border: 1px solid var(--t-ji, #7a3d4a); color: var(--t-ji, #7a3d4a); background: #fff; font-size: 14px; line-height: 24px; }
+    .fs-v2 .v2-branch-error[hidden] { display: none; }
+    /* 2026-10-02：每宮干支（右下角，不翻譯）。
+       流月卡底部有能量細條：有細條時，decorateCard 把干支移進細條，固定在細條正上方右側（不受各格內距差異影響）；
+       沒有細條時（無能量資料），干支照其他頁放在卡片右下角。 */
+    .fs-v2 #palace-grid .palace-card > .palace-card-gz { position: absolute; right: 24px; bottom: 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 20px; letter-spacing: 0.08em; color: var(--v2-muted); pointer-events: none; }
+    .fs-v2 #palace-grid .palace-card .v2-mbar { position: relative; }
+    .fs-v2 #palace-grid .palace-card .v2-mbar > .palace-card-gz { position: absolute; right: 0; bottom: calc(100% + 8px); font-family: var(--v2-font-cjk); font-size: 14px; line-height: 20px; letter-spacing: 0.08em; color: var(--v2-muted); pointer-events: none; }
+    .fs-v2 #palace-grid .palace-card.is-selected .palace-card-gz,
+    .fs-v2 #palace-grid .palace-card:hover .palace-card-gz { color: var(--v2-blue-strong); }
+    .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua { padding-right: 3em; }
+    @media (max-width: 1000px) { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 16px; bottom: 16px; } }
+    @media (max-width: 799px)  {
+      .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 8px; bottom: 10px; font-size: 12px; }
+      .fs-v2 #palace-grid .palace-card .v2-mbar > .palace-card-gz { bottom: calc(100% + 4px); font-size: 12px; }
+      /* 四化標在此寬度隱藏：細條改為貼底（原本沿用「接在四化標後」的 8px，會浮在中間），留出干支的位置 */
+      .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua + .v2-mbar { margin-top: auto; }
+    }
+    @media (max-width: 599px)  {
+      /* 四化標在此寬度重新顯示：細條恢復接在四化標之後 */
+      .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua + .v2-mbar { margin-top: 8px; }
+    }
     /* 中央：裝飾（雲紋 + 品牌花） */
     .fs-v2 #palace-grid::before {
       content: '';
@@ -1063,7 +1094,7 @@
     }
     .fs-v2 #palace-grid .palace-card:hover::before { opacity: .5; transform: none; }
     .fs-v2 #palace-grid .palace-card > * { position: relative; }
-    .fs-v2 .palace-card-index { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .palace-card-index { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); min-height: 20px; } /* 2026-10-02：羅馬數字已拿掉；保留元素當宮位圖示與徽章（本月焦點／追蹤）載體，維持原版面高度 */
     .fs-v2 .palace-card-name,
     .fs-v2 .palace-grid .palace-card:first-child .palace-card-name { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
     .fs-v2 #palace-grid .palace-card:hover .palace-card-name { color: var(--v2-blue-strong); }
@@ -1301,7 +1332,7 @@
       border: 1px solid var(--v2-line);
       background: #fff;
     }
-    .fs-v2 .v2-hp-index { font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .v2-hp-index { display: none; } /* 2026-10-02：I / XII 不再顯示（由共用 fs-v2-period.js 產生，三頁改完後再從 JS 移除）*/
     .fs-v2 .v2-hp-name { margin: 0; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
     .fs-v2 .v2-hp-tagline { font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
     .fs-v2 .v2-hp-explainer { font-size: 15px; line-height: 27px; color: var(--v2-muted); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1899,6 +1930,7 @@
            兩處共用 ulEntryHtml()，可見性一律由 monthly_unlock_quota().is_annual 決定。-->
       <div id="ul-entry-hub" class="ul-entry" style="display:none;"></div>
 
+      <p id="hub-branch-error" class="v2-branch-error" role="alert" hidden></p>
       <div id="palace-grid" class="palace-grid"></div>
 
       <!-- v2：能量細條說明 + 返回流月清單 -->
@@ -2374,6 +2406,8 @@
     function decorateCard(card, p) {
       var f = FS();
       var e = f && f.getEnergy && f.getEnergy();
+      // 2026-10-02：干支掛在能量細條上；重建細條前先把干支移回卡片，避免跟著被刪掉
+      card.querySelectorAll('.v2-mbar > .palace-card-gz').forEach(function (g) { card.appendChild(g); });
       card.querySelectorAll('.v2-cbadge, .v2-mbar').forEach(function (n) { n.remove(); });
       card.classList.remove('v2-is-focus');
       if (!e || !e.byPalace[p]) return;
@@ -2390,6 +2424,8 @@
       var pp = el('i', 'p'); pp.style.width = x.posPct + '%';
       bar.appendChild(n); bar.appendChild(pp);
       card.appendChild(bar);
+      var gz = card.querySelector(':scope > .palace-card-gz');   // 2026-10-02：干支固定在細條正上方右側
+      if (gz) bar.appendChild(gz);
     }
     function previewExtra(p, box) {
       var f = FS();
@@ -3180,16 +3216,49 @@
     });
   }
 
+  // 2026-10-02：十二宮地支固定排法（同 chart.html）。每宮地支取自 composition.branch；
+  // 12 宮必須是 12 個互不重複的地支，否則不定位並明顯報錯（noisy failure，不靜默擺格子）。
+  const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  function palaceBranches() {
+    const map = {};
+    PALACE_ORDER.forEach(p => { map[p] = String(reportsByPalace[p]?.composition?.branch || '').trim(); });
+    const vals = Object.values(map);
+    const ok = vals.every(b => BRANCHES.includes(b)) && new Set(vals).size === 12;
+    return { map, ok };
+  }
+
   function renderHub() {
     const grid = document.getElementById('palace-grid');
     grid.innerHTML = '';
-    PALACE_ORDER.forEach((palaceName, i) => {
+    const { map: branchOf, ok: branchesOk } = palaceBranches();
+    grid.classList.toggle('is-branch-invalid', !branchesOk);
+    const branchErr = document.getElementById('hub-branch-error');
+    if (branchErr) {
+      branchErr.hidden = branchesOk;
+      branchErr.textContent = branchesOk ? '' : tx('mo.v2BranchError');
+    }
+    if (!branchesOk) console.error('[monthly] 十二宮地支資料異常，未依地支定位', { chartSessionId, year: currentYear, month: currentMonth, branches: branchOf });
+    PALACE_ORDER.forEach((palaceName) => {
       const row = reportsByPalace[palaceName];
       const card = document.createElement('div');
       card.className = 'palace-card';
-      const idx = document.createElement('div');
-      idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
+      if (branchesOk) card.dataset.branch = branchOf[palaceName];
+      const idx = document.createElement('div');   // 宮位圖示與徽章載體（羅馬數字已拿掉）
+      idx.className = 'palace-card-index';
       card.appendChild(idx);
+      // 干支（不翻譯）：地支已驗證才顯示；宮干不合法時只顯示地支。
+      // 放在宮名之前：絕對定位不影響版面，也不打斷能量細條的「緊鄰兄弟」貼底規則（.palace-card-stars + .v2-mbar）
+      if (branchesOk) {
+        const stem = String(row?.composition?.heavenly_stem || '').trim();
+        const gz = (STEMS.includes(stem) ? stem : '') + branchOf[palaceName];
+        if (!STEMS.includes(stem)) console.error('[monthly] 宮干資料異常', { palace: palaceName, stem });
+        const gzEl = document.createElement('div');
+        gzEl.className = 'palace-card-gz';
+        gzEl.textContent = gz;
+        card.dataset.gz = gz;
+        card.appendChild(gzEl);
+      }
       const nameEl = document.createElement('div');
       nameEl.className = 'palace-card-name'; nameEl.textContent = palaceLabel(palaceName);
       card.appendChild(nameEl);
