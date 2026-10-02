@@ -76,6 +76,14 @@
       "an.v2Enter":         { "zh-TW": "進入{palace}詳情", "zh-CN": "进入{palace}详情", "en": "Read the {palace}", 'ja': '{palace}の詳細へ', 'ko': '{palace} 자세히 보기' },
       // 2026-10-02：十二宮改地支固定排法；地支資料異常時的明顯提示（ja/ko 為機翻，待語言專家校對）
       "an.v2BranchError":   { "zh-TW": "這個流年的地支資料有誤，十二宮暫時無法依傳統盤面位置排列。請來信 support@fusang-vision.com，我們會盡快處理。", "zh-CN": "这个流年的地支资料有误，十二宫暂时无法依传统盘面位置排列。请来信 support@fusang-vision.com，我们会尽快处理。", "en": "The earthly branch data for this Annual Chart has an error, so the twelve palaces cannot be shown in their traditional positions for now. Please email support@fusang-vision.com and we will fix it as soon as possible.", 'ja': 'この流年の地支データに誤りがあるため、十二宮を伝統的な盤面の位置に並べられません。support@fusang-vision.com までご連絡ください。早急に対応いたします。', 'ko': '이 유년의 지지 데이터에 오류가 있어 12궁을 전통 명반 위치에 배치할 수 없어요. support@fusang-vision.com 으로 연락 주시면 빠르게 처리해 드릴게요.' },
+      // 2026-10-02：疊宮（點選一宮時顯示大限、本命落在同一地支的宮位；ja/ko 為機翻，待語言專家校對）
+      "an.stackHead":       { "zh-TW": "這一格同時落在", "zh-CN": "这一格同时落在", "en": "This position also falls in", 'ja': 'この位置が重なる宮', 'ko': '이 자리가 겹치는 궁' },
+      "an.stackAnnual":     { "zh-TW": "流年", "zh-CN": "流年", "en": "Annual", 'ja': '流年', 'ko': '유년' },
+      "an.stackDecade":     { "zh-TW": "大限", "zh-CN": "大限", "en": "Major Limit", 'ja': '大限', 'ko': '대한' },
+      "an.stackNatal":      { "zh-TW": "本命", "zh-CN": "本命", "en": "Natal", 'ja': '本命', 'ko': '선천' },
+      "an.stackRoleAnnual": { "zh-TW": "今年的重心", "zh-CN": "今年的重心", "en": "Your focus this year", 'ja': '今年の重心', 'ko': '올해의 중심' },
+      "an.stackRoleDecade": { "zh-TW": "這十年的大方向", "zh-CN": "这十年的大方向", "en": "Your direction for these ten years", 'ja': 'この10年の大きな方向', 'ko': '이 10년의 큰 방향' },
+      "an.stackRoleNatal":  { "zh-TW": "天生的底色", "zh-CN": "天生的底色", "en": "Your innate foundation", 'ja': '生まれ持った土台', 'ko': '타고난 바탕' },
       "an.v2BackList":      { "zh-TW": "返回流年清單", "zh-CN": "返回流年清单", "en": "Back to all years", 'ja': '流年の一覧に戻る', 'ko': '유년 목록으로 돌아가기' }
     });
   </script>
@@ -479,6 +487,27 @@
     .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua { padding-right: 3em; }
     @media (max-width: 1000px) { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 16px; bottom: 16px; } }
     @media (max-width: 799px)  { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 8px; bottom: 10px; font-size: 12px; } }
+    /* 2026-10-02：疊宮。格子內：選取時才顯示大限／本命宮名；中央預覽：三層列表 */
+    .fs-v2 #palace-grid .palace-card .v2-stack { display: none; flex-shrink: 0; margin-top: 2px; padding-right: 3em; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 18px; color: var(--v2-blue-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fs-v2 #palace-grid .palace-card .v2-stack > span + span::before { content: ' · '; color: var(--v2-muted); }
+    .fs-v2 #palace-grid .palace-card.is-selected .v2-stack { display: block; }
+    .fs-v2 #palace-grid .palace-card.is-selected .palace-card-stars { flex-shrink: 0; }
+    .fs-v2 .v2-stack-box { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .fs-v2 .v2-stack-head { font-size: 12px; line-height: 18px; color: var(--v2-muted); }
+    .fs-v2 .v2-stack-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 6px 10px; background: var(--v2-tint); font-size: 13px; line-height: 20px; }
+    .fs-v2 .v2-stack-row .lv { font-size: 12px; color: var(--v2-muted); min-width: 3em; }
+    .fs-v2 .v2-stack-row .pl { font-weight: 500; color: var(--v2-ink); }
+    .fs-v2 .v2-stack-row .rl { font-size: 12px; color: var(--v2-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fs-v2 .v2-stack-row.is-current { background: transparent; border-left: 2px solid var(--v2-blue); }
+    .fs-v2 .v2-stack-row.is-current .pl { color: var(--v2-blue-strong); }
+    @media (max-width: 799px) {
+      .fs-v2 #palace-grid .palace-card.is-selected .v2-stack { display: none; }   /* 小格子不塞，交給中央預覽 */
+      .fs-v2 .v2-stack-row { padding: 4px 8px; gap: 8px; font-size: 12px; }
+      .fs-v2 .v2-stack-row .rl { display: none; }
+    }
+    @media (max-width: 599px) {
+      .fs-v2 .v2-stack-row .rl { display: block; }   /* 手機預覽自成一列、高度不受限，可放回說明 */
+    }
     /* 中央：裝飾（雲紋 + 品牌花） */
     .fs-v2 #palace-grid::before {
       content: '';
@@ -1425,24 +1454,120 @@
     document.getElementById('loading-title').textContent = tx('an.loadingYearTitle').replace('{year}', year);
     document.getElementById('loading-sub').textContent = tx('an.loadingYearSub');
 
-    const { data: reports, error } = await supabase
-      .from(ANNUAL_TABLE)
-      .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start')
-      .eq('chart_session_id', chartSessionId)
-      .eq('chart_layer', 'annual')
-      .eq('language', 'zh-TW')
-      .eq('valid_year_start', year);
+    const [{ data: reports, error }, stackPalaces] = await Promise.all([
+      supabase
+        .from(ANNUAL_TABLE)
+        .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_layer', 'annual')
+        .eq('language', 'zh-TW')
+        .eq('valid_year_start', year),
+      loadStackPalaces(year),
+    ]);
 
     if (error) { showError(tx('an.errReportsFail').replace('{year}', year) + error.message); return; }
     if (!reports || reports.length === 0) { showError(tx('an.errNoContent').replace('{year}', year)); return; }
 
     reportsByPalace = {};
     for (const row of reports) reportsByPalace[row.palace_name] = row;
+    stackByPalace = buildStack(stackPalaces);
 
     setHubHeader(year);
     renderHub();
     showView('view-hub');
   }
+
+  // ── 2026-10-02：疊宮（流年頁：疊大限、本命）──────────────────────
+  // 資料：ziwei_charts 當年 annual 列的 chart_data.palaces（以宮名為 key，
+  //       palaces[宮].layers.{annual,decade,natal}.branch）；以地支對齊各層。
+  // 只做呈現：撈不到或資料不一致時不顯示疊宮並 console.error，不影響流年本身的內容。
+  let stackByPalace = {};   // { 流年宮名: { decade: 大限宮名|null, natal: 本命宮名|null } }
+
+  async function loadStackPalaces(year) {
+    try {
+      const { data, error } = await supabase
+        .from('ziwei_charts')
+        .select('palaces:chart_data->palaces')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_type', 'annual')
+        .eq('valid_year_start', year)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) { console.error('[annual] 疊宮資料查詢失敗', error.message); return null; }
+      return data?.palaces || null;
+    } catch (e) { console.error('[annual] 疊宮資料查詢失敗', e); return null; }
+  }
+
+  function buildStack(palaces) {
+    if (!palaces || typeof palaces !== 'object') return {};
+    const byBranch = { decade: {}, natal: {} };
+    for (const [p, v] of Object.entries(palaces)) {
+      for (const layer of ['decade', 'natal']) {
+        const b = v?.layers?.[layer]?.branch;
+        if (b) byBranch[layer][b] = p;
+      }
+    }
+    const out = {};
+    for (const p of PALACE_ORDER) {
+      const b = String(reportsByPalace[p]?.composition?.branch || '').trim();
+      const ab = palaces[p]?.layers?.annual?.branch;
+      // 防呆：報告的地支必須和排盤資料一致，否則整盤不顯示疊宮
+      if (!b || ab !== b) { console.error('[annual] 疊宮地支與報告不一致，不顯示疊宮', { palace: p, report: b, chart: ab }); return {}; }
+      out[p] = { decade: byBranch.decade[b] || null, natal: byBranch.natal[b] || null };
+    }
+    return out;
+  }
+
+  function shortPalace(name) {
+    return String(palaceLabel(name) || name).replace(/^Palace of /, '').replace(/(宮|宫|궁)$/, '');
+  }
+
+  // 格子：選取時才顯示（CSS 控制）
+  window.FSV2_PERIOD.decorateCard = function (card, p) {
+    card.querySelectorAll('.v2-stack').forEach(n => n.remove());
+    const st = stackByPalace[p];
+    if (!st || !card.dataset.branch) return;
+    const box = document.createElement('div');
+    box.className = 'v2-stack';
+    [['decade', 'an.stackDecade'], ['natal', 'an.stackNatal']].forEach(([k, key]) => {
+      if (!st[k]) return;
+      const line = document.createElement('span');
+      line.textContent = tx(key) + ' ' + shortPalace(st[k]);
+      box.appendChild(line);
+    });
+    if (!box.childNodes.length) return;
+    const stars = card.querySelector('.palace-card-stars');
+    card.insertBefore(box, stars ? stars.nextSibling : null);
+  };
+
+  // 中央預覽：三層列表（插在「進入詳情」按鈕之前）
+  window.FSV2_PERIOD.previewExtra = function (p, preview) {
+    const st = stackByPalace[p];
+    if (!st) return;
+    const box = document.createElement('div');
+    box.className = 'v2-stack-box';
+    const head = document.createElement('div');
+    head.className = 'v2-stack-head';
+    head.textContent = tx('an.stackHead');
+    box.appendChild(head);
+    const rows = [
+      ['an.stackAnnual', p, 'an.stackRoleAnnual', true],
+      ['an.stackDecade', st.decade, 'an.stackRoleDecade', false],
+      ['an.stackNatal', st.natal, 'an.stackRoleNatal', false],
+    ];
+    rows.forEach(([lvKey, palace, roleKey, cur]) => {
+      if (!palace) return;
+      const row = document.createElement('div');
+      row.className = 'v2-stack-row' + (cur ? ' is-current' : '');
+      const lv = document.createElement('span'); lv.className = 'lv'; lv.textContent = tx(lvKey);
+      const pl = document.createElement('span'); pl.className = 'pl'; pl.textContent = palaceLabel(palace);
+      const rl = document.createElement('span'); rl.className = 'rl'; rl.textContent = tx(roleKey);
+      row.append(lv, pl, rl);
+      box.appendChild(row);
+    });
+    preview.appendChild(box);
+  };
 
   // 2026-10-02：十二宮地支固定排法（同 chart.html）。每宮地支取自 composition.branch；
   // 12 宮必須是 12 個互不重複的地支，否則不定位並明顯報錯（noisy failure，不靜默擺格子）。
