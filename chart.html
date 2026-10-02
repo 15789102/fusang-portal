@@ -671,6 +671,13 @@
     .fs-v2 #palace-grid.is-branch-invalid .palace-card { grid-column: auto; grid-row: auto; }
     .fs-v2 .v2-branch-error { margin: 0 0 16px; padding: 12px 16px; border: 1px solid var(--t-ji, #7a3d4a); color: var(--t-ji, #7a3d4a); background: #fff; font-size: 14px; line-height: 24px; }
     .fs-v2 .v2-branch-error[hidden] { display: none; }
+    /* 2026-10-02：每宮干支（右下角，不翻譯）*/
+    .fs-v2 #palace-grid .palace-card > .palace-card-gz { position: absolute; right: 24px; bottom: 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 20px; letter-spacing: 0.08em; color: var(--v2-muted); pointer-events: none; }
+    .fs-v2 #palace-grid .palace-card.is-selected > .palace-card-gz,
+    .fs-v2 #palace-grid .palace-card:hover > .palace-card-gz { color: var(--v2-blue-strong); }
+    .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua { padding-right: 3em; }
+    @media (max-width: 1000px) { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 16px; bottom: 16px; } }
+    @media (max-width: 799px)  { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 8px; bottom: 10px; font-size: 12px; } }
     /* 中央：裝飾（雲紋 + 品牌花） */
     .fs-v2 #palace-grid::before {
       content: '';
@@ -1801,6 +1808,7 @@
   // 2026-10-02：十二宮地支固定排法。每宮地支取自 composition.branch；
   // 12 宮必須是 12 個互不重複的地支，否則不定位並明顯報錯（noisy failure，不靜默擺格子）。
   const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
   function palaceBranches() {
     const map = {};
     PALACE_ORDER.forEach(p => { map[p] = String(reportsByPalace[p]?.composition?.branch || '').trim(); });
@@ -1837,6 +1845,17 @@
         ? row.composition.main_stars.map(s => starLabel(s.star)).join(' · ')
         : tx('emptyNoMainStar');
       card.appendChild(starsEl);
+      // 干支（不翻譯）：地支已驗證才顯示；宮干不合法時只顯示地支
+      if (branchesOk) {
+        const stem = String(row?.composition?.heavenly_stem || '').trim();
+        const gz = (STEMS.includes(stem) ? stem : '') + branchOf[palaceName];
+        if (!STEMS.includes(stem)) console.error('[chart] 宮干資料異常', { palace: palaceName, stem });
+        const gzEl = document.createElement('div');
+        gzEl.className = 'palace-card-gz';
+        gzEl.textContent = gz;
+        card.dataset.gz = gz;
+        card.appendChild(gzEl);
+      }
       card.addEventListener('click', () => openDetail(palaceName));
       grid.appendChild(card);
     });
