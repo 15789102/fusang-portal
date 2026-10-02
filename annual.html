@@ -74,7 +74,8 @@
       "an.v2Latest":        { "zh-TW": "最新流年", "zh-CN": "最新流年", "en": "Latest year", 'ja': '最新の流年', 'ko': '최신 유년' },
       "an.v2Intro":         { "zh-TW": "<strong>流年</strong>是一年一度的運勢週期。每一年，十二宮會依當年的天干地支重新排列，四化也隨之流轉，呈現這一年的重心、機會與需要留意的地方。", "zh-CN": "<strong>流年</strong>是一年一度的运势周期。每一年，十二宫会依当年的天干地支重新排列，四化也随之流转，呈现这一年的重心、机会与需要留意的地方。", "en": "The <strong>annual chart</strong> follows a yearly cycle. Each year, the twelve palaces are rearranged by the stem and branch of that year, and the Four Transformations move with them. Together they show the focus, openings and points to watch for the year.", 'ja': '<strong>流年</strong>とは、1年ごとの運勢の周期です。毎年、十二宮はその年の天干地支によって並び替えられ、四化もそれに合わせて巡り、その年の重心・チャンス・気をつけたい点を示します。', 'ko': '<strong>유년</strong>은 한 해 단위로 돌아오는 운세 주기예요. 해마다 12궁은 그해의 천간과 지지에 따라 다시 배열되고, 사화도 함께 흐르며 그해의 중심, 기회, 유의할 점을 보여 줘요.' },
       "an.v2Enter":         { "zh-TW": "進入{palace}詳情", "zh-CN": "进入{palace}详情", "en": "Read the {palace}", 'ja': '{palace}の詳細へ', 'ko': '{palace} 자세히 보기' },
-      "an.v2GridNote":      { "zh-TW": "I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。", "zh-CN": "I–XII 为宫位索引编号；个人命盘资料以详细解读为准。", "en": "I–XII identify the palaces. See the detailed reading for your personal chart information.", 'ja': 'I〜XII は宮の索引番号です。個人の命盤データは、詳しい解説をご確認ください。', 'ko': 'I–XII는 궁의 색인 번호예요. 개인 명반 정보는 상세 해석에서 확인해 주세요.' },
+      // 2026-10-02：十二宮改地支固定排法；地支資料異常時的明顯提示（ja/ko 為機翻，待語言專家校對）
+      "an.v2BranchError":   { "zh-TW": "這個流年的地支資料有誤，十二宮暫時無法依傳統盤面位置排列。請來信 support@fusang-vision.com，我們會盡快處理。", "zh-CN": "这个流年的地支资料有误，十二宫暂时无法依传统盘面位置排列。请来信 support@fusang-vision.com，我们会尽快处理。", "en": "The earthly branch data for this Annual Chart has an error, so the twelve palaces cannot be shown in their traditional positions for now. Please email support@fusang-vision.com and we will fix it as soon as possible.", 'ja': 'この流年の地支データに誤りがあるため、十二宮を伝統的な盤面の位置に並べられません。support@fusang-vision.com までご連絡ください。早急に対応いたします。', 'ko': '이 유년의 지지 데이터에 오류가 있어 12궁을 전통 명반 위치에 배치할 수 없어요. support@fusang-vision.com 으로 연락 주시면 빠르게 처리해 드릴게요.' },
       "an.v2BackList":      { "zh-TW": "返回流年清單", "zh-CN": "返回流年清单", "en": "Back to all years", 'ja': '流年の一覧に戻る', 'ko': '유년 목록으로 돌아가기' }
     });
   </script>
@@ -449,19 +450,35 @@
       margin: 0;
       padding: 1px 0 0 1px;
     }
-    /* 順序 = PALACE_ORDER（命 兄 夫 子 財 疾 遷 交 官 田 福 父）→ 傳統命盤逆時針環狀 */
-    .fs-v2 #palace-grid .palace-card:nth-child(1)  { grid-area: 1 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(2)  { grid-area: 1 / 2; }
-    .fs-v2 #palace-grid .palace-card:nth-child(3)  { grid-area: 1 / 3; }
-    .fs-v2 #palace-grid .palace-card:nth-child(4)  { grid-area: 1 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(5)  { grid-area: 2 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(6)  { grid-area: 3 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(7)  { grid-area: 4 / 4; }
-    .fs-v2 #palace-grid .palace-card:nth-child(8)  { grid-area: 4 / 3; }
-    .fs-v2 #palace-grid .palace-card:nth-child(9)  { grid-area: 4 / 2; }
-    .fs-v2 #palace-grid .palace-card:nth-child(10) { grid-area: 4 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(11) { grid-area: 3 / 1; }
-    .fs-v2 #palace-grid .palace-card:nth-child(12) { grid-area: 2 / 1; }
+    /* 2026-10-02：地支固定排法（傳統紫微盤）。位置依每宮 data-branch 決定，宮位名落在對應地支格；
+       DOM 順序仍為 PALACE_ORDER（v2 period script、宮位圖示依 DOM 順序對應，不受影響）。
+       巳 午 未 申
+       辰       酉
+       卯       戌
+       寅 丑 子 亥 */
+    .fs-v2 #palace-grid .palace-card[data-branch="巳"] { grid-area: 1 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="午"] { grid-area: 1 / 2; }
+    .fs-v2 #palace-grid .palace-card[data-branch="未"] { grid-area: 1 / 3; }
+    .fs-v2 #palace-grid .palace-card[data-branch="申"] { grid-area: 1 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="酉"] { grid-area: 2 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="戌"] { grid-area: 3 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="亥"] { grid-area: 4 / 4; }
+    .fs-v2 #palace-grid .palace-card[data-branch="子"] { grid-area: 4 / 3; }
+    .fs-v2 #palace-grid .palace-card[data-branch="丑"] { grid-area: 4 / 2; }
+    .fs-v2 #palace-grid .palace-card[data-branch="寅"] { grid-area: 4 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="卯"] { grid-area: 3 / 1; }
+    .fs-v2 #palace-grid .palace-card[data-branch="辰"] { grid-area: 2 / 1; }
+    /* 地支資料異常（noisy fallback）：不定位，12 宮依序自動填入外圈，並顯示 #hub-branch-error */
+    .fs-v2 #palace-grid.is-branch-invalid .palace-card { grid-column: auto; grid-row: auto; }
+    .fs-v2 .v2-branch-error { margin: 0 0 16px; padding: 12px 16px; border: 1px solid var(--t-ji, #7a3d4a); color: var(--t-ji, #7a3d4a); background: #fff; font-size: 14px; line-height: 24px; }
+    .fs-v2 .v2-branch-error[hidden] { display: none; }
+    /* 2026-10-02：每宮干支（右下角，不翻譯）*/
+    .fs-v2 #palace-grid .palace-card > .palace-card-gz { position: absolute; right: 24px; bottom: 20px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 20px; letter-spacing: 0.08em; color: var(--v2-muted); pointer-events: none; }
+    .fs-v2 #palace-grid .palace-card.is-selected > .palace-card-gz,
+    .fs-v2 #palace-grid .palace-card:hover > .palace-card-gz { color: var(--v2-blue-strong); }
+    .fs-v2 #palace-grid .palace-card[data-gz] .v2-hub-hua { padding-right: 3em; }
+    @media (max-width: 1000px) { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 16px; bottom: 16px; } }
+    @media (max-width: 799px)  { .fs-v2 #palace-grid .palace-card > .palace-card-gz { right: 8px; bottom: 10px; font-size: 12px; } }
     /* 中央：裝飾（雲紋 + 品牌花） */
     .fs-v2 #palace-grid::before {
       content: '';
@@ -499,7 +516,7 @@
     }
     .fs-v2 #palace-grid .palace-card:hover::before { opacity: .5; transform: none; }
     .fs-v2 #palace-grid .palace-card > * { position: relative; }
-    .fs-v2 .palace-card-index { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); }
+    .fs-v2 .palace-card-index { font-family: var(--v2-font-latin); font-style: normal; font-size: 12px; line-height: 20px; letter-spacing: 0; color: var(--v2-muted); min-height: 20px; } /* 2026-10-02：羅馬數字已拿掉，保留空元素當宮位圖示載體並維持原版面高度 */
     .fs-v2 .palace-card-name,
     .fs-v2 .palace-grid .palace-card:first-child .palace-card-name { font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
     .fs-v2 #palace-grid .palace-card:hover .palace-card-name { color: var(--v2-blue-strong); }
@@ -737,7 +754,7 @@
       border: 1px solid var(--v2-line);
       background: #fff;
     }
-    .fs-v2 .v2-hp-index { font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; color: var(--v2-muted); }
+    .fs-v2 .v2-hp-index { display: none; } /* 2026-10-02：I / XII 不再顯示（由共用 fs-v2-period.js 產生，三頁改完後再從 JS 移除）*/
     .fs-v2 .v2-hp-name { margin: 0; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
     .fs-v2 .v2-hp-tagline { font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
     .fs-v2 .v2-hp-explainer { font-size: 15px; line-height: 27px; color: var(--v2-muted); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
@@ -766,9 +783,8 @@
     .fs-v2 .v2-hua--ke { color: var(--t-ke); }
     .fs-v2 .v2-hua--ji { color: var(--t-ji); }
 
-    /* 十二宮底部：編號說明 + 返回本命總覽 */
-    .fs-v2 .v2-grid-note { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 32px; }
-    .fs-v2 .v2-grid-note p { margin: 0; font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+    /* 十二宮底部：返回流年清單（2026-10-02 編號說明已拿掉）*/
+    .fs-v2 .v2-grid-note { display: flex; align-items: center; justify-content: flex-end; gap: 24px; margin-top: 32px; }
 
     /* 總覽：導讀 */
 
@@ -966,10 +982,10 @@
         <h1 class="hub-title" id="hub-title">流年十二宮</h1>
         <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
       </div>
+      <p id="hub-branch-error" class="v2-branch-error" role="alert" hidden></p>
       <div id="palace-grid" class="palace-grid"></div>
-      <!-- v2：編號說明 + 返回流年清單 -->
+      <!-- v2：返回流年清單 -->
       <div class="v2-grid-note">
-        <p data-i18n="an.v2GridNote">I–XII 為宮位索引編號；個人命盤資料以詳細解讀為準。</p>
         <button type="button" class="v2-btn v2-btn--secondary" id="v2-back-list" data-i18n="an.v2BackList">返回流年清單</button>
       </div>
       <div class="hub-meta">
@@ -1428,15 +1444,36 @@
     showView('view-hub');
   }
 
+  // 2026-10-02：十二宮地支固定排法（同 chart.html）。每宮地支取自 composition.branch；
+  // 12 宮必須是 12 個互不重複的地支，否則不定位並明顯報錯（noisy failure，不靜默擺格子）。
+  const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  function palaceBranches() {
+    const map = {};
+    PALACE_ORDER.forEach(p => { map[p] = String(reportsByPalace[p]?.composition?.branch || '').trim(); });
+    const vals = Object.values(map);
+    const ok = vals.every(b => BRANCHES.includes(b)) && new Set(vals).size === 12;
+    return { map, ok };
+  }
+
   function renderHub() {
     const grid = document.getElementById('palace-grid');
     grid.innerHTML = '';
-    PALACE_ORDER.forEach((palaceName, i) => {
+    const { map: branchOf, ok: branchesOk } = palaceBranches();
+    grid.classList.toggle('is-branch-invalid', !branchesOk);
+    const branchErr = document.getElementById('hub-branch-error');
+    if (branchErr) {
+      branchErr.hidden = branchesOk;
+      branchErr.textContent = branchesOk ? '' : tx('an.v2BranchError');
+    }
+    if (!branchesOk) console.error('[annual] 十二宮地支資料異常，未依地支定位', { chartSessionId, year: currentYear, branches: branchOf });
+    PALACE_ORDER.forEach((palaceName) => {
       const row = reportsByPalace[palaceName];
       const card = document.createElement('div');
       card.className = 'palace-card';
-      const idx = document.createElement('div');
-      idx.className = 'palace-card-index'; idx.textContent = ROMAN[i];
+      if (branchesOk) card.dataset.branch = branchOf[palaceName];
+      const idx = document.createElement('div');   // 宮位圖示載體（羅馬數字已拿掉）
+      idx.className = 'palace-card-index';
       card.appendChild(idx);
       const nameEl = document.createElement('div');
       nameEl.className = 'palace-card-name'; nameEl.textContent = palaceLabel(palaceName);
@@ -1447,6 +1484,17 @@
         ? row.composition.main_stars.map(s => starLabel((typeof s === 'string') ? s : s?.star)).join(' · ')
         : tx('emptyNoMainStar');
       card.appendChild(starsEl);
+      // 干支（不翻譯）：地支已驗證才顯示；宮干不合法時只顯示地支
+      if (branchesOk) {
+        const stem = String(row?.composition?.heavenly_stem || '').trim();
+        const gz = (STEMS.includes(stem) ? stem : '') + branchOf[palaceName];
+        if (!STEMS.includes(stem)) console.error('[annual] 宮干資料異常', { palace: palaceName, stem });
+        const gzEl = document.createElement('div');
+        gzEl.className = 'palace-card-gz';
+        gzEl.textContent = gz;
+        card.dataset.gz = gz;
+        card.appendChild(gzEl);
+      }
       if (row) card.addEventListener('click', () => openDetail(palaceName));
       else card.style.opacity = '0.45';
       grid.appendChild(card);
