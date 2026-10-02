@@ -212,15 +212,16 @@
       // 2026-10-02：十二宮改地支固定排法；地支資料異常時的明顯提示（ja/ko 為機翻，待語言專家校對）
       "mo.v2BranchError": {"zh-TW": "這個流月的地支資料有誤，十二宮暫時無法依傳統盤面位置排列。請來信 support@fusang-vision.com，我們會盡快處理。", "zh-CN": "这个流月的地支资料有误，十二宫暂时无法依传统盘面位置排列。请来信 support@fusang-vision.com，我们会尽快处理。", "en": "The earthly branch data for this Monthly Chart has an error, so the twelve palaces cannot be shown in their traditional positions for now. Please email support@fusang-vision.com and we will fix it as soon as possible.", 'ja': 'この流月の地支データに誤りがあるため、十二宮を伝統的な盤面の位置に並べられません。support@fusang-vision.com までご連絡ください。早急に対応いたします。', 'ko': '이 유월의 지지 데이터에 오류가 있어 12궁을 전통 명반 위치에 배치할 수 없어요. support@fusang-vision.com 으로 연락 주시면 빠르게 처리해 드릴게요.'},
       // 2026-10-02：疊宮（點選一宮時顯示流年、大限、本命落在同一地支的宮位；ja/ko 為機翻，待語言專家校對）
-      "mo.stackHead":        {"zh-TW": "這一格同時落在", "zh-CN": "这一格同时落在", "en": "This position also falls in", 'ja': 'この位置が重なる宮', 'ko': '이 자리가 겹치는 궁'},
+      // 說明句跟 UI 語言；{palace} 與各層宮名跟報告語言（雙軌，同 v2Enter）
+      "mo.stackHead":        {"zh-TW": "這個月走到{palace}，這一格同時是：", "zh-CN": "这个月走到{palace}，这一格同时是：", "en": "This month you are in the {palace}. This position is also:", 'ja': '今月は{palace}に入ります。この位置は同時に：', 'ko': '이번 달은 {palace}에 있어요. 이 자리는 동시에:'},
       "mo.stackMonthly":     {"zh-TW": "流月", "zh-CN": "流月", "en": "Monthly", 'ja': '流月', 'ko': '월운'},
       "mo.stackAnnual":      {"zh-TW": "流年", "zh-CN": "流年", "en": "Annual", 'ja': '流年', 'ko': '유년'},
       "mo.stackDecade":      {"zh-TW": "大限", "zh-CN": "大限", "en": "Major Limit", 'ja': '大限', 'ko': '대한'},
       "mo.stackNatal":       {"zh-TW": "本命", "zh-CN": "本命", "en": "Natal", 'ja': '本命', 'ko': '선천'},
-      "mo.stackRoleMonthly": {"zh-TW": "這個月的重心", "zh-CN": "这个月的重心", "en": "Your focus this month", 'ja': '今月の重心', 'ko': '이번 달의 중심'},
-      "mo.stackRoleAnnual":  {"zh-TW": "今年的重心", "zh-CN": "今年的重心", "en": "Your focus this year", 'ja': '今年の重心', 'ko': '올해의 중심'},
-      "mo.stackRoleDecade":  {"zh-TW": "這十年的大方向", "zh-CN": "这十年的大方向", "en": "Your direction for these ten years", 'ja': 'この10年の大きな方向', 'ko': '이 10년의 큰 방향'},
-      "mo.stackRoleNatal":   {"zh-TW": "天生的底色", "zh-CN": "天生的底色", "en": "Your innate foundation", 'ja': '生まれ持った土台', 'ko': '타고난 바탕'},
+      "mo.stackRoleMonthly": {"zh-TW": "這個月你走到這裡", "zh-CN": "这个月你走到这里", "en": "Where you are this month", 'ja': '今月のあなたはここにいます', 'ko': '이번 달 당신이 머무는 자리예요'},
+      "mo.stackRoleAnnual":  {"zh-TW": "今年這一格的主題，會帶進這個月", "zh-CN": "今年这一格的主题，会带进这个月", "en": "This year's theme for this position carries into this month", 'ja': '今年のこの位置のテーマが、今月にも持ち込まれます', 'ko': '올해 이 자리의 주제가 이번 달로 이어져요'},
+      "mo.stackRoleDecade":  {"zh-TW": "這十年這一格的主題，是更大的背景", "zh-CN": "这十年这一格的主题，是更大的背景", "en": "The theme of this position over these ten years is the wider backdrop", 'ja': 'この10年のこの位置のテーマが、より大きな背景になります', 'ko': '이 10년 동안 이 자리의 주제가 더 큰 배경이에요'},
+      "mo.stackRoleNatal":   {"zh-TW": "你天生在這一格的底色", "zh-CN": "你天生在这一格的底色", "en": "Your innate foundation in this position", 'ja': 'この位置に生まれ持った、あなたの土台です', 'ko': '이 자리에 타고난 당신의 바탕이에요'},
       "mo.v2BackList": {"zh-TW": "返回流月清單", "zh-CN": "返回流月清单", "en": "Back to all months", 'ja': '流月の一覧に戻る', 'ko': '월운 목록으로 돌아가기'},
       "mo.v2Energy": {"zh-TW": "完整能量分布（12 宮對照）", "zh-CN": "完整能量分布（12 宫对照）", "en": "Full energy distribution (all 12 palaces)", 'ja': 'エネルギー分布の全体（十二宮の比較）', 'ko': '전체 에너지 분포(12궁 비교)'},
       "mo.v2Tension": {"zh-TW": "張力", "zh-CN": "张力", "en": "Tension", 'ja': '張り', 'ko': '긴장'},
@@ -1075,10 +1076,10 @@
     .fs-v2 #palace-grid .palace-card .v2-stack + .v2-mbar { margin-top: auto; }   /* 維持細條貼底（緊鄰兄弟規則）*/
     .fs-v2 .v2-stack-box { display: flex; flex-direction: column; gap: 4px; width: 100%; }
     .fs-v2 .v2-stack-head { font-size: 12px; line-height: 18px; color: var(--v2-muted); }
-    .fs-v2 .v2-stack-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 4px 10px; background: var(--v2-tint); font-size: 13px; line-height: 20px; }
+    .fs-v2 .v2-stack-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 10px; padding: 4px 10px; background: var(--v2-tint); font-size: 13px; line-height: 20px; }
     .fs-v2 .v2-stack-row .lv { font-size: 12px; color: var(--v2-muted); min-width: 3em; }
     .fs-v2 .v2-stack-row .pl { font-weight: 500; color: var(--v2-ink); }
-    .fs-v2 .v2-stack-row .rl { font-size: 12px; color: var(--v2-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fs-v2 .v2-stack-row .rl { grid-column: 1 / -1; font-size: 12px; line-height: 18px; color: var(--v2-muted); }   /* 說明在第二行，可換行（各語言長度不同）*/
     .fs-v2 .v2-stack-row.is-current { background: transparent; border-left: 2px solid var(--v2-blue); }
     .fs-v2 .v2-stack-row.is-current .pl { color: var(--v2-blue-strong); }
     @media (max-width: 799px) {
@@ -3341,7 +3342,7 @@
     box.className = 'v2-stack-box';
     const head = document.createElement('div');
     head.className = 'v2-stack-head';
-    head.textContent = tx('mo.stackHead');
+    head.textContent = (tx('mo.stackHead') || '').replace('{palace}', palaceLabel(p));
     box.appendChild(head);
     const rows = [['mo.stackMonthly', p, 'mo.stackRoleMonthly', true]]
       .concat(STACK_LAYERS.map(([k, lvKey, roleKey]) => [lvKey, st[k], roleKey, false]));
