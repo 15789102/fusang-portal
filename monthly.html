@@ -6,6 +6,42 @@
   <title>我的流月 - FuSang Vision</title>
   <meta name="description" content="View your personalized Zi Wei Dou Shu monthly chart." />
 
+  <!-- ============================================================
+    TOPIC-REMOVE-01 / C 段：移除「追蹤議題」(monthly_palace_context)
+    PM 定位調整：議題夾在「報告已滿足」與「單獨問事」之間不上不下。
+    現無流量，為移除最佳時機。純刪除，無任何新增行為。
+
+    【已移除】
+      · 開通頁 #context-panel（宮位下拉 + 處境 textarea + slot upsell）
+      · 十二宮頁 .ctx-hub-entry 摺疊入口與 #ctx-hub-mount
+      · 十二宮卡「追蹤」徽章（.palace-card-track / .v2-cbadge--track）
+      · 月份清單「追蹤：{list}」行與其來源查詢
+      · 宮位頁「追蹤議題解析」tab 與 #detail-personal-section 顯示區
+      · JS ctx 模組全部（CTX_TABLE / ctxInit / ctxSave / ctxClear /
+        ctxRenderSlots / ctxHasUnsaved / renderPersonalSuggestion …）
+      · 相關 i18n key 23 個、CSS .ctx-* / .personal-prose 全部
+
+    【⚠ 刻意保留 —— 皆為「解鎖未來月份」流程所需，勿因名字像議題就刪】
+      · const CTX_MAX_LEN     ul-textarea 的 maxlength 與 ul-counter 都讀它，
+                              刪掉解鎖表單會 ReferenceError
+      · mo.ctxSelectPlaceholder / mo.ctxPlaceholder   ul slot 的下拉與 placeholder
+      · palaceExplainerInput()                        ul slot 仍在用
+      · 所有 .ul-* / ul*() 程式碼與 view-unlock
+
+    【⚠ 兩套議題系統，不可混為一談】
+      本次移除的是 monthly_palace_context（常設議題）。
+      「解鎖未來月份」用的是 monthly_unlock_context（單月議題），由
+      RPC monthly_unlock_early 閘門五硬性要求 1–3 格有效內容 ——
+      一併移除會讓年方案的提前解鎖整個不可用。
+
+    【⚠ 資料一律保留】
+      monthly_palace_context 表、已生成的 suggestion_personal 全部不動，
+      不 DROP 任何表／欄位。本票只停前端寫入與顯示。
+      月報查詢已不再 select suggestion_personal，但欄位仍在。
+
+    【順序】前端先（本檔 + Shopify fs-calculator-form v10）→ n8n AI_E 後。
+  ============================================================ -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -39,9 +75,6 @@
       "mo.introOfferItem1": {"zh-TW": "十二宮的逐宮解讀，看清每個領域這個月的狀態", "zh-CN": "十二宫的逐宫解读，看清每个领域这个月的状态", "en": "A palace-by-palace reading of all twelve areas, so you can see the state of each this month", 'ja': '十二宮を一宮ずつ解説し、各領域の今月の状態がわかります', 'ko': '12궁을 한 궁씩 풀어 이번 달 각 영역의 상태를 살펴봐요'},
       "mo.introOfferItem2": {"zh-TW": "能量的流入與流出，知道哪些方面正在牽動你", "zh-CN": "能量的流入与流出，知道哪些方面正在牵动你", "en": "The inflow and outflow of energy, so you know which areas are moving you", 'ja': 'エネルギーの流入と流出から、どの側面があなたを動かしているかがわかります', 'ko': '에너지의 흐름(유입과 유출)으로 어떤 영역이 나를 움직이는지 알아봐요'},
       "mo.introOfferItem3": {"zh-TW": "順著本月建議，協助您把日子過得自在", "zh-CN": "顺着本月建议，协助您把日子过得自在", "en": "Guidance for the month, to help you live these days with ease", 'ja': '今月のアドバイスに沿って、日々を心地よく過ごすお手伝いをします', 'ko': '이번 달 조언을 따라 하루하루를 편안하게 보내도록 도와드려요'},
-      "mo.ctxLabel": {"zh-TW": "追蹤議題", "zh-CN": "追踪议题", "en": "Your tracked focus", 'ja': '追跡テーマ', 'ko': '관심 주제'},
-      "mo.ctxDesc": {"zh-TW": "選擇你最在意的領域，描述你目前的處境。<br>我們會在該宮位的「本月建議」中，把你的情況納入考量。<span class='ctx-desc-note'>您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>", "zh-CN": "选择你最在意的领域，描述你目前的处境。<br>我们会在该宫位的「本月建议」中，把你的情况纳入考量。<span class='ctx-desc-note'>您设定或调整的主题，会纳入下一期的流月分析；若分析已进入生成阶段，调整将于再下一期生效。</span>", "en": "Choose the area you care about most and describe your current situation.<br>We'll take it into account within that palace's guidance for the month.<span class='ctx-desc-note'>Topics you set or change are included in the next monthly reading; if a reading is already being generated, changes take effect the month after.</span>", 'ja': 'いちばん気になる領域を選び、今の状況をお書きください。<br>その宮の「今月のアドバイス」で、あなたの状況を考慮します。<span class=\'ctx-desc-note\'>設定・変更したテーマは、次号の流月の分析に反映されます。すでに作成が始まっている場合は、その次の号から反映されます。</span>', 'ko': '가장 신경 쓰이는 영역을 고르고 지금 상황을 적어 주세요.<br>해당 궁의 \'이번 달 조언\'에 회원님의 상황을 반영해 드려요.<span class=\'ctx-desc-note\'>설정하거나 변경한 주제는 다음 월운 분석에 반영돼요. 이미 분석이 생성 단계에 들어갔다면 변경 사항은 그다음 달부터 적용돼요.</span>'},
-      "mo.ctxUpsell": {"zh-TW": "目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。", "zh-CN": "目前可设定 <strong>1 个</strong> 主题；后续付费订阅后开放 <strong>3 个</strong>。", "en": "You can set <strong>1</strong> topic for now; a paid subscription unlocks <strong>3</strong>.", 'ja': '現在設定できるテーマは <strong>1つ</strong> です。今後、有料サブスクリプションで <strong>3つ</strong> まで設定できるようになります。', 'ko': '지금은 주제를 <strong>1개</strong> 설정할 수 있어요. 유료 구독 후에는 <strong>3개</strong>까지 가능해요.'},
       "mo.deliveryNote": {"zh-TW": "往後每月 1 號，新一期的流月會自動為你生成，並寄到你的信箱。<span class='dn-utc'>日期以世界標準時間（UTC）計算，與你當地日期可能相差數小時。日後可於「帳戶」頁隨時取消。</span>", "zh-CN": "往后每月 1 号，新一期的流月会自动为你生成，并寄到你的邮箱。<span class='dn-utc'>日期以世界标准时间（UTC）计算，与你当地日期可能相差数小时。日后可于「账户」页随时取消。</span>", "en": "From then on, a new reading is generated for you on the 1st of each month and sent to your inbox.<span class='dn-utc'>Dates follow Coordinated Universal Time (UTC), which may differ from your local date by a few hours. You can turn this off anytime on your Account page.</span>", 'ja': '今後は毎月1日に、新しい流月が自動で作成され、メールでお届けします。<span class=\'dn-utc\'>日付は協定世界時（UTC）を基準としているため、お住まいの地域の日付と数時間ずれる場合があります。「アカウント」ページでいつでも停止できます。</span>', 'ko': '앞으로 매월 1일에 새 월운이 자동으로 생성되어 이메일로 보내 드려요.<span class=\'dn-utc\'>날짜는 협정 세계시(UTC) 기준이라 현지 날짜와 몇 시간 차이가 날 수 있어요. 언제든지 \'계정\' 페이지에서 해지할 수 있어요.</span>'},
       "mo.introSubscribeBtn": {"zh-TW": "開始閱讀我的流月", "zh-CN": "开始阅读我的流月", "en": "Start reading my monthly chart", 'ja': '流月を読み始める', 'ko': '내 월운 읽기 시작'},
       "mo.introCtaNote": {"zh-TW": "為你生成下個月的流月，約需數分鐘", "zh-CN": "为你生成下个月的流月，约需数分钟", "en": "Generating next month's reading takes a few minutes", 'ja': '来月の流月の作成には数分かかります', 'ko': '다음 달 월운 생성에 몇 분 정도 걸려요'},
@@ -65,14 +98,12 @@
       "mo.hubSub": {"zh-TW": "點選一宮預覽，再進入閱讀完整內容", "zh-CN": "点选一宫预览，再进入阅读完整内容", "en": "Select a palace to preview it, then open the full reading", 'ja': '宮を選んでプレビューし、詳しい解説へ進みましょう', 'ko': '궁을 눌러 미리 보고, 전체 내용을 읽어 보세요'},
       "mo.hubEyebrow": {"zh-TW": "{ym} 流月", "zh-CN": "{ym} 流月", "en": "Your {ym} Monthly Chart", 'ja': '{ym} の流月', 'ko': '{ym} 월운'},
       "mo.hubTitle": {"zh-TW": "{ymLabel} 流月十二宮", "zh-CN": "{ymLabel} 流月十二宫", "en": "The {ymLabel} Twelve Palaces", 'ja': '{ymLabel} 流月十二宮', 'ko': '{ymLabel} 월운 12궁'},
-      "mo.ctxToggle": {"zh-TW": "追蹤議題設定", "zh-CN": "追踪议题设定", "en": "Tracked focus settings", 'ja': '追跡テーマの設定', 'ko': '관심 주제 설정'},
       "mo.relPrev": {"zh-TW": "上月", "zh-CN": "上月", "en": "Last month", 'ja': '先月', 'ko': '지난달'},
       "mo.relCurr": {"zh-TW": "本月", "zh-CN": "本月", "en": "This month", 'ja': '今月', 'ko': '이번 달'},
       "mo.relNext": {"zh-TW": "下月", "zh-CN": "下月", "en": "Next month", 'ja': '来月', 'ko': '다음 달'},
       "mo.monthSuffix": {"zh-TW": "{m}月", "zh-CN": "{m}月", "en": "Month {m}", 'ja': '{m}月', 'ko': '{m}월'},
       "mo.tabLockUpgrade": {"zh-TW": "🔒 升級可見", "zh-CN": "🔒 升级可见", "en": "🔒 Upgrade to view", 'ja': '🔒 アップグレードで表示', 'ko': '🔒 업그레이드 후 보기'},
       "mo.ymLabel": {"zh-TW": "{y} 年 {m} 月", "zh-CN": "{y} 年 {m} 月", "en": "{m}/{y}", 'ja': '{y}年{m}月', 'ko': '{y}년 {m}월'},
-      "mo.trackBadge": {"zh-TW": "追蹤", "zh-CN": "追踪", "en": "Tracked", 'ja': '追跡', 'ko': '관심'},
       "mo.ovEyebrow": {"zh-TW": "本月能量一覽 · Energy Overview", "zh-CN": "本月能量一览 · Energy Overview", "en": "Energy Overview", 'ja': '今月のエネルギー概観 · Energy Overview', 'ko': '이번 달 에너지 한눈에 · Energy Overview'},
       "mo.ovTitle": {"zh-TW": "本月十二領域的能量分布", "zh-CN": "本月十二领域的能量分布", "en": "How energy is distributed across your twelve areas this month", 'ja': '今月の十二領域のエネルギー分布', 'ko': '이번 달 열두 영역의 에너지 분포'},
       "mo.ovhTitle": {"zh-TW": "本月亮點 · Bright Spots", "zh-CN": "本月亮点 · Bright Spots", "en": "Bright Spots this month", 'ja': '今月のハイライト · Bright Spots', 'ko': '이번 달 하이라이트 · Bright Spots'},
@@ -100,8 +131,6 @@
       "mo.secSuggestTitle": {"zh-TW": "本月建議", "zh-CN": "本月建议", "en": "Guidance for the Month", 'ja': 'アドバイス', 'ko': '이달 조언'},
       "mo.secInflowDesc": {"zh-TW": "<strong>能量飛入</strong>——其他宮位的星曜，以四化的形式流入本宮。代表您的這個領域，正被本月哪些方面<strong>滋養、推動或牽引</strong>。", "zh-CN": "<strong>能量飞入</strong>——其他宫位的星曜，以四化的形式流入本宫。代表您的这个领域，正被本月哪些方面<strong>滋养、推动或牵引</strong>。", "en": "<strong>Inflowing energy</strong> — stars from other palaces flow into this one as transformations. They show which parts of this month are <strong>nourishing, driving, or pulling on</strong> this area of your life.", 'ja': '<strong>飛入するエネルギー</strong>——ほかの宮の星が、四化の形でこの宮に流れ込みます。あなたのこの領域が、今月のどの側面から<strong>育まれ、後押しされ、引き寄せられている</strong>かを表します。', 'ko': '<strong>유입 에너지</strong>—다른 궁의 성요가 사화의 형태로 이 궁에 흘러들어요. 이번 달 어떤 부분이 이 영역을 <strong>북돋우고, 밀어 주고, 이끌고</strong> 있는지 보여 줘요.'},
       "mo.secOutflowDesc": {"zh-TW": "<strong>能量飛出</strong>——本宮的能量，以四化的形式飛入其他宮位。代表您的這個領域，正在<strong>影響、貢獻或牽引</strong>哪些方面。", "zh-CN": "<strong>能量飞出</strong>——本宫的能量，以四化的形式飞入其他宫位。代表您的这个领域，正在<strong>影响、贡献或牵引</strong>哪些方面。", "en": "<strong>Outflowing energy</strong> — this palace's energy flows into other palaces as transformations. It shows which parts of your life this area is <strong>influencing, contributing to, or pulling on</strong> this month.", 'ja': '<strong>飛出するエネルギー</strong>——この宮のエネルギーが、四化の形でほかの宮へ流れ出します。今月、あなたのこの領域がどの側面に<strong>影響を与え、貢献し、引き寄せている</strong>かを表します。', 'ko': '<strong>유출 에너지</strong>—이 궁의 에너지가 사화의 형태로 다른 궁에 흘러들어가요. 이 영역이 지금 어떤 부분에 <strong>영향을 주고, 기여하고, 이끌고</strong> 있는지 보여 줘요.'},
-      "mo.personalTitle": {"zh-TW": "追蹤議題解析", "zh-CN": "追踪议题解析", "en": "Your Tracked Focus", 'ja': '追跡テーマの解説', 'ko': '관심 주제'},
-      "mo.personalDesc": {"zh-TW": "<strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。", "zh-CN": "<strong>追踪议题解析</strong>——这是针对您为本宫设定的个人处境，结合本月运势量身提供的建议。", "en": "<strong>Your Tracked Focus</strong> — guidance tailored to the personal situation you set for this palace, combined with this month's reading.", 'ja': '<strong>追跡テーマの解説</strong>——この宮に設定したあなた個人の状況に、今月の運勢を合わせてお届けするアドバイスです。', 'ko': '<strong>관심 주제 분석</strong>—이 궁에 설정하신 개인 상황을 이번 달 운세와 함께 살펴 맞춤으로 드리는 조언이에요.'},
       "mo.paywallTitle": {"zh-TW": "解鎖完整分析", "zh-CN": "解锁完整分析", "en": "Unlock the full reading", 'ja': '完全な解説をひらく', 'ko': '전체 분석 잠금 해제'},
       "mo.paywallItem1": {"zh-TW": "<b>能量飛入</b>　哪些資源正在幫助你、推動你。", "zh-CN": "<b>能量飞入</b>　哪些资源正在帮助你、推动你。", "en": "<b>Inflowing energy</b> — which resources are helping and driving you.", 'ja': '<b>飛入するエネルギー</b>　どんな資源があなたを助け、後押ししているか。', 'ko': '<b>유입 에너지</b>　어떤 자원이 나를 돕고 밀어 주고 있는지.'},
       "mo.paywallItem2": {"zh-TW": "<b>能量飛出</b>　你正在影響、推動哪些面向。", "zh-CN": "<b>能量飞出</b>　你正在影响、推动哪些面向。", "en": "<b>Outflowing energy</b> — which areas you're influencing and driving.", 'ja': '<b>飛出するエネルギー</b>　あなたがどの側面に影響を与え、動かしているか。', 'ko': '<b>유출 에너지</b>　내가 어떤 부분에 영향을 주고 움직이고 있는지.'},
@@ -111,18 +140,7 @@
       "mo.secLock": {"zh-TW": "解鎖後可見", "zh-CN": "解锁后可见", "en": "Unlock to view", 'ja': '解除すると表示されます', 'ko': '잠금 해제 후 보기'},
       "mo.noContent": {"zh-TW": "(尚無內容)", "zh-CN": "(尚无内容)", "en": "(No content yet)", 'ja': '（まだ内容がありません）', 'ko': '(아직 내용이 없어요)'},
       "mo.ctxSelectPlaceholder": {"zh-TW": "— 選擇宮位 —", "zh-CN": "— 选择宫位 —", "en": "— Select a palace —", 'ja': '— 宮を選択 —', 'ko': '— 궁 선택 —'},
-      "mo.ctxSlot": {"zh-TW": "Slot {n}", "zh-CN": "Slot {n}", "en": "Slot {n}", 'ja': 'Slot {n}', 'ko': 'Slot {n}'},
       "mo.ctxPlaceholder": {"zh-TW": "描述你目前在這個領域的處境，例如：我正在轉換跑道，想了解這個月適合主動出擊還是先沉澱。", "zh-CN": "描述你目前在这个领域的处境，例如：我正在转换跑道，想了解这个月适合主动出击还是先沉淀。", "en": "Describe your current situation in this area — e.g. I'm changing careers and want to know whether this month favors making a move or settling first.", 'ja': 'この領域での今の状況をお書きください。例：転職を考えていて、今月は積極的に動くべきか、まず落ち着くべきかを知りたい。', 'ko': '이 영역에서 지금 처한 상황을 적어 주세요. 예: 진로를 바꾸는 중인데, 이번 달에는 적극적으로 나서는 게 좋을지 먼저 차분히 다지는 게 좋을지 알고 싶어요.'},
-      "mo.ctxSaved": {"zh-TW": "✓ 已儲存", "zh-CN": "✓ 已储存", "en": "✓ Saved", 'ja': '✓ 保存しました', 'ko': '✓ 저장됨'},
-      "mo.ctxEdit": {"zh-TW": "編輯", "zh-CN": "编辑", "en": "Edit", 'ja': '編集', 'ko': '편집'},
-      "mo.ctxClear": {"zh-TW": "清除", "zh-CN": "清除", "en": "Clear", 'ja': '消去', 'ko': '지우기'},
-      "mo.ctxSave": {"zh-TW": "儲存", "zh-CN": "储存", "en": "Save", 'ja': '保存', 'ko': '저장'},
-      "mo.ctxAlertNoPalace": {"zh-TW": "請先選擇一個宮位。", "zh-CN": "请先选择一个宫位。", "en": "Please choose a palace first.", 'ja': '先に宮を選択してください。', 'ko': '먼저 궁을 선택해 주세요.'},
-      "mo.ctxAlertNoText": {"zh-TW": "請描述你的處境，或按「清除」移除此設定。", "zh-CN": "请描述你的处境，或按「清除」移除此设定。", "en": "Please describe your situation, or press Clear to remove this topic.", 'ja': '状況をお書きいただくか、「消去」でこの設定を削除してください。', 'ko': '상황을 적어 주시거나, \'지우기\'를 눌러 이 설정을 삭제해 주세요.'},
-      "mo.ctxDisclaimer": {"zh-TW": "提醒您：流月的個人化建議是依命盤能量提供的觀點與方向，並非醫療、法律或投資的專業意見。若涉及健康、法律或財務的重要決定，仍建議諮詢專業人士。\n\n按「確定」儲存並納入分析。", "zh-CN": "提醒您：流月的个人化建议是依命盘能量提供的观点与方向，并非医疗、法律或投资的专业意见。若涉及健康、法律或财务的重要决定，仍建议咨询专业人士。\n\n按「确定」储存并纳入分析。", "en": "Please note: monthly personalized guidance offers perspective and direction based on chart energy, not professional medical, legal, or financial advice. For important health, legal, or financial decisions, please consult a professional.\n\nPress OK to save and include this in the analysis.", 'ja': 'ご注意：流月の個別アドバイスは、命盤のエネルギーにもとづく視点と方向性であり、医療・法律・投資の専門的な助言ではありません。健康・法律・お金に関わる大切な判断は、専門家にご相談ください。\n\n「OK」を押すと保存され、分析に反映されます。', 'ko': '안내: 월운의 개인 맞춤 조언은 명반의 에너지를 바탕으로 한 관점과 방향이며, 의료·법률·투자에 관한 전문 의견이 아니에요. 건강, 법률, 재정과 관련된 중요한 결정은 전문가와 상담하시길 권해요.\n\n\'확인\'을 누르면 저장되고 분석에 반영돼요.'},
-      "mo.ctxSaveFail": {"zh-TW": "儲存失敗：", "zh-CN": "储存失败：", "en": "Save failed: ", 'ja': '保存に失敗しました：', 'ko': '저장 실패: '},
-      "mo.ctxClearConfirm": {"zh-TW": "確定要清除這個主題嗎？此動作無法復原。", "zh-CN": "确定要清除这个主题吗？此动作无法复原。", "en": "Remove this topic? This can't be undone.", 'ja': 'このテーマを消去しますか？この操作は元に戻せません。', 'ko': '이 주제를 지우시겠어요? 되돌릴 수 없어요.'},
-      "mo.ctxClearFail": {"zh-TW": "清除失敗：", "zh-CN": "清除失败：", "en": "Clear failed: ", 'ja': '消去に失敗しました：', 'ko': '삭제 실패: '},
       "mo.errTitle": {"zh-TW": "無法載入流月", "zh-CN": "无法载入流月", "en": "Couldn't load your monthly chart", 'ja': '流月を読み込めません', 'ko': '월운을 불러올 수 없어요'},
       "mo.errDefault": {"zh-TW": "發生了一點問題，請稍後再試。", "zh-CN": "发生了一点问题，请稍后再试。", "en": "Something went wrong. Please try again later.", 'ja': '問題が発生しました。しばらくしてから再度お試しください。', 'ko': '문제가 발생했어요. 잠시 후 다시 시도해 주세요.'},
       "mo.errMonthsFail": {"zh-TW": "無法載入 {year} 流月月份：", "zh-CN": "无法载入 {year} 流月月份：", "en": "Couldn't load months for {year}: ", 'ja': '{year} 年の流月の月を読み込めませんでした：', 'ko': '{year} 월운 월 목록을 불러올 수 없어요: '},
@@ -205,7 +223,6 @@
       "mo.v2RangeWhyLabel": {"zh-TW": "為什麼是這段日期？", "zh-CN": "为什么是这段日期？", "en": "Why these dates?", 'ja': 'なぜこの期間なのですか？', 'ko': '왜 이 기간인가요?'},
       "mo.v2Focus": {"zh-TW": "本月焦點", "zh-CN": "本月焦点", "en": "Focus this month", 'ja': '今月の注目', 'ko': '이번 달 초점'},
       "mo.v2FocusRow": {"zh-TW": "焦點：{list}", "zh-CN": "焦点：{list}", "en": "Focus: {list}", 'ja': '注目：{list}', 'ko': '초점: {list}'},
-      "mo.v2TrackRow": {"zh-TW": "追蹤：{list}", "zh-CN": "追踪：{list}", "en": "Tracked: {list}", 'ja': '追跡：{list}', 'ko': '관심: {list}'},
       "mo.v2FocusBadge": {"zh-TW": "焦點", "zh-CN": "焦点", "en": "Focus", 'ja': '注目', 'ko': '초점'},
       "mo.v2Enter": {"zh-TW": "進入{palace}詳情", "zh-CN": "进入{palace}详情", "en": "Read the {palace}", 'ja': '{palace}の詳細へ', 'ko': '{palace} 자세히 보기'},
       "mo.v2GridNote": {"zh-TW": "卡片下方細條：右側（藍）是助力與順流，左側（紅）是張力與需要用心之處；長度相對於你本月其他宮位，不是吉凶評分。", "zh-CN": "卡片下方细条：右侧（蓝）是助力与顺流，左侧（红）是张力与需要用心之处；长度相对于你本月其他宫位，不是吉凶评分。", "en": "The thin bar on each card: the right side (blue) shows support and flow, and the left side (red) shows tension and where care is needed. Length is relative to your other palaces this month, not a score.", 'ja': 'カード下の細いバー：右側（青）は助力と流れの良さ、左側（赤）は張りと心を配りたい点です。長さは今月のほかの宮と比べた相対的なもので、吉凶の点数ではありません。', 'ko': '카드 아래 가는 막대: 오른쪽(파랑)은 도움과 순조로운 흐름, 왼쪽(빨강)은 긴장과 마음을 써야 할 부분이에요. 길이는 이번 달 다른 궁과 비교한 상대값이며, 길흉 점수가 아니에요.'},
@@ -226,10 +243,6 @@
       "mo.v2Energy": {"zh-TW": "完整能量分布（12 宮對照）", "zh-CN": "完整能量分布（12 宫对照）", "en": "Full energy distribution (all 12 palaces)", 'ja': 'エネルギー分布の全体（十二宮の比較）', 'ko': '전체 에너지 분포(12궁 비교)'},
       "mo.v2Tension": {"zh-TW": "張力", "zh-CN": "张力", "en": "Tension", 'ja': '張り', 'ko': '긴장'},
       "mo.v2Support": {"zh-TW": "助力", "zh-CN": "助力", "en": "Support", 'ja': '助力', 'ko': '도움'},
-      "mo.v2Optional": {"zh-TW": "選填", "zh-CN": "选填", "en": "Optional", 'ja': '任意', 'ko': '선택 입력'},
-      "mo.v2CtxPalace": {"zh-TW": "宮位", "zh-CN": "宫位", "en": "Palace", 'ja': '宮', 'ko': '궁'},
-      "mo.v2CtxText": {"zh-TW": "你想了解的事", "zh-CN": "你想了解的事", "en": "What you want to understand", 'ja': '知りたいこと', 'ko': '알고 싶은 것'},
-      "mo.v2CtxPrivacy": {"zh-TW": "請勿填寫身分證號、密碼等敏感資訊。", "zh-CN": "请勿填写身份证号、密码等敏感信息。", "en": "Please do not include ID numbers, passwords, or other sensitive information.", 'ja': 'マイナンバーやパスワードなどの機密情報は入力しないでください。', 'ko': '주민등록번호, 비밀번호 등 민감한 정보는 입력하지 마세요.'}
     });
   </script>
 
@@ -550,88 +563,9 @@
     .month-tab.pending:hover { border-color: var(--rule); color: var(--ink-mid); }
     .month-tab-state { font-size: 10px; letter-spacing: 0.08em; color: var(--ink-light); }
 
-    /* ============ Context 個人化面板 ============ */
-    .ctx-panel { margin: 40px 0; padding: 28px 30px; background: var(--bg-soft-2); border-radius: 2px; position: relative; overflow: hidden; }
-    .ctx-panel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--gold, #b8945c), transparent); }
-    .ctx-head { margin-bottom: 20px; }
-    .ctx-label { font-family: var(--font-serif-en); font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--accent-soft); margin-bottom: 10px; }
-    .ctx-desc { font-family: var(--font-serif-zh); font-size: 14px; line-height: 1.75; color: var(--ink-mid); letter-spacing: 0.02em; }
 
-    .ctx-slots { display: flex; flex-direction: column; gap: 18px; }
-    .ctx-slot { background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; padding: 18px 20px; }
-    .ctx-slot-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .ctx-slot-no { flex-shrink: 0; font-family: var(--font-serif-en); font-style: italic; font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; min-width: 56px; }
-    .ctx-select {
-      flex: 1; font-family: var(--font-serif-zh); font-size: 14.5px; color: var(--ink-darkest);
-      padding: 9px 12px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg-primary);
-      letter-spacing: 0.04em; cursor: pointer; transition: border-color 0.2s;
-    }
-    .ctx-select:focus { outline: none; border-color: var(--accent-soft); }
-    .ctx-textarea {
-      width: 100%; min-height: 76px; resize: vertical; font-family: var(--font-serif-zh); font-size: 14px;
-      line-height: 1.7; color: var(--ink-dark); padding: 11px 13px; border: 1px solid var(--rule);
-      border-radius: 2px; background: var(--bg-primary); letter-spacing: 0.02em; transition: border-color 0.2s;
-    }
-    .ctx-textarea:focus { outline: none; border-color: var(--accent-soft); }
-    .ctx-textarea:disabled, .ctx-select:disabled { opacity: 0.5; cursor: not-allowed; }
-    .ctx-textarea::placeholder { color: var(--ink-light); font-style: italic; }
-
-    .ctx-slot-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
-    .ctx-counter { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.04em; color: var(--ink-light); }
-    .ctx-counter.over { color: var(--t-ji); }
-    .ctx-btns { display: flex; gap: 8px; }
-    .ctx-btn {
-      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 8px 16px; border-radius: 2px; cursor: pointer; border: 1px solid var(--rule); transition: all 0.2s;
-    }
-    .ctx-btn.save { background: var(--ink-darkest); color: var(--bg-primary); border-color: var(--ink-darkest); }
-    .ctx-btn.save:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
-    .ctx-btn.save:disabled { opacity: 0.45; cursor: not-allowed; }
-    .ctx-btn.clear { background: transparent; color: var(--ink-mid); }
-    .ctx-btn.clear:hover { border-color: var(--ink-mid); }
-    .ctx-slot-saved { font-family: var(--font-serif-zh); font-size: 12px; color: var(--accent-soft); letter-spacing: 0.05em; opacity: 0; transition: opacity 0.2s; }
-    .ctx-slot-saved.show { opacity: 1; }
-
-    .ctx-upsell { margin-top: 16px; padding: 12px 16px; background: var(--t-lu-bg); border-radius: 2px; font-family: var(--font-serif-zh); font-size: 13px; color: var(--ink-mid); letter-spacing: 0.03em; line-height: 1.6; text-align: center; }
-    .ctx-upsell strong { color: var(--accent-deep); font-weight: 600; }
-
-    /* hub 摺疊入口 */
-    .ctx-hub-entry { margin-bottom: 28px; }
-    .ctx-toggle {
-      display: flex; align-items: center; gap: 10px; margin: 0 auto; padding: 10px 20px;
-      font-family: var(--font-serif-zh); font-size: 13.5px; letter-spacing: 0.06em; color: var(--ink-mid);
-      background: var(--bg-card); border: 1px solid var(--rule); border-radius: 2px; cursor: pointer; transition: all 0.2s;
-    }
-    .ctx-toggle:hover { border-color: var(--accent-soft); color: var(--accent-deep); }
-    .ctx-toggle-caret { font-size: 11px; transition: transform 0.2s; }
-    .ctx-toggle.open .ctx-toggle-caret { transform: rotate(180deg); }
-    .ctx-hub-mount { margin-top: 4px; }
-    /* panel 被掛進 hub 時，移除上方多餘間距 */
-    .ctx-hub-mount .ctx-panel { margin-top: 8px; margin-bottom: 0; }
-
-    /* slot 內主題說明（選宮後顯示，複用 PALACE_EXPLAINER） */
-    .ctx-slot-explainer { display: none; margin: 0 0 12px; padding: 10px 12px; background: var(--bg-soft-2); border-left: 2px solid var(--accent-soft); border-radius: 0 2px 2px 0; font-family: var(--font-serif-zh); font-size: 13px; line-height: 1.7; color: var(--ink-mid); letter-spacing: 0.02em; }
-    .ctx-slot-explainer.show { display: block; }
-    .ctx-slot-explainer .domain-keyword { color: var(--ink-darkest); font-weight: 500; }
-
-    /* ctx 排程說明小字 */
-    .ctx-desc-note { display: inline-block; margin-top: 8px; font-size: 12.5px; color: var(--ink-light); line-height: 1.6; }
-
-    /* edit 解鎖按鈕 */
-    .ctx-btn.edit { background: transparent; color: var(--accent-deep); border-color: var(--accent-soft); }
-    .ctx-btn.edit:hover { background: var(--accent-soft); color: var(--bg-primary); }
-
-    /* hub palace-card 追蹤標記 */
+    /* hub palace-card：子元素（焦點徽章 / 疊宮 / 能量條）定位基準 */
     .palace-card { position: relative; }
-    .palace-card.has-personal { border-color: var(--accent-pale); }
-    .palace-card-track { position: absolute; top: 8px; right: 8px; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 2px; background: var(--t-lu-bg); color: var(--gold, #b8945c); }
-
-    /* detail 追蹤議題解析區塊 */
-    #detail-personal-section .section-num { color: var(--gold, #b8945c); }
-    #detail-personal-section .section-explainer-icon { color: var(--gold, #b8945c); }
-    .personal-prose { font-family: var(--font-serif-zh); font-size: 16px; line-height: 2.05; color: var(--ink-dark); letter-spacing: 0.02em; margin-top: 8px; padding: 28px 32px; background: linear-gradient(180deg, var(--t-lu-bg) 0%, var(--bg-soft) 100%); border-radius: 2px; border-left: 2px solid var(--gold, #b8945c); }
-    .personal-prose p { margin-bottom: 1.5em; }
-    .personal-prose p:last-child { margin-bottom: 0; }
 
     /* ============ 付費牆（未解鎖時取代 02/03/04 三段）============ */
     .paywall { margin-top: 8px; padding: 48px 40px; background: linear-gradient(180deg, var(--bg-soft-2) 0%, var(--bg-soft) 100%); border-radius: 2px; text-align: center; position: relative; overflow: hidden; }
@@ -657,7 +591,7 @@
   
     /* ════════════════════════════════════════════════════════
        monthly 冷藍改版（附加覆寫；JS / i18n / detail 版型不動）
-       .shell 覆寫 shared token → intro/years/hub/overview/ctx/month-tabs/detail
+       .shell 覆寫 shared token → intro/years/hub/overview/month-tabs/detail
        全部自動轉冷藍、版型保留。四化色 --t-* 不變。intro 與 hub(本月能量分布) 加編輯式設計。
        ════════════════════════════════════════════════════════ */
     body.monthly-page { background: #f8f9fa; }
@@ -745,11 +679,6 @@
     .intro-offer { background: #ffffff; border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 2px 16px -10px rgba(0,27,60,0.12); }
     .intro-offer-label { color: var(--accent-soft); }
     .intro-offer-item .marker { color: var(--gold); }
-    .ctx-panel { background: var(--bg-soft-2); border: 1px solid var(--rule); border-radius: 12px; }
-    .ctx-label { color: var(--ink-darkest); }
-    .ctx-slot { background: #ffffff; border: 1px solid var(--rule); border-radius: 8px; }
-    .ctx-btn { border-radius: 6px; }
-    .ctx-textarea, .ctx-select { border-color: var(--rule); border-radius: 6px; }
 
     /* ── 放寬（margin 置中，不用 transform）── */
     @media (min-width: 761px) {
@@ -1530,8 +1459,6 @@
     .fs-v2 .v2-mrow-hint { margin-top: 2px; font-size: 12px; line-height: 20px; color: var(--v2-faint); }
     .fs-v2 .v2-mrow-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--v2-gold); animation: pulse 1.4s ease-in-out infinite; }
     .fs-v2 .v2-mrow-status.is-stuck .v2-mrow-dot { background: var(--t-ji); animation: none; }
-    .fs-v2 .v2-track-line { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 20px; color: var(--v2-gold-ink); }
-    .fs-v2 .v2-track-line::before { content: ''; flex: none; width: 3px; height: 12px; background: var(--v2-gold); }
 
     /* 適用期間（清單 / 橫幅 / 月份切換 / 宮位頁共用）+ 說明鈕 */
     .fs-v2 .v2-range { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 14px; line-height: 24px; color: var(--v2-muted); }
@@ -1574,29 +1501,14 @@
     }
     .fs-v2 .v2-focus-chip:hover { border-color: var(--v2-blue); color: var(--v2-blue); }
     .fs-v2 .v2-focus-calm { font-size: 14px; line-height: 24px; color: var(--v2-muted); }
-    .fs-v2 .ctx-hub-entry { display: contents; }
-    .fs-v2 .ctx-toggle {
-      grid-column: 2; justify-self: end; display: inline-flex; align-items: center; gap: 8px;
-      min-height: 40px; padding: 8px 18px; margin: 0;
-      background: #fff; color: var(--v2-ink); border: 1px solid var(--v2-ink); border-radius: 0;
-      font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; cursor: pointer;
-    }
-    .fs-v2 .ctx-toggle:hover,
-    .fs-v2 .ctx-toggle.open { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
-    .fs-v2 .ctx-hub-mount { grid-column: 1 / -1; margin: 0; }
-    .fs-v2 .ctx-hub-mount .ctx-panel { margin: 0; }
-
-    /* ── 十二宮卡：焦點 / 追蹤標 + 能量細條 ── */
-    .fs-v2 .palace-card-track { display: none; }
+    /* ── 十二宮卡：焦點標 + 能量細條 ── */
     .fs-v2 .v2-cbadge { display: inline-block; margin-left: 8px; font-family: var(--v2-font-cjk); font-size: 12px; line-height: 18px; font-weight: 600; vertical-align: 1px; }
     .fs-v2 .v2-cbadge--focus { color: var(--v2-blue); }
-    .fs-v2 .v2-cbadge--track { padding-left: 6px; border-left: 3px solid var(--v2-gold); color: var(--v2-gold-ink); }
     .fs-v2 #palace-grid .palace-card.v2-is-focus { border-color: var(--v2-blue-line); }
     .fs-v2 #palace-grid .palace-card .v2-hub-hua { margin-top: auto; }
     .fs-v2 .v2-mbar { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 4px; margin-top: 8px; background: var(--v2-line-soft); flex: none; }
     .fs-v2 #palace-grid .palace-card .v2-hub-hua + .v2-mbar { margin-top: 8px; }
-    .fs-v2 #palace-grid .palace-card .palace-card-stars + .v2-mbar,
-    .fs-v2 #palace-grid .palace-card .palace-card-track + .v2-mbar { margin-top: auto; }
+    .fs-v2 #palace-grid .palace-card .palace-card-stars + .v2-mbar { margin-top: auto; }
     .fs-v2 .v2-mbar i { display: block; height: 4px; }
     .fs-v2 .v2-mbar .n { justify-self: end; background: var(--v2-neg); }
     .fs-v2 .v2-mbar .p { background: var(--v2-blue); }
@@ -1674,57 +1586,6 @@
     .fs-v2 .intro-offer-item:last-child { border-bottom: 1px solid var(--v2-line); }
     .fs-v2 .intro-offer-item .marker { font-family: var(--v2-font-latin); font-style: normal; font-size: 18px; line-height: 26px; font-weight: 500; color: var(--v2-blue); }
 
-    /* ── 追蹤議題表單（設計師 form ④ 樣式；開通頁與十二宮頁共用同一份 #context-panel）── */
-    .fs-v2 .ctx-panel {
-      max-width: 760px; margin: 32px 0 0; padding: 28px 32px;
-      background: linear-gradient(180deg, var(--v2-tint-soft), var(--v2-tint));
-      border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-gold); border-radius: 0;
-    }
-    .fs-v2 .ctx-panel::before { content: none; }
-    .fs-v2 .ctx-head { margin: 0 0 16px; }
-    .fs-v2 .ctx-label-row { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
-    .fs-v2 .ctx-label { margin: 0; font-family: var(--v2-font-cjk); font-style: normal; font-size: 17px; line-height: 26px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--v2-ink); }
-    .fs-v2 .v2-opt { padding: 1px 8px; border: 1px solid var(--v2-line); border-radius: 999px; background: #fff; font-size: 12px; line-height: 18px; color: var(--v2-muted); }
-    .fs-v2 .ctx-desc { font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; letter-spacing: 0; color: var(--v2-muted); }
-    .fs-v2 .ctx-desc-note { display: block; margin-top: 6px; font-size: 12px; line-height: 20px; color: var(--v2-faint); }
-    .fs-v2 .ctx-slots { display: flex; flex-direction: column; gap: 16px; }
-    .fs-v2 .ctx-slot { margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
-    .fs-v2 .ctx-slot-no { display: none; }
-    .fs-v2 .ctx-slot-top { display: block; margin: 0; }
-    .fs-v2 .v2-ctx-lbl { display: block; margin: 0 0 6px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 22px; color: var(--v2-ink); }
-    .fs-v2 .v2-ctx-lbl--text { margin-top: 14px; }
-    .fs-v2 .ctx-select {
-      width: 100%; height: 48px; padding: 0 40px 0 16px; margin: 0;
-      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%23686868' stroke-width='1.3'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") right 16px center / 12px 8px no-repeat;
-      border: 1px solid var(--v2-line); border-radius: 0; -webkit-appearance: none; appearance: none;
-      font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; color: var(--v2-ink);
-    }
-    .fs-v2 .ctx-select:disabled { background-color: #fafafa; color: var(--v2-muted); }
-    .fs-v2 .ctx-slot-explainer { margin: 8px 0 0; padding: 0; border: 0; background: transparent; }
-    .fs-v2 .ctx-slot-explainer.show { padding: 8px 12px; border: 1px solid var(--v2-line-soft); background: #fff; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-muted); }
-    .fs-v2 .ctx-textarea {
-      width: 100%; min-height: 104px; margin: 0; padding: 12px 14px; resize: vertical;
-      background: #fff; border: 1px solid var(--v2-line); border-radius: 0; box-shadow: none;
-      font-family: var(--v2-font-cjk); font-size: 15px; line-height: 24px; letter-spacing: 0; color: var(--v2-ink);
-    }
-    .fs-v2 .ctx-textarea:focus,
-    .fs-v2 .ctx-select:focus { outline: none; border-color: var(--v2-blue); box-shadow: 0 0 0 3px var(--v2-tint); }
-    .fs-v2 .ctx-textarea:disabled { background: #fafafa; color: var(--v2-muted); }
-    .fs-v2 .ctx-slot-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-    .fs-v2 .ctx-counter { font-family: var(--v2-font-latin); font-size: 12px; line-height: 18px; color: var(--v2-faint); }
-    .fs-v2 .ctx-counter.over { color: var(--t-ji); }
-    .fs-v2 .ctx-btns { display: flex; align-items: center; gap: 12px; }
-    .fs-v2 .ctx-slot-saved { font-size: 13px; color: var(--v2-blue); }
-    .fs-v2 .ctx-btn {
-      min-width: 0; min-height: 36px; padding: 6px 18px; margin: 0;
-      background: #fff; color: var(--v2-ink); border: 1px solid var(--v2-ink); border-radius: 0;
-      font-family: var(--v2-font-cjk); font-size: 13px; font-weight: 600; line-height: 22px; letter-spacing: 0; cursor: pointer;
-    }
-    .fs-v2 .ctx-btn:hover { background: var(--v2-tint); border-color: var(--v2-blue); color: var(--v2-blue); }
-    .fs-v2 .ctx-btn.save { background: var(--v2-ink); color: #fff; }
-    .fs-v2 .ctx-btn.save:hover { background: var(--v2-ink-hover); border-color: var(--v2-ink-hover); color: #fff; }
-    .fs-v2 .ctx-btn:disabled { opacity: .5; cursor: not-allowed; }
-    .fs-v2 .v2-ctx-privacy { margin: 12px 0 0; font-size: 12px; line-height: 20px; color: var(--v2-faint); }
 
     /* 寄送說明 + CTA */
     .fs-v2 .delivery-note { max-width: 760px; margin: 28px 0 0; padding: 0; background: transparent; border: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); text-align: left; }
@@ -1747,18 +1608,8 @@
     .fs-v2 .years-empty-title { font-family: var(--v2-font-cjk); font-size: 20px; line-height: 30px; font-weight: 500; color: var(--v2-ink); margin-bottom: 8px; letter-spacing: 0; }
     .fs-v2 .years-empty-body { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); letter-spacing: 0; }
 
-    /* ── 宮位頁：適用期間 + 追蹤議題解析卡 ── */
+    /* ── 宮位頁：適用期間 ── */
     .fs-v2 .v2-detail-range { margin: 0; }
-    .fs-v2 #detail-personal-section {
-      margin: 40px 0 0; padding: 24px 28px;
-      background: #fff; border: 1px solid var(--v2-line); border-left: 3px solid var(--v2-gold); border-radius: 0;
-    }
-    .fs-v2 #detail-personal-section .section-head { margin: 0 0 12px; padding: 0; border: 0; }
-    .fs-v2 #detail-personal-section .section-num { color: var(--v2-gold); }
-    .fs-v2 #detail-personal-section .section-explainer { margin: 0 0 16px; padding: 10px 12px; background: var(--v2-tint-soft); border: 1px solid var(--v2-line-soft); border-radius: 0; }
-    .fs-v2 #detail-personal-section .section-explainer-icon { display: none; }
-    .fs-v2 .personal-prose p { margin: 0 0 12px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 30px; letter-spacing: 0; color: var(--v2-ink); }
-    .fs-v2 .personal-prose p:last-child { margin-bottom: 0; }
     .fs-v2 .v2-chapter-tabs button[hidden] { display: none; }
 
     @media (max-width: 799px) {
@@ -1779,15 +1630,11 @@
       .fs-v2 .v2-mrow-act .v2-btn { min-width: 0; padding: 10px 14px; font-size: 13px; }
       .fs-v2 .month-tab { min-width: 96px; padding: 8px 12px; font-size: 14px; }
       .fs-v2 .v2-hub-bar { grid-template-columns: minmax(0, 1fr); }
-      .fs-v2 .ctx-toggle { grid-column: 1; justify-self: start; }
       .fs-v2 #palace-grid { grid-template-rows: repeat(4, minmax(176px, auto)); }
       .fs-v2 .v2-cbadge { display: block; margin: 2px 0 0; font-size: 11px; }
-      .fs-v2 .v2-cbadge--track { display: inline-block; }
-      .fs-v2 .v2-hp-hl { display: none; }
-      .fs-v2 .ctx-panel { padding: 20px; }
-      .fs-v2 .intro-cta-wrap { flex-direction: column; align-items: stretch; }
+        .fs-v2 .v2-hp-hl { display: none; }
+        .fs-v2 .intro-cta-wrap { flex-direction: column; align-items: stretch; }
       .fs-v2 .intro-cta { width: 100%; }
-      .fs-v2 #detail-personal-section { padding: 20px; }
       .fs-v2 .ovb-tags { padding-left: 0; }
     }
     @media (max-width: 599px) {
@@ -1805,7 +1652,6 @@
     .fs-v2 #v2-detail-range { order: 5; margin-top: 8px; }
     .fs-v2 #v2-detail-range:empty { display: none; }
     /* 追蹤議題解析：外框已承擔金色左線，內文不再重複底色 / 邊線 */
-    .fs-v2 .personal-prose { margin: 0; padding: 0; background: none; border: 0; border-radius: 0; font-family: var(--v2-font-cjk); }
   </style>
 </head>
 <body class="monthly-page fs-v2">
@@ -1854,26 +1700,6 @@
             </div>
           </div>
 
-          <!-- ── 個人化 context 設定（訂閱前後共用，JS 控制 slot 數）── -->
-          <div id="context-panel" class="ctx-panel">
-            <div class="ctx-head">
-              <div class="ctx-label-row">
-                <div class="ctx-label" id="ctx-label">Personalize · 個人化你的流月建議（選填）</div>
-                <span class="v2-opt" data-i18n="mo.v2Optional">選填</span>
-              </div>
-              <div class="ctx-desc" id="ctx-desc">
-                選擇你最在意的領域，描述你目前的處境。<br>
-                我們會在該宮位的「本月建議」中，把你的情況納入考量。
-                <span class="ctx-desc-note">您設定或調整的主題，會納入下一期的流月分析；若分析已進入生成階段，調整將於再下一期生效。</span>
-              </div>
-            </div>
-            <div id="ctx-slots" class="ctx-slots"><!-- JS 動態填入 slot --></div>
-            <p class="v2-ctx-privacy" data-i18n="mo.v2CtxPrivacy">請勿填寫身分證號、密碼等敏感資訊。</p>
-            <div id="ctx-upsell" class="ctx-upsell" style="display:none;">
-              目前可設定 <strong>1 個</strong> 主題；後續付費訂閱後開放 <strong>3 個</strong>。
-            </div>
-          </div>
-          
           <!-- 月報統一 1 號：寄送說明（開通時由 RPC 寫入 monthly_enabled = true）-->
           <div class="delivery-note" id="delivery-note">
             往後每月 1 號，新一期的流月會自動為你生成，並寄到你的信箱。
@@ -1946,17 +1772,9 @@
         <div id="month-tabs" class="month-tabs"></div>
       </div>
 
-      <!-- v2：本月焦點 ＋ 追蹤議題設定（原個人化設定摺疊入口，功能不變）-->
+      <!-- v2：本月焦點 -->
       <div class="v2-hub-bar">
         <div class="v2-focus" id="v2-focus"></div>
-        <!-- 個人化設定摺疊入口（已訂閱者在此隨時調整 context）-->
-        <div class="ctx-hub-entry">
-          <button id="ctx-toggle" class="ctx-toggle">
-            <span class="ctx-toggle-label" id="ctx-toggle-label">⚙ 個人化設定</span>
-            <span class="ctx-toggle-caret" id="ctx-toggle-caret">▾</span>
-          </button>
-          <div id="ctx-hub-mount" class="ctx-hub-mount" style="display:none;"><!-- JS 把 panel 移進來 --></div>
-        </div>
       </div>
 
       <!-- T15 段 3 / D5-b：解鎖入口掛載點之一（另一處在 view-intro 生成畫面）。
@@ -2075,7 +1893,6 @@
         <button type="button" data-v2-target="sec-02" data-i18n="secInflowTitle">能量飛入</button>
         <button type="button" data-v2-target="sec-03" data-i18n="secOutflowTitle">能量飛出</button>
         <button type="button" data-v2-target="sec-04" data-i18n="mo.secSuggestTitle">本月建議</button>
-        <button type="button" data-v2-target="detail-personal" data-i18n="mo.personalTitle" id="v2-tab-personal" hidden>追蹤議題解析</button>
       </div>
 
       <section class="section">
@@ -2135,24 +1952,8 @@
         <div id="lock-04" class="seclock" style="display:none;"></div>
       </section>
 
-      <!-- 底部單一 CTA（在追蹤議題之前，維持免費內容在最後）-->
+      <!-- 底部單一 CTA（維持免費內容在最後）-->
       <div id="detail-paywall-cta"></div>
-
-    
-      <section class="section" id="detail-personal-section" style="display:none;">
-        <div class="section-head">
-          <div class="section-num">✦</div>
-          <div class="section-titles">
-            <div class="section-title-zh" id="personal-title">追蹤議題解析</div>
-            <div class="section-title-en">Your Tracked Focus</div>
-          </div>
-        </div>
-        <div class="section-explainer">
-          <div class="section-explainer-icon">✦</div>
-          <div id="personal-desc"><strong>追蹤議題解析</strong>——這是針對您為本宮設定的個人處境，結合本月運勢量身提供的建議。</div>
-        </div>
-        <div id="detail-personal" class="personal-prose"></div>
-      </section>
       </div>
 
       <nav class="detail-nav">
@@ -2320,7 +2121,6 @@
       var rn = rangeNode(o.year, o.month, o.dispMonth, 'mo.v2Range', false);
       if (rn) mid.appendChild(rn);
       if (o.focus && o.focus.length) mid.appendChild(el('span', '', tx('mo.v2FocusRow').replace('{list}', o.focus.join((window.FSI18N && (window.FSI18N.getUILang() === 'ko' || window.FSI18N.getReportLang() === 'ko')) ? ', ' : '、'))));
-      if (o.tracked && o.tracked.length) mid.appendChild(el('span', 'v2-track-line', tx('mo.v2TrackRow').replace('{list}', o.tracked.join((window.FSI18N && (window.FSI18N.getUILang() === 'ko' || window.FSI18N.getReportLang() === 'ko')) ? ', ' : '、'))));
       r.appendChild(mid);
       var act = el('div', 'v2-mrow-act');
       if (o.onOpen) {
@@ -2352,7 +2152,7 @@
       var f = FS();
       return {
         year: m.year, month: m.month, ym: m.ym, dispYear: m.dispYear, dispMonth: m.dispMonth,
-        rel: m.relLabel, current: m.rel === 0, focus: m.focus, tracked: m.tracked,
+        rel: m.relLabel, current: m.rel === 0, focus: m.focus,
         state: m.state, stateText: m.stateText, hint: m.hint,
         onOpen: m.hasReport ? function () { f.openMonth(m.year, m.month); } : null
       };
@@ -2371,7 +2171,7 @@
       var items = Array.prototype.map.call(wrap.querySelectorAll('.gen-card'), function (c) {
         var d = f.describeMonth(Number(c.dataset.year), Number(c.dataset.month));
         var st = c.dataset.state;
-        var o = fromMonth(Object.assign({}, d, { hasReport: st === 'done', state: st, focus: [], tracked: [] }));
+        var o = fromMonth(Object.assign({}, d, { hasReport: st === 'done', state: st, focus: [] }));
         if (st === 'done') o.onOpen = function () { c.click(); };
         o.stateText = (c.querySelector('.gen-card-status') || {}).textContent || '';
         o.hint = (c.querySelector('.gen-card-hint') || {}).textContent || '';
@@ -2448,7 +2248,6 @@
       var idx = card.querySelector('.palace-card-index');
       if (idx) {
         if (x.focus) idx.appendChild(el('span', 'v2-cbadge v2-cbadge--focus', tx('mo.v2FocusBadge')));
-        if (card.classList.contains('has-personal')) idx.appendChild(el('span', 'v2-cbadge v2-cbadge--track', tx('mo.trackBadge')));
       }
       if (x.focus) card.classList.add('v2-is-focus');
       var bar = el('span', 'v2-mbar');
@@ -2497,37 +2296,8 @@
       var n = rangeNode(c.year, c.month, f.describeMonth(c.year, c.month).dispMonth, 'mo.v2Range', false);
       if (n) host.appendChild(n);
     }
-    function syncPersonalTab() {
-      var sec = document.getElementById('detail-personal-section');
-      var tab = document.getElementById('v2-tab-personal');
-      if (sec && tab) tab.hidden = (sec.style.display === 'none');
-    }
-
-    /* ── 追蹤議題表單：欄位標籤（module 每次重繪 slot 後補上）── */
-    function labelSlots() {
-      var wrap = document.getElementById('ctx-slots');
-      if (!wrap) return;
-      wrap.querySelectorAll('.ctx-slot').forEach(function (s) {
-        var n = s.getAttribute('data-slot');
-        var sel = s.querySelector('.ctx-select');
-        var ta = s.querySelector('.ctx-textarea');
-        if (sel && !s.querySelector('.v2-ctx-lbl--palace')) {
-          sel.id = sel.id || ('v2-ctx-select-' + n);
-          var l1 = el('label', 'v2-ctx-lbl v2-ctx-lbl--palace', tx('mo.v2CtxPalace'));
-          l1.htmlFor = sel.id;
-          sel.parentNode.insertBefore(l1, sel);
-        }
-        if (ta && !s.querySelector('.v2-ctx-lbl--text')) {
-          ta.id = ta.id || ('v2-ctx-text-' + n);
-          var l2 = el('label', 'v2-ctx-lbl v2-ctx-lbl--text', tx('mo.v2CtxText'));
-          l2.htmlFor = ta.id;
-          ta.parentNode.insertBefore(l2, ta);
-        }
-      });
-    }
-
     function refreshAll() {
-      buildMonths(); buildGenerating(); hubHeader(); decorateTabs(); buildFocus(); syncEnergyBox(); detailRange(); syncPersonalTab(); labelSlots();
+      buildMonths(); buildGenerating(); hubHeader(); decorateTabs(); buildFocus(); syncEnergyBox(); detailRange();
     }
 
     function init() {
@@ -2537,8 +2307,6 @@
       var grid = document.getElementById('palace-grid');
       var ov = document.getElementById('overview');
       var title = document.getElementById('detail-title-zh');
-      var sec = document.getElementById('detail-personal-section');
-      var slots = document.getElementById('ctx-slots');
       // module 重建各區塊時同步（首次載入 / 切月份 / 語言切換 / 輪詢都會重建）
       if (yg) new MutationObserver(buildMonths).observe(yg, { childList: true });
       if (gc) new MutationObserver(buildGenerating).observe(gc, { childList: true });
@@ -2546,8 +2314,6 @@
       if (grid) new MutationObserver(function () { hubHeader(); buildFocus(); }).observe(grid, { childList: true });
       if (ov) new MutationObserver(syncEnergyBox).observe(ov, { attributes: true, attributeFilter: ['style'] });
       if (title) new MutationObserver(detailRange).observe(title, { childList: true, characterData: true, subtree: true });
-      if (sec) new MutationObserver(syncPersonalTab).observe(sec, { attributes: true, attributeFilter: ['style'] });
-      if (slots) new MutationObserver(labelSlots).observe(slots, { childList: true });
       window.addEventListener('fsv2:monthly', buildMonths);
       window.addEventListener('i18n:changed', function () { rangeCache = {}; hideTip(); setTimeout(refreshAll, 0); });
       // 月份切換：鍵盤（Enter / 空白鍵 = 點擊）
@@ -2590,7 +2356,8 @@
   const { t: tx, td, palaceLabel, starLabel, transformLabel } = window.FSI18N;
 
   // ── 輸入介面的宮位詞彙：跟 UI 語言（PM 裁決 a）──────────────────────
-  //   適用：個人化面板（ctx-panel）與解鎖表單（view-unlock）兩處，行為必須一致。
+  //   適用：解鎖表單（view-unlock）。原個人化面板（ctx-panel）已於
+  //   TOPIC-REMOVE-01 / C 段移除。
   //   不適用：報告內容本身（detail explainer / overview 宮位名）—— 那些仍走
   //   reportLang，用 palaceLabel / td(dict,key) 的兩參數原形。
   //
@@ -2764,9 +2531,6 @@
     setHtml('intro-offer-item-1', 'mo.introOfferItem1');
     setHtml('intro-offer-item-2', 'mo.introOfferItem2');
     setHtml('intro-offer-item-3', 'mo.introOfferItem3');
-    setText('ctx-label', 'mo.ctxLabel');
-    setHtml('ctx-desc', 'mo.ctxDesc');
-    setHtml('ctx-upsell', 'mo.ctxUpsell');
     setHtml('delivery-note', 'mo.deliveryNote');
     setText('intro-subscribe-btn', 'mo.introSubscribeBtn');
     setText('intro-cta-note', 'mo.introCtaNote');
@@ -2784,7 +2548,6 @@
     // hub
     setText('hub-to-years', 'mo.hubToYears');
     setText('hub-sub', 'mo.hubSub');
-    setText('ctx-toggle-label', 'mo.ctxToggle');
     // unlock（T15 段 3）；ul-title 在 form 步驟由 ulApplyStaticI18n 覆寫為「解鎖 {ym}」
     setText('ul-back', 'mo.ulBack');
     setText('ul-title', 'mo.ulTitle');
@@ -2805,8 +2568,6 @@
     setText('sec4-title', 'mo.secSuggestTitle');
     setHtml('sec2-desc', 'mo.secInflowDesc');
     setHtml('sec3-desc', 'mo.secOutflowDesc');
-    setText('personal-title', 'mo.personalTitle');
-    setHtml('personal-desc', 'mo.personalDesc');
     // error
     setText('error-title', 'mo.errTitle');
     setText('error-detail', 'mo.errDefault');
@@ -3018,7 +2779,7 @@
     const [{ data: reports, error }, stackRows] = await Promise.all([
       supabase
         .from(MONTHLY_TABLE)
-        .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, suggestion_personal, transforms_in_meta, transforms_out_meta, valid_year_start, valid_month_start')
+        .select('palace_name, composition, palace_analysis, transforms_incoming, transforms_outgoing, suggestion, transforms_in_meta, transforms_out_meta, valid_year_start, valid_month_start')
         .eq('chart_session_id', chartSessionId)
         .eq('chart_layer', 'monthly')
         .eq('language', 'zh-TW')
@@ -3411,13 +3172,6 @@
         ? row.composition.main_stars.map(s => starLabel((typeof s === 'string') ? s : s?.star)).join(' · ')
         : tx('emptyNoMainStar');
       card.appendChild(starsEl);
-      if (row && row.suggestion_personal) {
-        card.classList.add('has-personal');
-        const mk = document.createElement('div');
-        mk.className = 'palace-card-track';
-        mk.textContent = tx('mo.trackBadge');
-        card.appendChild(mk);
-      }
       if (row) card.addEventListener('click', () => openDetail(palaceName));
       else card.style.opacity = '0.45';
       grid.appendChild(card);
@@ -3486,9 +3240,6 @@
         if (cta) cta.addEventListener('click', goPricing);
       }
     }
-
-    // 追蹤議題解析為免費，無論解鎖與否都呼叫：
-    renderPersonalSuggestion(row.suggestion_personal);
 
     const prev = PALACE_ORDER[(idx - 1 + 12) % 12];
     const next = PALACE_ORDER[(idx + 1) % 12];
@@ -3625,21 +3376,6 @@
     });
     inner += '</div>';
     wrap.innerHTML = `<div class="epilogue">${inner}</div>`;
-  }
-
-  function renderPersonalSuggestion(text) {
-    const sec = document.getElementById('detail-personal-section');
-    const el = document.getElementById('detail-personal');
-    if (!sec || !el) return;
-    if (!text) { sec.style.display = 'none'; el.innerHTML = ''; return; }
-    sec.style.display = 'block';
-    let paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-    if (paras.length <= 1) {
-      paras = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
-    }
-    el.innerHTML = paras.length
-      ? paras.map(p => `<p>${escapeHtml(p)}</p>`).join('')
-      : `<p>${escapeHtml(text)}</p>`;
   }
 
   function bindTooltips(scope) {
@@ -3806,12 +3542,11 @@
   }
 
   // ===================================================================
-  // v2 月份清單：各月的「本月焦點」與「追蹤中的宮位」
-  //   只讀免費欄位：palace_interpretations.metadata（與能量一覽同源）、
-  //   suggestion_personal 是否存在（只取 palace_name，不取內文）。
-  //   失敗只少掉清單上的焦點／追蹤文字，不影響閱讀。
+  // v2 月份清單：各月的「本月焦點」
+  //   只讀免費欄位：palace_interpretations.metadata（與能量一覽同源）。
+  //   失敗只少掉清單上的焦點文字，不影響閱讀。
   // ===================================================================
-  let monthIndex = { months: new Map(), focus: {}, tracked: {} };
+  let monthIndex = { months: new Map(), focus: {} };
   function focusOfMeta(metaMap) {
     return PALACE_ORDER
       .map(p => metaMap[p] ? { palace: p, neg: palaceNegScore(metaMap[p]) } : null)
@@ -3820,28 +3555,16 @@
       .map(x => x.palace);
   }
   async function fetchMonthExtras() {
-    const focus = {}, tracked = {};
+    const focus = {};
     try {
       const minYear = nowAsLunarBase().year - 1;
-      const [tr, it] = await Promise.all([
-        supabase.from(MONTHLY_TABLE)
-          .select('palace_name, valid_year_start, valid_month_start')
-          .eq('chart_session_id', chartSessionId)
-          .eq('chart_layer', 'monthly')
-          .eq('language', 'zh-TW')
-          .not('suggestion_personal', 'is', null),
-        supabase.from(INTERP_TABLE)
-          .select('palace_name, metadata, valid_year_start, valid_month_start')
-          .eq('chart_session_id', chartSessionId)
-          .eq('chart_layer', 'monthly')
-          .eq('language', 'zh-TW')
-          .eq('interpretation_type', 'main')
-          .gte('valid_year_start', minYear),
-      ]);
-      if (!tr.error) (tr.data || []).forEach(r => {
-        const k = `${r.valid_year_start}-${r.valid_month_start}`;
-        (tracked[k] = tracked[k] || []).push(r.palace_name);
-      });
+      const it = await supabase.from(INTERP_TABLE)
+        .select('palace_name, metadata, valid_year_start, valid_month_start')
+        .eq('chart_session_id', chartSessionId)
+        .eq('chart_layer', 'monthly')
+        .eq('language', 'zh-TW')
+        .eq('interpretation_type', 'main')
+        .gte('valid_year_start', minYear);
       if (!it.error) {
         const byMonth = {};
         (it.data || []).forEach(r => {
@@ -3856,9 +3579,7 @@
     } catch (e) {
       console.warn('[monthly] 月份清單補充資料例外：', e);
     }
-    Object.keys(tracked).forEach(k => { tracked[k].sort((a, b) => PALACE_ORDER.indexOf(a) - PALACE_ORDER.indexOf(b)); });
     monthIndex.focus = focus;
-    monthIndex.tracked = tracked;
   }
 
   // EF 的 HTTP status → 三語文案鍵。
@@ -4006,7 +3727,9 @@
   //   本模組只負責 render RPC 回應 + 收集輸入 + 依 HTTP status 顯示結果。
   //   任何「我來算一下這個月能不能解」的程式碼都是第二個判定點，禁止出現。
   //
-  // ⚠ 與常規 context（ctxSave / CTX_TABLE）是兩套模型，不可複用：
+  // ⚠ 歷史註記：原本另有一套「常規 context」（monthly_palace_context，
+  //   ctxSave / CTX_TABLE），已於 TOPIC-REMOVE-01 / C 段移除。
+  //   當時兩套模型不可複用的理由仍具參考價值，保留於下：
   //     常規：key = user_email + slot_no，無月份維度，是使用者的「常設值」，逐格 upsert
   //     解鎖：綁定特定 target 月，整組覆蓋，一次送出，slot_no 由 RPC 用 row_number() 自編
   //   若複用 ctxSave()，使用者為某月填的內容會覆寫掉常設 context，污染之後所有正常月份。
@@ -4613,9 +4336,6 @@
         isUnlocked = (!spErr && !!sp && sp.sihua_unlocked === true);
       } catch (_) { isUnlocked = false; }
 
-      await ctxInit();
-      ctxBindHubToggle();
-
       // T15 段 3：解鎖模組。ulLoadQuota 必須在 chartSessionId 賦值之後；
       // 失敗一律 fail-closed（ulQuota=null → 入口不顯示）。
       await ulLoadQuota();
@@ -4661,240 +4381,19 @@
   }
 
   // ===================================================================
-  // Context 個人化面板（訂閱前後共用；slot 數依即時訂閱判定 monthly_subscribed_live）
+  // 議題長度上限
+  //   原屬「追蹤議題」面板（TOPIC-REMOVE-01 / C 段已移除），現由「解鎖未來
+  //   月份」流程獨用：ul-textarea 的 maxlength 與 ul-counter 都讀它。
+  //   ⚠ 勿因為名字叫 CTX_ 就跟著議題一起刪 —— 刪掉解鎖表單會 ReferenceError。
+  //   ⚠ 與 RPC monthly_unlock_early 寫入的 monthly_unlock_context.context_text
+  //     同值，勿單方調整。
   // ===================================================================
-  const CTX_TABLE = 'monthly_palace_context';
   const CTX_MAX_LEN = 500;
-  let ctxSlotCount = 1;
-  let ctxData = {};
-  let ctxEditing = new Set();
-
-  // slot 數與 paywall 同源：直接複用 isUnlocked（已由 monthly_subscribed_live() 判定）。
-  // 不另外查一次 DB —— 兩處各自判定會分岔，且多一次 round trip。
-  // 前置條件：ctxInit() 必須在 isUnlocked 賦值之後呼叫（見 init 流程）。
-  // 後端配額由 monthly_palace_context 的 mpc_insert_own / mpc_update_own policy
-  //（slot_no BETWEEN 1 AND 3 且 slot_no=1 OR monthly_subscribed_live()）強制，此處僅為顯示。
-  function ctxLoadTier() {
-    // 2026-09 四化統一買斷：3 議題追蹤前端明確隱藏，固定 1 格（免費格）。
-    // ⚠ 刻意【不】依 isUnlocked —— isUnlocked 已改讀 sihua_unlocked，
-    //   沿用會讓買 $4.99 的人看到 3 格（DB 的 RLS 仍擋 slot 2/3 → 存檔失敗）。
-    ctxSlotCount = 1;
-  }
-
-  async function ctxLoadData() {
-    ctxData = {};
-    try {
-      const { data, error } = await supabase
-        .from(CTX_TABLE)
-        .select('slot_no, palace_name, context_text')
-        .eq('user_email', userEmail);
-      if (!error && data) {
-        data.forEach(r => { ctxData[r.slot_no] = { palace_name: r.palace_name, context_text: r.context_text }; });
-      }
-    } catch (_) {}
-  }
-
-  function ctxUsedPalaces(exceptSlot) {
-    const used = new Set();
-    Object.entries(ctxData).forEach(([slot, v]) => {
-      if (Number(slot) !== Number(exceptSlot) && v && v.palace_name) used.add(v.palace_name);
-    });
-    return used;
-  }
-
-  function ctxRenderSlots() {
-    const wrap = document.getElementById('ctx-slots');
-    const upsell = document.getElementById('ctx-upsell');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-
-    for (let n = 1; n <= ctxSlotCount; n++) {
-      const cur = ctxData[n] || { palace_name: '', context_text: '' };
-      const used = ctxUsedPalaces(n);
-      const isSaved = !!ctxData[n];
-      const locked = isSaved && !ctxEditing.has(n);
-
-      const slot = document.createElement('div');
-      slot.className = 'ctx-slot';
-      slot.dataset.slot = n;
-
-      const options = [`<option value="">${escapeHtml(tx('mo.ctxSelectPlaceholder'))}</option>`]
-        .concat(PALACE_ORDER.map(p => {
-          const dis = used.has(p) && p !== cur.palace_name ? ' disabled' : '';
-          const sel = p === cur.palace_name ? ' selected' : '';
-          return `<option value="${p}"${sel}${dis}>${escapeHtml(palaceLabelInput(p))}</option>`;
-        }))
-        .join('');
-
-      const explainerHtml = palaceExplainerInput(cur.palace_name);
-
-      slot.innerHTML = `
-        <div class="ctx-slot-top">
-          <span class="ctx-slot-no">${escapeHtml(tx('mo.ctxSlot').replace('{n}', n))}</span>
-          <select class="ctx-select" data-slot="${n}"${locked ? ' disabled' : ''}>${options}</select>
-        </div>
-        <div class="ctx-slot-explainer${explainerHtml ? ' show' : ''}" data-slot="${n}">${explainerHtml}</div>
-        <textarea class="ctx-textarea" data-slot="${n}" maxlength="${CTX_MAX_LEN}"${locked ? ' disabled' : ''}
-          placeholder="${escapeHtml(tx('mo.ctxPlaceholder'))}">${escapeHtml(cur.context_text || '')}</textarea>
-        <div class="ctx-slot-actions">
-          <span class="ctx-counter" data-slot="${n}">${(cur.context_text || '').length} / ${CTX_MAX_LEN}</span>
-          <div class="ctx-btns">
-            <span class="ctx-slot-saved${locked ? ' show' : ''}" data-slot="${n}">${escapeHtml(tx('mo.ctxSaved'))}</span>
-            ${locked
-              ? `<button class="ctx-btn edit" data-slot="${n}">${escapeHtml(tx('mo.ctxEdit'))}</button><button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button>`
-              : `<button class="ctx-btn clear" data-slot="${n}">${escapeHtml(tx('mo.ctxClear'))}</button><button class="ctx-btn save" data-slot="${n}">${escapeHtml(tx('mo.ctxSave'))}</button>`}
-          </div>
-        </div>`;
-      wrap.appendChild(slot);
-    }
-
-    // 2026-09：3 議題追蹤已隱藏 → 不再顯示「付費開放 3 個」提示。
-    if (upsell) upsell.style.display = 'none';
-
-    ctxBindSlotEvents();
-  }
-
-  function ctxBindSlotEvents() {
-    const wrap = document.getElementById('ctx-slots');
-    if (!wrap) return;
-
-    wrap.querySelectorAll('.ctx-textarea').forEach(ta => {
-      ta.addEventListener('input', () => {
-        const n = ta.dataset.slot;
-        const c = wrap.querySelector(`.ctx-counter[data-slot="${n}"]`);
-        if (c) {
-          c.textContent = `${ta.value.length} / ${CTX_MAX_LEN}`;
-          c.classList.toggle('over', ta.value.length >= CTX_MAX_LEN);
-        }
-      });
-    });
-
-    wrap.querySelectorAll('.ctx-select').forEach(sel => {
-      sel.addEventListener('change', () => {
-        const n = sel.dataset.slot;
-        const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${n}"]`);
-        if (exp) {
-          const html = palaceExplainerInput(sel.value);
-          exp.innerHTML = html;
-          exp.classList.toggle('show', !!html);
-        }
-      });
-    });
-
-    wrap.querySelectorAll('.ctx-btn.save').forEach(btn => {
-      btn.addEventListener('click', () => ctxSave(Number(btn.dataset.slot)));
-    });
-    wrap.querySelectorAll('.ctx-btn.edit').forEach(btn => {
-      btn.addEventListener('click', () => { ctxEditing.add(Number(btn.dataset.slot)); ctxRenderSlots(); });
-    });
-    wrap.querySelectorAll('.ctx-btn.clear').forEach(btn => {
-      btn.addEventListener('click', () => ctxClear(Number(btn.dataset.slot)));
-    });
-  }
-
-  async function ctxSave(slotNo) {
-    const wrap = document.getElementById('ctx-slots');
-    const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
-    const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
-    const palace = sel.value || null;
-    const text = (ta.value || '').trim();
-
-    if (!palace) { alert(tx('mo.ctxAlertNoPalace')); return; }
-    if (!text) { alert(tx('mo.ctxAlertNoText')); return; }
-
-    if (!confirm(tx('mo.ctxDisclaimer'))) return;
-
-    const btn = wrap.querySelector(`.ctx-btn.save[data-slot="${slotNo}"]`);
-    if (btn) btn.disabled = true;
-
-    const payload = {
-      user_email: userEmail,
-      chart_session_id: chartSessionId,
-      slot_no: slotNo,
-      palace_name: palace,
-      context_text: text,
-    };
-
-    const { error } = await supabase
-      .from(CTX_TABLE)
-      .upsert(payload, { onConflict: 'user_email,slot_no' });
-
-    if (btn) btn.disabled = false;
-
-    if (error) { alert(tx('mo.ctxSaveFail') + error.message); return; }
-
-    ctxData[slotNo] = { palace_name: palace, context_text: text };
-    ctxEditing.delete(slotNo);
-    ctxRenderSlots();
-  }
-
-  async function ctxClear(slotNo) {
-    if (!ctxData[slotNo]) {
-      const wrap = document.getElementById('ctx-slots');
-      const sel = wrap.querySelector(`.ctx-select[data-slot="${slotNo}"]`);
-      const ta = wrap.querySelector(`.ctx-textarea[data-slot="${slotNo}"]`);
-      if (sel) sel.value = ''; if (ta) ta.value = '';
-      const exp = wrap.querySelector(`.ctx-slot-explainer[data-slot="${slotNo}"]`);
-      if (exp) { exp.innerHTML = ''; exp.classList.remove('show'); }
-      return;
-    }
-    if (!confirm(tx('mo.ctxClearConfirm'))) return;
-    const { error } = await supabase
-      .from(CTX_TABLE)
-      .delete()
-      .eq('user_email', userEmail)
-      .eq('slot_no', slotNo);
-    if (error) { alert(tx('mo.ctxClearFail') + error.message); return; }
-    delete ctxData[slotNo];
-    ctxEditing.delete(slotNo);
-    ctxRenderSlots();
-  }
-
-  async function ctxInit() {
-    await ctxLoadTier();
-    await ctxLoadData();
-    ctxRenderSlots();
-  }
-
-  function ctxBindHubToggle() {
-    const toggle = document.getElementById('ctx-toggle');
-    const mount = document.getElementById('ctx-hub-mount');
-    const panel = document.getElementById('context-panel');
-    if (!toggle || !mount || !panel) return;
-    toggle.addEventListener('click', () => {
-      const open = mount.style.display !== 'none';
-      if (open) {
-        mount.style.display = 'none';
-        toggle.classList.remove('open');
-      } else {
-        mount.appendChild(panel);
-        panel.style.display = 'block';
-        mount.style.display = 'block';
-        toggle.classList.add('open');
-      }
-    });
-  }
-
-  // 是否有未儲存的 context 輸入(語言切換時避免覆蓋使用者輸入)
-  function ctxHasUnsaved() {
-    const wrap = document.getElementById('ctx-slots');
-    if (!wrap) return false;
-    for (const ta of wrap.querySelectorAll('.ctx-textarea')) {
-      const n = ta.dataset.slot;
-      const saved = (ctxData[n] && ctxData[n].context_text) || '';
-      if ((ta.value || '') !== saved) return true;
-      const sel = wrap.querySelector(`.ctx-select[data-slot="${n}"]`);
-      const savedPalace = (ctxData[n] && ctxData[n].palace_name) || '';
-      if (sel && !sel.disabled && (sel.value || '') !== savedPalace) return true;
-    }
-    return false;
-  }
 
   // ── UI 語言切換(header 語言鈕)→ 以快取資料就地重繪 ──
   function rerender() {
     const view = currentView;
     applyStaticI18n();
-    if (!ctxHasUnsaved()) ctxRenderSlots();
     ulRerender();                       // T15 段 3：入口 + 解鎖介面（form 步驟保留使用者輸入）
     if (introMode === 'generating') renderGenerating(lastJobs);
     if (lastYears && lastYears.length) renderYears(lastYears);
@@ -4965,7 +4464,6 @@
         hint: st === 'stuck' ? stuckHintText() : '',
         // 還沒有 report 的月份（生成中）不顯示焦點 / 追蹤，避免與「尚不可讀」矛盾
         focus: v.hasReport ? (monthIndex.focus[k] || []).map(p => palaceLabel(p)) : [],
-        tracked: v.hasReport ? (monthIndex.tracked[k] || []).map(p => palaceLabel(p)) : [],
       });
     })
     // 與 computeVisibleMonths 同一條產品規則：不回顧兩個月以前
