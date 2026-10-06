@@ -12,9 +12,11 @@
   //     一律使用 i18n.js 共用區 navChart / navDecade / navAnnual / navMonthly / navCharts
   //     的「現值」,不自創別名(例:nav 現值為「大限」,不可寫成「大限盤」)。
   //     日後若共用區那些 key 的值有變動,本檔對應字串必須同步更新。
-  //   ⚠ 流月用語對齊 monthly.html：「開啟每月流月」(mo.enableTitle)、「追蹤議題解析」(mo.personalTitle)。
+  //   ⚠ 流月用語對齊 monthly.html：「開啟每月流月」(mo.enableTitle)。
+  //     2026-10-06 TOPIC-REMOVE-01 / D：「追蹤議題」功能已下架，本檔
+  //     ht.lyMonthlyBody 五語末句的相關承諾一併移除。
   //   裝飾性英文 eyebrow 刻意保留靜態(比照 support.html)。
-  //   2026-09-24 v2 改版：內容對齊現行流程(生成時間/寄信/兩段式宮位/追蹤議題/農曆適用日期)+ 第三步。
+  //   2026-09-24 v2 改版：內容對齊現行流程(生成時間/寄信/兩段式宮位/農曆適用日期)+ 第三步。
   window.FSI18N.addUI({
     'ht.docTitle': { 'zh-TW': '怎麼使用 FuSang - FuSang Vision', 'zh-CN': '如何使用 FuSang - FuSang Vision', 'en': 'How to Use FuSang - FuSang Vision', 'ja': 'FuSang の使い方 - FuSang Vision', 'ko': 'FuSang 이용 방법 - FuSang Vision' },
     'ht.title':    { 'zh-TW': '怎麼使用 FuSang', 'zh-CN': '如何使用 FuSang', 'en': 'How to Use FuSang', 'ja': 'FuSang の使い方', 'ko': 'FuSang 이용 방법' },
@@ -52,7 +54,7 @@
     'ht.lyMonthlyName': { 'zh-TW': '流月', 'zh-CN': '流月', 'en': 'Monthly', 'ja': '流月', 'ko': '월운' },
     'ht.lyMonthlyTag':  { 'zh-TW': '最重要', 'zh-CN': '最重要', 'en': 'Most important', 'ja': '最重要', 'ko': '가장 중요' },
     'ht.lyMonthlyPath': { 'zh-TW': '命盤 → 流月', 'zh-CN': '命盘 → 流月', 'en': 'Charts → Monthly', 'ja': '命盤 → 流月', 'ko': '명반 → 월운' },
-    'ht.lyMonthlyBody': { 'zh-TW': '這是最個人化的一層。開啟每月流月後，每月 1 號會為你生成新一期的解讀並寄到你的信箱，看見當月的重心；解鎖四化後，流月同樣包含完整的四化解讀。你也可以為宮位設定想追蹤的議題，每期的「追蹤議題解析」會持續回應它。', 'zh-CN': '这是最个人化的一层。开启每月流月后，每月 1 号会为你生成新一期的解读并寄到你的邮箱，看见当月的重心；解锁四化后，流月同样包含完整的四化解读。你也可以为宫位设定想追踪的议题，每期的「追踪议题解析」会持续回应它。', 'en': 'This is the most personal layer. Once you turn on monthly readings, a new reading is generated on the 1st of each month and sent to your inbox, showing where that month is focused. After unlocking the four transformations, Monthly includes the full transformation reading too. You can also set a focus you want to track for a palace, and each issue of Your Tracked Focus will keep responding to it.', 'ja': 'もっとも個人に寄り添った層です。毎月の流月をオンにすると、毎月1日に新しい解説が作成されてメールで届き、その月の重心がわかります。四化を解除すると、流月にも四化の完全な解説が含まれます。また、宮ごとに追跡したいテーマを設定でき、毎号の「追跡テーマの解説」がそのテーマに継続して応えていきます。', 'ko': '가장 개인적인 리포트예요. 월운을 열면 매월 1일에 새 해석이 생성되어 메일로 발송되고, 그달의 중심을 살펴볼 수 있어요. 사화를 잠금 해제하면 월운에도 사화 해석이 모두 포함돼요. 궁별로 살펴보고 싶은 주제를 설정할 수도 있으며, 매 회차의 ‘관심 주제 분석’이 그 주제에 계속 답해 드려요.' },
+    'ht.lyMonthlyBody': { 'zh-TW': '這是最個人化的一層。開啟每月流月後，每月 1 號會為你生成新一期的解讀並寄到你的信箱，看見當月的重心；解鎖四化後，流月同樣包含完整的四化解讀。', 'zh-CN': '这是最个人化的一层。开启每月流月后，每月 1 号会为你生成新一期的解读并寄到你的邮箱，看见当月的重心；解锁四化后，流月同样包含完整的四化解读。', 'en': 'This is the most personal layer. Once you turn on monthly readings, a new reading is generated on the 1st of each month and sent to your inbox, showing where that month is focused. After unlocking the four transformations, Monthly includes the full transformation reading too.', 'ja': 'もっとも個人に寄り添った層です。毎月の流月をオンにすると、毎月1日に新しい解説が作成されてメールで届き、その月の重心がわかります。四化を解除すると、流月にも四化の完全な解説が含まれます。', 'ko': '가장 개인적인 리포트예요. 월운을 열면 매월 1일에 새 해석이 생성되어 메일로 발송되고, 그달의 중심을 살펴볼 수 있어요. 사화를 잠금 해제하면 월운에도 사화 해석이 모두 포함돼요.' },
     'ht.lyMonthlyNote': { 'zh-TW': '流月依農曆月份計算，所以每期的適用期間不會剛好是國曆的 1 號到月底。流月頁上會標出實際適用的國曆日期。', 'zh-CN': '流月依农历月份计算，所以每期的适用期间不会刚好是公历的 1 号到月底。流月页上会标出实际适用的公历日期。', 'en': 'Monthly readings follow the lunar calendar, so each period does not run exactly from the 1st to the end of a calendar month. The Monthly page shows the exact dates each reading covers.', 'ja': '流月は旧暦の月で計算するため、各号の対象期間は西暦の1日から月末までとぴったり一致しません。流月ページには、実際に対象となる西暦の日付が表示されます。', 'ko': '월운은 음력 달을 기준으로 계산하기 때문에, 각 회차의 적용 기간이 양력 1일부터 말일까지와 정확히 일치하지 않아요. 월운 페이지에 실제 적용되는 양력 날짜가 표시돼요.' },
 
     // ── 第三步：更進一步 ──
