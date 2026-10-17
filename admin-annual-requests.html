@@ -41,7 +41,8 @@
     background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
     box-shadow:var(--shadow);overflow-x:auto;
   }
-  table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:860px;}
+  .row-mark{padding:6px 12px;}
   thead th{
     text-align:left;font-weight:600;font-size:11px;color:var(--faint);
     letter-spacing:.05em;text-transform:uppercase;
@@ -68,7 +69,7 @@
   <main class="fa-wrap">
     <div class="fa-page-head">
       <h1 class="fa-page-title">年報索取</h1>
-      <p class="fa-page-sub">PT-006 · 2027 年報索取名單。年報依「年報語言」撰寫，於索取後 2–3 天內寄出，寄出後勾選並標記。</p>
+      <p class="fa-page-sub">PT-006 · 2027 年報索取名單。年報依「年報語言」撰寫，於索取後 2–3 天內寄出。寄出後按該列的「標記已寄出」，多筆可勾選後批次標記。</p>
     </div>
 
     <div class="summary-row" id="summaryRow"></div>
@@ -107,6 +108,7 @@
               <th>索取時間</th>
               <th>狀態</th>
               <th>寄出時間</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -172,6 +174,7 @@
           <td class="nowrap">${esc(fmt(r.requested_at))}</td>
           <td><span class="st st-${esc(r.status)}">${esc(STATUS[r.status] ?? r.status)}</span></td>
           <td class="nowrap">${r.sent_at ? esc(fmt(r.sent_at)) : '<span class="dim">—</span>'}</td>
+          <td class="nowrap">${can ? `<button type="button" class="btn ghost row-mark" data-id="${esc(r.id)}">標記已寄出</button>` : ''}</td>
         </tr>`;
       }).join('');
       $('rows').querySelectorAll('input[type=checkbox]').forEach(cb => {
@@ -179,6 +182,9 @@
           if (cb.checked) selected.add(cb.dataset.id); else selected.delete(cb.dataset.id);
           renderSelection();
         });
+      });
+      $('rows').querySelectorAll('.row-mark').forEach(btn => {
+        btn.addEventListener('click', () => markSent([btn.dataset.id], btn));
       });
       renderSelection();
     }
@@ -204,20 +210,20 @@
       show('listWrap');
     }
 
-    async function markSent() {
-      const ids = [...selected];
+    // ids 省略 = 批次（目前勾選的列）；單列按鈕會傳 [id] 與按鈕本身
+    async function markSent(ids = [...selected], btn = $('btnMark')) {
       if (!ids.length) return;
-      const emails = rows.filter(r => selected.has(r.id)).map(r => r.user_email);
+      const emails = rows.filter(r => ids.includes(r.id)).map(r => r.user_email);
       if (!confirm(`將 ${ids.length} 筆標記為「已寄出」？\n\n${emails.join('\n')}`)) return;
-      const btn = $('btnMark');
       btn.disabled = true;
       const { data, error } = await supabase.rpc('admin_mark_annual_sent', { p_ids: ids });
       if (error) {
         alert('標記失敗：' + (error.message || String(error)));
+        btn.disabled = false;
         renderSelection();
         return;
       }
-      selected.clear();
+      ids.forEach(id => selected.delete(id));
       await load();
       if (data !== ids.length) alert(`已標記 ${data} 筆（其餘可能已被標記過）。`);
     }
@@ -248,7 +254,7 @@
       if (e.target.checked) pending.forEach(r => selected.add(r.id)); else selected.clear();
       renderRows();
     });
-    $('btnMark').addEventListener('click', markSent);
+    $('btnMark').addEventListener('click', () => markSent());
     $('btnReload').addEventListener('click', load);
     $('btnCsv').addEventListener('click', downloadCsv);
 
