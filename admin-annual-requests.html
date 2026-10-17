@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 年報索取</title>
+<!--
+  PT-006 2027 年報索取名單
+  - 讀取：admin_list_annual_requests(2027)（非 admin → not_admin）
+  - 標記已寄出：admin_mark_annual_sent(ids[])，只會更新 status='requested' 的列
+  - CSV：前端由目前名單產生（UTF-8 BOM，Excel 可直接開；含 ui_lang）
+-->
+<style>
+  /* ── 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+  .summary-row{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
+  .sum-pill{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    padding:14px 18px;box-shadow:var(--shadow);display:flex;align-items:baseline;gap:10px;
+  }
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:26px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .toolbar .spacer{flex:1 1 auto;}
+  .sel-note{font-size:12.5px;color:var(--muted);}
+  .btn{
+    font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);
+    padding:8px 14px;transition:all .15s ease;
+  }
+  .btn.primary{background:var(--ink);color:#fff;border:1px solid var(--ink);}
+  .btn.primary:hover:not(:disabled){filter:brightness(1.15);}
+  .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--hair-strong);}
+  .btn.ghost:hover:not(:disabled){border-color:var(--ink);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
+
+  .table-scroll{
+    background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow-x:auto;
+  }
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+  thead th{
+    text-align:left;font-weight:600;font-size:11px;color:var(--faint);
+    letter-spacing:.05em;text-transform:uppercase;
+    padding:13px 14px;border-bottom:1px solid var(--hair);white-space:nowrap;background:var(--surface);
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--hair);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FBFBFC;}
+  .col-check{width:36px;}
+  .col-email{font-weight:500;word-break:break-all;}
+  .dim{color:var(--faint);}
+  .nowrap{white-space:nowrap;}
+  .lang-tag{font-size:12px;font-weight:600;background:#F0F1F3;border-radius:6px;padding:3px 9px;white-space:nowrap;}
+  .st{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap;}
+  .st-requested{color:var(--wait);background:var(--wait-soft);}
+  .st-sent{color:var(--ok);background:var(--ok-soft);}
+  .st-cancelled{color:var(--muted);background:#F0F1F3;}
+  input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
+  input[type=checkbox]:disabled{cursor:not-allowed;opacity:.35;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">年報索取</h1>
+      <p class="fa-page-sub">PT-006 · 2027 年報索取名單。年報依「年報語言」撰寫，於索取後 2–3 天內寄出，寄出後勾選並標記。</p>
+    </div>
+
+    <div class="summary-row" id="summaryRow"></div>
+
+    <div id="loadState" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">讀取中…</div>
+    </div>
+
+    <div id="emptyState" class="fa-state fa-hidden">
+      <div class="fa-state-title">尚無索取</div>
+      <div>用戶在 2027 專區索取年報後，會顯示於此。</div>
+    </div>
+
+    <div id="errorState" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">讀取失敗</div>
+      <div id="errorMsg"></div>
+    </div>
+
+    <div id="listWrap" class="fa-hidden">
+      <div class="toolbar">
+        <button type="button" class="btn primary" id="btnMark" disabled>標記已寄出</button>
+        <span class="sel-note" id="selNote"></span>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="btnReload">重新整理</button>
+        <button type="button" class="btn ghost" id="btnCsv">下載 CSV</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="chkAll" aria-label="全選待寄出"></th>
+              <th>Email</th>
+              <th>姓名</th>
+              <th>年報語言</th>
+              <th>索取時間</th>
+              <th>狀態</th>
+              <th>寄出時間</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    const YEAR = 2027;
+    const LANG = { 'zh-TW': '繁中', 'zh-CN': '簡中', 'en': '英文', 'ja': '日文', 'ko': '韓文' };
+    const STATUS = { requested: '待寄出', sent: '已寄出', cancelled: '已取消' };
+
+    const $ = (id) => document.getElementById(id);
+    let rows = [];
+    const selected = new Set();
+
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function fmt(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleString('zh-TW', {
+        timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false,
+      });
+    }
+    const langLabel = (l) => `${LANG[l] ?? l}（${l}）`;
+
+    function show(which) {
+      for (const id of ['loadState', 'emptyState', 'errorState', 'listWrap']) {
+        $(id).classList.toggle('fa-hidden', id !== which);
+      }
+    }
+
+    function renderSummary() {
+      const n = (s) => rows.filter(r => r.status === s).length;
+      const pills = [['總索取', rows.length], ['待寄出', n('requested')], ['已寄出', n('sent')]];
+      $('summaryRow').innerHTML = pills.map(([label, num]) =>
+        `<div class="sum-pill"><span class="sum-num">${num}</span><span class="sum-label">${label}</span></div>`).join('');
+    }
+
+    function renderSelection() {
+      const pending = rows.filter(r => r.status === 'requested');
+      $('btnMark').disabled = selected.size === 0;
+      $('selNote').textContent = selected.size ? `已選 ${selected.size} 筆` : '';
+      const all = $('chkAll');
+      all.disabled = pending.length === 0;
+      all.checked = pending.length > 0 && pending.every(r => selected.has(r.id));
+      all.indeterminate = selected.size > 0 && !all.checked;
+    }
+
+    function renderRows() {
+      $('rows').innerHTML = rows.map(r => {
+        const can = r.status === 'requested';
+        return `<tr>
+          <td class="col-check"><input type="checkbox" data-id="${esc(r.id)}" ${can ? '' : 'disabled'} ${selected.has(r.id) ? 'checked' : ''} aria-label="選取 ${esc(r.user_email)}"></td>
+          <td class="col-email">${esc(r.user_email)}</td>
+          <td>${r.cust_name ? esc(r.cust_name) : '<span class="dim">—</span>'}</td>
+          <td><span class="lang-tag">${esc(langLabel(r.ui_lang))}</span></td>
+          <td class="nowrap">${esc(fmt(r.requested_at))}</td>
+          <td><span class="st st-${esc(r.status)}">${esc(STATUS[r.status] ?? r.status)}</span></td>
+          <td class="nowrap">${r.sent_at ? esc(fmt(r.sent_at)) : '<span class="dim">—</span>'}</td>
+        </tr>`;
+      }).join('');
+      $('rows').querySelectorAll('input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) selected.add(cb.dataset.id); else selected.delete(cb.dataset.id);
+          renderSelection();
+        });
+      });
+      renderSelection();
+    }
+
+    async function load() {
+      show('loadState');
+      const { data, error } = await supabase.rpc('admin_list_annual_requests', { p_year: YEAR });
+      if (error) {
+        $('errorMsg').textContent = error.message || String(error);
+        show('errorState');
+        return;
+      }
+      rows = Array.isArray(data) ? data : [];
+      // 待寄出排前面，其餘依索取時間
+      rows.sort((a, b) => (a.status === 'requested' ? 0 : 1) - (b.status === 'requested' ? 0 : 1)
+        || new Date(a.requested_at) - new Date(b.requested_at));
+      for (const id of [...selected]) {
+        if (!rows.some(r => r.id === id && r.status === 'requested')) selected.delete(id);
+      }
+      renderSummary();
+      if (!rows.length) { show('emptyState'); return; }
+      renderRows();
+      show('listWrap');
+    }
+
+    async function markSent() {
+      const ids = [...selected];
+      if (!ids.length) return;
+      const emails = rows.filter(r => selected.has(r.id)).map(r => r.user_email);
+      if (!confirm(`將 ${ids.length} 筆標記為「已寄出」？\n\n${emails.join('\n')}`)) return;
+      const btn = $('btnMark');
+      btn.disabled = true;
+      const { data, error } = await supabase.rpc('admin_mark_annual_sent', { p_ids: ids });
+      if (error) {
+        alert('標記失敗：' + (error.message || String(error)));
+        renderSelection();
+        return;
+      }
+      selected.clear();
+      await load();
+      if (data !== ids.length) alert(`已標記 ${data} 筆（其餘可能已被標記過）。`);
+    }
+
+    function csvCell(v) {
+      let s = String(v ?? '');
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;          // 避免試算表公式注入
+      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    }
+
+    function downloadCsv() {
+      const head = ['email', '姓名', '年報語言', 'ui_lang', '索取時間（台北）', '狀態', '寄出時間（台北）'];
+      const lines = [head.map(csvCell).join(',')].concat(rows.map(r => [
+        r.user_email, r.cust_name || '', LANG[r.ui_lang] ?? r.ui_lang, r.ui_lang,
+        fmt(r.requested_at), STATUS[r.status] ?? r.status, fmt(r.sent_at),
+      ].map(csvCell).join(',')));
+      const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      const d = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `annual-${YEAR}-requests-${d}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    $('chkAll').addEventListener('change', (e) => {
+      const pending = rows.filter(r => r.status === 'requested');
+      if (e.target.checked) pending.forEach(r => selected.add(r.id)); else selected.clear();
+      renderRows();
+    });
+    $('btnMark').addEventListener('click', markSent);
+    $('btnReload').addEventListener('click', load);
+    $('btnCsv').addEventListener('click', downloadCsv);
+
+    /* ── 啟動 ── */
+    (async function init(){
+      const ok = await initAdmin('annual');
+      if (!ok) return;
+      await load();
+    })();
+  </script>
+</body>
+</html>
