@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<script src="y27-i18n.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 年報 - FuSang Vision</title>
+<link rel="stylesheet" href="fs-v2.css" />
+<!--
+  PT-006 2027 專區 + 年報索取入口
+  - 狀態：loading → idle（未索取）/ done（已索取）/ error（可重試）
+  - 讀取：annual_report_requests（RLS 只讀自己）
+  - 索取：RPC request_annual_report(2027, uiLang)，冪等；created=true 才呼叫 EF notify-annual-request
+  - 通知寄送失敗不影響索取結果
+-->
+<style>
+  body.y27-page.fs-v2 { background: #ffffff; }
+  .fs-v2 .y27-wrap { width: calc(100% - 2 * var(--v2-gutter)); max-width: var(--v2-max); margin: 0 auto; padding: 32px 0 96px; }
+
+  .fs-v2 .y27-hero {
+    position: relative; min-height: 179px; margin: 0 0 40px; padding: 32px; overflow: hidden;
+    background: #ffffff url('assets/v2/banner.webp') center / cover no-repeat;
+  }
+  .fs-v2 .y27-eyebrow { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 12px; line-height: 20px; text-transform: uppercase; color: var(--v2-muted); }
+  .fs-v2 .y27-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 36px; line-height: 50px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .y27-sub { max-width: 640px; margin: 0; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 29px; color: var(--v2-muted); }
+
+  .fs-v2 .y27-section { display: grid; grid-template-columns: 240px minmax(0, 1fr); column-gap: 48px; padding: 32px 0; border-top: 1px solid var(--v2-line); }
+  .fs-v2 .y27-section:last-child { border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .y27-label { margin: 0; font-family: var(--v2-font-cjk); font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .y27-text { max-width: 820px; margin: 0 0 12px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-muted); }
+  .fs-v2 .y27-text:last-child { margin-bottom: 0; }
+
+  .fs-v2 .y27-what { list-style: none; margin: 0 0 16px; padding: 0; max-width: 820px; }
+  .fs-v2 .y27-what li { padding: 14px 0; border-bottom: 1px solid var(--v2-line-soft); font-family: var(--v2-font-cjk); font-size: 15px; line-height: 26px; color: var(--v2-muted); }
+  .fs-v2 .y27-what li:first-child { padding-top: 0; }
+  .fs-v2 .y27-what b { margin-inline-end: .5em; font-weight: 500; color: var(--v2-ink); }
+
+  /* 索取區 */
+  .fs-v2 .y27-action { min-height: 120px; }
+  .fs-v2 .y27-state[hidden] { display: none; }
+  .fs-v2 .y27-done-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .y27-done-body { margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 26px; color: var(--v2-ink); overflow-wrap: anywhere; }
+  .fs-v2 .y27-done-date { margin: 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-faint); }
+  .fs-v2 .y27-done { padding: 20px 24px; background: var(--v2-tint-soft); border: 1px solid var(--v2-blue-line); }
+  .fs-v2 .y27-err { margin: 0 0 16px; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: #b42318; }
+  .fs-v2 .y27-note { max-width: 820px; margin: 16px 0 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-faint); }
+  .fs-v2 .y27-btn[aria-busy="true"] { cursor: progress; }
+
+  @media (max-width: 799px) {
+    .fs-v2 .y27-wrap { padding-top: 16px; }
+    .fs-v2 .y27-hero { padding: 24px; min-height: 169px; background-position: 60% center; }
+    .fs-v2 .y27-title { font-size: 28px; line-height: 42px; }
+    .fs-v2 .y27-sub { font-size: 14px; line-height: 24px; }
+    .fs-v2 .y27-section { grid-template-columns: minmax(0, 1fr); padding: 24px 0; }
+    .fs-v2 .y27-label { margin: 0 0 12px; font-size: 16px; line-height: 26px; }
+    .fs-v2 .y27-btn { width: 100%; }
+  }
+</style>
+</head>
+
+<body class="y27-page fs-v2">
+
+<script>window.FS_ACTIVE_PAGE = 'annual-2027';</script>
+
+<div id="site-header"></div>
+
+<div class="fs-page">
+  <main class="y27-wrap">
+    <div class="y27-hero">
+      <div class="y27-eyebrow" data-i18n="y27.eyebrow">2027 年報</div>
+      <h1 class="y27-title" data-i18n="y27.title">你的 2027 年報</h1>
+      <p class="y27-sub" data-i18n="y27.sub">依你的命盤，看見 2027 這一年的重心。</p>
+    </div>
+
+    <section class="y27-section">
+      <h2 class="y27-label" data-i18n="y27.eyebrow">2027 年報</h2>
+      <div>
+        <p class="y27-text" data-i18n="y27.intro1"></p>
+        <p class="y27-text" data-i18n="y27.intro2"></p>
+      </div>
+    </section>
+
+    <section class="y27-section">
+      <h2 class="y27-label" data-i18n="y27.whatTitle">年報會告訴你</h2>
+      <div>
+        <ul class="y27-what">
+          <li data-i18n-html="y27.what1"></li>
+          <li data-i18n-html="y27.what2"></li>
+          <li data-i18n-html="y27.what3"></li>
+        </ul>
+        <p class="y27-text" data-i18n="y27.what4"></p>
+      </div>
+    </section>
+
+    <section class="y27-section">
+      <h2 class="y27-label" data-i18n="y27.howTitle">怎麼做出來的</h2>
+      <div><p class="y27-text" data-i18n="y27.how"></p></div>
+    </section>
+
+    <section class="y27-section">
+      <h2 class="y27-label" data-i18n="y27.btn">免費索取我的 2027 年報</h2>
+      <div class="y27-action" aria-live="polite">
+        <!-- 未索取 / 錯誤 -->
+        <div class="y27-state" id="y27-idle" hidden>
+          <p class="y27-err" id="y27-err" data-i18n="y27.err" hidden></p>
+          <button type="button" class="v2-btn v2-btn--primary y27-btn" id="y27-btn" data-i18n="y27.btn">免費索取我的 2027 年報</button>
+          <p class="y27-note" data-i18n="y27.note"></p>
+        </div>
+        <!-- 已索取 -->
+        <div class="y27-state y27-done" id="y27-done" hidden>
+          <p class="y27-done-title" data-i18n="y27.doneTitle">已收到你的索取</p>
+          <p class="y27-done-body" id="y27-done-body"></p>
+          <p class="y27-done-date" id="y27-done-date"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module">
+  import { supabase, requireAuth } from './components.js';
+
+  const YEAR = 2027;
+  const I18N = window.FSI18N;
+  const $ = (id) => document.getElementById(id);
+  const DATE_LOCALE = { 'zh-TW': 'zh-TW', 'zh-CN': 'zh-CN', 'en': 'en-US', 'ja': 'ja-JP', 'ko': 'ko-KR' };
+
+  let current = null;   // 已索取的那一筆（null = 未索取）
+  let busy = false;
+
+  function fmtDate(iso) {
+    const L = I18N.getUILang();
+    try {
+      return new Date(iso).toLocaleDateString(DATE_LOCALE[L] || 'zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (_) { return String(iso).slice(0, 10); }
+  }
+
+  function render() {
+    document.title = I18N.t('y27.docTitle');
+    if (current) {
+      $('y27-idle').hidden = true;
+      $('y27-done').hidden = false;
+      const body = $('y27-done-body'), date = $('y27-done-date');
+      body.textContent = I18N.t('y27.doneBody').replace('{email}', current.user_email || '');
+      date.textContent = I18N.t('y27.doneDate').replace('{date}', fmtDate(current.requested_at));
+      I18N.tagKo(body); I18N.tagKo(date);
+    } else {
+      $('y27-done').hidden = true;
+      $('y27-idle').hidden = false;
+    }
+  }
+
+  function showError(on) { $('y27-err').hidden = !on; }
+
+  function setBusy(on) {
+    busy = on;
+    const b = $('y27-btn');
+    b.disabled = on;
+    b.setAttribute('aria-busy', on ? 'true' : 'false');
+  }
+
+  async function load() {
+    const { data, error } = await supabase
+      .from('annual_report_requests')
+      .select('id, user_email, ui_lang, status, requested_at')
+      .eq('target_year', YEAR)
+      .maybeSingle();
+    if (error) throw error;
+    current = data || null;
+  }
+
+  async function request() {
+    if (busy) return;
+    setBusy(true);
+    showError(false);
+    try {
+      const { data, error } = await supabase.rpc('request_annual_report', {
+        p_year: YEAR,
+        p_ui_lang: I18N.getUILang(),
+      });
+      if (error || !data) throw error || new Error('empty_response');
+      current = data;
+      if (data.created === true) {
+        // 通知寄送失敗不影響索取
+        supabase.functions.invoke('notify-annual-request', { body: { request_id: data.id } })
+          .then(({ error: e }) => { if (e) console.warn('[notify-annual-request] 通知寄送失敗（不影響索取）：', e); })
+          .catch((e) => console.warn('[notify-annual-request] 通知寄送失敗（不影響索取）：', e));
+      }
+      render();
+    } catch (e) {
+      console.error('[y27] 索取失敗：', e);
+      showError(true);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  $('y27-btn').addEventListener('click', request);
+  window.addEventListener('i18n:changed', render);
+  document.title = I18N.t('y27.docTitle');
+
+  (async () => {
+    const session = await requireAuth();
+    if (!session) return;
+    try {
+      await load();
+    } catch (e) {
+      // 讀取失敗：顯示錯誤 + 按鈕；索取 RPC 冪等，重按也不會重複建立
+      console.error('[y27] 讀取索取紀錄失敗：', e);
+      showError(true);
+    }
+    render();
+  })();
+</script>
+
+</body>
+</html>
