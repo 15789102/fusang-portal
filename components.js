@@ -191,6 +191,25 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .fs-nav-link:hover { color: var(--accent-deep); }
 .fs-nav-link.active { color: var(--ink-darkest); }
+/* PT-006 2027 年報入口(強調樣式;v2 外觀見 fs-v2.css)*/
+.fs-nav-y27 {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border: 1px solid var(--accent-soft); border-radius: 999px;
+  font-family: var(--font-serif-zh); font-size: 13.5px; letter-spacing: 0.06em; line-height: 1.2;
+  color: var(--accent-deep); background: var(--bg-primary); text-decoration: none; white-space: nowrap;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.fs-nav-y27:hover, .fs-nav-y27.active { background: var(--accent-deep); border-color: var(--accent-deep); color: var(--bg-primary); }
+.fs-nav-y27-ic { width: 14px; height: 14px; flex: none; fill: currentColor; }
+.fs-nav-y27--m { display: none; }
+@media (max-width: 1000px) {
+  .fs-nav-y27--d { display: none; }
+  .fs-nav-y27--m { display: inline-flex; margin-left: auto; padding: 6px 12px; font-size: 13px; }
+}
+@media (max-width: 420px) {
+  .fs-nav-y27--m { padding: 5px 10px; font-size: 12px; gap: 4px; }
+  .fs-nav-y27--m .fs-nav-y27-ic { display: none; }
+}
 /* 「即將推出」小標(CONSULT_ENABLED=false 時掛在 nav 項目後)*/
 .fs-nav-soon {
   display: inline-block;
@@ -273,9 +292,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .fs-lang-opt { padding: 5px 8px; font-size: 10px; }
 }
 
-/* nav 文字不換行;901–1100px 收窄間距(容納「官網」)*/
+/* nav 文字不換行;1001–1199px 收窄間距(容納「官網」與 2027 入口;PT-006 由 901–1100 調整)*/
 .fs-nav-link, .fs-nav-parent, .fs-lang-opt { white-space: nowrap; }
-@media (min-width: 901px) and (max-width: 1100px) {
+@media (min-width: 1001px) and (max-width: 1199px) {
   .fs-header { padding-left: 24px; padding-right: 24px; flex-wrap: nowrap; }
   .fs-header-nav { gap: 14px; }
   .fs-brand-name { font-size: 18px; letter-spacing: 0.06em; }
@@ -284,8 +303,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .fs-lang-opt { padding: 6px 8px; }
 }
 
-/* ── nav RWD：≤900px 漢堡下拉 ── */
-@media (max-width: 900px) {
+/* ── nav RWD：≤1000px 漢堡下拉(PT-006 由 900 調整:加 2027 入口後 901–1000 放不下五語主選單)── */
+@media (max-width: 1000px) {
   .fs-header { flex-wrap: nowrap; }
   .fs-nav-toggle { display: flex; align-items: center; }
   .fs-header-nav {
@@ -419,7 +438,7 @@ function injectBg() {
 }
 
 // ─── Header ──────────────────────────────────────────────────
-// activePage: 'chart' | 'decade' | 'annual' | 'monthly' | 'consultation' | 'account' | null
+// activePage: 'chart' | 'decade' | 'annual' | 'monthly' | 'consultation' | 'account' | 'annual-2027' | null
 function injectHeader(activePage = null) {
   const el = document.getElementById('site-header');
   if (!el) return;
@@ -436,6 +455,12 @@ function injectHeader(activePage = null) {
   // 目前頁 → aria-current(螢幕閱讀器可知所在位置)
   const cur = (k) => (activePage === k ? ' aria-current="page"' : '');
 
+  // PT-006：2027 年報索取入口（強調樣式）。桌機放主選單最前；≤1000px 改放 header 上、漢堡鈕旁（選單收合時仍看得到）
+  const y27Link = (variant) =>
+    `<a class="fs-nav-y27 ${variant} ${activePage === 'annual-2027' ? 'active' : ''}" href="annual-2027.html"${cur('annual-2027')}>` +
+    `<svg class="fs-nav-y27-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.1 5.1L19.2 10l-5.1 2.1L12 17.2l-2.1-5.1L4.8 10l5.1-1.9L12 3z"/></svg>` +
+    `<span data-i18n="navY27"></span></a>`;
+
   el.innerHTML = `
     <a class="fs-skip" href="#fs-main" data-i18n="navSkipToMain"></a>
     <header class="fs-header">
@@ -446,8 +471,10 @@ function injectHeader(activePage = null) {
           <span class="fs-brand-sub" data-i18n="navMySpace"></span>
         </span>
       </div>
+      ${y27Link('fs-nav-y27--m')}
       <button class="fs-nav-toggle" id="fs-nav-toggle" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <nav class="fs-header-nav" id="fs-nav">
+        ${y27Link('fs-nav-y27--d')}
         <div class="fs-nav-group" id="fs-charts-group">
           <span class="fs-nav-parent ${['chart','decade','annual','monthly'].includes(activePage) ? 'active' : ''}" id="fs-charts-parent"><span data-i18n="navCharts"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
           <div class="fs-nav-dropdown">
@@ -540,7 +567,7 @@ function injectHeader(activePage = null) {
   el.querySelectorAll('.fs-lang-opt').forEach((b) => {
     b.addEventListener('click', () => I18N.setUILang(b.getAttribute('data-lang')));
   });
-  // 漢堡選單(RWD)：≤900px 收起,點漢堡展開;點連結/外部自動收起
+  // 漢堡選單(RWD)：≤1000px 收起,點漢堡展開;點連結/外部自動收起
   const _navToggle = document.getElementById('fs-nav-toggle');
   const _nav = document.getElementById('fs-nav');
   if (_navToggle && _nav) {

@@ -128,11 +128,22 @@ body.fs-v2 .fs-brand-name {
 body.fs-v2 .fs-brand-text { display: flex; flex-direction: column; }
 body.fs-v2 .fs-brand-sub { font-size: 12px; line-height: 20px; margin-top: -4px; color: var(--v2-muted); }
 
-/* display / align-items 不在此設定：沿用 components.js（桌機 flex+center／≤900px 收合、stretch），避免蓋掉漢堡選單 */
+/* display / align-items 不在此設定：沿用 components.js（桌機 flex+center／≤1000px 收合、stretch），避免蓋掉漢堡選單 */
 body.fs-v2 .fs-header-nav { flex: 1; gap: 16px; }
 body.fs-v2 #fs-charts-group { margin-left: auto; }          /* 主選單群置中 */
 body.fs-v2 .fs-lang-switch { order: 2; margin-left: auto; } /* 右群：語言 → 帳戶 */
 body.fs-v2 #fs-account-group { order: 3; }
+
+/* PT-006 2027 年報入口（強調）：主選單最前，取代命盤群的置中錨點 */
+body.fs-v2 .fs-nav-y27 {
+  gap: 6px; padding: 7px 14px; border: 1px solid var(--v2-blue-line); border-radius: 999px;
+  background: var(--v2-tint); color: var(--v2-blue);
+  font-family: var(--v2-font-cjk); font-size: 14px; font-weight: 600; line-height: 20px; letter-spacing: 0;
+}
+body.fs-v2 .fs-nav-y27:hover,
+body.fs-v2 .fs-nav-y27.active { background: var(--v2-blue); border-color: var(--v2-blue); color: #ffffff; }
+body.fs-v2 .fs-nav-y27--d { margin-left: auto; }
+body.fs-v2 .fs-nav-y27--d + #fs-charts-group { margin-left: 8px; }
 
 body.fs-v2 .fs-nav-link,
 body.fs-v2 .fs-nav-parent {
@@ -366,19 +377,21 @@ body.fs-v2 a:focus-visible,
 body.fs-v2 button:focus-visible,
 body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 4px; }
 
-/* ── §6 RWD（斷點沿用設計師：1270 / 1000 / 799；header 漢堡沿用 Ben 的 900）── */
+/* ── §6 RWD（斷點沿用設計師：1270 / 1000 / 799；header 漢堡 1000，PT-006 由 900 調整）── */
 @media (max-width: 1270px) {
   body.fs-v2 { --v2-gutter: 40px; }
   body.fs-v2 .fs-header-nav { gap: 8px; }
 }
-@media (min-width: 901px) and (max-width: 1100px) {
+@media (min-width: 1001px) and (max-width: 1199px) {
   body.fs-v2 .fs-header { padding-left: 24px; padding-right: 24px; gap: 12px; }
   body.fs-v2 .fs-header-nav { gap: 0; }
   body.fs-v2 .fs-nav-link,
   body.fs-v2 .fs-nav-parent { padding-inline: 8px; }
   body.fs-v2 .fs-lang-opt { padding-inline: 6px; }
+  body.fs-v2 .fs-nav-y27 { padding-inline: 10px; font-size: 13px; }
+  body.fs-v2 .fs-nav-y27-ic { display: none; }
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   body.fs-v2 .fs-header { height: auto; min-height: 72px; padding-block: 12px; }
   body.fs-v2 .fs-header-nav {
     background: #ffffff;
@@ -389,6 +402,8 @@ body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline
   }
   body.fs-v2 #fs-charts-group,
   body.fs-v2 .fs-lang-switch { margin-left: 0; }
+  body.fs-v2 .fs-nav-y27--m { margin-left: auto; padding: 6px 12px; font-size: 13px; }
+  body.fs-v2 .fs-nav-y27--d + #fs-charts-group { margin-left: 0; }
   body.fs-v2 .fs-lang-switch { order: 4; }   /* 手機維持原順序：語言在最下 */
   body.fs-v2 .fs-header-nav .fs-nav-link,
   body.fs-v2 .fs-nav-parent { padding: 14px 2px; border-bottom: 1px solid var(--v2-line-soft); font-size: 15px; }
@@ -397,6 +412,10 @@ body.fs-v2 [tabindex]:focus-visible { outline: 2px solid var(--v2-blue); outline
   body.fs-v2 .fs-nav-dropdown .fs-nav-signout { padding: 13px 2px; }
   body.fs-v2 .fs-nav-dropdown .fs-nav-signout { border-top: 0; border-bottom: 1px solid var(--v2-line-soft); margin-top: 0; }
   body.fs-v2 .fs-lang-switch { margin-top: 14px; }
+}
+@media (max-width: 420px) {
+  body.fs-v2 .fs-header { gap: 10px; }
+  body.fs-v2 .fs-nav-y27--m { padding: 5px 10px; font-size: 12px; gap: 4px; }
 }
 @media (max-width: 799px) {
   body.fs-v2 { --v2-gutter: 20px; }
