@@ -301,10 +301,10 @@
       cn_p: '每一则咨询都是针对你的问题单独准备。我们拒绝罐头答案，每一字一句皆是基于你的能量流动所写下。',
       en_p: 'Every consultation is prepared for your question alone, never from a template. Each line is written from how your own energies move.' },
     { n: '03', ic: ICON.ask,
-      zh_h: '可追問一次', cn_h: '可追问一次', en_h: 'One follow-up',
-      zh_p: '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。',
-      cn_p: '收到回复后，7 天内可再针对原议题追问一次。我们陪你把想厘清的地方问清楚，不留遗憾。',
-      en_p: 'After the reply, you may ask one follow-up on the same topic within 7 days, so nothing is left unclear.' },
+      zh_h: '陪你問到清楚', cn_h: '陪你问到清楚', en_h: 'Until it is clear',
+      zh_p: '同一個問題，收到回覆後可以繼續追問、補充細節，不限次數，直到你覺得清楚為止。什麼時候結案，由你決定。',
+      cn_p: '同一个问题，收到回复后可以继续追问、补充细节，不限次数，直到你觉得清楚为止。什么时候结案，由你决定。',
+      en_p: 'After the reply, you can keep following up on the same question and add details, with no limit, until it feels clear to you. You decide when to close it.' },
   ];
 
   // ── 客戶見證 ─────────────────────────────────────────────────
@@ -356,7 +356,7 @@
     document.getElementById('lp-price-list').innerHTML = [
       pick('由 R.S. Chen 親自解讀你的命盤', '由 R.S. Chen 亲自解读你的命盘', 'R.S. Chen personally reads your chart'),
       pick('針對你的問題個別撰寫的書面回覆', '针对你的问题个别撰写的书面回复', 'A written reply prepared for your question alone'),
-      pick('收到回覆後 7 天內可追問一次', '收到回复后 7 天内可追问一次', 'One follow-up within 7 days of the reply'),
+      pick('同一問題可來回追問，直到清楚', '同一问题可来回追问，直到清楚', 'Follow up on the same question until it is clear'),
     ].map((t, i) => `<li><span class="mk">${['I', 'II', 'III'][i]}</span><span>${t}</span></li>`).join('');
 
     document.getElementById('story-eyebrow').textContent = pick('品牌故事', '品牌故事', 'Brand Story');
