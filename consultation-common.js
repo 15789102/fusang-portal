@@ -26,7 +26,10 @@ export { supabase, requireAuth, startCheckout };
 
 /* ── 常數 ── */
 export const PRICE_LABEL = 'US$49.90';
-export const FOLLOWUP_DAYS = 7;
+// CONSULT-ADJ-01：追問不限次數、無期限；客戶 14 天未回 → 命理師可結案
+export const IDLE_CLOSE_DAYS = 14;
+// ⚠ 相容：舊版 consultation-detail.html 仍 import FOLLOWUP_DAYS；detail 改版後不再使用
+export const FOLLOWUP_DAYS = IDLE_CLOSE_DAYS;
 export const AVATAR = 'https://fusang-vision.com/cdn/shop/files/ruei-syuan.jpg?v=1756331083&width=1500';
 export const SIGNER = 'RS Chen';
 
@@ -66,8 +69,6 @@ const JA = {
   '找不到對應的諮詢，請重新提交。': '該当する相談が見つかりません。もう一度送信してください。',
   '提交資料不完整，請重試。': '送信内容が不完全です。もう一度お試しください。',
   '前往付款時發生問題，請稍後再試。': 'お支払いへの移動中に問題が発生しました。しばらくしてから再度お試しください。',
-  '每則諮詢僅能追問一次。': '追加質問は、1件の相談につき1回までです。',
-  '追問期限已過，諮詢已結案。': '追加質問の期限が過ぎたため、相談は終了しました。',
   '目前無法追問。': '現在、追加質問はできません。',
   '找不到這則諮詢。': 'この相談が見つかりません。',
   '請填寫追問內容。': '追加質問の内容をお書きください。',
@@ -93,7 +94,6 @@ const JA = {
   '單次問事費用': '相談1回の料金',
   '由 R.S. Chen 親自解讀你的命盤': 'R.S. Chen があなたの命盤を直接読み解きます',
   '針對你的問題個別撰寫的書面回覆': 'ご質問に合わせて個別に書き下ろす書面回答',
-  '收到回覆後 7 天內可追問一次': '回答の受け取りから7日以内に、追加質問が1回できます',
   '品牌故事': 'ブランドストーリー',
   '探索你的內在天賦': 'あなたの内なる才能を探る',
   '將東方智慧，帶入你真正嚮往的現代生活。': '東洋の知恵を、あなたが本当に望む現代の暮らしへ。',
@@ -118,7 +118,6 @@ const JA = {
   '描述你的處境': '状況をお書きください',
   '描述越完整，回覆越精準。盡量說明背景、目前的狀況，以及你最想釐清的點。': '詳しく書いていただくほど、回答の精度が上がります。背景、現在の状況、そしていちばんはっきりさせたい点を、できるだけお書きください。',
   '在這裡寫下你的問題與處境…': 'ここにご質問と状況をお書きください…',
-  '我了解這是不可退款的數位服務，並同意以上各項。': '返金不可のデジタルサービスであることを理解し、上記のすべてに同意します。',
   '提交並付款': '送信してお支払いへ',
   '勾選同意聲明': '同意事項にチェック',
   '尚需：': '送信するには：',
@@ -139,16 +138,11 @@ const JA = {
   '回覆': '回答',
   '回覆於': '回答日',
   '你的追問': 'あなたの追加質問',
-  '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。': '追加質問を受け付けました。再度の回答をお待ちください。回答が完了すると、この相談は終了します。',
   '再次回覆': '追加質問への回答',
-  '追問一次': '追加質問（1回）',
-  '寫下你的追問…': '追加質問をお書きください…',
   '送出追問': '追加質問を送信',
-  '我沒有其他問題了，結束諮詢': 'ほかに質問はありません。相談を終了する',
   '諮詢已關閉': '相談は終了しました',
   '關閉於': '終了日',
   '你的回饋': 'あなたのフィードバック',
-  '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？': '終了すると追加質問はできなくなり、この相談は終わります。終了してもよろしいですか？',
   '確定結案': '終了する',
   '取消': 'キャンセル',
   '這次的回覆，對現在的你有幫助嗎？': '今回の回答は、今のあなたにとって役に立ちましたか？',
@@ -170,14 +164,27 @@ const JA = {
   '由 R.S. Chen 親自解讀你的命盤，結合深厚的紫微斗數造詣與現代心理洞察，針對你的處境書面回覆。': 'R.S. Chen があなたの命盤を直接読み解き、紫微斗数への深い造詣と現代的な心理の洞察を合わせて、あなたの状況に書面でお答えします。',
   '為你個別撰寫': 'あなただけのために書く',
   '每一則諮詢都是針對你的問題單獨準備。我們拒絕罐頭答案，每一字一句皆是基於你的能量流動所寫下。': 'どの相談も、あなたの質問のためだけに用意します。定型文の回答はお送りしません。一語一句、あなたのエネルギーの流れにもとづいて書き下ろします。',
-  '可追問一次': '追加質問1回',
-  '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。': '回答の受け取りから7日以内に、同じテーマについて追加質問が1回できます。はっきりさせたい点を最後まで一緒に確かめ、心残りのないようにします。',
   '整體都很好！我喜歡會先說明整體狀態、個性，再回應到流年。語氣中也可以感覺得到正向和溫暖。有給予很多自己判斷的方向和可能性，也會建議最後回到自己去做決定！': '全体的にとても良かったです！まず全体の状態や性格を説明してから、流年の話に入ってくれるところが気に入りました。言葉づかいからも前向きさと温かさが感じられました。自分で判断するための方向性や可能性をたくさん示してくれて、最後は自分で決めるようにと勧めてくれました！',
   '一開始有點緊張（社恐）但不用露臉的方式加上Ben很親切😊讓整體感受下來很快的能放鬆，也謝謝您讓我問一些奇怪的問題🙏第一次給別人算命就有這麼好的體驗，感恩❤️': '最初は少し緊張していました（人見知りなので）が、顔を出さなくていい形式と、Ben さんのとても親しみやすい雰囲気😊のおかげで、すぐにリラックスできました。変わった質問にも付き合っていただき、ありがとうございました🙏 初めての占いでこんなに良い体験ができて、感謝しています❤️',
   '謝謝您舉辦這次活動。我跟您聊完覺得很有幫助，也蠻清楚找到了問題的答案或建議！': 'この企画をありがとうございました。お話ししてとても役に立ち、質問への答えやアドバイスがはっきり見つかりました！',
   '很感謝Ben提供這次的機會 真的學到很多也很充實的訪談 讓我可以好好審視自己各方面的狀態！Really appreciate that!! Thanks a lot!!': 'Ben さん、今回の機会を本当にありがとうございました。学びの多い、とても充実したセッションで、自分のさまざまな面をじっくり見つめ直すことができました！Really appreciate that!! Thanks a lot!!',
   '一對一解讀命盤': '一対一の命盤解読',
   '位使用者用過線上命財官解析': '人がオンラインの命財官解析を利用',
+  // ── CONSULT-ADJ-01：不限次數追問 + 客戶主導結案 ──
+  '陪你問到清楚': 'はっきりするまで寄り添います',
+  '同一個問題，收到回覆後可以繼續追問、補充細節，不限次數，直到你覺得清楚為止。什麼時候結案，由你決定。': '同じ質問について、回答を受け取ったあとも、はっきりするまで回数の制限なく追加質問や補足ができます。いつ相談を終えるかは、あなたが決めます。',
+  '同一問題可來回追問，直到清楚': '同じ質問は、はっきりするまで何度でも追加質問できます',
+  '我已了解以上各項，並同意。': '上記の内容を理解し、すべてに同意します。',
+  '繼續追問': '追加質問を続ける',
+  '如果還有不清楚的地方，可以針對同一個問題繼續追問或補充細節，次數不限。若 14 天內沒有新的追問，命理師會為這則諮詢結案。': 'まだはっきりしない点があれば、同じ質問について回数の制限なく、追加質問や補足ができます。14日以内に新しい追加質問がない場合は、こちらで相談を終了します。',
+  '寫下你想追問或補充的內容…': '追加質問や補足したい内容をお書きください…',
+  '已送出追問，命理師回覆後會以 Email 通知你。': '追加質問を受け付けました。回答が届きしだい、メールでお知らせします。',
+  '我已經清楚了，結束諮詢': 'はっきりしたので、相談を終了する',
+  '結案後就不能再追問。之後若有新的問題，需要另外提交一則問事。確定要結案嗎？': '終了すると、追加質問はできなくなります。新しい質問がある場合は、改めて相談をお申し込みいただく必要があります。終了してもよろしいですか？',
+  '諮詢已結案': '相談は終了しました',
+  '這則諮詢已由命理師結案。完整回覆仍可隨時查看；若之後有新的問題，歡迎另外提交一則問事。': 'この相談はこちらで終了しました。回答はいつでもご覧いただけます。新しい質問がある場合は、改めて相談をお申し込みください。',
+  '這則諮詢已結案，無法再追問。': 'この相談は終了しているため、追加質問はできません。',
+  '已送出追問，請等命理師回覆後再繼續。': '追加質問を受け付けています。回答が届いてから続けてください。',
 };
 // ── 韓語（ko，2026-09 第五語言）對照表 ────────────────────────────
 //   規則同 JA：以繁中原文為 key；修改 pick() 繁中原文時 KO 的 key 也要同步。
@@ -199,8 +206,6 @@ const KO = {
   '找不到對應的諮詢，請重新提交。': '해당 질문을 찾을 수 없어요. 다시 제출해 주세요.',
   '提交資料不完整，請重試。': '제출 정보가 완전하지 않아요. 다시 시도해 주세요.',
   '前往付款時發生問題，請稍後再試。': '결제 페이지로 이동하는 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.',
-  '每則諮詢僅能追問一次。': '추가 질문은 질문 1건당 한 번만 할 수 있어요.',
-  '追問期限已過，諮詢已結案。': '추가 질문 기한이 지나 질문이 완료되었어요.',
   '目前無法追問。': '지금은 추가 질문을 할 수 없어요.',
   '找不到這則諮詢。': '이 질문을 찾을 수 없어요.',
   '請填寫追問內容。': '추가 질문 내용을 입력해 주세요.',
@@ -226,7 +231,6 @@ const KO = {
   '單次問事費用': '질문 1회 비용',
   '由 R.S. Chen 親自解讀你的命盤': 'R.S. Chen이 직접 명반을 해석해 드려요',
   '針對你的問題個別撰寫的書面回覆': '질문에 맞춰 개별 작성하는 서면 답변',
-  '收到回覆後 7 天內可追問一次': '답변을 받은 뒤 7일 안에 추가 질문 1회 가능',
   '品牌故事': '브랜드 스토리',
   '探索你的內在天賦': '내면의 재능 발견하기',
   '將東方智慧，帶入你真正嚮往的現代生活。': '동양의 지혜를, 당신이 진정 바라는 현대의 삶 속으로.',
@@ -251,7 +255,6 @@ const KO = {
   '描述你的處境': '상황 설명',
   '描述越完整，回覆越精準。盡量說明背景、目前的狀況，以及你最想釐清的點。': '자세히 적을수록 더 정확하게 답변할 수 있어요. 배경과 현재 상황, 그리고 가장 알고 싶은 점을 최대한 적어 주세요.',
   '在這裡寫下你的問題與處境…': '여기에 질문과 상황을 적어 주세요…',
-  '我了解這是不可退款的數位服務，並同意以上各項。': '환불이 불가능한 디지털 서비스임을 이해하며, 위 내용에 모두 동의합니다.',
   '提交並付款': '제출하고 결제하기',
   '勾選同意聲明': '동의 항목 체크',
   '尚需：': '남은 항목: ',
@@ -272,16 +275,11 @@ const KO = {
   '回覆': '답변',
   '回覆於': '답변일',
   '你的追問': '내 추가 질문',
-  '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。': '추가 질문이 접수되었어요. 답변을 기다려 주세요. 답변이 완료되면 이 질문은 종료돼요.',
   '再次回覆': '추가 질문 답변',
-  '追問一次': '추가 질문 (1회)',
-  '寫下你的追問…': '추가 질문을 적어 주세요…',
   '送出追問': '추가 질문 보내기',
-  '我沒有其他問題了，結束諮詢': '더 궁금한 점이 없어요. 질문 종료하기',
   '諮詢已關閉': '질문이 종료되었어요',
   '關閉於': '종료일',
   '你的回饋': '내 피드백',
-  '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？': '종료하면 더 이상 추가 질문을 할 수 없고, 이 질문은 마무리돼요. 정말 종료할까요?',
   '確定結案': '종료하기',
   '取消': '취소',
   '這次的回覆，對現在的你有幫助嗎？': '이번 답변이 지금의 당신에게 도움이 되었나요?',
@@ -303,14 +301,27 @@ const KO = {
   '由 R.S. Chen 親自解讀你的命盤，結合深厚的紫微斗數造詣與現代心理洞察，針對你的處境書面回覆。': 'R.S. Chen이 직접 명반을 해석하고, 깊이 있는 자미두수 역량과 현대적인 심리 통찰을 더해 당신의 상황에 맞춰 서면으로 답변드려요.',
   '為你個別撰寫': '당신만을 위해 작성',
   '每一則諮詢都是針對你的問題單獨準備。我們拒絕罐頭答案，每一字一句皆是基於你的能量流動所寫下。': '모든 답변은 당신의 질문만을 위해 따로 준비해요. 틀에 박힌 답변은 드리지 않아요. 한 글자 한 문장, 당신의 에너지 흐름을 바탕으로 적어 내려가요.',
-  '可追問一次': '추가 질문 1회',
-  '收到回覆後，7 天內可再針對原議題追問一次。我們陪你把想釐清的地方問清楚，不留遺憾。': '답변을 받은 뒤 7일 안에 같은 주제로 한 번 더 추가 질문할 수 있어요. 궁금한 점이 남지 않도록 끝까지 함께 짚어 드려요.',
   '整體都很好！我喜歡會先說明整體狀態、個性，再回應到流年。語氣中也可以感覺得到正向和溫暖。有給予很多自己判斷的方向和可能性，也會建議最後回到自己去做決定！': '전체적으로 다 좋았어요! 먼저 전반적인 상태와 성격을 설명해 주시고 나서 유년 이야기로 넘어가는 점이 마음에 들었어요. 말투에서도 긍정적이고 따뜻한 느낌이 전해졌어요. 스스로 판단할 수 있는 방향과 가능성을 많이 제시해 주셨고, 결국 마지막 결정은 나 자신에게 돌아가서 하라고 권해 주셨어요!',
   '一開始有點緊張（社恐）但不用露臉的方式加上Ben很親切😊讓整體感受下來很快的能放鬆，也謝謝您讓我問一些奇怪的問題🙏第一次給別人算命就有這麼好的體驗，感恩❤️': '처음엔 좀 긴장했는데(낯을 많이 가려서) 얼굴을 안 보여도 되는 방식에다 Ben 님이 정말 친절하셔서😊 전체적으로 금방 편해질 수 있었어요. 이상한 질문도 하게 해 주셔서 감사해요🙏 처음으로 남에게 운세를 봤는데 이렇게 좋은 경험을 하다니, 감사합니다❤️',
   '謝謝您舉辦這次活動。我跟您聊完覺得很有幫助，也蠻清楚找到了問題的答案或建議！': '이번 행사를 열어 주셔서 감사해요. 이야기 나눠 보니 정말 도움이 됐고, 질문에 대한 답이나 조언도 꽤 명확하게 찾았어요!',
   '很感謝Ben提供這次的機會 真的學到很多也很充實的訪談 讓我可以好好審視自己各方面的狀態！Really appreciate that!! Thanks a lot!!': '이번 기회를 주신 Ben 님께 정말 감사드려요 정말 많이 배웠고 알찬 인터뷰였어요 제 여러 면의 상태를 차분히 돌아볼 수 있었어요! Really appreciate that!! Thanks a lot!!',
   '一對一解讀命盤': '1:1 명반 해석',
   '位使用者用過線上命財官解析': '명이 온라인 명재관 핵심 분석을 이용했어요',
+  // ── CONSULT-ADJ-01：不限次數追問 + 客戶主導結案 ──
+  '陪你問到清楚': '명확해질 때까지 함께해요',
+  '同一個問題，收到回覆後可以繼續追問、補充細節，不限次數，直到你覺得清楚為止。什麼時候結案，由你決定。': '같은 질문에 대해 답변을 받은 뒤에도 충분히 명확해질 때까지 횟수 제한 없이 추가 질문하고 내용을 보충할 수 있어요. 언제 마무리할지는 당신이 정해요.',
+  '同一問題可來回追問，直到清楚': '같은 질문은 명확해질 때까지 추가 질문 가능',
+  '我已了解以上各項，並同意。': '위 내용을 이해했으며 모두 동의합니다.',
+  '繼續追問': '추가 질문 이어 가기',
+  '如果還有不清楚的地方，可以針對同一個問題繼續追問或補充細節，次數不限。若 14 天內沒有新的追問，命理師會為這則諮詢結案。': '아직 명확하지 않은 부분이 있다면 같은 질문에 대해 횟수 제한 없이 추가 질문하거나 내용을 보충할 수 있어요. 14일 안에 새 추가 질문이 없으면 저희가 질문을 종료해요.',
+  '寫下你想追問或補充的內容…': '추가 질문이나 보충할 내용을 적어 주세요…',
+  '已送出追問，命理師回覆後會以 Email 通知你。': '추가 질문이 접수되었어요. 답변이 도착하면 이메일로 알려 드릴게요.',
+  '我已經清楚了，結束諮詢': '충분히 명확해졌어요. 질문 종료하기',
+  '結案後就不能再追問。之後若有新的問題，需要另外提交一則問事。確定要結案嗎？': '종료하면 더 이상 추가 질문을 할 수 없어요. 새로운 질문이 생기면 질문을 따로 제출해야 해요. 정말 종료할까요?',
+  '諮詢已結案': '질문이 완료되었어요',
+  '這則諮詢已由命理師結案。完整回覆仍可隨時查看；若之後有新的問題，歡迎另外提交一則問事。': '이 질문은 저희가 종료했어요. 전체 답변은 언제든 다시 볼 수 있어요. 새로운 질문이 생기면 질문을 따로 제출해 주세요.',
+  '這則諮詢已結案，無法再追問。': '이 질문은 이미 종료되어 추가 질문을 할 수 없어요.',
+  '已送出追問，請等命理師回覆後再繼續。': '추가 질문이 이미 접수되었어요. 답변을 받은 뒤에 이어서 질문해 주세요.',
 };
 // 五語挑選：繁中／简中／English／日本語／한국어（每次呼叫都讀當前 uiLang）
 //   ja：第 4 參數（僅含動態插值的樣板字串使用）優先 → JA[繁中原文] → 缺譯時警告並退回英文。
@@ -377,19 +388,17 @@ export const fmtDate = (iso) => {
 export const refCode = (id) => String(id || '').slice(0, 8);
 
 /* ── 狀態判定 ── */
-export const isActive = (t) => {
-  if (t.status === 'paid' || t.status === 'followup') return true;
-  if (t.status === 'answered' && t.answered_at) {
-    return new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
-  }
-  return false;
-};
+// CONSULT-ADJ-01：未結案的已付款單都算進行中（與 RPC create_consultation_ticket 佔位條件一致）
+export const isActive = (t) => t.status === 'paid' || t.status === 'answered' || t.status === 'followup';
 export const isPendingDraft = (t) => t.status === 'pending' && t.payment_status === 'pending';
-export const inFollowupWindow = (t) =>
-  t.status === 'answered' && t.answered_at &&
-  new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5 > Date.now();
+// 輪到客戶：可追問、可結案（無期限）
+export const canFollowup = (t) => t.status === 'answered' && !!t.answered_at;
+// ⚠ 相容：舊版 consultation-detail.html 仍 import inFollowupWindow；detail 改版後改用 canFollowup
+export const inFollowupWindow = canFollowup;
 export const needsFeedback = (t) => t.status === 'closed' && !t.rating && !t.closed_by_admin;
 export const isAdminClosed = (t) => t.status === 'closed' && t.closed_by_admin === true;
+// 命理師結案（客戶 14 天未回）；退款關閉另由 isAdminClosed 判定
+export const isAdvisorClosed = (t) => t.status === 'closed' && t.close_type === 'advisor';
 // 顯示用狀態文字：admin 關閉 → 已關閉；其餘照 STATUS_LABEL
 export const statusText = (t) => isAdminClosed(t) ? pick('已關閉', '已关闭', 'Closed') : (STATUS_LABEL[t.status] || t.status);
 
@@ -423,6 +432,17 @@ export async function getTicketById(id) {
     return data || null;
   } catch (_) { return null; }
 }
+// 首問／首覆之後的來回訊息（RLS 只回本人 ticket 的訊息）
+export async function getTicketMessages(ticketId) {
+  try {
+    const { data } = await supabase
+      .from('consultation_messages')
+      .select('role, body, created_at')
+      .eq('ticket_id', ticketId)
+      .order('created_at', { ascending: true });
+    return data || [];
+  } catch (_) { return []; }
+}
 
 /* ── HTML 片段 ── */
 export function signatureHtml() {
@@ -438,49 +458,54 @@ export function disclaimerHtml() {
     return `<div class="disclaim"><div class="disclaim-h">提交前请确认</div><ul>` +
       `<li>这是由真人解盘的个人化紫微斗数咨询。提供的背景越完整，回复越精准。</li>` +
       `<li>回复将以你设定的报告语言（繁体中文／简体中文／English）为主，与你的报告内容一致。</li>` +
-      `<li><strong>同一时间仅能进行一则咨询。</strong>须待目前咨询结案后，才能再提交新的问题。</li>` +
-      `<li>付款后 <strong>7 天内</strong>你会收到书面回复。回复后可于 <strong>7 天内追问一次</strong>；逾时咨询即结案。</li>` +
-      `<li>本服务仅提供紫微斗数命理解读，<strong>不</strong>提供医疗、法律、财务或投资意见。</li>` +
-      `<li><strong>数字服务，提交后恕不退款。</strong>每则咨询皆为你个别撰写，付款送出后不予退费。</li>` +
+      `<li><strong>一次购买处理一个问题。</strong>同一问题可来回追问到清楚为止；若要问不同的问题，请另外提交一则新的问事。</li>` +
+      `<li><strong>同一时间仅能进行一则咨询。</strong>须待目前咨询结案后，才能提交新的问题。</li>` +
+      `<li>付款后 <strong>7 天内</strong>你会收到书面回复。之后可针对同一问题继续追问，<strong>次数不限</strong>；觉得清楚了，由你结案。若 <strong>14 天</strong>没有新的追问，命理师会为这则咨询结案。</li>` +
+      `<li>本服务仅提供紫微斗数命理解读。<strong>健康诊断、法律问题、医疗决定不在服务范围内</strong>；若问题属于这些范围，命理师会说明原因并全额退款。</li>` +
+      `<li><strong>数字服务：</strong>除上述范围外，回复送出后恕不退款。</li>` +
       `</ul></div>`;
   }
   if (L === 'ja') {
     return `<div class="disclaim"><div class="disclaim-h">送信前にご確認ください</div><ul>` +
       `<li>人が読み解く、あなた個人のための紫微斗数相談です。背景を詳しくお書きいただくほど、回答の精度が上がります。</li>` +
       `<li>回答は、あなたが設定したレポート言語（繁體中文／简体中文／English／日本語）で、レポートの内容に合わせてお書きします。</li>` +
+      `<li><strong>1回のお支払いで、ひとつの質問をお受けします。</strong>同じ質問については、はっきりするまで何度でも追加質問できます。別の質問をしたい場合は、新しい相談をお申し込みください。</li>` +
       `<li><strong>同時に進められる相談は1件までです。</strong>現在の相談が終了してから、新しい質問を送信できます。</li>` +
-      `<li>お支払い後 <strong>7日以内</strong>に書面で回答が届きます。回答後 <strong>7日以内に1回</strong>追加質問ができ、期限を過ぎると相談は終了します。</li>` +
-      `<li>本サービスは紫微斗数による命理の解読のみを提供し、医療・法律・財務・投資に関する助言は<strong>提供しません</strong>。</li>` +
-      `<li><strong>デジタルサービスのため、送信後の返金はできません。</strong>各相談はあなたのために個別に作成するため、お支払い後の返金はお受けしておりません。</li>` +
+      `<li>お支払い後 <strong>7日以内</strong>に書面で回答が届きます。その後も同じ質問について、<strong>回数の制限なく</strong>追加質問ができます。はっきりしたら、ご自身で相談を終了してください。<strong>14日間</strong>新しい追加質問がない場合は、こちらで相談を終了します。</li>` +
+      `<li>本サービスは紫微斗数による命理の解読のみを提供します。<strong>健康の診断、法律の問題、医療に関する判断はサービスの対象外です。</strong>ご質問がこれらに当たる場合は、理由をご説明し、全額を返金いたします。</li>` +
+      `<li><strong>デジタルサービスのため、</strong>上記の場合を除き、回答の送信後は返金できません。</li>` +
       `</ul></div>`;
   }
   if (L === 'ko') {
     return `<div class="disclaim"><div class="disclaim-h">제출 전에 확인해 주세요</div><ul>` +
       `<li>사람이 직접 명반을 풀어 드리는 개인 맞춤 자미두수 질문 서비스예요. 배경을 자세히 적어 주실수록 답변이 더 정확해져요.</li>` +
       `<li>답변은 설정하신 리포트 언어(繁體中文／简体中文／English／日本語／한국어)로, 리포트 내용에 맞춰 작성해 드려요.</li>` +
+      `<li><strong>한 번 결제로 질문 하나를 다뤄요.</strong> 같은 질문은 명확해질 때까지 계속 추가 질문할 수 있어요. 다른 질문을 하고 싶다면 새 질문을 따로 제출해 주세요.</li>` +
       `<li><strong>질문은 한 번에 1건만 진행할 수 있어요.</strong> 현재 질문이 종료된 뒤에 새 질문을 제출할 수 있어요.</li>` +
-      `<li>결제 후 <strong>7일 이내</strong>에 서면 답변을 받아요. 답변 후 <strong>7일 이내에 추가 질문 1회</strong>가 가능하며, 기한이 지나면 질문이 종료돼요.</li>` +
-      `<li>본 서비스는 자미두수 명반 해석만 제공하며, 의료·법률·재무·투자에 관한 조언은 <strong>제공하지 않아요</strong>.</li>` +
-      `<li><strong>디지털 서비스이므로 제출 후에는 환불되지 않아요.</strong> 모든 답변은 회원님을 위해 개별로 작성되므로, 결제 후에는 환불해 드리지 않아요.</li>` +
+      `<li>결제 후 <strong>7일 이내</strong>에 서면 답변을 받아요. 그 뒤에도 같은 질문에 대해 <strong>횟수 제한 없이</strong> 추가 질문할 수 있어요. 충분히 명확해지면 직접 질문을 종료해 주세요. <strong>14일</strong> 동안 새 추가 질문이 없으면 저희가 질문을 종료해요.</li>` +
+      `<li>본 서비스는 자미두수 명반 해석만 제공해요. <strong>건강 진단, 법률 문제, 의료 결정은 서비스 범위에 포함되지 않아요.</strong> 질문이 이에 해당하면 저희가 이유를 안내해 드리고 전액 환불해 드려요.</li>` +
+      `<li><strong>디지털 서비스이므로</strong> 위의 경우를 제외하고 답변이 전송된 뒤에는 환불되지 않아요.</li>` +
       `</ul></div>`;
   }
   if (L.startsWith('zh')) {
     return `<div class="disclaim"><div class="disclaim-h">提交前請確認</div><ul>` +
       `<li>這是由真人解盤的個人化紫微斗數諮詢。提供的背景越完整，回覆越精準。</li>` +
       `<li>回覆將以你設定的報告語言（繁體中文／简体中文／English）為主，與你的報告內容一致。</li>` +
-      `<li><strong>同一時間僅能進行一則諮詢。</strong>須待目前諮詢結案後，才能再提交新的問題。</li>` +
-      `<li>付款後 <strong>7 天內</strong>你會收到書面回覆。回覆後可於 <strong>7 天內追問一次</strong>；逾時諮詢即結案。</li>` +
-      `<li>本服務僅提供紫微斗數命理解讀，<strong>不</strong>提供醫療、法律、財務或投資意見。</li>` +
-      `<li><strong>數位服務，提交後恕不退款。</strong>每則諮詢皆為你個別撰寫，付款送出後不予退費。</li>` +
+      `<li><strong>一次購買處理一個問題。</strong>同一問題可來回追問到清楚為止；若要問不同的問題，請另外提交一則新的問事。</li>` +
+      `<li><strong>同一時間僅能進行一則諮詢。</strong>須待目前諮詢結案後，才能提交新的問題。</li>` +
+      `<li>付款後 <strong>7 天內</strong>你會收到書面回覆。之後可針對同一問題繼續追問，<strong>次數不限</strong>；覺得清楚了，由你結案。若 <strong>14 天</strong>沒有新的追問，命理師會為這則諮詢結案。</li>` +
+      `<li>本服務僅提供紫微斗數命理解讀。<strong>健康診斷、法律問題、醫療決定不在服務範圍內</strong>；若問題屬於這些範圍，命理師會說明原因並全額退款。</li>` +
+      `<li><strong>數位服務：</strong>除上述範圍外，回覆送出後恕不退款。</li>` +
       `</ul></div>`;
   }
   return `<div class="disclaim"><div class="disclaim-h">Before you submit</div><ul>` +
     `<li>This is a personal Zi Wei Dou Shu consultation, answered by a human. The more context you give, the more precise the reading.</li>` +
     `<li>Your reply will be written in your registered report language (繁體中文 / 简体中文 / English), matching your report.</li>` +
-    `<li><strong>One open consultation at a time.</strong> You can start a new one only after your current consultation is resolved.</li>` +
-    `<li>You will receive a written reply within <strong>7 days</strong> of payment. After the reply, you may ask <strong>one follow-up within 7 days</strong>; after that the consultation closes.</li>` +
-    `<li>This service provides Zi Wei Dou Shu interpretation only. It is <strong>not</strong> medical, legal, financial, or investment advice.</li>` +
-    `<li><strong>Digital service. All sales are final.</strong> Each consultation is prepared individually for you, so payment is non-refundable once submitted.</li>` +
+    `<li><strong>One purchase covers one question.</strong> You can keep following up on the same question until it is clear. For a different question, please submit a new consultation.</li>` +
+    `<li><strong>One open consultation at a time.</strong> You can submit a new question once your current consultation is closed.</li>` +
+    `<li>You will receive a written reply within <strong>7 days</strong> of payment. After that, you can keep following up on the same question <strong>with no limit</strong>. When it feels clear, you close the consultation. If there is no new follow-up for <strong>14 days</strong>, we will close it.</li>` +
+    `<li>This service provides Zi Wei Dou Shu interpretation only. <strong>Health diagnoses, legal matters, and medical decisions are outside its scope.</strong> If your question falls into these areas, we will explain why and give you a full refund.</li>` +
+    `<li><strong>Digital service:</strong> outside the cases above, payment is non-refundable once the reply has been sent.</li>` +
     `</ul></div>`;
 }
 
@@ -501,8 +526,8 @@ export function mapCheckoutErr(code) {
   return pick('前往付款時發生問題，請稍後再試。', '前往付款时发生问题，请稍后再试。', 'Could not reach checkout. Please try again.');
 }
 export function mapFollowupErr(m) {
-  if (m.includes('followup_exists'))        return pick('每則諮詢僅能追問一次。', '每则咨询仅能追问一次。', 'Only one follow-up per consultation.');
-  if (m.includes('followup_window_closed')) return pick('追問期限已過，諮詢已結案。', '追问期限已过，咨询已结案。', 'The follow-up window has closed.');
+  if (m.includes('ticket_closed'))          return pick('這則諮詢已結案，無法再追問。', '这则咨询已结案，无法再追问。', 'This consultation is closed, so no more follow-ups can be sent.');
+  if (m.includes('awaiting_reply'))         return pick('已送出追問，請等命理師回覆後再繼續。', '已送出追问，请等命理师回复后再继续。', 'Your follow-up has been sent. Please wait for the reply before continuing.');
   if (m.includes('not_answerable'))         return pick('目前無法追問。', '目前无法追问。', 'Follow-up is not available right now.');
   if (m.includes('ticket_not_found'))       return pick('找不到這則諮詢。', '找不到这则咨询。', 'Consultation not found.');
   if (m.includes('empty_content'))          return pick('請填寫追問內容。', '请填写追问内容。', 'Please write your follow-up.');
