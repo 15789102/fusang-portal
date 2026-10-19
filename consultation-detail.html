@@ -87,9 +87,9 @@
   window.FS_ACTIVE_PAGE = 'consultation';
   import {
     supabase, initConsult,
-    pick, isZh, FOLLOWUP_DAYS, SIGNER,
+    pick, isZh, SIGNER,
     subjLabel, ratingLabel, STATUS_LABEL, fmtDate, refCode,
-    inFollowupWindow, isAdminClosed, statusText, getTicketById,
+    canFollowup, isAdminClosed, isAdvisorClosed, statusText, getTicketById, getTicketMessages,
     signatureHtml, esc, el, showMsg, reloadSoon,
     mapFollowupErr, mapCloseErr, mapFeedbackErr, RATINGS,
   } from './consultation-common.js';
@@ -103,13 +103,14 @@
   const ticketId = qs.get('id');
 
   let lastTicket = undefined;   // undefined=未載入 / null=找不到 / object=票券
+  let lastMessages = [];        // CONSULT-ADJ-01：首覆之後的來回訊息
 
   function renderDetail() {
     const body = document.getElementById('cons-body');
     document.getElementById('cons-loading').style.display = 'none';
     body.innerHTML = '';
     if (lastTicket === null) { body.appendChild(notFound()); return; }
-    if (lastTicket) body.appendChild(cardDetail(lastTicket));
+    if (lastTicket) body.appendChild(cardDetail(lastTicket, lastMessages));
   }
 
   // 語言切換重繪前，擷取使用者尚未送出的輸入
@@ -152,6 +153,7 @@
       return;
     }
 
+    lastMessages = await getTicketMessages(t.id);
     lastTicket = t;
     renderDetail();
   })();
@@ -178,7 +180,7 @@
     return c;
   }
 
-  function cardDetail(t) {
+  function cardDetail(t, msgs = []) {
     const c = el('div', 'cons-card');
     const ICON = {
       you: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>',
@@ -225,20 +227,13 @@
         signatureHtml());
     }
 
-    // 追問已提交（followup）
-    if (t.status === 'followup' && t.followup_question) {
+    // 舊制單（CONSULT-ADJ-01 前）：一次追問＋再覆，唯讀顯示
+    if (t.followup_question) {
       html += node('you', ICON.you,
         `<div class="qa-label">${pick('你的追問', '你的追问', 'Your follow-up')}</div>` +
         `<div class="qa-text">${esc(t.followup_question)}</div>` +
         `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(t.followup_at)}</div>`);
-      html += node('note', ICON.note, `<div class="followup-note">${pick(
-        '已送出追問，等待再次回覆。回覆完成後本諮詢即結案。',
-        '已送出追问，等待再次回复。回复完成后本咨询即结案。',
-        'Your follow-up is in. Awaiting the final reply, after which the consultation closes.'
-      )}</div>`);
     }
-
-    // 再覆（closed 且有 followup_answer）
     if (t.followup_answer) {
       html += node('expert', ICON.expert,
         `<div class="qa-label">${pick('再次回覆', '再次回复', 'Final reply')}</div>` +
@@ -247,26 +242,60 @@
         signatureHtml());
     }
 
-    // 可追問（answered 且窗未過）→ 追問框 + 主動結案
-    if (t.status === 'answered' && inFollowupWindow(t)) {
-      const deadline = fmtDate(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS * 864e5).toISOString());
+    // CONSULT-ADJ-01：來回訊息串（不限次數）
+    msgs.forEach((m) => {
+      if (m.role === 'customer') {
+        html += node('you', ICON.you,
+          `<div class="qa-label">${pick('你的追問', '你的追问', 'Your follow-up')}</div>` +
+          `<div class="qa-text">${esc(m.body)}</div>` +
+          `<div class="qa-meta">${pick('提交於', '提交于', 'Submitted')} ${fmtDate(m.created_at)}</div>`);
+      } else {
+        html += node('expert', ICON.expert,
+          `<div class="qa-label">${pick('回覆', '回复', 'Reply')}</div>` +
+          `<div class="answer-box"><div class="qa-text">${esc(m.body)}</div></div>` +
+          `<div class="qa-meta">${pick('回覆於', '回复于', 'Replied')} ${fmtDate(m.created_at)}</div>` +
+          signatureHtml());
+      }
+    });
+
+    // 追問已送出、等命理師回覆（followup）
+    if (t.status === 'followup') {
+      html += node('note', ICON.note, `<div class="followup-note">${pick(
+        '已送出追問，命理師回覆後會以 Email 通知你。',
+        '已送出追问，命理师回复后会以 Email 通知你。',
+        'Your follow-up has been sent. We will email you when the reply is ready.'
+      )}</div>`);
+    }
+
+    // 輪到客戶（answered）→ 追問框 + 客戶結案
+    if (canFollowup(t)) {
       html += node('action', ICON.note,
-        `<div class="qa-label">${pick('追問一次', '追问一次', 'One follow-up')}</div>` +
+        `<div class="qa-label">${pick('繼續追問', '继续追问', 'Keep following up')}</div>` +
         `<div class="followup-note">${pick(
-          `回覆後可追問 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期諮詢自動結案。`,
-          `回复后可追问 <strong>一次</strong>，期限至 <strong>${deadline}</strong>。逾期咨询自动结案。`,
-          `You may ask <strong>one</strong> follow-up, until <strong>${deadline}</strong>. After that the consultation closes.`,
-          `回答後、追加質問が<strong>1回</strong>できます。期限は<strong>${deadline}</strong>までです。期限を過ぎると、相談は自動で終了します。`,
-          `답변 후 추가 질문을 <strong>1회</strong> 할 수 있어요. 기한은 <strong>${deadline}</strong>까지이며, 기한이 지나면 질문이 자동으로 종료돼요.`
+          '如果還有不清楚的地方，可以針對同一個問題繼續追問或補充細節，次數不限。若 14 天內沒有新的追問，命理師會為這則諮詢結案。',
+          '如果还有不清楚的地方，可以针对同一个问题继续追问或补充细节，次数不限。若 14 天内没有新的追问，命理师会为这则咨询结案。',
+          'If anything is still unclear, you can keep following up on the same question or add details, with no limit. If there is no new follow-up within 14 days, we will close this consultation.'
         )}</div>` +
-        `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你的追問…', '写下你的追问…', 'Write your follow-up…')}"></textarea>` +
+        `<textarea class="cons-input" id="fu-input" placeholder="${pick('寫下你想追問或補充的內容…', '写下你想追问或补充的内容…', 'Write your follow-up or any details to add…')}"></textarea>` +
         `<div class="char-count" id="fu-count">0</div>` +
         `<button class="cons-btn ghost" id="fu-btn" disabled>${pick('送出追問', '送出追问', 'Send follow-up')}</button>` +
         `<div class="msg" id="fu-msg"></div>` +
         `<div class="close-row">` +
-          `<span class="close-link" id="close-link" role="button" tabindex="0">${pick('我沒有其他問題了，結束諮詢', '我没有其他问题了，结束咨询', 'No other questions. Close this consultation')}</span>` +
+          `<span class="close-link" id="close-link" role="button" tabindex="0">${pick('我已經清楚了，結束諮詢', '我已经清楚了，结束咨询', 'It is clear now. Close this consultation')}</span>` +
           `<div id="close-host"></div>` +
         `</div>`);
+    }
+
+    // 命理師結案（客戶 14 天未回）
+    if (isAdvisorClosed(t)) {
+      html += node('note', ICON.note,
+        `<div class="qa-label">${pick('諮詢已結案', '咨询已结案', 'Consultation closed')}</div>` +
+        `<div class="followup-note">${pick(
+          '這則諮詢已由命理師結案。完整回覆仍可隨時查看；若之後有新的問題，歡迎另外提交一則問事。',
+          '这则咨询已由命理师结案。完整回复仍可随时查看；若之后有新的问题，欢迎另外提交一则问事。',
+          'This consultation has been closed by us. You can still read the full replies anytime. For a new question, you are welcome to submit a new consultation.'
+        )}</div>` +
+        (t.closed_at ? `<div class="qa-meta">${pick('關閉於', '关闭于', 'Closed')} ${fmtDate(t.closed_at)}</div>` : ''));
     }
 
     // admin 關閉 → 顯示關閉原因（不出回饋）
@@ -327,9 +356,9 @@
         const box = el('div', 'confirm-box');
         box.innerHTML =
           `<div class="confirm-text">${pick(
-            '結案後將無法再追問，且此諮詢會結束。確定要結束嗎？',
-            '结案后将无法再追问，且此咨询会结束。确定要结束吗？',
-            'Once closed, you can no longer follow up and this consultation ends. Are you sure?'
+            '結案後就不能再追問。之後若有新的問題，需要另外提交一則問事。確定要結案嗎？',
+            '结案后就不能再追问。之后若有新的问题，需要另外提交一则问事。确定要结案吗？',
+            'Once closed, you can no longer follow up. For a new question later, you will need to submit a new consultation. Close it now?'
           )}</div>` +
           `<div class="confirm-actions">` +
             `<button class="btn-sm confirm" id="close-yes">${pick('確定結案', '确定结案', 'Close it')}</button>` +
