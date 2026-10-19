@@ -15,6 +15,7 @@
       已寄出 → 只儲存修改，不再寄信
   - CSV：前端由目前名單產生（UTF-8 BOM，Excel 可直接開；含 ui_lang）
   - PT-007 起移除手動「標記已寄出」（避免出現已寄出但沒有全文）
+  - PT-007b：全文支援 Markdown，視窗內可切換「預覽」（與客戶頁同一套排版 y27-md.js）
 -->
 <style>
   /* ── 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
@@ -76,6 +77,11 @@
     font-family:"Noto Sans TC","Noto Sans SC","Noto Sans KR","PingFang TC",system-ui,sans-serif;font-size:14.5px;line-height:1.8;color:var(--ink);}
   .ed-text:focus{outline:2px solid var(--dawn);outline-offset:1px;border-color:transparent;}
   .ed-count{margin-top:6px;font-size:12px;color:var(--faint);text-align:right;}
+  .ed-tabs{display:flex;gap:6px;margin:0 0 10px;}
+  .ed-tab{font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:999px;border:1px solid var(--hair-strong);background:var(--surface);color:var(--muted);}
+  .ed-tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .ed-preview{min-height:52vh;max-height:60vh;overflow:auto;padding:20px 24px;border:1px solid var(--hair-strong);border-radius:var(--radius-sm);
+    font-family:"Noto Sans TC","Noto Sans SC","Noto Sans KR","PingFang TC",system-ui,sans-serif;font-size:15px;line-height:1.95;color:#202020;}
   .ed-count.is-over{color:var(--fail);font-weight:600;}
   .ed-msg{margin:10px 0 0;font-size:13px;line-height:1.6;}
   .ed-msg.is-error{color:var(--fail);}
@@ -146,7 +152,12 @@
       </div>
       <div class="ed-body">
         <p class="ed-note" id="edNote"></p>
+        <div class="ed-tabs" role="tablist">
+          <button type="button" class="ed-tab" id="edTabEdit" role="tab" aria-selected="true">編輯</button>
+          <button type="button" class="ed-tab" id="edTabPreview" role="tab" aria-selected="false">預覽（客戶看到的樣子）</button>
+        </div>
         <textarea class="ed-text" id="edText" spellcheck="false" aria-label="年報全文"></textarea>
+        <div class="ed-preview" id="edPreview" hidden></div>
         <div class="ed-count" id="edCount"></div>
         <p class="ed-msg" id="edMsg" role="status"></p>
       </div>
@@ -160,6 +171,9 @@
 
   <script type="module">
     import { supabase, initAdmin } from './admin-common.js';
+    import { renderReport, injectMdCss } from './y27-md.js';
+
+    injectMdCss();
 
     const YEAR = 2027;
     const MAX_LEN = 60000;
@@ -261,15 +275,25 @@
       $('edLang').textContent = langLabel(editing.ui_lang);
       $('edStatus').innerHTML = `<span class="st st-${esc(editing.status)}">${esc(STATUS[editing.status] ?? editing.status)}</span>`;
       $('edNote').textContent = first
-        ? `貼上純文字全文（換行會保留）。按「寄送」後，客戶會收到「年報已完成」通知信（${LANG[editing.ui_lang] ?? editing.ui_lang}），登入 2027 專區即可閱讀。`
+        ? `貼上全文（支援 Markdown：# 標題、**粗體**、清單、表格、---）。可按「預覽」確認排版。按「寄送」後，客戶會收到「年報已完成」通知信（${LANG[editing.ui_lang] ?? editing.ui_lang}），登入 2027 專區即可閱讀。`
         : '已寄出。修改後按「儲存修改」，客戶頁面會更新，不會再寄信。';
       $('edSubmit').textContent = first ? '寄送' : '儲存修改';
       $('edUpdated').textContent = editing.report_updated_at ? `最後儲存 ${fmt(editing.report_updated_at)}` : '';
       $('edText').value = editing.report_body || '';
+      setTab('edit');
       setMsg('');
       updateCount();
       $('ed').showModal();
       $('edText').focus();
+    }
+
+    function setTab(which) {
+      const preview = which === 'preview';
+      $('edTabEdit').setAttribute('aria-selected', String(!preview));
+      $('edTabPreview').setAttribute('aria-selected', String(preview));
+      $('edText').hidden = preview;
+      $('edPreview').hidden = !preview;
+      if (preview) renderReport($('edPreview'), $('edText').value);
     }
 
     function closeEditor() {
@@ -336,6 +360,8 @@
     }
 
     $('edText').addEventListener('input', updateCount);
+    $('edTabEdit').addEventListener('click', () => setTab('edit'));
+    $('edTabPreview').addEventListener('click', () => setTab('preview'));
     $('edCancel').addEventListener('click', closeEditor);
     $('edSubmit').addEventListener('click', submit);
     $('ed').addEventListener('cancel', (e) => { e.preventDefault(); closeEditor(); });

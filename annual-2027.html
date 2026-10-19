@@ -16,7 +16,7 @@
       ready：hero 改為「年報已完成」+ 閱讀 / 列印按鈕；介紹區塊收起，改顯示全文 → 回饋句 → 優惠
   - 讀取：annual_report_requests（RLS 只讀自己；含 report_body）
   - 索取：RPC request_annual_report(2027, uiLang)，冪等；created=true 才呼叫 EF notify-annual-request
-  - 全文一律以 textContent 顯示（純文字、保留換行），不解析 HTML
+  - 全文以 Markdown 排版（y27-md.js：marked + DOMPurify 白名單），載入失敗時退回純文字（PT-007b）
 -->
 <style>
   body.y27-page.fs-v2 { background: #ffffff; }
@@ -91,7 +91,7 @@
   .fs-v2 .y27-report-title { margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 28px; line-height: 40px; font-weight: 500; color: var(--v2-ink); }
   .fs-v2 .y27-report-date { margin: 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-faint); }
   .fs-v2 .y27-report-body {
-    max-width: 760px; margin: 0 auto; white-space: pre-wrap; overflow-wrap: anywhere;
+    max-width: 760px; margin: 0 auto; overflow-wrap: anywhere;
     font-family: var(--v2-font-cjk); font-size: 16px; line-height: 32px; color: var(--v2-ink);
   }
   .fs-v2 .y27-feedback { max-width: 760px; margin: 40px auto 0; padding: 20px 0 0; border-top: 1px solid var(--v2-line-soft); font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-muted); }
@@ -279,6 +279,10 @@
 
 <script type="module">
   import { supabase, requireAuth } from './components.js';
+  import { renderReport, injectMdCss } from './y27-md.js';
+
+  injectMdCss();
+  let renderedBody = null;   // 已排版的全文（語言切換時不重排）
 
   const YEAR = 2027;
   const SUPPORT_MAIL = 'support@fusang-vision.com';
@@ -333,7 +337,10 @@
       const readyDate = I18N.t('y27.readyBody').replace('{date}', fmtDate(doneAt));
       $('y27-ready-date').textContent = readyDate;
       $('y27-report-date').textContent = fmtDate(doneAt);
-      $('y27-report-body').textContent = current.report_body;
+      if (renderedBody !== current.report_body) {
+        renderedBody = current.report_body;
+        renderReport($('y27-report-body'), current.report_body);
+      }
       I18N.tagKo($('y27-ready-date'));
       renderFeedback();
       return;
