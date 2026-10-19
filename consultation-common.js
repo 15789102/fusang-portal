@@ -174,7 +174,7 @@ const JA = {
   '陪你問到清楚': 'はっきりするまで寄り添います',
   '同一個問題，收到回覆後可以繼續追問、補充細節，不限次數，直到你覺得清楚為止。什麼時候結案，由你決定。': '同じ質問について、回答を受け取ったあとも、はっきりするまで回数の制限なく追加質問や補足ができます。いつ相談を終えるかは、あなたが決めます。',
   '同一問題可來回追問，直到清楚': '同じ質問は、はっきりするまで何度でも追加質問できます',
-  '我已了解以上各項，並同意。': '上記の内容を理解し、すべてに同意します。',
+  '我了解這是不可退款的數位服務，並同意以上各項。': '返金不可のデジタルサービスであることを理解し、上記のすべてに同意します。',
   '繼續追問': '追加質問を続ける',
   '如果還有不清楚的地方，可以針對同一個問題繼續追問或補充細節，次數不限。若 14 天內沒有新的追問，命理師會為這則諮詢結案。': 'まだはっきりしない点があれば、同じ質問について回数の制限なく、追加質問や補足ができます。14日以内に新しい追加質問がない場合は、こちらで相談を終了します。',
   '寫下你想追問或補充的內容…': '追加質問や補足したい内容をお書きください…',
@@ -311,7 +311,7 @@ const KO = {
   '陪你問到清楚': '명확해질 때까지 함께해요',
   '同一個問題，收到回覆後可以繼續追問、補充細節，不限次數，直到你覺得清楚為止。什麼時候結案，由你決定。': '같은 질문에 대해 답변을 받은 뒤에도 충분히 명확해질 때까지 횟수 제한 없이 추가 질문하고 내용을 보충할 수 있어요. 언제 마무리할지는 당신이 정해요.',
   '同一問題可來回追問，直到清楚': '같은 질문은 명확해질 때까지 추가 질문 가능',
-  '我已了解以上各項，並同意。': '위 내용을 이해했으며 모두 동의합니다.',
+  '我了解這是不可退款的數位服務，並同意以上各項。': '환불이 불가능한 디지털 서비스임을 이해하며, 위 내용에 모두 동의합니다.',
   '繼續追問': '추가 질문 이어 가기',
   '如果還有不清楚的地方，可以針對同一個問題繼續追問或補充細節，次數不限。若 14 天內沒有新的追問，命理師會為這則諮詢結案。': '아직 명확하지 않은 부분이 있다면 같은 질문에 대해 횟수 제한 없이 추가 질문하거나 내용을 보충할 수 있어요. 14일 안에 새 추가 질문이 없으면 저희가 질문을 종료해요.',
   '寫下你想追問或補充的內容…': '추가 질문이나 보충할 내용을 적어 주세요…',
@@ -461,8 +461,8 @@ export function disclaimerHtml() {
       `<li><strong>一次购买处理一个问题。</strong>同一问题可来回追问到清楚为止；若要问不同的问题，请另外提交一则新的问事。</li>` +
       `<li><strong>同一时间仅能进行一则咨询。</strong>须待目前咨询结案后，才能提交新的问题。</li>` +
       `<li>付款后 <strong>7 天内</strong>你会收到书面回复。之后可针对同一问题继续追问，<strong>次数不限</strong>；觉得清楚了，由你结案。若 <strong>14 天</strong>没有新的追问，命理师会为这则咨询结案。</li>` +
-      `<li>本服务仅提供紫微斗数命理解读。<strong>健康诊断、法律问题、医疗决定不在服务范围内</strong>；若问题属于这些范围，命理师会说明原因并全额退款。</li>` +
-      `<li><strong>数字服务：</strong>除上述范围外，回复送出后恕不退款。</li>` +
+      `<li>本服务仅提供紫微斗数命理解读，<strong>健康诊断、法律问题、医疗决定不在服务范围内</strong>。</li>` +
+      `<li><strong>数字服务，提交后恕不退款。</strong>每则咨询皆为你个别撰写，付款送出后不予退费。</li>` +
       `</ul></div>`;
   }
   if (L === 'ja') {
@@ -472,8 +472,8 @@ export function disclaimerHtml() {
       `<li><strong>1回のお支払いで、ひとつの質問をお受けします。</strong>同じ質問については、はっきりするまで何度でも追加質問できます。別の質問をしたい場合は、新しい相談をお申し込みください。</li>` +
       `<li><strong>同時に進められる相談は1件までです。</strong>現在の相談が終了してから、新しい質問を送信できます。</li>` +
       `<li>お支払い後 <strong>7日以内</strong>に書面で回答が届きます。その後も同じ質問について、<strong>回数の制限なく</strong>追加質問ができます。はっきりしたら、ご自身で相談を終了してください。<strong>14日間</strong>新しい追加質問がない場合は、こちらで相談を終了します。</li>` +
-      `<li>本サービスは紫微斗数による命理の解読のみを提供します。<strong>健康の診断、法律の問題、医療に関する判断はサービスの対象外です。</strong>ご質問がこれらに当たる場合は、理由をご説明し、全額を返金いたします。</li>` +
-      `<li><strong>デジタルサービスのため、</strong>上記の場合を除き、回答の送信後は返金できません。</li>` +
+      `<li>本サービスは紫微斗数による命理の解読のみを提供します。<strong>健康の診断、法律の問題、医療に関する判断はサービスの対象外です。</strong></li>` +
+      `<li><strong>デジタルサービスのため、送信後の返金はできません。</strong>各相談はあなたのために個別に作成するため、お支払い後の返金はお受けしておりません。</li>` +
       `</ul></div>`;
   }
   if (L === 'ko') {
@@ -483,8 +483,8 @@ export function disclaimerHtml() {
       `<li><strong>한 번 결제로 질문 하나를 다뤄요.</strong> 같은 질문은 명확해질 때까지 계속 추가 질문할 수 있어요. 다른 질문을 하고 싶다면 새 질문을 따로 제출해 주세요.</li>` +
       `<li><strong>질문은 한 번에 1건만 진행할 수 있어요.</strong> 현재 질문이 종료된 뒤에 새 질문을 제출할 수 있어요.</li>` +
       `<li>결제 후 <strong>7일 이내</strong>에 서면 답변을 받아요. 그 뒤에도 같은 질문에 대해 <strong>횟수 제한 없이</strong> 추가 질문할 수 있어요. 충분히 명확해지면 직접 질문을 종료해 주세요. <strong>14일</strong> 동안 새 추가 질문이 없으면 저희가 질문을 종료해요.</li>` +
-      `<li>본 서비스는 자미두수 명반 해석만 제공해요. <strong>건강 진단, 법률 문제, 의료 결정은 서비스 범위에 포함되지 않아요.</strong> 질문이 이에 해당하면 저희가 이유를 안내해 드리고 전액 환불해 드려요.</li>` +
-      `<li><strong>디지털 서비스이므로</strong> 위의 경우를 제외하고 답변이 전송된 뒤에는 환불되지 않아요.</li>` +
+      `<li>본 서비스는 자미두수 명반 해석만 제공해요. <strong>건강 진단, 법률 문제, 의료 결정은 서비스 범위에 포함되지 않아요.</strong></li>` +
+      `<li><strong>디지털 서비스이므로 제출 후에는 환불되지 않아요.</strong> 모든 답변은 회원님을 위해 개별로 작성되므로, 결제 후에는 환불해 드리지 않아요.</li>` +
       `</ul></div>`;
   }
   if (L.startsWith('zh')) {
@@ -494,8 +494,8 @@ export function disclaimerHtml() {
       `<li><strong>一次購買處理一個問題。</strong>同一問題可來回追問到清楚為止；若要問不同的問題，請另外提交一則新的問事。</li>` +
       `<li><strong>同一時間僅能進行一則諮詢。</strong>須待目前諮詢結案後，才能提交新的問題。</li>` +
       `<li>付款後 <strong>7 天內</strong>你會收到書面回覆。之後可針對同一問題繼續追問，<strong>次數不限</strong>；覺得清楚了，由你結案。若 <strong>14 天</strong>沒有新的追問，命理師會為這則諮詢結案。</li>` +
-      `<li>本服務僅提供紫微斗數命理解讀。<strong>健康診斷、法律問題、醫療決定不在服務範圍內</strong>；若問題屬於這些範圍，命理師會說明原因並全額退款。</li>` +
-      `<li><strong>數位服務：</strong>除上述範圍外，回覆送出後恕不退款。</li>` +
+      `<li>本服務僅提供紫微斗數命理解讀，<strong>健康診斷、法律問題、醫療決定不在服務範圍內</strong>。</li>` +
+      `<li><strong>數位服務，提交後恕不退款。</strong>每則諮詢皆為你個別撰寫，付款送出後不予退費。</li>` +
       `</ul></div>`;
   }
   return `<div class="disclaim"><div class="disclaim-h">Before you submit</div><ul>` +
@@ -504,8 +504,8 @@ export function disclaimerHtml() {
     `<li><strong>One purchase covers one question.</strong> You can keep following up on the same question until it is clear. For a different question, please submit a new consultation.</li>` +
     `<li><strong>One open consultation at a time.</strong> You can submit a new question once your current consultation is closed.</li>` +
     `<li>You will receive a written reply within <strong>7 days</strong> of payment. After that, you can keep following up on the same question <strong>with no limit</strong>. When it feels clear, you close the consultation. If there is no new follow-up for <strong>14 days</strong>, we will close it.</li>` +
-    `<li>This service provides Zi Wei Dou Shu interpretation only. <strong>Health diagnoses, legal matters, and medical decisions are outside its scope.</strong> If your question falls into these areas, we will explain why and give you a full refund.</li>` +
-    `<li><strong>Digital service:</strong> outside the cases above, payment is non-refundable once the reply has been sent.</li>` +
+    `<li>This service provides Zi Wei Dou Shu interpretation only. <strong>Health diagnoses, legal matters, and medical decisions are outside its scope.</strong></li>` +
+    `<li><strong>Digital service. All sales are final.</strong> Each consultation is prepared individually for you, so payment is non-refundable once submitted.</li>` +
     `</ul></div>`;
 }
 
