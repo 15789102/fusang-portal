@@ -1,10 +1,11 @@
 // ============================================================
-// y27-i18n.js：PT-006 2027 年報專區字典（key 前綴 y27.）
-//   來源：PT-006 核准版文案表（2026-10-17）；step* 為 A 版新增（2026-10-17）。
+// y27-i18n.js：2027 年報專區字典（key 前綴 y27.）
+//   來源：PT-006 核准版文案表（2026-10-17）；step* 為 A 版新增（2026-10-17）；
+//   ready* / feedback / coupon* 為 PT-007 線上交付（Ben 2026-10-19 核准；couponCopied 為 UI 回饋字）。
 //   ja / ko 待語言專家審。
 //   載入順序：i18n.js 之後。annual-2027.html 與 dashboard.html（橫幅）共用。
 //   y27.step2 的說明沿用 y27.how。
-//   y27.doneBody 的 {email}、y27.doneDate 的 {date} 由頁面代入。
+//   代入值：doneBody {email}、doneDate {date}、readyBody {date}、feedback {mail}。
 // ============================================================
 (function () {
   if (!window.FSI18N || !window.FSI18N.addUI) {
@@ -199,6 +200,90 @@
       "en": "Sent to your registered email within 2 to 3 days.",
       "ja": "お申し込みから2〜3日以内に、ご登録のメールアドレスへお送りします。",
       "ko": "신청 후 2~3일 이내에 가입하신 이메일로 보내 드려요."
+    },
+    "y27.readyTitle": {
+      "zh-TW": "你的 2027 年報已完成",
+      "zh-CN": "你的 2027 年报已完成",
+      "en": "Your 2027 report is ready",
+      "ja": "2027年 年報が完成しました",
+      "ko": "2027 연간 리포트가 완성되었어요"
+    },
+    "y27.readyBody": {
+      "zh-TW": "完成時間 {date}。可以隨時回到這一頁閱讀，或存成 PDF 留存。",
+      "zh-CN": "完成时间 {date}。可以随时回到这一页阅读，或存成 PDF 留存。",
+      "en": "Completed on {date}. Come back to this page anytime, or save it as a PDF.",
+      "ja": "完成日 {date}。いつでもこのページで読み返したり、PDF として保存したりできます。",
+      "ko": "완성일 {date}. 언제든 이 페이지에서 다시 읽거나 PDF로 저장할 수 있어요."
+    },
+    "y27.readBtn": {
+      "zh-TW": "閱讀我的 2027 年報",
+      "zh-CN": "阅读我的 2027 年报",
+      "en": "Read my 2027 report",
+      "ja": "2027年 年報を読む",
+      "ko": "2027 연간 리포트 읽기"
+    },
+    "y27.printBtn": {
+      "zh-TW": "列印／存成 PDF",
+      "zh-CN": "打印／存成 PDF",
+      "en": "Print or save as PDF",
+      "ja": "印刷・PDF で保存",
+      "ko": "인쇄 · PDF로 저장"
+    },
+    "y27.feedback": {
+      "zh-TW": "讀完之後，如果有任何感受或想法，歡迎寫信到 {mail} 告訴我。",
+      "zh-CN": "读完之后，如果有任何感受或想法，欢迎写信到 {mail} 告诉我。",
+      "en": "After reading, if anything stays with you or you have thoughts to share, write to me at {mail}.",
+      "ja": "読み終えて感じたことやご意見があれば、{mail} までお聞かせください。",
+      "ko": "읽어 보시고 느낀 점이나 생각이 있다면 {mail}으로 들려주세요."
+    },
+    "y27.couponTitle": {
+      "zh-TW": "想問得更深嗎？",
+      "zh-CN": "想问得更深吗？",
+      "en": "Want to look deeper?",
+      "ja": "もっと深く知りたいときは",
+      "ko": "더 깊이 알고 싶다면"
+    },
+    "y27.couponBody": {
+      "zh-TW": "單獨問事由 R.S. Chen 針對你的問題，對照命盤以書面回覆。原價 $49.9，體驗價 $20。",
+      "zh-CN": "单独问事由 R.S. Chen 针对你的问题，对照命盘以书面回复。原价 $49.9，体验价 $20。",
+      "en": "In a Consultation, R.S. Chen answers your question in writing, based on your chart. Regular price $49.9, trial price $20.",
+      "ja": "個別相談では、R.S. Chen があなたの質問に命盤をもとに書面でお答えします。通常価格 $49.9、体験価格 $20。",
+      "ko": "1:1 맞춤 질문에서는 R.S. Chen이 명반을 바탕으로 질문에 서면으로 답변드려요. 정가 $49.9, 체험가 $20."
+    },
+    "y27.couponLabel": {
+      "zh-TW": "體驗碼",
+      "zh-CN": "体验码",
+      "en": "Code",
+      "ja": "体験コード",
+      "ko": "체험 코드"
+    },
+    "y27.couponHint": {
+      "zh-TW": "在付款頁輸入即可折抵",
+      "zh-CN": "在付款页输入即可抵扣",
+      "en": "Enter it at checkout",
+      "ja": "お支払いページで入力してください",
+      "ko": "결제 페이지에서 입력해 주세요"
+    },
+    "y27.couponCopy": {
+      "zh-TW": "複製",
+      "zh-CN": "复制",
+      "en": "Copy",
+      "ja": "コピー",
+      "ko": "복사"
+    },
+    "y27.couponCopied": {
+      "zh-TW": "已複製",
+      "zh-CN": "已复制",
+      "en": "Copied",
+      "ja": "コピーしました",
+      "ko": "복사했어요"
+    },
+    "y27.couponCta": {
+      "zh-TW": "前往單獨問事",
+      "zh-CN": "前往单独问事",
+      "en": "Go to Consultation",
+      "ja": "個別相談へ",
+      "ko": "1:1 맞춤 질문으로 가기"
     }
   });
 })();

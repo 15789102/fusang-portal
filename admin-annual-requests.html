@@ -8,10 +8,13 @@
 <meta name="robots" content="noindex, nofollow" />
 <title>扶桑晨曦 · 年報索取</title>
 <!--
-  PT-006 2027 年報索取名單
-  - 讀取：admin_list_annual_requests(2027)（非 admin → not_admin）
-  - 標記已寄出：admin_mark_annual_sent(ids[])，只會更新 status='requested' 的列
+  PT-006 / PT-007 2027 年報索取名單與線上交付
+  - 讀取：admin_list_annual_requests(2027)（非 admin → not_admin；含 report_body）
+  - 填寫年報：EF admin-annual-report { request_id, report_body }
+      第一次 → 儲存全文、狀態改已寄出、寄「年報已完成」通知信（客戶語言）
+      已寄出 → 只儲存修改，不再寄信
   - CSV：前端由目前名單產生（UTF-8 BOM，Excel 可直接開；含 ui_lang）
+  - PT-007 起移除手動「標記已寄出」（避免出現已寄出但沒有全文）
 -->
 <style>
   /* ── 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
@@ -25,7 +28,6 @@
 
   .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
   .toolbar .spacer{flex:1 1 auto;}
-  .sel-note{font-size:12.5px;color:var(--muted);}
   .btn{
     font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);
     padding:8px 14px;transition:all .15s ease;
@@ -42,7 +44,6 @@
     box-shadow:var(--shadow);overflow-x:auto;
   }
   table{width:100%;border-collapse:collapse;font-size:13px;min-width:860px;}
-  .row-mark{padding:6px 12px;}
   thead th{
     text-align:left;font-weight:600;font-size:11px;color:var(--faint);
     letter-spacing:.05em;text-transform:uppercase;
@@ -51,7 +52,6 @@
   tbody td{padding:12px 14px;border-bottom:1px solid var(--hair);vertical-align:middle;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#FBFBFC;}
-  .col-check{width:36px;}
   .col-email{font-weight:500;word-break:break-all;}
   .dim{color:var(--faint);}
   .nowrap{white-space:nowrap;}
@@ -60,8 +60,28 @@
   .st-requested{color:var(--wait);background:var(--wait-soft);}
   .st-sent{color:var(--ok);background:var(--ok-soft);}
   .st-cancelled{color:var(--muted);background:#F0F1F3;}
-  input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
-  input[type=checkbox]:disabled{cursor:not-allowed;opacity:.35;}
+  .row-btn{padding:6px 12px;}
+
+  /* ── 填寫年報視窗 ── */
+  .ed{width:min(860px, calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;border:1px solid var(--hair);border-radius:var(--radius);box-shadow:0 24px 64px rgba(27,30,39,.18);}
+  .ed::backdrop{background:rgba(27,30,39,.45);}
+  .ed-form{display:flex;flex-direction:column;max-height:calc(100vh - 34px);}
+  .ed-head{padding:18px 22px 14px;border-bottom:1px solid var(--hair);}
+  .ed-title{font-family:"Fraunces",serif;font-weight:600;font-size:18px;margin:0 0 6px;}
+  .ed-meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px;color:var(--muted);}
+  .ed-meta b{color:var(--ink);font-weight:600;word-break:break-all;}
+  .ed-body{padding:16px 22px;overflow:auto;}
+  .ed-note{font-size:12.5px;line-height:1.7;color:var(--muted);background:#F6F7F9;border-radius:var(--radius-sm);padding:10px 12px;margin:0 0 12px;}
+  .ed-text{width:100%;min-height:52vh;resize:vertical;padding:14px;border:1px solid var(--hair-strong);border-radius:var(--radius-sm);
+    font-family:"Noto Sans TC","Noto Sans SC","Noto Sans KR","PingFang TC",system-ui,sans-serif;font-size:14.5px;line-height:1.8;color:var(--ink);}
+  .ed-text:focus{outline:2px solid var(--dawn);outline-offset:1px;border-color:transparent;}
+  .ed-count{margin-top:6px;font-size:12px;color:var(--faint);text-align:right;}
+  .ed-count.is-over{color:var(--fail);font-weight:600;}
+  .ed-msg{margin:10px 0 0;font-size:13px;line-height:1.6;}
+  .ed-msg.is-error{color:var(--fail);}
+  .ed-msg.is-ok{color:var(--ok);}
+  .ed-foot{display:flex;gap:10px;justify-content:flex-end;align-items:center;padding:14px 22px;border-top:1px solid var(--hair);}
+  .ed-foot .spacer{flex:1 1 auto;font-size:12px;color:var(--faint);}
 </style>
 </head>
 <body>
@@ -69,7 +89,7 @@
   <main class="fa-wrap">
     <div class="fa-page-head">
       <h1 class="fa-page-title">年報索取</h1>
-      <p class="fa-page-sub">PT-006 · 2027 年報索取名單。年報依「年報語言」撰寫，於索取後 2–3 天內寄出。寄出後按該列的「標記已寄出」，多筆可勾選後批次標記。</p>
+      <p class="fa-page-sub">2027 年報索取名單。按該列的「填寫年報」貼上內容並寄送：客戶會收到「年報已完成」通知信，登入 2027 專區即可閱讀全文。寄出後仍可修改，修改不會再寄信。</p>
     </div>
 
     <div class="summary-row" id="summaryRow"></div>
@@ -91,8 +111,6 @@
 
     <div id="listWrap" class="fa-hidden">
       <div class="toolbar">
-        <button type="button" class="btn primary" id="btnMark" disabled>標記已寄出</button>
-        <span class="sel-note" id="selNote"></span>
         <span class="spacer"></span>
         <button type="button" class="btn ghost" id="btnReload">重新整理</button>
         <button type="button" class="btn ghost" id="btnCsv">下載 CSV</button>
@@ -101,7 +119,6 @@
         <table>
           <thead>
             <tr>
-              <th class="col-check"><input type="checkbox" id="chkAll" aria-label="全選待寄出"></th>
               <th>Email</th>
               <th>姓名</th>
               <th>年報語言</th>
@@ -117,16 +134,42 @@
     </div>
   </main>
 
+  <dialog class="ed" id="ed" aria-labelledby="edTitle">
+    <form class="ed-form" method="dialog" id="edForm">
+      <div class="ed-head">
+        <h2 class="ed-title" id="edTitle">填寫 2027 年報</h2>
+        <div class="ed-meta">
+          <span>客戶 <b id="edEmail"></b></span>
+          <span>年報語言 <b id="edLang"></b></span>
+          <span id="edStatus"></span>
+        </div>
+      </div>
+      <div class="ed-body">
+        <p class="ed-note" id="edNote"></p>
+        <textarea class="ed-text" id="edText" spellcheck="false" aria-label="年報全文"></textarea>
+        <div class="ed-count" id="edCount"></div>
+        <p class="ed-msg" id="edMsg" role="status"></p>
+      </div>
+      <div class="ed-foot">
+        <span class="spacer" id="edUpdated"></span>
+        <button type="button" class="btn ghost" id="edCancel">取消</button>
+        <button type="button" class="btn primary" id="edSubmit">寄送</button>
+      </div>
+    </form>
+  </dialog>
+
   <script type="module">
     import { supabase, initAdmin } from './admin-common.js';
 
     const YEAR = 2027;
+    const MAX_LEN = 60000;
     const LANG = { 'zh-TW': '繁中', 'zh-CN': '簡中', 'en': '英文', 'ja': '日文', 'ko': '韓文' };
     const STATUS = { requested: '待寄出', sent: '已寄出', cancelled: '已取消' };
 
     const $ = (id) => document.getElementById(id);
     let rows = [];
-    const selected = new Set();
+    let editing = null;      // 目前視窗編輯中的那一筆
+    let busy = false;
 
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -153,40 +196,23 @@
         `<div class="sum-pill"><span class="sum-num">${num}</span><span class="sum-label">${label}</span></div>`).join('');
     }
 
-    function renderSelection() {
-      const pending = rows.filter(r => r.status === 'requested');
-      $('btnMark').disabled = selected.size === 0;
-      $('selNote').textContent = selected.size ? `已選 ${selected.size} 筆` : '';
-      const all = $('chkAll');
-      all.disabled = pending.length === 0;
-      all.checked = pending.length > 0 && pending.every(r => selected.has(r.id));
-      all.indeterminate = selected.size > 0 && !all.checked;
-    }
-
     function renderRows() {
       $('rows').innerHTML = rows.map(r => {
-        const can = r.status === 'requested';
+        const label = r.status === 'requested' ? '填寫年報' : (r.status === 'sent' ? '查看・修改' : '');
+        const cls = r.status === 'requested' ? 'primary' : 'ghost';
         return `<tr>
-          <td class="col-check"><input type="checkbox" data-id="${esc(r.id)}" ${can ? '' : 'disabled'} ${selected.has(r.id) ? 'checked' : ''} aria-label="選取 ${esc(r.user_email)}"></td>
           <td class="col-email">${esc(r.user_email)}</td>
           <td>${r.cust_name ? esc(r.cust_name) : '<span class="dim">—</span>'}</td>
           <td><span class="lang-tag">${esc(langLabel(r.ui_lang))}</span></td>
           <td class="nowrap">${esc(fmt(r.requested_at))}</td>
           <td><span class="st st-${esc(r.status)}">${esc(STATUS[r.status] ?? r.status)}</span></td>
           <td class="nowrap">${r.sent_at ? esc(fmt(r.sent_at)) : '<span class="dim">—</span>'}</td>
-          <td class="nowrap">${can ? `<button type="button" class="btn ghost row-mark" data-id="${esc(r.id)}">標記已寄出</button>` : ''}</td>
+          <td class="nowrap">${label ? `<button type="button" class="btn ${cls} row-btn" data-id="${esc(r.id)}">${label}</button>` : ''}</td>
         </tr>`;
       }).join('');
-      $('rows').querySelectorAll('input[type=checkbox]').forEach(cb => {
-        cb.addEventListener('change', () => {
-          if (cb.checked) selected.add(cb.dataset.id); else selected.delete(cb.dataset.id);
-          renderSelection();
-        });
+      $('rows').querySelectorAll('.row-btn').forEach(btn => {
+        btn.addEventListener('click', () => openEditor(btn.dataset.id));
       });
-      $('rows').querySelectorAll('.row-mark').forEach(btn => {
-        btn.addEventListener('click', () => markSent([btn.dataset.id], btn));
-      });
-      renderSelection();
     }
 
     async function load() {
@@ -201,33 +227,120 @@
       // 待寄出排前面，其餘依索取時間
       rows.sort((a, b) => (a.status === 'requested' ? 0 : 1) - (b.status === 'requested' ? 0 : 1)
         || new Date(a.requested_at) - new Date(b.requested_at));
-      for (const id of [...selected]) {
-        if (!rows.some(r => r.id === id && r.status === 'requested')) selected.delete(id);
-      }
       renderSummary();
       if (!rows.length) { show('emptyState'); return; }
       renderRows();
       show('listWrap');
     }
 
-    // ids 省略 = 批次（目前勾選的列）；單列按鈕會傳 [id] 與按鈕本身
-    async function markSent(ids = [...selected], btn = $('btnMark')) {
-      if (!ids.length) return;
-      const emails = rows.filter(r => ids.includes(r.id)).map(r => r.user_email);
-      if (!confirm(`將 ${ids.length} 筆標記為「已寄出」？\n\n${emails.join('\n')}`)) return;
-      btn.disabled = true;
-      const { data, error } = await supabase.rpc('admin_mark_annual_sent', { p_ids: ids });
-      if (error) {
-        alert('標記失敗：' + (error.message || String(error)));
-        btn.disabled = false;
-        renderSelection();
-        return;
-      }
-      ids.forEach(id => selected.delete(id));
-      await load();
-      if (data !== ids.length) alert(`已標記 ${data} 筆（其餘可能已被標記過）。`);
+    /* ── 填寫年報視窗 ── */
+    function setMsg(text, kind) {
+      const m = $('edMsg');
+      m.textContent = text || '';
+      m.className = 'ed-msg' + (kind ? ` is-${kind}` : '');
     }
 
+    function updateCount() {
+      const len = $('edText').value.trim().length;
+      const c = $('edCount');
+      c.textContent = `${len.toLocaleString()} / ${MAX_LEN.toLocaleString()} 字`;
+      c.classList.toggle('is-over', len > MAX_LEN);
+      $('edSubmit').disabled = busy || len === 0 || len > MAX_LEN;
+    }
+
+    function isDirty() {
+      return !!editing && $('edText').value.trim() !== (editing.report_body || '').trim();
+    }
+
+    function openEditor(id) {
+      editing = rows.find(r => r.id === id) || null;
+      if (!editing) return;
+      const first = editing.status === 'requested';
+      $('edTitle').textContent = first ? '填寫 2027 年報' : '查看・修改 2027 年報';
+      $('edEmail').textContent = editing.user_email;
+      $('edLang').textContent = langLabel(editing.ui_lang);
+      $('edStatus').innerHTML = `<span class="st st-${esc(editing.status)}">${esc(STATUS[editing.status] ?? editing.status)}</span>`;
+      $('edNote').textContent = first
+        ? `貼上純文字全文（換行會保留）。按「寄送」後，客戶會收到「年報已完成」通知信（${LANG[editing.ui_lang] ?? editing.ui_lang}），登入 2027 專區即可閱讀。`
+        : '已寄出。修改後按「儲存修改」，客戶頁面會更新，不會再寄信。';
+      $('edSubmit').textContent = first ? '寄送' : '儲存修改';
+      $('edUpdated').textContent = editing.report_updated_at ? `最後儲存 ${fmt(editing.report_updated_at)}` : '';
+      $('edText').value = editing.report_body || '';
+      setMsg('');
+      updateCount();
+      $('ed').showModal();
+      $('edText').focus();
+    }
+
+    function closeEditor() {
+      if (busy) return;
+      if (isDirty() && !confirm('內容尚未儲存，確定要關閉嗎？')) return;
+      $('ed').close();
+      editing = null;
+    }
+
+    async function errorCode(error) {
+      try {
+        const res = error && error.context;
+        if (res && typeof res.json === 'function') {
+          const j = await res.clone().json();
+          return j && j.error;
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    async function submit() {
+      if (!editing || busy) return;
+      const body = $('edText').value.trim();
+      if (!body || body.length > MAX_LEN) return;
+      const first = editing.status === 'requested';
+      const ask = first
+        ? `確定寄送給 ${editing.user_email}？\n\n客戶會收到「年報已完成」通知信（${LANG[editing.ui_lang] ?? editing.ui_lang}）。`
+        : `確定儲存修改？\n\n客戶頁面會更新為新內容，不會再寄信。`;
+      if (!confirm(ask)) return;
+
+      busy = true;
+      updateCount();
+      $('edCancel').disabled = true;
+      setMsg(first ? '寄送中…' : '儲存中…');
+
+      const { data, error } = await supabase.functions.invoke('admin-annual-report', {
+        body: { request_id: editing.id, report_body: body },
+      });
+
+      busy = false;
+      $('edCancel').disabled = false;
+
+      if (error || !data || !data.ok) {
+        const code = await errorCode(error);
+        const msg = code === 'mail_failed'
+          ? '內容已儲存，但通知信寄送失敗，狀態維持「待寄出」。請稍後再按一次「寄送」。'
+          : code === 'forbidden' ? '沒有權限（需要 admin 帳號）。'
+          : code === 'too_long' ? `內容超過 ${MAX_LEN.toLocaleString()} 字。`
+          : code === 'empty_body' ? '內容是空的。'
+          : '送出失敗，請稍後再試。' + (code ? `（${code}）` : '');
+        setMsg(msg, 'error');
+        updateCount();
+        if (code === 'mail_failed') {
+          editing.report_body = body;   // 已儲存，避免關閉時誤判未儲存
+        }
+        return;
+      }
+
+      editing.report_body = body;
+      $('ed').close();
+      editing = null;
+      await load();
+      alert(data.mailed ? '已寄出，客戶會收到「年報已完成」通知信。' : '已儲存修改（未寄信）。');
+    }
+
+    $('edText').addEventListener('input', updateCount);
+    $('edCancel').addEventListener('click', closeEditor);
+    $('edSubmit').addEventListener('click', submit);
+    $('ed').addEventListener('cancel', (e) => { e.preventDefault(); closeEditor(); });
+
+    /* ── CSV ── */
     function csvCell(v) {
       let s = String(v ?? '');
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;          // 避免試算表公式注入
@@ -249,12 +362,6 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
 
-    $('chkAll').addEventListener('change', (e) => {
-      const pending = rows.filter(r => r.status === 'requested');
-      if (e.target.checked) pending.forEach(r => selected.add(r.id)); else selected.clear();
-      renderRows();
-    });
-    $('btnMark').addEventListener('click', () => markSent());
     $('btnReload').addEventListener('click', load);
     $('btnCsv').addEventListener('click', downloadCsv);
 
