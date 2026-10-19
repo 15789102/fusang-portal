@@ -256,14 +256,14 @@
       </div>
       <div class="fbar-row" id="status-chips">
         <span class="chip" data-status="paid" tabindex="0">待首覆</span>
-        <span class="chip" data-status="answered" tabindex="0">已首覆</span>
+        <span class="chip" data-status="answered" tabindex="0">等客戶回應</span>
         <span class="chip" data-status="followup" tabindex="0">追問待覆</span>
         <span class="chip" data-status="closed" tabindex="0">已結案</span>
       </div>
       <div class="fbar-row">
         <button class="more-toggle" id="more-toggle" type="button">更多篩選 ▾</button>
         <button class="clear-btn" id="clear-btn" type="button">清除篩選</button>
-        <button class="autoclose-btn" id="autoclose-btn" type="button">處理逾期結案</button>
+        <button class="autoclose-btn" id="autoclose-btn" type="button">命理師結案（閒置 14 天）</button>
         <span class="autoclose-msg" id="autoclose-msg"></span>
       </div>
       <div class="more-panel fa-hidden" id="more-panel">
@@ -334,7 +334,8 @@
     import { supabase, initAdmin } from './admin-common.js';
 
     const $ = (id) => document.getElementById(id);
-    const FOLLOWUP_DAYS = 7;
+    // CONSULT-ADJ-01：追問不限次數；客戶在命理師最後回覆後 14 天未回 → 可由命理師結案
+    const IDLE_CLOSE_DAYS = 14;
 
     const SUBJECT_LABEL = {
       career:'事業與工作', relationship:'感情與關係', wealth:'財運與理財',
@@ -342,7 +343,7 @@
     };
     const STATUS = {
       paid:     { cls:'st-paid',     label:'待首覆' },
-      answered: { cls:'st-answered', label:'已首覆' },
+      answered: { cls:'st-answered', label:'等客戶回應' },
       followup: { cls:'st-followup', label:'追問待覆' },
       closed:   { cls:'st-closed',   label:'已結案' },
     };
@@ -363,9 +364,12 @@
       const d = new Date(iso); if (isNaN(d)) return '—';
       return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
     };
-    const inFollowupWindow = (t) =>
-      t.status === 'answered' && t.answered_at &&
-      new Date(t.answered_at).getTime() + FOLLOWUP_DAYS*864e5 > Date.now();
+    // 閒置起點：命理師最後一次回覆（admin_list_tickets.last_advisor_at，舊資料退回 answered_at）
+    const idleSince = (t) => t.last_advisor_at || t.answered_at || null;
+    const idleDue = (t) => {
+      const base = idleSince(t);
+      return base ? new Date(new Date(base).getTime() + IDLE_CLOSE_DAYS*864e5) : null;
+    };
 
     let allTickets = [];
     let openIds = new Set();   // 保留展開狀態跨重載
@@ -525,39 +529,52 @@
              `<div class="seg-meta">回覆於 ${fmtDT(t.answered_at)}</div></div>`;
       }
 
-      // 追問
+      // 舊制單（CONSULT-ADJ-01 前）：一次追問＋再覆，唯讀
       if (t.followup_question){
-        h += `<div class="seg"><div class="seg-label">客戶追問</div>` +
+        h += `<div class="seg"><div class="seg-label">客戶追問（舊制）</div>` +
              `<div class="seg-box q"><div class="seg-text">${esc(t.followup_question)}</div></div>` +
              `<div class="seg-meta">提交於 ${fmtDT(t.followup_at)}</div></div>`;
       }
-
-      // 再覆
       if (t.followup_answer){
-        h += `<div class="seg"><div class="seg-label">再覆（結案）</div>` +
+        h += `<div class="seg"><div class="seg-label">再覆（舊制）</div>` +
              `<div class="seg-box"><div class="seg-text">${esc(t.followup_answer)}</div></div>` +
              `<div class="seg-meta">回覆於 ${fmtDT(t.followup_answered_at)}</div></div>`;
       }
+
+      // 來回訊息串（不限次數）
+      const msgs = Array.isArray(t.messages) ? t.messages : [];
+      msgs.forEach((m, i) => {
+        const n = i + 1;
+        if (m.role === 'customer'){
+          h += `<div class="seg"><div class="seg-label">客戶追問 #${n}</div>` +
+               `<div class="seg-box q"><div class="seg-text">${esc(m.body)}</div></div>` +
+               `<div class="seg-meta">提交於 ${fmtDT(m.created_at)}</div></div>`;
+        } else {
+          h += `<div class="seg"><div class="seg-label">回覆 #${n}</div>` +
+               `<div class="seg-box"><div class="seg-text">${esc(m.body)}</div></div>` +
+               `<div class="seg-meta">回覆於 ${fmtDT(m.created_at)}</div></div>`;
+        }
+      });
 
       // 操作區（依狀態）
       if (t.status === 'paid'){
         h += replyForm(t.id, 'first', '撰寫首覆', '送出首覆');
       } else if (t.status === 'followup'){
-        h += replyForm(t.id, 'second', '撰寫再覆（送出後結案）', '送出再覆並結案');
+        h += replyForm(t.id, 'second', '回覆追問（送出後回到「等客戶回應」，不結案）', '送出回覆');
       } else if (t.status === 'answered'){
-        const deadline = t.answered_at
-          ? fmtD(new Date(new Date(t.answered_at).getTime() + FOLLOWUP_DAYS*864e5).toISOString())
-          : '—';
-        h += inFollowupWindow(t)
-          ? `<div class="note">已首覆。客戶可於 <strong>${deadline}</strong> 前追問一次；逾期自動結案，無需處理。</div>`
-          : `<div class="note">已首覆，追問窗（至 ${deadline}）已過，客戶未追問。此諮詢視為完成。</div>`;
+        const due = idleDue(t);
+        const overdue = due && due.getTime() <= Date.now();
+        h += overdue
+          ? `<div class="note">等客戶回應。命理師最後回覆於 ${fmtDT(idleSince(t))}，已閒置超過 ${IDLE_CLOSE_DAYS} 天，可按上方「命理師結案（閒置 ${IDLE_CLOSE_DAYS} 天）」結案。</div>`
+          : `<div class="note">等客戶回應（追問或結案）。命理師最後回覆於 ${fmtDT(idleSince(t))}；若客戶到 <strong>${due ? fmtD(due.toISOString()) : '—'}</strong> 仍未回，可由命理師結案。</div>`;
       } else if (t.status === 'closed'){
         if (t.closed_by_admin){
           h += `<div class="cancel-shown"><div class="seg-label">已由管理者關閉</div>` +
                `<div class="cancel-reason">${esc(t.close_reason || '（未填原因）')}</div>` +
                `<div class="seg-meta">關閉於 ${fmtDT(t.closed_at)}</div></div>`;
         } else {
-          h += `<div class="note">本諮詢已結案。</div>`;
+          const how = t.close_type === 'advisor' ? `命理師結案（客戶 ${IDLE_CLOSE_DAYS} 天未回）` : '客戶已結案';
+          h += `<div class="note">${how}${t.closed_at ? '，' + fmtDT(t.closed_at) : ''}。</div>`;
           h += renderFeedback(t);
         }
       }
@@ -682,7 +699,8 @@
         }
 
         // best-effort：寄信通知客戶（失敗不影響已完成的回覆）
-        const notifyEvent = kind === 'first' ? 'answered' : 'closed';
+        //   CONSULT-ADJ-01：回覆追問不再結案 → 寄「追問已回覆」信，不寄結案信
+        const notifyEvent = kind === 'first' ? 'answered' : 'followup_answered';
         try {
           await supabase.functions.invoke('notify-ticket', {
             body: { event: notifyEvent, ticket_id: t.id },
@@ -815,21 +833,21 @@
       const count = data?.closed_count || 0;
       const ids = Array.isArray(data?.ticket_ids) ? data.ticket_ids : [];
 
-      // 對每筆結案的 ticket 補發感謝信（best-effort，無 followup_answer → 純祝福版）
+      // 對每筆命理師結案的 ticket 寄結案通知（best-effort；notify-ticket 依 close_type 選信）
       let sent = 0;
       for (const id of ids){
         try {
           await supabase.functions.invoke('notify-ticket', { body: { event: 'closed', ticket_id: id } });
           sent++;
         } catch (e) {
-          console.warn('[notify-ticket] 逾期結案感謝信寄送失敗：', id, e);
+          console.warn('[notify-ticket] 命理師結案通知寄送失敗：', id, e);
         }
       }
 
       msg.className = 'autoclose-msg ok';
       msg.textContent = count
-        ? `已結案 ${count} 筆，感謝信已送出 ${sent} 封。`
-        : '沒有逾期待結案的工單。';
+        ? `已結案 ${count} 筆，結案通知已送出 ${sent} 封。`
+        : `沒有閒置滿 ${IDLE_CLOSE_DAYS} 天的工單。`;
       btn.disabled = false;
       if (count) setTimeout(load, 800);   // 重載清單反映新狀態
     }
