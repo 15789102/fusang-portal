@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>單獨問事 - FuSang Vision</title>
 <link rel="stylesheet" href="fs-v2.css" />
+<link rel="stylesheet" href="consult-chat-demo.css" />
 <style>
   /* ── Landing 專屬（共用樣式由 consultation-common.js 注入；顏色由 .cons-wrap 冷藍 token 覆寫）── */
 
@@ -156,7 +157,37 @@
   .fs-v2 .lp-fact-l { display: block; margin-top: 4px; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 20px; color: var(--v2-muted); }
   .fs-v2 .lp-bio { margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-ink); }
 
+  /* PT-008：不是問一次就結束（左文右對話）*/
+  .fs-v2 .cv-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: start; }
+  .fs-v2 .cv-heading { margin: 0 0 12px; font-family: var(--v2-font-cjk); font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; color: var(--v2-ink); }
+  .fs-v2 .cv-lead { margin: 0 0 24px; font-family: var(--v2-font-cjk); font-size: 15px; line-height: 28px; color: var(--v2-muted); }
+  .fs-v2 .cv-points { list-style: none; margin: 0; padding: 0; }
+  .fs-v2 .cv-points li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; padding: 16px 0; border-top: 1px solid var(--v2-line); }
+  .fs-v2 .cv-points li:last-child { border-bottom: 1px solid var(--v2-line); }
+  .fs-v2 .cv-points .mk { font-family: var(--v2-font-latin); font-size: 14px; line-height: 24px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .cv-points .h { display: block; margin: 0 0 4px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 24px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .cv-points .p { display: block; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+  .fs-v2 .cv-demo { min-width: 0; }
+
+  /* PT-008：怎麼進行（比照服務特色格線卡）*/
+  .fs-v2 .lp-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 1px 0 0 1px; }
+  .fs-v2 .lp-flow-step { margin: -1px 0 0 -1px; padding: 32px; background: #ffffff; border: 1px solid var(--v2-line); min-width: 0; }
+  .fs-v2 .lp-flow-n { margin: 0 0 8px; font-family: var(--v2-font-latin); font-size: 24px; line-height: 32px; font-weight: 500; color: var(--v2-blue); }
+  .fs-v2 .lp-flow-h { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 18px; line-height: 28px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .lp-flow-p { margin: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 26px; color: var(--v2-muted); }
+
+  /* PT-008：適合問什麼（展示用，不可點）*/
+  .fs-v2 .lp-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 0; padding: 1px 0 0 1px; }
+  .fs-v2 .lp-topic { margin: -1px 0 0 -1px; padding: 24px; background: #ffffff; border: 1px solid var(--v2-line); min-width: 0; }
+  .fs-v2 .lp-topic-h { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 24px; font-weight: 500; color: var(--v2-ink); }
+  .fs-v2 .lp-topic-q { margin: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); overflow-wrap: anywhere; }
+  .fs-v2 .lp-topics-note { margin: 16px 0 0; font-family: var(--v2-font-cjk); font-size: 13px; line-height: 22px; color: var(--v2-faint); }
+
   @media (max-width: 799px) {
+    .fs-v2 .cv-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .fs-v2 .lp-flow { grid-template-columns: minmax(0, 1fr); }
+    .fs-v2 .lp-flow-step { padding: 24px 20px; }
+    .fs-v2 .lp-topic { padding: 20px; }
     .fs-v2 .lp-testi { padding: 20px; }
     .fs-v2 .lp-fact-n { font-size: 24px; line-height: 32px; }
     .fs-v2 .lp-hero { padding: 28px 24px; min-height: 0; background-position: 60% center; }
@@ -182,12 +213,34 @@
       <div class="lp-eyebrow" id="lp-eyebrow">Individual Session</div>
       <h1 class="lp-title" id="lp-title">單獨問事</h1>
       <div class="lp-sub" id="lp-sub">A human reading of your chart, for one question that matters.</div>
-      <p class="lp-lead" id="lp-lead">當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。</p>
+      <p class="lp-lead" id="lp-lead">當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的解讀。收到回覆後可以來回追問，直到你覺得清楚為止。</p>
 
       <div id="lp-loading" class="cons-loading" style="padding:20px;">載入中…</div>
       <div class="lp-actions" id="lp-actions-hero" style="display:none;"></div>
       <div class="lp-note" id="lp-note" style="display:none;"></div>
     </div>
+
+    <!-- PT-008：不是問一次就結束（左：說明三點；右：範例對話示範）-->
+    <section class="lp-band convo" aria-labelledby="cv-heading">
+      <div class="lp-band-in cv-grid">
+        <div class="cv-text">
+          <h2 class="cv-heading" id="cv-heading">不是問一次就結束</h2>
+          <p class="cv-lead" id="cv-lead"></p>
+          <ul class="cv-points" id="cv-points"></ul>
+        </div>
+        <div class="cv-demo" id="cv-demo"></div>
+      </div>
+    </section>
+
+    <!-- PT-008：怎麼進行（三步）-->
+    <section class="lp-band flow" aria-labelledby="fl-heading">
+      <div class="lp-band-in">
+        <div class="lp-secthead">
+          <h2 class="zh" id="fl-heading">怎麼進行</h2>
+        </div>
+        <div class="lp-flow" id="lp-flow"></div>
+      </div>
+    </section>
 
     <!-- Service features (full-width band) -->
     <div class="lp-band features">
@@ -198,6 +251,17 @@
         <div class="lp-features" id="lp-features"></div>
       </div>
     </div>
+
+    <!-- PT-008：適合問什麼（主題名稱沿用表單選項 subjLabel；展示用，不可點）-->
+    <section class="lp-band topics" aria-labelledby="tp-heading">
+      <div class="lp-band-in">
+        <div class="lp-secthead">
+          <h2 class="zh" id="tp-heading">適合問什麼</h2>
+        </div>
+        <div class="lp-topics" id="lp-topics"></div>
+        <p class="lp-topics-note" id="tp-note"></p>
+      </div>
+    </section>
 
     <!-- Pricing:CONSULT_ENABLED=false 期間整段隱藏(標籤+價格+小標一起)。
          預設 hidden、開啟時才由 JS 顯示 —— 避免 module 執行前閃現價格,
@@ -261,8 +325,134 @@
   import {
     initConsult,
     pick, getMyTickets, findActive,
-    el,
+    el, subjLabel,
   } from './consultation-common.js';
+  import { mountChatDemo } from './consult-chat-demo.js';
+
+  // ── PT-008 文案（五語，來源：claude/tickets/PT-008_copy_5lang.csv rev2）──
+  //   順序：[zh-TW, zh-CN, en, ja, ko]；以 pick 五參數直接傳入，不動 consultation-common.js 對照表。
+  const COPY = {
+    "cs.lead": ["當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的解讀。收到回覆後可以來回追問，直到你覺得清楚為止。", "当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的解读。收到回复后可以来回追问，直到你觉得清楚为止。", "When you carry a question that truly matters and deserves care, an Individual Session is a reading prepared for you alone. After the reply, you can keep asking back and forth until it feels clear.", "大切に向き合いたい質問があるとき、個別相談はあなた一人のために用意する読み解きです。回答を受け取ったあとも、納得できるまで何度でもやりとりできます。", "정말 중요하고 신중하게 다루고 싶은 질문이 있을 때, 1:1 맞춤 질문은 오직 나를 위해 준비하는 해석이에요. 답변을 받은 뒤에도 충분히 이해될 때까지 계속 주고받을 수 있어요."],
+    "cv.heading": ["不是問一次就結束", "不是问一次就结束", "Not a one-time answer", "一度きりの回答ではありません", "한 번 묻고 끝나지 않아요"],
+    "cv.lead": ["單獨問事是一段書面往返的對話。R.S. Chen 回覆後，你可以繼續追問、補充細節，他會依你的命盤再回應，直到你覺得清楚為止。", "单独问事是一段书面往返的对话。R.S. Chen 回复后，你可以继续追问、补充细节，他会依你的命盘再回应，直到你觉得清楚为止。", "An Individual Session is a written conversation that goes back and forth. After R.S. Chen replies, you can follow up and add details, and he answers again from your chart until it feels clear to you.", "個別相談は、書面で行き来する対話です。R.S. Chen の回答のあとも追加で質問したり、状況を補足したりでき、納得できるまで命盤をもとに改めてお答えします。", "1:1 맞춤 질문은 글로 주고받는 대화예요. R.S. Chen의 답변을 받은 뒤에도 추가로 묻거나 상황을 보충할 수 있고, 충분히 이해될 때까지 명반을 바탕으로 다시 답해 드려요."],
+    "cv.p1h": ["先收到書面回覆", "先收到书面回复", "First, a written reply", "まず書面で回答", "먼저 서면 답변"],
+    "cv.p1": ["付款後 7 天內，你會收到針對你的問題撰寫的回覆。", "付款后 7 天内，你会收到针对你的问题撰写的回复。", "Within 7 days of payment, you receive a reply written for your question.", "お支払いから7日以内に、あなたの質問に合わせて書いた回答が届きます。", "결제 후 7일 이내에 내 질문에 맞춰 작성한 답변을 받아요."],
+    "cv.p2h": ["想到什麼都可以再問", "想到什么都可以再问", "Ask again whenever you need", "気になることは何度でも", "궁금한 건 언제든 다시"],
+    "cv.p2": ["同一個問題可以來回追問、補充細節，次數不限。", "同一个问题可以来回追问、补充细节，次数不限。", "You can follow up on the same question and add details, with no limit on how many times.", "同じ質問について、回数の制限なく追加の質問や補足ができます。", "같은 질문에 대해 횟수 제한 없이 추가 질문하고 내용을 보충할 수 있어요."],
+    "cv.p3h": ["由你決定什麼時候結束", "由你决定什么时候结束", "You decide when it ends", "終わりはあなたが決めます", "끝내는 시점은 내가 정해요"],
+    "cv.p3": ["覺得清楚了，由你主動結案；不會因為問了幾次就被結束。若 14 天內沒有新的追問，命理師才會為這則問事結案。", "觉得清楚了，由你主动结案；不会因为问了几次就被结束。若 14 天内没有新的追问，命理师才会为这则问事结案。", "When it feels clear, you close it yourself. It does not end because you asked a certain number of times. Only if there is no new follow-up for 14 days does the advisor close it.", "納得できたら、あなたご自身で終了します。質問の回数で打ち切られることはありません。14日間新しい質問がない場合にのみ、こちらで相談を終了します。", "충분히 이해됐다면 내가 직접 종료해요. 질문 횟수 때문에 끝나지 않아요. 14일 동안 새 질문이 없을 때만 저희가 질문을 종료해요."],
+    "cv.badge": ["範例對話", "范例对话", "Sample conversation", "対話の例", "대화 예시"],
+    "cv.chatSub": ["單獨問事", "单独问事", "Individual Session", "個別相談", "1:1 맞춤 질문"],
+    "cv.replay": ["重播", "重播", "Replay", "もう一度見る", "다시 보기"],
+    "cv.you": ["你", "你", "You", "あなた", "나"],
+    "cv.day": ["第 {n} 天", "第 {n} 天", "Day {n}", "{n}日目", "{n}일째"],
+    "cv.m1": ["我在考慮明年要不要換工作。現在的工作穩定，但越做越沒動力。", "我在考虑明年要不要换工作。现在的工作稳定，但越做越没动力。", "I am thinking about changing jobs next year. My current job is stable, but I feel less and less motivated.", "来年、転職するかどうか迷っています。今の仕事は安定していますが、だんだんやる気がなくなってきました。", "내년에 이직할지 고민하고 있어요. 지금 일은 안정적이지만 갈수록 의욕이 떨어져요."],
+    "cv.m2": ["從你的命盤看，官祿宮的主星偏向需要舞台和成就感，今年流年也正好引動這一塊。所以「沒動力」比較像是現在的位置讓你發揮不了，不一定是你的問題。想先問你：讓你沒動力的是工作內容，還是環境和人？", "从你的命盘看，官禄宫的主星偏向需要舞台和成就感，今年流年也正好引动这一块。所以「没动力」比较像是现在的位置让你发挥不了，不一定是你的问题。想先问你：让你没动力的是工作内容，还是环境和人？", "Looking at your chart, the main star in your Career Palace leans toward needing a stage and a sense of achievement, and this year is activating that area. So the lack of motivation looks more like your current role not letting you use what you have, rather than a problem with you. First, may I ask: is it the work itself, or the environment and the people?", "命盤を見ると、官祿宮の主星は活躍の場や達成感を求める傾向があり、今年の流年もちょうどこの部分を動かしています。ですから「やる気が出ない」のは、今のポジションで力を発揮できていないからで、あなた自身の問題とは限りません。まずお聞きしたいのですが、やる気をなくしているのは仕事の内容ですか、それとも環境や人間関係ですか？", "명반을 보면 관록궁의 주성은 무대와 성취감이 필요한 쪽이고, 올해 유년도 마침 이 부분을 움직이고 있어요. 그래서 ‘의욕이 없다’는 건 지금 자리에서 역량을 펼치지 못해서일 가능성이 크고, 꼭 내 문제라고 할 수는 없어요. 먼저 여쭤볼게요. 의욕을 떨어뜨리는 건 일의 내용인가요, 아니면 환경과 사람인가요?"],
+    "cv.m3": ["比較是內容吧，每天做的事都一樣。不過換工作也怕收入不穩。", "比较是内容吧，每天做的事都一样。不过换工作也怕收入不稳。", "Mostly the work itself. I do the same things every day. But I also worry that changing jobs will make my income unstable.", "どちらかというと内容ですね。毎日同じことの繰り返しです。でも転職すると収入が不安定になるのも心配です。", "내용 쪽인 것 같아요. 매일 똑같은 일을 하거든요. 그런데 이직하면 수입이 불안정해질까 봐 걱정돼요."],
+    "cv.m4": ["了解。你的財帛宮偏向靠累積、不喜歡大起大落，所以這個擔心很合理。比起直接離職，可以先在現在的公司爭取新專案，或利用下班時間接觸想轉的領域，邊做邊確認。", "了解。你的财帛宫偏向靠累积、不喜欢大起大落，所以这个担心很合理。比起直接离职，可以先在现在的公司争取新项目，或利用下班时间接触想转的领域，边做边确认。", "I see. Your Wealth Palace leans toward building up steadily and dislikes big swings, so that worry makes sense. Rather than quitting right away, you could ask for new projects at your current company, or explore the field you are drawn to after work, and confirm as you go.", "なるほど。あなたの財帛宮は積み重ねを大切にし、大きな浮き沈みを好まない傾向があるので、その心配はもっともです。すぐに辞めるより、今の会社で新しいプロジェクトに手を挙げたり、仕事のあとに気になる分野に触れてみたりして、確かめながら進めることもできます。", "그렇군요. 재백궁이 차곡차곡 쌓아 가는 쪽이고 큰 기복을 좋아하지 않아서, 그런 걱정은 충분히 그럴 만해요. 바로 그만두기보다는 지금 회사에서 새 프로젝트를 맡아 보거나, 퇴근 후에 관심 있는 분야를 접해 보면서 확인해 가는 방법도 있어요."],
+    "cv.m5": ["如果在公司內部爭取，有什麼要注意的嗎？", "如果在公司内部争取，有什么要注意的吗？", "If I ask for this inside the company, is there anything I should keep in mind?", "社内で手を挙げるなら、気をつけることはありますか？", "회사 안에서 해 보려면 주의할 점이 있을까요?"],
+    "cv.m6": ["你今年的交友宮比較活躍，同事的支持可能會是助力。先找一位信任、也了解你的前輩聊聊，會比直接跟主管提順利。之後有新進展，也可以回來跟我說。", "你今年的交友宫比较活跃，同事的支持可能会是助力。先找一位信任、也了解你的前辈聊聊，会比直接跟主管提顺利。之后有新进展，也可以回来跟我说。", "Your Friends Palace is fairly active this year, so support from coworkers may help. Talking first with a senior colleague you trust, who knows you well, may go more smoothly than going straight to your manager. When there is news, feel free to come back and tell me.", "今年は交友宮が比較的活発なので、同僚の支えが力になるかもしれません。いきなり上司に話すより、信頼できてあなたをよく知る先輩にまず相談してみると、スムーズに進みやすいでしょう。進展があったら、またいつでも聞かせてください。", "올해는 교우궁이 비교적 활발해서 동료의 지지가 힘이 될 수 있어요. 바로 상사에게 말하기보다, 믿을 수 있고 나를 잘 아는 선배와 먼저 이야기해 보면 더 순조로울 거예요. 새로운 소식이 생기면 언제든 다시 알려 주세요."],
+    "cv.m7": ["好，我先試試看。謝謝！", "好，我先试试看。谢谢！", "Okay, I will give it a try. Thank you!", "わかりました、まずやってみます。ありがとうございました！", "네, 먼저 해 볼게요. 감사합니다!"],
+    "cv.closed": ["客戶主動結案", "客户主动结案", "Closed by the client", "ご本人が終了", "본인이 직접 종료"],
+    "cv.closedNote": ["結案前都可以繼續追問，什麼時候結束由你決定。", "结案前都可以继续追问，什么时候结束由你决定。", "Until you close it, you can keep following up. You decide when it ends.", "終了するまでは、何度でも追加で質問できます。いつ終えるかはあなたが決めます。", "종료하기 전까지는 계속 추가 질문할 수 있어요. 언제 끝낼지는 내가 정해요."],
+    "cv.sampleNote": ["虛構情境，僅示意互動方式；實際回覆依你的命盤與問題撰寫，可以比這更長。", "虚构情境，仅示意互动方式；实际回复依你的命盘与问题撰写，可以比这更长。", "A fictional example that only shows how the conversation works. Real replies are written from your own chart and question, and can be longer than this.", "架空の例で、やりとりの流れを示すためのものです。実際の回答はあなたの命盤と質問に合わせて書くため、これより長くなることもあります。", "가상의 예시로, 대화 방식만 보여 드려요. 실제 답변은 나의 명반과 질문에 맞춰 작성하며, 이보다 더 길어질 수 있어요."],
+    "fl.heading": ["怎麼進行", "怎么进行", "How it works", "相談の流れ", "진행 방법"],
+    "fl.s1h": ["選主題、寫下你的問題", "选主题、写下你的问题", "Choose a topic and write your question", "テーマを選び、質問を書く", "주제를 고르고 질문 쓰기"],
+    "fl.s1": ["說明你的處境和想釐清的地方，寫得越具體，回覆越貼近你。", "说明你的处境和想厘清的地方，写得越具体，回复越贴近你。", "Describe your situation and what you want to understand. The more specific you are, the closer the reply fits you.", "状況や知りたいことを書いてください。具体的なほど、あなたに合った回答になります。", "상황과 알고 싶은 점을 적어 주세요. 구체적일수록 나에게 꼭 맞는 답변을 받을 수 있어요."],
+    "fl.s2h": ["7 天內收到書面回覆", "7 天内收到书面回复", "A written reply within 7 days", "7日以内に書面で回答", "7일 이내 서면 답변"],
+    "fl.s2": ["R.S. Chen 依你的命盤撰寫回覆，完成後會寄信通知你。", "R.S. Chen 依你的命盘撰写回复，完成后会寄信通知你。", "R.S. Chen writes the reply from your chart and emails you when it is ready.", "R.S. Chen が命盤をもとに回答を書き、完成したらメールでお知らせします。", "R.S. Chen이 명반을 바탕으로 답변을 작성하고, 완료되면 이메일로 알려 드려요."],
+    "fl.s3h": ["來回追問，由你結案", "来回追问，由你结案", "Follow up, then close it yourself", "やりとりして、ご自身で終了", "주고받은 뒤 직접 종료"],
+    "fl.s3": ["還有不清楚的地方就繼續問，次數不限；覺得清楚了，再由你結案。", "还有不清楚的地方就继续问，次数不限；觉得清楚了，再由你结案。", "Keep asking about anything still unclear, with no limit. When it feels clear, you close it.", "わからないところは回数の制限なく質問を続けられます。納得できたら、ご自身で終了してください。", "아직 궁금한 점은 횟수 제한 없이 계속 물어보세요. 충분히 이해됐다면 직접 종료하면 돼요."],
+    "tp.heading": ["適合問什麼", "适合问什么", "What you can ask", "相談できること", "물어볼 수 있는 것"],
+    "tp.career": ["現在的工作越做越沒動力，我該怎麼調整方向？", "现在的工作越做越没动力，我该怎么调整方向？", "I feel less motivated at work. How should I adjust my direction?", "今の仕事にやる気が出ません。どう方向を見直せばいいですか？", "지금 일에 의욕이 떨어져요. 방향을 어떻게 조정하면 좋을까요?"],
+    "tp.relationship": ["這段關係一直在原地打轉，我該怎麼看待它？", "这段关系一直在原地打转，我该怎么看待它？", "This relationship keeps going in circles. How should I see it?", "この関係が堂々巡りです。どう受け止めればいいですか？", "이 관계가 계속 제자리걸음이에요. 어떻게 바라보면 좋을까요?"],
+    "tp.wealth": ["我總是存不了錢，問題出在哪裡？", "我总是存不了钱，问题出在哪里？", "I can never seem to save money. Where does the problem come from?", "なかなかお金が貯まりません。どこに原因がありますか？", "돈이 잘 모이지 않아요. 문제가 어디에 있을까요?"],
+    "tp.family": ["跟家人的相處常常卡住，我可以怎麼調整？", "跟家人的相处常常卡住，我可以怎么调整？", "Things often get stuck with my family. What can I change?", "家族との関係がよく行き詰まります。どう向き合えばいいですか？", "가족과의 관계가 자주 막혀요. 어떻게 바꿔 볼 수 있을까요?"],
+    "tp.self": ["我不確定自己真正想要什麼，該從哪裡開始？", "我不确定自己真正想要什么，该从哪里开始？", "I am not sure what I really want. Where should I start?", "自分が本当に何を望んでいるのかわかりません。どこから始めればいいですか？", "내가 진짜 원하는 게 뭔지 모르겠어요. 어디서부터 시작하면 좋을까요?"],
+    "tp.note": ["以上只是例子，任何你在意的問題都可以問。命理諮詢不提供醫療、法律、投資等專業意見。", "以上只是例子，任何你在意的问题都可以问。命理咨询不提供医疗、法律、投资等专业意见。", "These are only examples. You can ask about anything that matters to you. Readings do not provide medical, legal, investment, or other professional advice.", "以上は一例です。気になることは何でもご相談いただけます。命理の相談は、医療・法律・投資などの専門的な助言を提供するものではありません。", "위 내용은 예시일 뿐이에요. 마음에 걸리는 질문이라면 무엇이든 물어볼 수 있어요. 명반 해석은 의료·법률·투자 등 전문적인 조언을 제공하지 않아요."],
+  };
+  const T = (k) => {
+    const v = COPY[k];
+    if (!v) { try { console.warn('[PT-008] missing copy key', k); } catch (_) {} return ''; }
+    return pick(v[0], v[1], v[2], v[3], v[4]);
+  };
+
+  // ── 範例對話（天數：m1=1、m2=3、m3=3、m4=4、m5=5、m6=6、m7=6）──
+  const CHAT_SCRIPT = [
+    { who: 'client',  day: 1, k: 'cv.m1' },
+    { who: 'advisor', day: 3, k: 'cv.m2' },
+    { who: 'client',  day: 3, k: 'cv.m3' },
+    { who: 'advisor', day: 4, k: 'cv.m4' },
+    { who: 'client',  day: 5, k: 'cv.m5' },
+    { who: 'advisor', day: 6, k: 'cv.m6' },
+    { who: 'client',  day: 6, k: 'cv.m7' },
+  ];
+  const TOPIC_CODES = ['career', 'relationship', 'wealth', 'family', 'self'];
+
+  let chatDemo = null;
+  let chatSeen = false;   // 動畫是否已開始播過；載入時 profile 語言觸發的 i18n:changed 不應跳過動畫
+  function mountDemo(showNow) {
+    if (chatDemo) { chatDemo.destroy(); chatDemo = null; }
+    const host = document.getElementById('cv-demo');
+    if (!host) return;
+    const dayTpl = T('cv.day');
+    chatDemo = mountChatDemo(host, {
+      avatar: 'assets/rs-fusang.webp',
+      avatarFocus: { x: '48%', y: '27%', zoom: 1.9 },
+      name: 'R.S. Chen',
+      sub: T('cv.chatSub'),
+      badge: T('cv.badge'),
+      replay: T('cv.replay'),
+      you: T('cv.you'),
+      day: (n) => dayTpl.replace('{n}', n),
+      messages: CHAT_SCRIPT.map((m) => ({ who: m.who, day: m.day, text: T(m.k) })),
+      closed: T('cv.closed'),
+      closedNote: T('cv.closedNote'),
+      sampleNote: T('cv.sampleNote'),
+      autoplay: !showNow,
+      onPlay: () => { chatSeen = true; },
+    });
+    if (showNow) chatDemo.showAll();
+  }
+
+  // PT-008 新區塊文字（可重繪）
+  function applyPt008Text() {
+    document.getElementById('cv-heading').textContent = T('cv.heading');
+    document.getElementById('cv-lead').textContent = T('cv.lead');
+    const pts = document.getElementById('cv-points');
+    pts.textContent = '';
+    ['1', '2', '3'].forEach((i, idx) => {
+      const li = el('li');
+      li.appendChild(Object.assign(el('span', 'mk'), { textContent: ['I', 'II', 'III'][idx] }));
+      const body = el('span');
+      body.appendChild(Object.assign(el('span', 'h'), { textContent: T('cv.p' + i + 'h') }));
+      body.appendChild(Object.assign(el('span', 'p'), { textContent: T('cv.p' + i) }));
+      li.appendChild(body);
+      pts.appendChild(li);
+    });
+
+    document.getElementById('fl-heading').textContent = T('fl.heading');
+    const flow = document.getElementById('lp-flow');
+    flow.textContent = '';
+    ['1', '2', '3'].forEach((i) => {
+      const step = el('div', 'lp-flow-step');
+      step.appendChild(Object.assign(el('div', 'lp-flow-n'), { textContent: '0' + i }));
+      step.appendChild(Object.assign(el('h3', 'lp-flow-h'), { textContent: T('fl.s' + i + 'h') }));
+      step.appendChild(Object.assign(el('p', 'lp-flow-p'), { textContent: T('fl.s' + i) }));
+      flow.appendChild(step);
+    });
+
+    document.getElementById('tp-heading').textContent = T('tp.heading');
+    const topics = document.getElementById('lp-topics');
+    topics.textContent = '';
+    TOPIC_CODES.forEach((code) => {
+      const card = el('div', 'lp-topic');
+      card.appendChild(Object.assign(el('h3', 'lp-topic-h'), { textContent: subjLabel(code) }));
+      card.appendChild(Object.assign(el('p', 'lp-topic-q'), { textContent: T('tp.' + code) }));
+      topics.appendChild(card);
+    });
+    document.getElementById('tp-note').textContent = T('tp.note');
+  }
 
   // ── 單獨問事開關(SoT:config.js 的 window.CFG.CONSULT_ENABLED)──────────
   //   明確等於 true 才算開啟;config.js 載入失敗時視同關閉(fail-closed)。
@@ -339,11 +529,8 @@
     document.getElementById('lp-eyebrow').textContent = pick('單獨問事', '单独问事', 'Individual Session');
     document.getElementById('lp-title').textContent   = pick('單獨問事', '单独问事', 'Individual Session');
     document.getElementById('lp-sub').textContent     = pick('一個真正重要的問題，由真人為你解盤。', '一个真正重要的问题，由真人为你解盘。', 'A human reading of your chart, for one question that matters.');
-    document.getElementById('lp-lead').textContent    = pick(
-      '當你有一個真正重要、想要被慎重對待的問題，單獨問事是為你一個人準備的一次解讀。',
-      '当你有一个真正重要、想要被慎重对待的问题，单独问事是为你一个人准备的一次解读。',
-      'When you carry a question that truly matters and deserves care, a personal consultation is a reading prepared for you alone.'
-    );
+    document.getElementById('lp-lead').textContent    = T('cs.lead');   // PT-008
+    applyPt008Text();
 
     document.getElementById('feat-heading').textContent = pick('服務特色', '服务特色', 'What you get');
     document.getElementById('lp-features').innerHTML = FEATURES.map((f) =>
@@ -439,6 +626,7 @@
   }
 
   applyStaticText();
+  mountDemo(false);   // PT-008：捲到區塊才播放（減少動態設定時模組會直接顯示完整對話）
 
   (async () => {
     const session = await initConsult('home');
@@ -452,6 +640,8 @@
   // 即時語言切換：重套靜態文字 + 重繪動作區(用快取,不重查)
   window.addEventListener('i18n:changed', () => {
     applyStaticText();
+    // PT-008：已播過 → 直接顯示新語言的完整對話（不重播）；尚未捲到 → 維持捲到再播
+    mountDemo(chatSeen);
     if (!CONSULT_ON) { renderComingSoon(); return; }
     if (lastActive !== undefined) renderActions(lastActive);
   });

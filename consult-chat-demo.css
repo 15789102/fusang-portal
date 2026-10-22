@@ -1,0 +1,278 @@
+/* ════════════════════════════════════════════════════════════════
+   consult-chat-demo.css — 單獨問事「範例對話」示範模組（PT-008）
+   - 獨立模組：class 一律 cvd- 前綴；不依賴 portal 其他樣式。
+   - 顏色／字型用 CSS 變數並附預設值：在 portal 會吃到 v2 token，
+     搬到官網時只要改下列 --cvd-* 或對應的 --v2-* 變數即可。
+   - 版面不跳動：所有列先以 visibility:hidden 佔位，播放時逐則顯現；
+     打字點疊在下一則泡泡的預留位置內，不額外佔高度。
+   ════════════════════════════════════════════════════════════════ */
+
+.cvd {
+  --cvd-blue: var(--v2-blue, #3b83f6);
+  --cvd-ink: var(--v2-ink, #202020);
+  --cvd-muted: var(--v2-muted, #686868);
+  --cvd-faint: var(--v2-faint, #999999);
+  --cvd-line: var(--v2-line, #dedede);
+  --cvd-blue-line: var(--v2-blue-line, #a1bfee);
+  --cvd-tint: var(--v2-tint, #eff5ff);
+  --cvd-surface: #ffffff;
+  --cvd-font: var(--v2-font-cjk, 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', sans-serif);
+  --cvd-font-latin: var(--v2-font-latin, Jost, 'Noto Sans TC', sans-serif);
+  --cvd-av-x: 48%;
+  --cvd-av-y: 28%;
+  --cvd-av-zoom: 1;
+  min-width: 0;
+  font-family: var(--cvd-font);
+  color: var(--cvd-ink);
+}
+
+/* ── 對話框 ── */
+.cvd-box {
+  background: var(--cvd-surface);
+  border: 1px solid var(--cvd-line);
+  min-width: 0;
+}
+
+.cvd-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--cvd-line);
+}
+.cvd-av {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--cvd-tint);
+}
+.cvd-av img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--cvd-av-x) var(--cvd-av-y);
+  transform: scale(var(--cvd-av-zoom));
+  transform-origin: var(--cvd-av-x) var(--cvd-av-y);
+}
+.cvd-who { flex: 1 1 auto; min-width: 0; }
+.cvd-name {
+  display: block;
+  font-family: var(--cvd-font-latin);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--cvd-ink);
+  white-space: nowrap;
+}
+.cvd-sub {
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--cvd-muted);
+  overflow-wrap: anywhere;
+}
+.cvd-tools {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.cvd-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--cvd-blue-line);
+  background: var(--cvd-tint);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--cvd-blue);
+  white-space: nowrap;
+}
+.cvd-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--cvd-line);
+  background: var(--cvd-surface);
+  font-family: var(--cvd-font);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--cvd-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cvd-replay:hover { color: var(--cvd-ink); border-color: var(--cvd-faint); }
+.cvd-replay:focus-visible { outline: 2px solid var(--cvd-blue); outline-offset: 2px; }
+.cvd-replay svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── 訊息區（無內部捲軸，高度隨內容）── */
+.cvd-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.cvd-day {
+  align-self: center;
+  margin: 4px 0 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--cvd-tint);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--cvd-muted);
+}
+
+.cvd-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+.cvd-row--client { justify-content: flex-end; }
+.cvd-row--advisor { justify-content: flex-start; }
+
+.cvd-av-sm {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--cvd-tint);
+}
+.cvd-av-sm img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--cvd-av-x) var(--cvd-av-y);
+  transform: scale(var(--cvd-av-zoom));
+  transform-origin: var(--cvd-av-x) var(--cvd-av-y);
+}
+
+.cvd-bubble {
+  max-width: 82%;
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+.cvd-row--client .cvd-bubble {
+  background: var(--cvd-tint);
+  border: 1px solid var(--cvd-blue-line);
+  border-radius: 14px 14px 4px 14px;
+  color: var(--cvd-ink);
+}
+.cvd-row--advisor .cvd-bubble {
+  background: var(--cvd-surface);
+  border: 1px solid var(--cvd-line);
+  border-radius: 14px 14px 14px 4px;
+  color: var(--cvd-ink);
+}
+
+/* 打字點：疊在下一則泡泡的預留位置左下角，不額外佔高度 */
+.cvd-dots {
+  position: absolute;
+  left: 36px;          /* 小頭像 28px + gap 8px */
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 14px;
+  background: var(--cvd-surface);
+  border: 1px solid var(--cvd-line);
+  border-radius: 14px 14px 14px 4px;
+  visibility: hidden;
+}
+.cvd-dots i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cvd-faint);
+  animation: cvd-dot 1s infinite ease-in-out;
+}
+.cvd-dots i:nth-child(2) { animation-delay: .15s; }
+.cvd-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes cvd-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: .45; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
+
+/* ── 結案列 ── */
+.cvd-closed {
+  margin: 4px 0 0;
+  text-align: center;
+}
+.cvd-closed-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cvd-closed-line::before,
+.cvd-closed-line::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--cvd-line);
+}
+.cvd-closed-tag {
+  flex: 0 1 auto;
+  padding: 2px 10px;
+  border: 1px solid var(--cvd-blue-line);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--cvd-blue);
+}
+.cvd-closed-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--cvd-muted);
+}
+
+.cvd-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cvd-faint);
+}
+
+/* 視覺隱藏（給螢幕閱讀器的說話者名稱）*/
+.cvd-sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── 播放狀態 ──
+   cvd-wait   ：佔位但不可見
+   cvd-typing ：只顯示小頭像與打字點（泡泡仍佔位、不可見）
+   cvd-in     ：顯現（帶淡入）                                  */
+.cvd-wait { visibility: hidden; }
+.cvd-row.cvd-typing { visibility: hidden; }
+.cvd-row.cvd-typing .cvd-av-sm,
+.cvd-row.cvd-typing .cvd-dots { visibility: visible; }
+.cvd-in { animation: cvd-in .35s ease-out both; }
+@keyframes cvd-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cvd-in { animation: none; }
+  .cvd-dots i { animation: none; }
+}
