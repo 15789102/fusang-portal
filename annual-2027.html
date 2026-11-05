@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="config.js"></script>
+<script src="track.js" defer></script>
 <script src="i18n.js"></script>
 <script src="y27-i18n.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -156,7 +157,7 @@
   <div class="y27-action" aria-live="polite">
     <div class="y27-state y27-idle" hidden>
       <p class="y27-err" data-i18n="y27.err" hidden></p>
-      <button type="button" class="v2-btn v2-btn--primary y27-btn" data-i18n="y27.btn">免費索取我的 2027 年報</button>
+      <button type="button" class="v2-btn v2-btn--primary y27-btn" data-fs-cta="y27-request" data-i18n="y27.btn">免費索取我的 2027 年報</button>
     </div>
     <div class="y27-state y27-done" hidden>
       <span class="y27-done-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
@@ -216,7 +217,7 @@
           </span>
           <span class="y27-coupon-hint" data-i18n="y27.couponHint">在付款頁輸入即可折抵</span>
         </div>
-        <a class="v2-btn v2-btn--primary" href="consultation.html" data-i18n="y27.couponCta">前往單獨問事</a>
+        <a class="v2-btn v2-btn--primary" href="consultation.html" data-fs-cta="y27-coupon-consult" data-i18n="y27.couponCta">前往單獨問事</a>
       </aside>
     </section>
 

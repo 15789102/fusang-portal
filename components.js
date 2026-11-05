@@ -723,6 +723,7 @@ export async function startCheckout(productType, extra = {}) {
     return { ok: false, code: 'not_authenticated' };
   }
 
+  try { window.fsTrack?.('checkout_start', { product_type: productType }); } catch (_) {}  // PT-010
   const { data, error } = await supabase.functions.invoke('create-checkout', {
     body: { product_type: productType, ...extra },
   });

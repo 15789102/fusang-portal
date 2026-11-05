@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
 <script src="config.js"></script>
+<script src="track.js" defer></script>
 <script src="i18n.js"></script>
 <script src="y27-i18n.js"></script>
 <meta charset="UTF-8">
@@ -781,7 +782,7 @@
       </nav>
 
       <!-- Featured Banner：PT-006 2027 年報專區入口（同分頁開啟）-->
-      <a class="dash-banner" href="annual-2027.html" aria-label="你的 2027 年報" data-i18n-aria-label="y27.bannerTitle">
+      <a class="dash-banner" href="annual-2027.html" data-fs-cta="dash-banner-2027" aria-label="你的 2027 年報" data-i18n-aria-label="y27.bannerTitle">
         <span class="y27b-eyebrow" data-i18n="y27.eyebrow">2027 年報</span>
         <span class="y27b-title" data-i18n="y27.bannerTitle">你的 2027 年報</span>
         <span class="y27b-sub" data-i18n="y27.bannerSub">依你的三層命盤整理，免費索取。</span>
@@ -838,7 +839,7 @@
             <div class="dc-name" data-i18n="dash.consultName">有一個真正重要的問題？</div>
             <div class="dc-desc" data-i18n="dash.consultDesc">選定主題、說明處境，由真人為你解盤並書面回覆。</div>
           </div>
-          <span class="dc-cta" data-go="consultation.html"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
+          <span class="dc-cta" data-go="consultation.html" data-fs-cta="dash-consult"><span data-i18n="dash.consultCta">前往問事</span> <span class="arrow">→</span></span>
         </div>
 
       </div>
@@ -1132,7 +1133,7 @@
       '<div class="dash-unlock" style="animation-delay:0.32s;">' +
         '<div class="u-title"><span class="u-icon">✦</span> ' + F.t('dash.unlockTitle') + '</div>' +
         '<div class="u-note">' + F.t('dash.unlockNote') + '</div>' +
-        '<button class="u-btn" id="btn-unlock-transforms">' + F.t('dash.viewPlans') + '</button>' +
+        '<button class="u-btn" id="btn-unlock-transforms" data-fs-cta="dash-unlock-sihua">' + F.t('dash.viewPlans') + '</button>' +
       '</div>';
     document.getElementById('btn-unlock-transforms')
       .addEventListener('click', () => { window.location.href = CONFIG.pricingPage; });

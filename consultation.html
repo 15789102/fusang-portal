@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="config.js"></script>
+<script src="track.js" defer></script>
 <script src="i18n.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>單獨問事 - FuSang Vision</title>
@@ -586,7 +587,7 @@
       c.querySelector('.act-view').addEventListener('click', () => { window.location.href = `consultation-detail.html?id=${active.id}`; });
     } else {
       c.innerHTML =
-        `<button class="cons-btn act-new">${pick('提交新的問事', '提交新的问事', 'New consultation')} <span class="btn-arrow">→</span></button>` +
+        `<button class="cons-btn act-new" data-fs-cta="consult-new">${pick('提交新的問事', '提交新的问事', 'New consultation')} <span class="btn-arrow">→</span></button>` +
         `<button class="cons-btn ghost act-list">${pick('我的問事紀錄', '我的问事纪录', 'My consultations')}</button>`;
       c.querySelector('.act-new').addEventListener('click', () => { window.location.href = 'consultation-form.html'; });
     }

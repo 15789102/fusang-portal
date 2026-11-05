@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="config.js"></script>
+<script src="track.js" defer></script>
 <script src="i18n.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>提交問事 - FuSang Vision</title>
@@ -201,7 +202,7 @@
             '我了解这是不可退款的数字服务，并同意以上各项。',
             'I understand this is a non-refundable digital service and agree to the above.'
           )}</span></label>` +
-          `<button class="cons-btn" id="submit-btn" disabled>${pick('提交並付款', '提交并付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
+          `<button class="cons-btn" id="submit-btn" data-fs-cta="consult-submit" disabled>${pick('提交並付款', '提交并付款', 'Submit & pay')} ${PRICE_LABEL}</button>` +
           `<div class="form-gate" id="form-gate"></div>` +
           `<div class="msg" id="form-msg"></div>` +
         `</div>` +

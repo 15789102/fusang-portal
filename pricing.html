@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <script src="config.js"></script>
+  <script src="track.js" defer></script>
   <script src="i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>解鎖你的命盤 - FuSang Vision</title>
@@ -510,7 +511,7 @@
               <span class="pr-price-unit" data-i18n="pr.c1Unit">一次買斷</span>
             </div>
             <div class="pr-price-note" data-i18n="pr.c1PriceNote">永久有效，含未來年份與月份，不再另外收費</div>
-            <button class="pr-btn" data-product="sihua" data-i18n="pr.c1Btn">永久解鎖全部四化</button>
+            <button class="pr-btn" data-product="sihua" data-fs-cta="unlock-sihua" data-i18n="pr.c1Btn">永久解鎖全部四化</button>
             <!-- 已解鎖時顯示（JS 讀 user_profiles.sihua_unlocked；只讀，不影響付款流程）-->
             <div class="pr-owned" id="pr-owned" hidden>
               <p class="pr-owned-note" data-i18n="pr.c1OwnedNote">你已經擁有完整命盤解讀，未來的年份與月份也會自動包含四化。</p>
@@ -557,7 +558,7 @@
               <span class="pr-price-unit" data-i18n="pr.c2Unit">/ 次</span>
             </div>
             <div class="pr-price-note" data-i18n="pr.c2PriceNote">單次計費，不自動續訂</div>
-            <a class="pr-btn outline" href="consultation.html" data-i18n="pr.c2Btn">了解單獨問事</a>
+            <a class="pr-btn outline" href="consultation.html" data-fs-cta="consult-learn-more" data-i18n="pr.c2Btn">了解單獨問事</a>
           </div>
           <div class="pr-wide-right">
             <ul class="pr-features">
