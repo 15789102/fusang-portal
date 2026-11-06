@@ -13,7 +13,7 @@
   - 把關：沿用 admin-common.js initAdmin()（requireAuth → admin_check）
   - 本頁不載入 track.js（admin 頁一律不追蹤）
   - 安全：事件表來的文字（page、cta_id、product_type、label）一律 textContent，不用 innerHTML
-  - 已同意／匿名分欄：欄位名集中在 SPLIT_KEYS，待 claude/tickets/PT-010_E_DB追加.md 定稿後依該文件調整
+  - 已同意／匿名分欄：欄位依 claude/tickets/PT-010_E_DB追加.md（people_consented / people_anonymous），集中在 SPLIT_KEYS
 -->
 <style>
   /* ── 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
@@ -135,7 +135,7 @@
     import { supabase, initAdmin } from './admin-common.js';
 
     // 已同意／匿名人數的欄位名（每個 step 物件內）。
-    // 待 claude/tickets/PT-010_E_DB追加.md 定稿後，依該文件改這兩個值即可。
+    // 依 claude/tickets/PT-010_E_DB追加.md；日後欄位改名只改這兩個值。
     const SPLIT_KEYS = { consented: 'people_consented', anonymous: 'people_anonymous' };
 
     const STEP_NAME = { 1: '看頁', 2: '按鈕', 3: '完成' };
