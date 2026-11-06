@@ -53,6 +53,12 @@
     'dash.quote':      { 'zh-TW': '你能給世界最大的禮物，就是你的快樂。', 'zh-CN': '你能给世界最大的礼物，就是你的快乐。', 'en': 'The greatest gift you can give the world is your own happiness.', 'ja': '世界に贈れる最高の贈り物は、あなたの幸せです。', 'ko': '당신이 세상에 줄 수 있는 가장 큰 선물은 바로 당신의 행복이에요.' },
     'dash.broadcast':  { 'zh-TW': '歡迎回到 FuSang Vision', 'zh-CN': '欢迎回到 FuSang Vision', 'en': 'Welcome back to FuSang Vision', 'ja': 'FuSang Vision へおかえりなさい', 'ko': 'FuSang Vision에 다시 오신 걸 환영해요' },
 
+    // ── PT-010 E：使用情形與帳號連結的同意卡片（文案 v1，Ben 核可）──
+    'dash.consentTitle': { 'zh-TW': '要不要讓我們看見你的使用情形？', 'zh-CN': '要不要让我们看到你的使用情况？', 'en': 'Can we see how you use the Portal?', 'ja': 'ポータルの利用状況を見てもよいですか？', 'ko': '포털 이용 현황을 확인해도 될까요?' },
+    'dash.consentBody':  { 'zh-TW': '允許後，你在 Portal 的使用情形（看了哪些頁面、點了哪些按鈕）會與你的帳號連結，只有營運者看得到，用來改善服務，不用於廣告，也不會給第三方。不允許也完全不影響使用。你可以隨時在帳號設定改變決定。', 'zh-CN': '允许后，你在 Portal 的使用情况（看了哪些页面、点了哪些按钮）会与你的账号关联，只有运营者看得到，用来改善服务，不用于广告，也不会给第三方。不允许也完全不影响使用。你可以随时在账号设置改变决定。', 'en': 'If you allow, how you use the Portal (which pages you view, which buttons you click) will be linked to your account. Only the operator can see it. It is used to improve the service, not for ads, and is not shared with third parties. Saying no changes nothing about how you use the Portal. You can change your mind anytime in Account settings.', 'ja': '許可いただくと、ポータルでのご利用状況（閲覧したページ、クリックしたボタン）がアカウントに関連付けられます。運営者だけが確認でき、サービス改善のみに使用し、広告への利用や第三者への提供は行いません。許可しなくてもご利用には一切影響ありません。設定はアカウント設定でいつでも変更できます。', 'ko': '허용하시면 포털 이용 현황(열람한 페이지, 클릭한 버튼)이 계정과 연결됩니다. 운영자만 볼 수 있으며 서비스 개선에만 사용하고 광고에 쓰거나 제3자에게 제공하지 않습니다. 허용하지 않아도 이용에는 전혀 영향이 없습니다. 계정 설정에서 언제든지 바꿀 수 있습니다.' },
+    'dash.consentAllow': { 'zh-TW': '允許', 'zh-CN': '允许', 'en': 'Allow', 'ja': '許可する', 'ko': '허용' },
+    'dash.consentDeny':  { 'zh-TW': '不用了', 'zh-CN': '不用了', 'en': 'No thanks', 'ja': '許可しない', 'ko': '허용 안 함' },
+
     // ── v2 視覺（設計師 v1.0 文案）──
     'dash.v2Continue': { 'zh-TW': '繼續閱讀', 'zh-CN': '继续阅读', 'en': 'Continue reading', 'ja': '続きを読む', 'ko': '이어서 읽기' },
     'dash.v2Hint':     { 'zh-TW': '本命總覽 / 十二宮 / 宮位解讀', 'zh-CN': '本命总览 / 十二宫 / 宫位解读', 'en': 'Natal Overview / Twelve Palaces / Palace Readings', 'ja': '本命の概要 / 十二宮 / 宮の解説', 'ko': '선천 명반 요약 / 12궁 / 궁 해석' },
@@ -158,6 +164,18 @@
     }
     .fs-v2 .dash-broadcast .bc-dot { display: inline-block; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--v2-blue); }
     .fs-v2 .dash-broadcast .bc-text { font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; letter-spacing: 0; color: var(--v2-muted); }
+
+    /* ── PT-010 E：同意卡片（不擋畫面；兩顆按鈕同 class、同尺寸、同權重）── */
+    .fs-v2 .consent-card { margin: 16px 0 0; padding: 20px 24px; background: var(--v2-tint); border: 1px solid var(--v2-line); }
+    .fs-v2 .consent-card[hidden] { display: none; }
+    .fs-v2 .consent-title { margin: 0 0 8px; font-family: var(--v2-font-cjk); font-size: 16px; line-height: 26px; font-weight: 600; color: var(--v2-ink); }
+    .fs-v2 .consent-body { margin: 0; font-family: var(--v2-font-cjk); font-size: 14px; line-height: 24px; color: var(--v2-muted); }
+    .fs-v2 .consent-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .fs-v2 .consent-actions .v2-btn { flex: 0 0 160px; min-width: 0; }
+    @media (max-width: 480px) {
+      .fs-v2 .consent-card { padding: 16px; }
+      .fs-v2 .consent-actions .v2-btn { flex: 1 1 0; }
+    }
 
     /* ── 精選 banner：PT-006 改為 2027 年報專區入口（文字橫幅，五語 y27.*）── */
     .fs-v2 a.dash-banner {
@@ -774,6 +792,16 @@
         <span class="bc-text" data-i18n="dash.broadcast">歡迎回到 FuSang Vision</span>
       </div>
 
+      <!-- PT-010 E：登入後第一次同意卡片（預設隱藏；由下方 module 依 get_analytics_consent().answered 決定是否顯示）-->
+      <section class="consent-card" id="consent-card" hidden aria-labelledby="consent-title">
+        <h2 class="consent-title" id="consent-title" data-i18n="dash.consentTitle">要不要讓我們看見你的使用情形？</h2>
+        <p class="consent-body" data-i18n="dash.consentBody">允許後，你在 Portal 的使用情形（看了哪些頁面、點了哪些按鈕）會與你的帳號連結，只有營運者看得到，用來改善服務，不用於廣告，也不會給第三方。不允許也完全不影響使用。你可以隨時在帳號設定改變決定。</p>
+        <div class="consent-actions">
+          <button type="button" class="v2-btn v2-btn--secondary" id="consent-allow" data-i18n="dash.consentAllow">允許</button>
+          <button type="button" class="v2-btn v2-btn--secondary" id="consent-deny" data-i18n="dash.consentDeny">不用了</button>
+        </div>
+      </section>
+
       <!-- v2：閱讀地圖（三入口 → chart.html 對應畫面；本命生成中時停用）-->
       <nav class="v2-map" id="v2-map" aria-label="Reading map">
         <a class="v2-entry" href="chart.html"><span class="v2-entry-icon" aria-hidden="true"><svg class="v2-entry-svg v2-entry-orbit" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.76185 14.4187C6.9573 17.2887 5.99992 20.6099 5.99992 24C5.99992 27.3901 6.9573 30.7113 8.76185 33.5813M14.4187 39.2382C17.2887 41.0427 20.6099 42.0001 24 42.0001C27.3901 42.0001 30.7113 41.0427 33.5813 39.2382M39.2381 33.5813C41.0427 30.7113 42.0001 27.3901 42.0001 24C42.0001 20.6099 41.0427 17.2887 39.2381 14.4187M33.5813 8.76185C30.7113 6.9573 27.3901 5.99992 24 5.99992C20.6099 5.99992 17.2887 6.9573 14.4187 8.76185M9.85786 9.85786L13.3934 13.3934M38.1421 9.85786L34.6066 13.3934M38.1421 38.1421L34.6066 34.6066M9.85786 38.1421L13.3934 34.6066M16.2218 16.2218L24 19.7574L31.7782 16.2218L28.2426 24L31.7782 31.7782L24 28.2426L16.2218 31.7782L19.7574 24L16.2218 16.2218Z"/></svg></span><span class="v2-entry-name" data-i18n="dash.v2eNatal">本命總覽</span><span class="v2-entry-desc" data-i18n="dash.v2eNatalD">認識性格、天賦與人生方向</span></a>
@@ -1069,7 +1097,64 @@
         window.location.href = 'consultation.html';
       });
     }
+
+    // PT-010 E：同意卡片（不 await；任何失敗都安靜略過，不影響頁面）
+    try { initConsentCard(userId); } catch (_) {}
   })();
+
+  /* ════════════════════════════════════════════════════════════
+     PT-010 E：同意卡片
+     - 是否出現：get_analytics_consent().answered === false 才可能出現（RPC 失敗 → 不出現）。
+     - 次數：沒回答時下次登入再出現，最多 3 次。計次在 localStorage（逐使用者），
+       同一個瀏覽器工作階段（sessionStorage）內只算一次；任一儲存體不可用 → 不出現（無法保證上限）。
+     - 按鈕：允許 → set_analytics_consent(true,'v1')；不用了 → set_analytics_consent(false,'v1')。
+       RPC 失敗 → 安靜收起（不顯示錯誤，下次登入仍會再問）。unlinked_events 不是錯誤，不處理。
+     ════════════════════════════════════════════════════════════ */
+  const CONSENT_TEXT_VERSION = 'v1';
+  const CONSENT_MAX_PROMPTS = 3;
+
+  async function initConsentCard(userId) {
+    const card = document.getElementById('consent-card');
+    if (!card) return;
+    const cntKey = 'fs_consent_prompts_' + userId;
+    const sesKey = 'fs_consent_prompt_session_' + userId;
+
+    // 1) 先問資料庫是否已回答（失敗 → 靜默不顯示）
+    let answered = true;
+    try {
+      const { data, error } = await supabase.rpc('get_analytics_consent');
+      if (error || !data || typeof data.answered !== 'boolean') return;
+      answered = data.answered;
+    } catch (_) { return; }
+    if (answered) return;
+
+    // 2) 次數上限（localStorage / sessionStorage 都要 try/catch）
+    try {
+      if (sessionStorage.getItem(sesKey) === '1') return;   // 本次登入已出現過
+      const n = parseInt(localStorage.getItem(cntKey) || '0', 10) || 0;
+      if (n >= CONSENT_MAX_PROMPTS) return;
+      localStorage.setItem(cntKey, String(n + 1));
+      sessionStorage.setItem(sesKey, '1');
+    } catch (_) { return; }
+
+    // 3) 顯示並綁按鈕（兩顆走同一個函式）
+    card.hidden = false;
+    const allowBtn = document.getElementById('consent-allow');
+    const denyBtn = document.getElementById('consent-deny');
+    let busy = false;
+    async function answer(granted) {
+      if (busy) return;
+      busy = true;
+      allowBtn.disabled = true; denyBtn.disabled = true;
+      try {
+        await supabase.rpc('set_analytics_consent', { p_granted: granted, p_text_version: CONSENT_TEXT_VERSION });
+        // 不檢查 error / 回傳值：成功與否都安靜收起；沒寫成功 → 資料庫仍是未回答，下次登入還會問
+      } catch (_) { /* 安靜失敗 */ }
+      card.hidden = true;
+    }
+    allowBtn.addEventListener('click', () => answer(true));
+    denyBtn.addEventListener('click', () => answer(false));
+  }
 
   /* hero 標題(含姓名,隨語言重繪) */
   function renderHeroTitle() {

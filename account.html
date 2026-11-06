@@ -75,7 +75,11 @@
     'acc.nmErrDenied':{ 'zh-TW': '沒有權限修改此欄位。', 'zh-CN': '没有权限修改此栏位。', 'en': 'You do not have permission to change this.', 'ja': 'この項目を変更する権限がありません。', 'ko': '이 항목을 수정할 권한이 없어요.' },
     'acc.nmErrFail':  { 'zh-TW': '儲存失敗：{msg}', 'zh-CN': '保存失败：{msg}', 'en': 'Save failed: {msg}', 'ja': '保存に失敗しました：{msg}', 'ko': '저장 실패: {msg}' },
     // v2：未開通時的「查看方案」連結
-    'acc.viewPlans':  { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans', 'ja': 'プランを見る', 'ko': '요금제 보기' }
+    'acc.viewPlans':  { 'zh-TW': '查看方案', 'zh-CN': '查看方案', 'en': 'View plans', 'ja': 'プランを見る', 'ko': '요금제 보기' },
+
+    // ── PT-010 E：使用情形與帳號連結開關（文案 v1，Ben 核可）──
+    'acc.consentLabel': { 'zh-TW': '將我的使用情形與帳號連結', 'zh-CN': '将我的使用情况与账号关联', 'en': 'Link my usage to my account', 'ja': '利用状況をアカウントに関連付ける', 'ko': '이용 현황을 계정과 연결' },
+    'acc.consentDesc':  { 'zh-TW': '關閉時維持匿名；關閉後，過去的紀錄也會解除與帳號的連結。', 'zh-CN': '关闭时保持匿名；关闭后，过去的记录也会解除与账号的关联。', 'en': 'When off, your usage stays anonymous. Turning it off also unlinks past records from your account.', 'ja': 'オフの間は匿名のままです。オフにすると、過去の記録とアカウントの関連付けも解除されます。', 'ko': '끄면 익명으로 유지됩니다. 끄면 이전 기록과 계정의 연결도 해제됩니다.' }
   });
 </script>
 
@@ -330,6 +334,22 @@
     .fs-v2 .acc-row { flex-wrap: wrap; gap: 4px 16px; }
     .fs-v2 .acc-btn { width: 100%; }
   }
+
+  /* PT-010 E：使用情形連結開關（預設關；role=switch）*/
+  .fs-v2 .acc-switch {
+    flex: none; position: relative; width: 44px; height: 24px; padding: 0;
+    background: #ffffff; border: 1px solid var(--v2-ink); border-radius: 12px; cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .fs-v2 .acc-switch::after {
+    content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+    background: var(--v2-ink); border-radius: 50%; transition: transform .15s, background .15s;
+  }
+  .fs-v2 .acc-switch[aria-checked="true"] { background: var(--v2-ink); }
+  .fs-v2 .acc-switch[aria-checked="true"]::after { background: #ffffff; transform: translateX(20px); }
+  .fs-v2 .acc-switch:focus-visible { outline: 2px solid var(--v2-blue); outline-offset: 2px; }
+  .fs-v2 .acc-switch:disabled { opacity: 0.5; cursor: default; }
+  @media (prefers-reduced-motion: reduce) { .fs-v2 .acc-switch, .fs-v2 .acc-switch::after { transition: none; } }
 </style>
 </head>
 <body class="account-page fs-v2">
@@ -440,6 +460,17 @@
         </div>
         <span class="acc-btn" id="acc-portal" role="button" tabindex="0" data-i18n="acc.manageSub">管理訂閱</span>
         <div class="acc-msg" id="acc-portal-msg"></div>
+      </div>
+
+      <!-- PT-010 E：使用情形與帳號連結（預設關；取得狀態成功後才顯示，失敗則整張卡不出現）-->
+      <div class="acc-card" id="acc-consent-card" style="display:none;">
+        <div class="acc-card-label" id="acc-consent-label" data-i18n="acc.consentLabel">將我的使用情形與帳號連結</div>
+        <div class="acc-row" style="border-bottom:none;">
+          <span class="acc-row-key" id="acc-consent-desc" data-i18n="acc.consentDesc">關閉時維持匿名；關閉後，過去的紀錄也會解除與帳號的連結。</span>
+          <span class="acc-row-val">
+            <button type="button" class="acc-switch" id="acc-consent-switch" role="switch" aria-checked="false" aria-labelledby="acc-consent-label" aria-describedby="acc-consent-desc" disabled></button>
+          </span>
+        </div>
       </div>
 
       <!-- 安全性 -->
@@ -688,6 +719,41 @@
     }
   }
 
+  // ── PT-010 E：使用情形與帳號連結開關 ──
+  //   狀態取自 get_analytics_consent().granted（失敗 → 整張卡不顯示，頁面其他部分不受影響）。
+  //   切換 → set_analytics_consent(p_granted, 'v1')；失敗 → 開關回到原狀態、不顯示錯誤。
+  //   撤回回傳的 unlinked_events 不是錯誤，不處理。
+  const CONSENT_TEXT_VERSION = 'v1';
+  async function bindConsent() {
+    const card = document.getElementById('acc-consent-card');
+    const sw = document.getElementById('acc-consent-switch');
+    if (!card || !sw) return;
+    let granted = false;
+    try {
+      const { data, error } = await supabase.rpc('get_analytics_consent');
+      if (error || !data || typeof data.granted !== 'boolean') return;
+      granted = data.granted;
+    } catch (_) { return; }
+
+    const paint = (on) => { sw.setAttribute('aria-checked', on ? 'true' : 'false'); };
+    paint(granted);
+    sw.disabled = false;
+    card.style.display = 'block';
+
+    sw.addEventListener('click', async () => {
+      if (sw.disabled) return;
+      const want = !granted;
+      sw.disabled = true;
+      try {
+        const { data, error } = await supabase.rpc('set_analytics_consent', { p_granted: want, p_text_version: CONSENT_TEXT_VERSION });
+        if (!error && data && typeof data.granted === 'boolean') granted = data.granted;
+        // 失敗（error 或回傳異常）→ granted 不變，開關維持原狀
+      } catch (_) { /* 安靜失敗 */ }
+      paint(granted);
+      sw.disabled = false;
+    });
+  }
+
   // ── init ──
   (async () => {
     const session = await requireAuth();
@@ -741,6 +807,7 @@
     }
     bindDisplayName(S.userId);
     bindDelivery(S.userId);
+    bindConsent();   // PT-010 E（不 await；失敗安靜）
     document.getElementById('acc-reset').addEventListener('click', () => sendReset(S.email));
 
     document.getElementById('acc-loading').style.display = 'none';
