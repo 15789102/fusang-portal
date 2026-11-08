@@ -261,6 +261,7 @@
   let natalRow = null;               // chart_type='natal'
   const annualRows = {};             // year → row
   let birthYear = null;
+  let shenPalace = null;             // 身宮所在的本命宮名（僅此一欄，不取整個 profile）
   let reportsByPalace = {};
   let plainByT = {};                 // 未解鎖的一般說明（report_glossary.transforms.*.plain，免費）
   let chartSessionId = null;
@@ -344,7 +345,8 @@
   }
   const flows = () => flowsOf(S.sel, S.dir);
   const related = (b) => ({ opp:mod(b + 6, 12), tri:[mod(b + 4, 12), mod(b + 8, 12)] });
-  function shenBranch() { return null; }  // 身宮資料欄位尚未確認，先不標（見完成回報）
+  // 身宮：只取 chart_data->profile->>shen_palace 這一個欄位（本命宮名），標在該本命宮所在的地支
+  function shenBranch() { const b = shenPalace ? MODEL.n2b.natal[shenPalace] : null; return b == null ? null : b; }
   function ageSpan() {
     const d = MODEL.ctx.decade; if (!d || birthYear == null) return null;
     return { a:d.valid_year_start - birthYear, b:d.valid_year_end - birthYear, y1:d.valid_year_start, y2:d.valid_year_end };
@@ -670,7 +672,7 @@
       plainByT = {}; TF.forEach((k, i) => { const p = data && data.tr && data.tr[k] && data.tr[k].plain; if (p) plainByT[i] = p; });
     } catch (_) { plainByT = {}; }
   }
-  const COLS = 'chart_type, valid_year_start, valid_year_end, birth_year, palaces:chart_data->palaces, ctx:chart_data->chart_context';   // 不取 chart_data->profile（出生資料）
+  const COLS = 'chart_type, valid_year_start, valid_year_end, birth_year, palaces:chart_data->palaces, ctx:chart_data->chart_context, shen:chart_data->profile->>shen_palace';   // 只取 profile 的 shen_palace 一欄；birth_year 只在本頁算歲數，不進事件追蹤
   async function init() {
     document.title = tx('cm.docTitle'); showState(tx('cm.loading'));
     try {
@@ -698,6 +700,7 @@
       const any = natalRow || Object.values(annualRows)[0];
       if (!any) { showState(tx('cm.errNoChart')); return; }
       birthYear = (any.birth_year != null) ? any.birth_year : null;
+      shenPalace = any.shen || null;
       (rep.data || []).forEach((r) => { reportsByPalace[r.palace_name] = r; });
       await loadPlain();
       S.year = annualRows[nowY] ? nowY : +Object.keys(annualRows)[0] || nowY;
