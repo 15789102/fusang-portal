@@ -176,7 +176,7 @@
     .dot { flex: none; min-width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center; font-weight: 600; font-size: 12px; padding: 0 5px; border: 1.5px solid; }
     .flow .txt { min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
     .flow .txt small { display: block; color: var(--cm-muted); font-size: 12px; }
-    .meaning { margin-top: 10px; border: 1px solid var(--cm-line); border-radius: 8px; padding: 10px 12px; background: var(--cm-soft); font-size: 13px; }
+    .meaning { grid-column: 1 / -1; margin-top: 2px; border: 1px solid var(--cm-line); border-radius: 8px; padding: 10px 12px; background: var(--cm-soft); font-size: 13px; }
     .meaning .mt { font-weight: 600; margin-bottom: 4px; }
     .meaning p { margin: 0 0 6px; overflow-wrap: anywhere; }
     .meaning .src { font-size: 12px; color: var(--cm-faint); }
@@ -526,6 +526,8 @@
       t.appendChild(document.createTextNode(palShort(nameOf(L, other))));
       t.appendChild(h('small', null, starLabel(f.star) + ' ' + code(f.t) + ' · ' + (MODEL.cells[L][f.from].stem || '')));
       r.appendChild(t); r.onclick = () => toggleActive(f); fl.appendChild(r);
+      // 說明直接展開在被點的那一條下面（不是整個清單最下方）
+      if (S.active && S.active.i === flowKey(f)) { const m = meaningBlock(); if (m) fl.appendChild(m); }
     });
     return fl;
   }
@@ -585,7 +587,7 @@
     box.appendChild(h('div', 'sec', tx('cm.stars'))); box.appendChild(starsBlock(b));
     box.appendChild(h('div', 'sec', tx('cm.flying')));
     const seg = dirSeg(); seg.style.marginBottom = '8px'; box.appendChild(seg);
-    box.appendChild(flowsBlock()); const m = meaningBlock(); if (m) box.appendChild(m);
+    box.appendChild(flowsBlock());
     return box;
   }
   function renderPanels() {
@@ -627,7 +629,7 @@
     S.anim = false;
     if (!same && !isDesktop()) S.sheet = 'full';
     render(); if (S.sheet === 'full') requestAnimationFrame(fitView);
-    if (!same && !isDesktop()) requestAnimationFrame(() => { const m = document.querySelector('#cm-sheetbody .meaning'); if (m) m.scrollIntoView({ block:'nearest' }); });
+    if (!same) requestAnimationFrame(() => { const m = document.querySelector(isDesktop() ? '#cm-side .meaning' : '#cm-sheetbody .meaning'); if (m) m.scrollIntoView({ block:'nearest' }); });
   }
   function render() {
     if (!MODEL) return;
