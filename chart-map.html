@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的命盤 - FuSang Vision</title>
+  <meta name="description" content="Your Zi Wei Dou Shu chart: twelve palaces, major limit, annual layer and transformation flows." />
+
+  <script>window.FS_ACTIVE_PAGE = 'chart';</script>
+
+  <!-- 設定 + i18n 核心:須先於 module 載入(classic) -->
+  <script src="config.js"></script>
+  <script src="track.js" defer></script>
+  <script src="i18n.js"></script>
+  <script>
+    // chart-map 專屬 UI 字典(策略 B)。星曜/宮位/四化名稱走 starLabel/palaceLabel(report_glossary)。
+    window.FSI18N.addUI({
+      "cm.docTitle":  { "zh-TW": "我的命盤 - FuSang Vision", "zh-CN": "我的命盘 - FuSang Vision", "en": "My Chart - FuSang Vision", "ja": "あなたの命盤 - FuSang Vision", "ko": "내 명반 - FuSang Vision" },
+      "cm.h1":        { "zh-TW": "我的命盤", "zh-CN": "我的命盘", "en": "My Chart", "ja": "あなたの命盤", "ko": "내 명반" },
+      "cm.loading":   { "zh-TW": "正在載入你的命盤…", "zh-CN": "正在载入你的命盘…", "en": "Loading your chart…", "ja": "命盤を読み込んでいます…", "ko": "명반을 불러오는 중…" },
+      "cm.errNoChart":{ "zh-TW": "還沒有完成的命盤。命盤完成後再回來看看。", "zh-CN": "还没有完成的命盘。命盘完成后再回来看看。", "en": "There is no finished chart yet. Come back once your chart is ready.", "ja": "完成した命盤がまだありません。命盤が完成したらまたお越しください。", "ko": "아직 완성된 명반이 없어요. 명반이 완성되면 다시 와 주세요." },
+      "cm.errLoad":   { "zh-TW": "命盤載入失敗，請重新整理再試一次。", "zh-CN": "命盘载入失败，请刷新后再试一次。", "en": "Could not load your chart. Please refresh and try again.", "ja": "命盤を読み込めませんでした。更新してもう一度お試しください。", "ko": "명반을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요." },
+      "cm.errShape":  { "zh-TW": "這張命盤的資料格式不完整，無法排出十二宮。", "zh-CN": "这张命盘的数据格式不完整，无法排出十二宫。", "en": "This chart's data is incomplete, so the twelve palaces cannot be laid out.", "ja": "この命盤のデータが不完全なため、十二宮を並べられません。", "ko": "이 명반의 데이터가 불완전해 12궁을 배치할 수 없어요." },
+      "cm.natal":     { "zh-TW": "本命", "zh-CN": "本命", "en": "Natal", "ja": "本命", "ko": "선천" },
+      "cm.decade":    { "zh-TW": "大限", "zh-CN": "大限", "en": "Major Limit", "ja": "大限", "ko": "대한" },
+      "cm.annual":    { "zh-TW": "流年", "zh-CN": "流年", "en": "Annual", "ja": "流年", "ko": "유년" },
+      "cm.layers":    { "zh-TW": "選擇層次", "zh-CN": "选择层次", "en": "Choose a layer", "ja": "層を選ぶ", "ko": "층 선택" },
+      "cm.hua":       { "zh-TW": "四化標記", "zh-CN": "四化标记", "en": "Transforms", "ja": "四化マーク", "ko": "사화 표시" },
+      "cm.out":       { "zh-TW": "飛出", "zh-CN": "飞出", "en": "Flies out", "ja": "飛出", "ko": "나가는 흐름" },
+      "cm.in":        { "zh-TW": "飛入", "zh-CN": "飞入", "en": "Flies in", "ja": "飛入", "ko": "들어오는 흐름" },
+      "cm.year":      { "zh-TW": "年", "zh-CN": "年", "en": "", "ja": "年", "ko": "년" },
+      "cm.last":      { "zh-TW": "去年", "zh-CN": "去年", "en": "Last year", "ja": "昨年", "ko": "작년" },
+      "cm.now":       { "zh-TW": "今年", "zh-CN": "今年", "en": "This year", "ja": "今年", "ko": "올해" },
+      "cm.next":      { "zh-TW": "明年", "zh-CN": "明年", "en": "Next year", "ja": "来年", "ko": "내년" },
+      "cm.prevYear":  { "zh-TW": "前一年", "zh-CN": "前一年", "en": "Previous year", "ja": "前の年", "ko": "이전 해" },
+      "cm.nextYear":  { "zh-TW": "後一年", "zh-CN": "后一年", "en": "Next year", "ja": "次の年", "ko": "다음 해" },
+      "cm.grpMain":   { "zh-TW": "主星", "zh-CN": "主星", "en": "Major stars", "ja": "主星", "ko": "주성" },
+      "cm.grpSup":    { "zh-TW": "輔佐星", "zh-CN": "辅佐星", "en": "Support", "ja": "輔佐星", "ko": "보좌성" },
+      "cm.grpSha":    { "zh-TW": "煞星", "zh-CN": "煞星", "en": "Challenging", "ja": "煞星", "ko": "살성" },
+      "cm.grpMin":    { "zh-TW": "雜曜", "zh-CN": "杂曜", "en": "Minor", "ja": "雑曜", "ko": "잡성" },
+      "cm.stars":     { "zh-TW": "星曜", "zh-CN": "星曜", "en": "Stars", "ja": "星", "ko": "별" },
+      "cm.flying":    { "zh-TW": "四化飛化", "zh-CN": "四化飞化", "en": "Transformation flows", "ja": "四化の飛化", "ko": "사화 비화" },
+      "cm.body":      { "zh-TW": "身宮", "zh-CN": "身宫", "en": "Body", "ja": "身宮", "ko": "신궁" },
+      "cm.hint":      { "zh-TW": "點一個宮，看三方四正與飛化箭頭。", "zh-CN": "点一个宫，看三方四正与飞化箭头。", "en": "Tap a palace to see its related palaces and flows.", "ja": "宮をタップすると、三方四正と飛化の矢印が見られます。", "ko": "궁을 누르면 삼방사정과 비화 화살표를 볼 수 있어요." },
+      "cm.gridHint":  { "zh-TW": "箭頭上的圓標可以點。", "zh-CN": "箭头上的圆标可以点。", "en": "The round marks on arrows are tappable.", "ja": "矢印の丸いマークもタップできます。", "ko": "화살표 위의 동그라미를 누를 수 있어요." },
+      "cm.peekHint":  { "zh-TW": "上拉看完整內容", "zh-CN": "上拉看完整内容", "en": "Pull up for details", "ja": "上に引くと詳細が見られます", "ko": "위로 올려 자세히 보기" },
+      "cm.regionLabel":{ "zh-TW": "宮位詳情", "zh-CN": "宫位详情", "en": "Palace details", "ja": "宮の詳細", "ko": "궁 상세" },
+      "cm.lockLead":  { "zh-TW": "解鎖四化，看這一條對你的意思", "zh-CN": "解锁四化，看这一条对你的意思", "en": "Unlock to read what this flow means for you", "ja": "四化を解放して、この流れがあなたに持つ意味を読む", "ko": "잠금을 풀고 이 흐름이 나에게 의미하는 바를 보기" },
+      "cm.lockLeadIn":{ "zh-TW": "解鎖四化，看這個四化飛入此宮的整體說明", "zh-CN": "解锁四化，看这个四化飞入此宫的整体说明", "en": "Unlock to read the overall explanation of this transform flowing in", "ja": "四化を解放して、この四化がこの宮に入る全体の説明を読む", "ko": "잠금을 풀고 이 사화가 이 궁으로 들어오는 전체 설명 보기" },
+      "cm.unlock":    { "zh-TW": "解鎖四化", "zh-CN": "解锁四化", "en": "Unlock transformations", "ja": "四化を解放する", "ko": "사화 잠금 해제" },
+      "cm.report":    { "zh-TW": "查看{l}報告", "zh-CN": "查看{l}报告", "en": "Open the {l} report", "ja": "{l}のレポートを見る", "ko": "{l} 리포트 보기" },
+      "cm.factOut":   { "zh-TW": "{a}的{s}{t}，飛入{b}", "zh-CN": "{a}的{s}{t}，飞入{b}", "en": "{a}: {s} {t} flies to {b}", "ja": "{a}の{s}{t}が{b}に飛入", "ko": "{a}의 {s} {t}, {b}(으)로 들어감" },
+      "cm.factIn":    { "zh-TW": "{b}的{s}{t}，飛入{a}", "zh-CN": "{b}的{s}{t}，飞入{a}", "en": "{b}: {s} {t} flies to {a}", "ja": "{b}の{s}{t}が{a}に飛入", "ko": "{b}의 {s} {t}, {a}(으)로 들어감" },
+      "cm.reportNote":{ "zh-TW": "大限與流年先顯示事實，完整說明在該層報告。", "zh-CN": "大限与流年先显示事实，完整说明在该层报告。", "en": "Major Limit and Annual show the facts here; the full reading is in that report.", "ja": "大限と流年はここでは事実のみを表示し、詳しい解説はそのレポートにあります。", "ko": "대한과 유년은 사실만 보여 드리고, 자세한 해석은 해당 리포트에 있어요." },
+      "cm.srcNatal":  { "zh-TW": "出自本命報告", "zh-CN": "出自本命报告", "en": "From your natal report", "ja": "本命レポートより", "ko": "선천 리포트에서" },
+      "cm.titleOut":  { "zh-TW": "{t}飛出的說明", "zh-CN": "{t}飞出的说明", "en": "{t}: flowing out", "ja": "{t}が飛出する場合", "ko": "{t}: 나가는 흐름" },
+      "cm.titleIn":   { "zh-TW": "{t}飛入此宮的整體說明（涵蓋所有飛入的{t}，不限這一條箭頭）", "zh-CN": "{t}飞入此宫的整体说明（涵盖所有飞入的{t}，不限这一条箭头）", "en": "Overall explanation of {t} flowing into this palace (covers every {t} flowing in, not only this arrow)", "ja": "{t}がこの宮に入る場合の全体の説明（入ってくるすべての{t}を含み、この矢印だけではありません）", "ko": "{t}이(가) 이 궁으로 들어오는 전체 설명 (들어오는 모든 {t} 포함, 이 화살표만이 아님)" },
+      "cm.more":      { "zh-TW": "另有 {n} 顆", "zh-CN": "另有 {n} 颗", "en": "{n} more", "ja": "他に{n}個", "ko": "{n}개 더" },
+      "cm.ageUnit":   { "zh-TW": "歲", "zh-CN": "岁", "en": "", "ja": "歳", "ko": "세" },
+      "cm.decadeRange":{ "zh-TW": "大限 {a}–{b} 歲（{y1}–{y2}）", "zh-CN": "大限 {a}–{b} 岁（{y1}–{y2}）", "en": "Major Limit, age {a}–{b} ({y1}–{y2})", "ja": "大限 {a}〜{b}歳（{y1}–{y2}）", "ko": "대한 {a}–{b}세 ({y1}–{y2})" },
+      "cm.annualSub": { "zh-TW": "{age} 歲", "zh-CN": "{age} 岁", "en": "Age {age}", "ja": "{age}歳", "ko": "{age}세" },
+      "cm.noFlow":    { "zh-TW": "這一層沒有飛化資料。", "zh-CN": "这一层没有飞化数据。", "en": "No flow data for this layer.", "ja": "この層には飛化のデータがありません。", "ko": "이 층에는 비화 데이터가 없어요." },
+      "cm.sw":        { "zh-TW": "實線＝本命、虛線＝大限、點線＝流年", "zh-CN": "实线＝本命、虚线＝大限、点线＝流年", "en": "Solid = natal, dashed = major limit, dotted = annual", "ja": "実線＝本命、破線＝大限、点線＝流年", "ko": "실선＝선천, 파선＝대한, 점선＝유년" },
+      "cm.limitStar": { "zh-TW": "運限星", "zh-CN": "运限星", "en": "Cycle star", "ja": "運限の星", "ko": "운한 별" }
+    });
+  </script>
+
+  <link rel="stylesheet" href="fs-v2.css" />
+  <style>
+    /* chart-map：傳統十二宮方格；手機底部抽屜、桌機側欄。僅用 Portal v2 token（fs-v2.css）。
+       四化色為本頁專用莫蘭迪色（線色 line／字色 text／底色 fill）。所有字級 ≥ 12px。 */
+    body.cmap {
+      --cm-ink: var(--v2-ink, #202020); --cm-muted: var(--v2-muted, #686868); --cm-faint: #6f6f6f;
+      --cm-line: var(--v2-line, #dedede); --cm-blue: var(--v2-blue, #3b83f6); --cm-tint: var(--v2-tint, #eff5ff);
+      --cm-soft: #f7f9fc; --cm-hl-sel: #eaf2ff; --cm-hl-rel: #f4f8ff; --cm-hl-ext: #fdf3e3;
+      --lu-line:#86a38f; --lu-text:#4a6c55; --lu-fill:#e8f0ea;
+      --quan-line:#c9a272; --quan-text:#86642f; --quan-fill:#f6ecdd;
+      --ke-line:#8aa2c2; --ke-text:#46648a; --ke-fill:#e6edf6;
+      --ji-line:#c78f93; --ji-text:#8b4e53; --ji-fill:#f6e6e7;
+      --cm-shadow: 0 -6px 24px #2020201f;
+    }
+    body.cmap.sheet-peek { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+    body.cmap.sheet-full { padding-bottom: calc(46vh + 16px); }
+    .cm-wrap { max-width: 1040px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left, 0px)) 24px max(16px, env(safe-area-inset-right, 0px)); }
+    .cm-wrap button, .cm-sheet button { font: inherit; color: inherit; cursor: pointer; }
+    .cm-wrap :focus-visible, .cm-sheet :focus-visible { outline: 2px solid var(--cm-blue); outline-offset: 2px; }
+    .cm-h1 { font-size: 22px; font-weight: 600; margin: 4px 0 8px; }
+    .cm-state { padding: 64px 0; text-align: center; color: var(--cm-muted); font-size: 14px; }
+    #cm-main[hidden] { display: none; }
+
+    .cm-tabs { display: inline-flex; gap: 4px; border-bottom: 1px solid var(--cm-line); }
+    .cm-tabs button { border: 0; background: transparent; padding: 8px 14px; border-bottom: 2px solid transparent; font-weight: 500; min-height: 44px; color: var(--cm-muted); }
+    .cm-tabs button[aria-selected="true"] { border-bottom-color: var(--cm-ink); color: var(--cm-ink); font-weight: 600; }
+    .cm-tabs button:disabled { opacity: .45; cursor: default; }
+    .cm-bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 10px 0; }
+    .cm-tog { border: 1px solid var(--cm-line); background: #fff; border-radius: 8px; padding: 6px 12px; min-height: 36px; font-size: 13px; }
+    .cm-tog[aria-pressed="true"] { border-color: var(--cm-blue); background: var(--cm-tint); font-weight: 600; }
+    .cm-stepper { display: inline-flex; align-items: center; border: 1px solid var(--cm-line); border-radius: 8px; background: #fff; }
+    .cm-stepper button { border: 0; background: transparent; width: 40px; height: 36px; font-size: 16px; }
+    .cm-stepper button:disabled { color: var(--cm-line); cursor: default; }
+    .cm-stepper span { min-width: 100px; text-align: center; font-weight: 600; font-size: 13px; padding: 0 4px; }
+    .cm-seg { display: inline-flex; border: 1px solid var(--cm-line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .cm-seg button { border: 0; background: transparent; padding: 6px 12px; min-height: 36px; font-size: 13px; }
+    .cm-seg button[aria-pressed="true"] { background: var(--cm-ink); color: #fff; }
+
+    .cm-layout { display: flex; gap: 24px; align-items: flex-start; }
+    .cm-chart-col { flex: 1 1 0; min-width: 0; max-width: 700px; }
+    .cm-panel-col { flex: 0 0 340px; min-width: 0; position: sticky; top: 12px; }
+    @media (max-width: 959px) { .cm-panel-col { display: none; } body.cmap.sheet-full .cm-note { display: none; } }
+    @media (min-width: 960px) { .cm-sheet { display: none !important; } }
+
+    .cm-gridwrap { position: relative; }
+    .cm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--cm-line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .cm-cell { position: relative; min-height: 116px; padding: 6px 6px 8px; border: .5px solid var(--cm-line); display: flex; flex-direction: column; gap: 3px; min-width: 0; background: #fff; overflow-wrap: break-word; transition: background .15s; }
+    /* 抽屜展開時方格壓縮：每格 ≤ ~76px，四列總高 ≤ 抽屜上方可視區（375×667：約 334px），箭頭起訖宮才都看得到 */
+    .cm-grid.compact .cm-cell { min-height: 0; max-height: 78px; overflow: hidden; padding: 4px 5px; gap: 1px; }
+    .cm-grid.compact .c-tags, .cm-grid.compact .c-more, .cm-grid.compact .st.sub, .cm-grid.compact .empty, .cm-grid.compact .shen { display: none; }
+    .cm-grid.compact .c-top { flex-direction: row; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+    .cm-grid.compact .c-stars { flex-direction: row; flex-wrap: wrap; gap: 0 6px; }
+    .cm-cell.rel { background: var(--cm-hl-rel); }
+    .cm-cell.sel { background: var(--cm-hl-sel); box-shadow: inset 0 0 0 2px var(--cm-blue); }
+    .cm-cell.hl { box-shadow: inset 0 0 0 2px var(--quan-line); background: var(--cm-hl-ext); }
+    .cm-cell.end { box-shadow: inset 0 0 0 2px var(--cm-ink); }
+    .cell-hit { position: absolute; inset: 0; background: transparent; border: 0; z-index: 1; width: 100%; }
+    .c-top { display: flex; flex-direction: column-reverse; align-items: flex-start; }
+    .c-gz { white-space: nowrap; font-size: 12px; color: var(--cm-faint); }
+    .c-name { font-weight: 600; font-size: 13px; line-height: 1.25; min-width: 0; }
+    .c-tags { display: flex; flex-direction: column; gap: 1px; }
+    .tg { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--cm-muted); line-height: 1.3; }
+    .sw { flex: none; width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid var(--cm-muted); display: inline-block; }
+    .sw.k-decade, .hua.k-decade { border-style: dashed; } .sw.k-annual, .hua.k-annual { border-style: dotted; }
+    .sw.k-natal { background: var(--cm-muted); }
+    .shen { display: inline-block; font-size: 12px; padding: 0 4px; border-radius: 3px; background: var(--cm-tint); width: max-content; max-width: 100%; }
+    .c-stars { display: flex; flex-direction: column; gap: 2px; margin-top: 1px; }
+    .st { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 3px; font-size: 12px; line-height: 1.35; }
+    .st.main { font-weight: 600; font-size: 13px; }
+    .st.sub { color: var(--cm-muted); }
+    .c-more { align-self: flex-start; font-size: 12px; color: var(--cm-muted); border: 1px solid var(--cm-line); border-radius: 10px; padding: 0 6px; line-height: 1.5; background: #fff; position: relative; z-index: 2; min-height: 22px; }
+    .empty { font-size: 12px; color: var(--cm-faint); }
+    .hua { position: relative; z-index: 2; border: 1.5px solid currentColor; background: #fff; border-radius: 4px; padding: 0 3px; font-size: 12px; line-height: 1.3; font-weight: 600; min-height: 18px; white-space: nowrap; }
+    button.hua { cursor: pointer; }
+    .t0 { --c-line: var(--lu-line); --c-text: var(--lu-text); --c-fill: var(--lu-fill); }
+    .t1 { --c-line: var(--quan-line); --c-text: var(--quan-text); --c-fill: var(--quan-fill); }
+    .t2 { --c-line: var(--ke-line); --c-text: var(--ke-text); --c-fill: var(--ke-fill); }
+    .t3 { --c-line: var(--ji-line); --c-text: var(--ji-text); --c-fill: var(--ji-fill); }
+    .hua, .dot, .pc { color: var(--c-text); background: var(--c-fill); border-color: var(--c-line); }
+    .cm-center { grid-area: 2/2/4/4; padding: 10px; display: flex; flex-direction: column; justify-content: center; gap: 6px; border: .5px solid var(--cm-line); background: #fafdff; text-align: center; }
+    .cm-center h2 { font-size: 18px; font-weight: 600; margin: 0; }
+    .cm-center p { margin: 0; font-size: 12px; color: var(--cm-muted); }
+    .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; font-size: 12px; color: var(--cm-muted); }
+    svg.cm-arrows { position: absolute; inset: 0; overflow: visible; z-index: 3; pointer-events: none; }
+    .lab { pointer-events: all; cursor: pointer; }
+    .lab:focus-visible { outline: none; }
+    .lab:focus-visible circle.ring { stroke: var(--cm-ink); stroke-width: 3; }
+    @keyframes cm-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes cm-pop { from { opacity: 0; } to { opacity: 1; } }
+    .anim .arrow-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: cm-draw .75s cubic-bezier(.3,.7,.3,1) forwards; animation-delay: calc(var(--i) * 110ms); }
+    .anim .arrow-head, .anim .lab { opacity: 0; animation: cm-pop .25s ease-out forwards; animation-delay: calc(var(--i) * 110ms + 620ms); }
+    @media (prefers-reduced-motion: reduce) { .anim .arrow-line { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; } .anim .arrow-head, .anim .lab { animation: none; opacity: 1; } }
+    .cm-note { font-size: 12px; color: var(--cm-faint); margin: 8px 0 0; }
+
+    .cm-detail { border: 1px solid var(--cm-line); border-radius: 10px; padding: 14px 14px 16px; background: #fff; }
+    .cm-sheet .cm-detail { border: 0; padding: 0; }
+    .dh h3 { font-size: 18px; font-weight: 600; margin: 0; }
+    .dh .meta { color: var(--cm-muted); font-size: 13px; margin: 0 0 6px; }
+    .dh .layers { display: flex; flex-direction: column; gap: 1px; margin: 0 0 6px; }
+    .sec { margin: 12px 0 6px; font-size: 12px; letter-spacing: .06em; color: var(--cm-faint); font-weight: 600; }
+    .slist { display: flex; flex-direction: column; gap: 6px; }
+    .sgrp { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 13px; align-items: baseline; }
+    .sgrp .gl { font-size: 12px; color: var(--cm-faint); min-width: 56px; }
+    .sgrp .it { display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+    .sgrp .it.ly { color: var(--cm-muted); }
+    .flows { display: flex; flex-direction: column; gap: 6px; }
+    .flow { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--cm-line); background: #fff; border-radius: 8px; padding: 8px 10px; min-height: 44px; }
+    .flow[aria-pressed="true"] { border-color: var(--cm-ink); background: var(--cm-soft); }
+    .dot { flex: none; min-width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center; font-weight: 600; font-size: 12px; padding: 0 5px; border: 1.5px solid; }
+    .flow .txt { min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+    .flow .txt small { display: block; color: var(--cm-muted); font-size: 12px; }
+    .meaning { margin-top: 10px; border: 1px solid var(--cm-line); border-radius: 8px; padding: 10px 12px; background: var(--cm-soft); font-size: 13px; }
+    .meaning .mt { font-weight: 600; margin-bottom: 4px; }
+    .meaning p { margin: 0 0 6px; overflow-wrap: anywhere; }
+    .meaning .src { font-size: 12px; color: var(--cm-faint); }
+    .lockrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+    .cm-cta { display: inline-block; background: var(--cm-ink); color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; text-decoration: none; min-height: 40px; }
+    .cm-link { color: var(--cm-blue); text-decoration: none; font-weight: 500; }
+    .hint { color: var(--cm-muted); font-size: 13px; margin: 0; }
+
+    .cm-sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: #fff; border-radius: 16px 16px 0 0; box-shadow: var(--cm-shadow);
+      padding: 0 max(16px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; max-height: 46vh; }
+    .sheet-in { max-width: 700px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; min-height: 0; }
+    .grab { border: 0; background: transparent; width: 100%; height: 30px; display: grid; place-items: center; touch-action: none; }
+    .grab i { display: block; width: 40px; height: 4px; border-radius: 2px; background: var(--cm-line); }
+    .peek { display: flex; flex-direction: column; gap: 6px; padding-bottom: 2px; }
+    .peek-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .peek-h b { font-size: 15px; }
+    .peek-h span.gz { font-size: 12px; color: var(--cm-muted); }
+    .peek-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .pc { display: flex; flex-direction: column; align-items: center; border: 1.5px solid; border-radius: 8px; padding: 3px 2px; min-height: 44px; font-size: 12px; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+    .pc[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--cm-ink); }
+    .sheet-body { overflow: auto; min-height: 0; display: none; padding-top: 6px; }
+    .cm-sheet.full .sheet-body { display: block; }
+    .sheet-body .flows { display: grid; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 420px) { .sheet-body .flows { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body class="cmap fs-v2">
+
+<div id="site-header"></div>
+
+<div class="cm-wrap">
+  <div id="cm-state" class="cm-state" role="status"></div>
+  <div id="cm-main" hidden>
+    <h1 class="cm-h1" id="cm-h1"></h1>
+    <div id="cm-toolbar"></div>
+    <div class="cm-layout">
+      <div class="cm-chart-col">
+        <div class="cm-gridwrap" id="cm-gridwrap"><div class="cm-grid" id="cm-grid"></div><svg class="cm-arrows" id="cm-arrows" aria-hidden="false"></svg></div>
+        <p class="cm-note" id="cm-note"></p>
+      </div>
+      <div class="cm-panel-col" id="cm-side"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cm-sheet" id="cm-sheet" role="region" hidden>
+  <div class="sheet-in">
+    <button class="grab" id="cm-grab" aria-expanded="false"><i></i></button>
+    <div class="peek" id="cm-peek"></div>
+    <div class="sheet-body" id="cm-sheetbody"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { supabase, requireAuth, loadReportGlossary } from './components.js';
+  const { t: tx, getReportLang, palaceLabel, starLabel } = window.FSI18N;
+
+  const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const TF = ['化祿','化權','化科','化忌'];
+  const LAYERS = ['natal','decade','annual'];
+  // 棋盤位置（地支 index → [列, 欄]）：巳午未申／辰＿＿酉／卯＿＿戌／寅丑子亥
+  const GRIDPOS = {5:[1,1],6:[1,2],7:[1,3],8:[1,4],4:[2,1],9:[2,4],3:[3,1],10:[3,4],2:[4,1],1:[4,2],0:[4,3],11:[4,4]};
+  const GROUPS = [['main_stars','main','cm.grpMain'],['support_stars','support','cm.grpSup'],['sha_ji_stars','sha','cm.grpSha'],['minor_stars','minor','cm.grpMin']];
+  const PRICING_PAGE = 'pricing.html';
+  const TCODE = {
+    'zh-TW': ['祿','權','科','忌'], 'zh-CN': ['禄','权','科','忌'], 'ja': ['祿','權','科','忌'],
+    'en': ['Lu','Quan','Ke','Ji'], 'ko': ['녹','권','과','기']
+  };
+  // 報告中 transforms_* 的 key 清理（簡體、少數整句英文）。找不到的 key 忽略並寫 console。
+  const SENT = [['Brings smooth sailing',0],['Fosters a desire to lead',1],['Makes you easily visible',2],['Indicates repeated investment',3]];
+  function normKey(k) {
+    if (!k) return -1;
+    const s = String(k).replace('化禄','化祿').replace('化权','化權');
+    const i = TF.indexOf(s); if (i > -1) return i;
+    for (const [p, n] of SENT) if (String(k).indexOf(p) === 0) return n;
+    return -1;
+  }
+
+  const S = { layer:'natal', year:0, sel:null, dir:'out', showHua:true, active:null, sheet:'peek', anim:true, hl:[] };
+  let nowY = new Date().getFullYear();
+  let isUnlocked = false;
+  let natalRow = null;               // chart_type='natal'
+  const annualRows = {};             // year → row
+  let birthYear = null;
+  let shenPalace = null;             // 身宮所在的本命宮名（僅此一欄，不取整個 profile）
+  let reportsByPalace = {};
+  let plainByT = {};                 // 未解鎖的一般說明（report_glossary.transforms.*.plain，免費）
+  let chartSessionId = null;
+  let MODEL = null;                  // 目前層次的資料模型
+
+  const $ = (id) => document.getElementById(id);
+  const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); };
+  const mod = (n, m) => ((n % m) + m) % m;
+  const F = (s, o) => String(s).replace(/\{(\w+)\}/g, (_, k) => (o[k] != null ? o[k] : ''));
+  const lang = () => getReportLang();
+  const code = (t) => (TCODE[lang()] || TCODE['zh-TW'])[t];
+  const layerName = (k) => tx('cm.' + k);
+  const palFull = (zh) => palaceLabel(zh);
+  const palShort = (zh) => { const f = palaceLabel(zh); const l = lang(); return l === 'en' ? f.replace(/ Palace$/, '') : l === 'ko' ? f.replace(/궁$/, '') : f; };
+  const shortScreen = () => window.innerHeight < 720;     // 375×667 為基準
+  const isDesktop = () => window.innerWidth >= 960;
+
+  /* ───── 資料 → 模型 ───── */
+  // 一列 ziwei_charts.palaces：palaces[宮名].layers[層] 帶有該層地支（該層自己的宮位落點）。
+  function buildModel(row) {
+    const cells = { natal:{}, decade:{}, annual:{} }, n2b = { natal:{}, decade:{}, annual:{} };
+    for (const [pname, pal] of Object.entries(row.palaces || {})) {
+      for (const L of LAYERS) {
+        const lay = pal && pal.layers && pal.layers[L];
+        if (!lay) continue;
+        const b = BRANCHES.indexOf(lay.branch);
+        if (b < 0) continue;
+        cells[L][b] = { name:pname, stem:lay.heavenly_stem || '', ps:lay.palace_stars || {}, fout:lay.incoming_transforms || [], fin:lay.out_transforms || [] };
+        n2b[L][pname] = b;
+      }
+    }
+    const ok = {};
+    for (const L of LAYERS) ok[L] = Object.keys(cells[L]).length === 12;
+    return { cells, n2b, ok, ctx:row.ctx || {} };
+  }
+  function sourceRow() {
+    if (S.layer === 'natal') return natalRow || annualRows[S.year] || annualRows[nowY] || Object.values(annualRows)[0] || null;
+    return annualRows[S.layer === 'decade' ? nowY : S.year] || null;
+  }
+  function curKey() { return S.layer; }
+  // 該層是否有完整十二宮資料（童年尚未起運的年份沒有 decade 層）
+  function layerAvailable(L) {
+    if (L === 'natal') return true;
+    const row = annualRows[L === 'decade' ? nowY : S.year] || annualRows[nowY]; if (!row) return false;
+    const m = buildModel(row); return m.ok[L];
+  }
+  function layerList() { return S.layer === 'natal' ? ['natal'] : S.layer === 'decade' ? ['natal','decade'] : ['natal','decade','annual'].filter((k) => MODEL.ok[k]); }
+  function nameOf(k, b) { const c = MODEL.cells[k] && MODEL.cells[k][b]; return c ? c.name : ''; }
+  function starsOf(c) {
+    const out = { main:[], support:[], sha:[], minor:[] };
+    for (const [src, key] of GROUPS) for (const s of (c.ps[src] || [])) out[key].push(s);
+    return out;
+  }
+  // 四化標記：每一層只認該層自己 palace_stars 裡的 transform（已用 DB 驗證：各層旗標皆屬該層）
+  function marksAt(b) {
+    const r = [];
+    for (const k of layerList()) {
+      const c = MODEL.cells[k] && MODEL.cells[k][b]; if (!c) continue;
+      for (const [src] of GROUPS) for (const s of (c.ps[src] || [])) {
+        const t = normKey(s.transform); if (t > -1) r.push({ k, t, star:s.star });
+      }
+    }
+    return r;
+  }
+  function flowKey(f) { return f.t + '-' + f.from + '-' + f.to + '-' + f.star; }
+  // 飛出：該宮宮干飛出（DB: incoming_transforms，source_palace＝落點宮）；飛入：落在此宮星曜的來源（DB: out_transforms，target_palace＝來源宮）
+  function flowsOf(b, dir) {
+    const L = curKey(), c = MODEL.cells[L][b], n2b = MODEL.n2b[L], seen = {}, r = [];
+    if (!c) return r;
+    const list = dir === 'out' ? c.fout : c.fin;
+    for (const e of list) {
+      const t = normKey(e.transform); if (t < 0) continue;
+      const other = n2b[dir === 'out' ? e.source_palace : e.target_palace];
+      if (other == null) { console.warn('[chart-map] unknown palace in flow', e); continue; }
+      const f = dir === 'out' ? { t, star:e.source_star, from:b, to:other } : { t, star:e.star, from:other, to:b };
+      const k = flowKey(f); if (seen[k]) continue; seen[k] = 1; r.push(f);
+    }
+    r.sort((a, z) => a.t - z.t);
+    return r;
+  }
+  const flows = () => flowsOf(S.sel, S.dir);
+  const related = (b) => ({ opp:mod(b + 6, 12), tri:[mod(b + 4, 12), mod(b + 8, 12)] });
+  // 身宮：只取 chart_data->profile->>shen_palace 這一個欄位（本命宮名），標在該本命宮所在的地支
+  function shenBranch() { const b = shenPalace ? MODEL.n2b.natal[shenPalace] : null; return b == null ? null : b; }
+  function ageSpan() {
+    const d = MODEL.ctx.decade; if (!d || birthYear == null) return null;
+    return { a:d.valid_year_start - birthYear, b:d.valid_year_end - birthYear, y1:d.valid_year_start, y2:d.valid_year_end };
+  }
+
+  /* ───── 畫面 ───── */
+  function buildToolbar() {
+    const tb = $('cm-toolbar'); clear(tb);
+    const tabs = h('div', 'cm-tabs'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', tx('cm.layers'));
+    for (const L of LAYERS) {
+      const b = h('button', null, layerName(L)); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(S.layer === L));
+      b.setAttribute('data-fs-cta', 'chart-layer-switch');
+      if (!layerAvailable(L)) b.disabled = true;
+      b.onclick = () => { if (S.layer === L) return; S.layer = L; S.active = null; S.anim = true; rebuildModel(); render(); };
+      tabs.appendChild(b);
+    }
+    tb.appendChild(tabs);
+    const bar = h('div', 'cm-bar');
+    if (S.layer === 'annual') {
+      const st = h('span', 'cm-stepper');
+      const p = h('button', null, '‹'); p.setAttribute('aria-label', tx('cm.prevYear')); p.disabled = !annualRows[S.year - 1];
+      p.onclick = () => { S.year--; S.active = null; S.anim = true; rebuildModel(); render(); };
+      const lab = S.year === nowY ? tx('cm.now') : S.year < nowY ? tx('cm.last') : tx('cm.next');
+      const m = h('span', null, S.year + tx('cm.year') + ' · ' + lab);
+      const n = h('button', null, '›'); n.setAttribute('aria-label', tx('cm.nextYear')); n.disabled = !annualRows[S.year + 1];
+      n.onclick = () => { S.year++; S.active = null; S.anim = true; rebuildModel(); render(); };
+      st.append(p, m, n); bar.appendChild(st);
+    }
+    const t2 = h('button', 'cm-tog', tx('cm.hua')); t2.setAttribute('aria-pressed', String(S.showHua));
+    t2.onclick = () => { S.showHua = !S.showHua; S.anim = false; render(); };
+    bar.appendChild(t2); tb.appendChild(bar);
+  }
+  function huaChip(m) {
+    const c = h('button', 'hua t' + m.t + ' k-' + m.k, code(m.t));
+    c.setAttribute('aria-label', starLabel(m.star) + ' ' + layerName(m.k) + ' ' + code(m.t));
+    c.setAttribute('data-fs-cta', 'chart-hua-mark');
+    c.onclick = (e) => { e.stopPropagation(); selectPalace(m.b, false); };   // 點標記＝選中該星所在宮
+    return c;
+  }
+  function buildGrid() {
+    const g = $('cm-grid'); clear(g);
+    g.classList.toggle('compact', S.sheet === 'full' && !isDesktop());
+    const L = curKey(), rel = related(S.sel), short = shortScreen() && layerList().length > 2;
+    const ends = {}; if (S.active) ends[S.dir === 'out' ? S.active.f.to : S.active.f.from] = 1;
+    const shen = shenBranch();
+    for (let b = 0; b < 12; b++) {
+      const cell = MODEL.cells[L][b]; if (!cell) continue;
+      const c = h('div', 'cm-cell'); c.style.gridRow = GRIDPOS[b][0]; c.style.gridColumn = GRIDPOS[b][1]; c.dataset.b = b;
+      if (S.sel === b) c.classList.add('sel'); else if (rel.opp === b || rel.tri.indexOf(b) > -1) c.classList.add('rel');
+      if (S.hl.indexOf(b) > -1) c.classList.add('hl');
+      if (ends[b] && b !== S.sel) c.classList.add('end');
+      const top = h('div', 'c-top');
+      top.appendChild(h('span', 'c-gz', cell.stem + BRANCHES[b]));
+      top.appendChild(h('span', 'c-name', palShort(cell.name)));
+      c.appendChild(top);
+      // 多層宮名：流年三行。矮螢幕（≤ 375×667）只在選中宮列出三層宮名
+      const tags = h('div', 'c-tags');
+      if (!short || S.sel === b) {
+        for (const k of layerList()) {
+          if (k === L) continue;
+          const t = h('div', 'tg'); t.appendChild(h('i', 'sw k-' + k)); t.appendChild(h('span', null, palShort(nameOf(k, b)))); t.title = layerName(k); tags.appendChild(t);
+        }
+      }
+      if (tags.firstChild) c.appendChild(tags);
+      if (b === shen) c.appendChild(h('span', 'shen', tx('cm.body')));
+      // 星曜：只放主星與帶四化的星，其餘「+N」
+      const st = h('div', 'c-stars'), stars = starsOf(cell), mk = S.showHua ? marksAt(b) : [];
+      let shown = 0, total = 0;
+      for (const k of ['main','support','sha','minor']) total += stars[k].length;
+      const row = (cls, s) => {
+        const r = h('div', 'st ' + cls); r.appendChild(h('span', null, starLabel(s.star)));
+        mk.filter((m) => m.star === s.star).forEach((m) => { m.b = b; r.appendChild(huaChip(m)); });
+        return r;
+      };
+      stars.main.forEach((s) => { st.appendChild(row('main', s)); shown++; });
+      if (!stars.main.length) st.appendChild(h('div', 'empty', '—'));
+      ['support','sha','minor'].forEach((k) => stars[k].forEach((s) => { if (mk.some((m) => m.star === s.star)) { st.appendChild(row('sub', s)); shown++; } }));
+      c.appendChild(st);
+      const rest = total - shown;
+      if (rest > 0) {
+        const mb = h('button', 'c-more', '+' + rest); mb.setAttribute('aria-label', F(tx('cm.more'), { n:rest }));
+        mb.onclick = (e) => { e.stopPropagation(); selectPalace(b, false); if (!isDesktop()) setSheet('full'); };
+        c.appendChild(mb);
+      }
+      const hit = h('button', 'cell-hit'); hit.setAttribute('aria-label', palFull(cell.name) + ' ' + cell.stem + BRANCHES[b]);
+      hit.setAttribute('aria-pressed', String(S.sel === b)); hit.setAttribute('data-fs-cta', 'chart-palace');
+      hit.onclick = () => selectPalace(b, false); c.appendChild(hit);
+      g.appendChild(c);
+    }
+    const ce = h('div', 'cm-center');
+    ce.appendChild(h('h2', null, S.layer === 'annual' ? layerName('annual') + ' ' + S.year : layerName(S.layer)));
+    if (S.layer === 'decade') { const a = ageSpan(); if (a) ce.appendChild(h('p', null, F(tx('cm.decadeRange'), a))); }
+    else if (S.layer === 'annual' && birthYear != null) ce.appendChild(h('p', null, F(tx('cm.annualSub'), { age:S.year - birthYear })));
+    const lg = h('div', 'legend');
+    layerList().forEach((k) => { const t = h('span', 'tg'); t.appendChild(h('i', 'sw k-' + k)); t.appendChild(document.createTextNode(layerName(k))); lg.appendChild(t); });
+    ce.appendChild(lg);
+    const lg2 = h('div', 'legend'); [0,1,2,3].forEach((t) => lg2.appendChild(h('span', 'hua t' + t + ' k-natal', code(t)))); ce.appendChild(lg2);
+    g.appendChild(ce);
+  }
+
+  /* ───── 箭頭（延伸動畫、圓標可點） ───── */
+  const NS = (n, a) => { const e = document.createElementNS('http://www.w3.org/2000/svg', n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const cen = (el, w) => { const a = el.getBoundingClientRect(), r = w.getBoundingClientRect(); return { x:a.left - r.left + a.width / 2, y:a.top - r.top + a.height / 2 }; };
+  const LINE = ['var(--lu-line)','var(--quan-line)','var(--ke-line)','var(--ji-line)'];
+  const TXT = ['var(--lu-text)','var(--quan-text)','var(--ke-text)','var(--ji-text)'];
+  const FILL = ['var(--lu-fill)','var(--quan-fill)','var(--ke-fill)','var(--ji-fill)'];
+  function drawArrows() {
+    const svg = $('cm-arrows'), wrap = $('cm-gridwrap'); clear(svg);
+    const w = wrap.getBoundingClientRect();
+    svg.setAttribute('width', w.width); svg.setAttribute('height', w.height); svg.setAttribute('viewBox', '0 0 ' + w.width + ' ' + w.height);
+    svg.classList.toggle('anim', S.anim);
+    const cells = {}; document.querySelectorAll('.cm-cell[data-b]').forEach((c) => { cells[c.dataset.b] = c; });
+    const list = flows(), L = curKey();
+    list.forEach((f, idx) => {
+      const fromB = f.from, toB = f.to; if (!cells[fromB] || !cells[toB]) return;
+      const a = cen(cells[fromB], wrap), b = cen(cells[toB], wrap);
+      const act = S.active && S.active.i === flowKey(f), dim = S.active && !act;
+      const off = (f.t - 1.5) * 7 + (idx % 3) * 2;
+      let d, mx, my, hx, hy, ang;
+      if (fromB === toB) {
+        const cx = a.x + 24, cy = a.y - 24;
+        d = 'M' + (a.x + 10) + ',' + (a.y - 12) + ' C' + (cx + 22) + ',' + (cy - 22) + ' ' + (cx + 26) + ',' + (cy + 12) + ' ' + (a.x + 13) + ',' + (a.y + 4);
+        mx = cx + 16; my = cy - 8; hx = a.x + 13; hy = a.y + 4; ang = Math.atan2(4 - (cy + 12 - a.y), 13 - (cx + 26 - a.x));
+      } else {
+        const dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / len, ny = dx / len;
+        const sx = a.x + nx * off, sy = a.y + ny * off, ex = b.x + nx * off - dx / len * 13, ey = b.y + ny * off - dy / len * 13;
+        const qx = (sx + ex) / 2 + nx * (len * 0.16 + off), qy = (sy + ey) / 2 + ny * (len * 0.16 + off);
+        d = 'M' + sx + ',' + sy + ' Q' + qx + ',' + qy + ' ' + ex + ',' + ey;
+        const tt = 0.4 + 0.07 * f.t;
+        mx = (1 - tt) * (1 - tt) * sx + 2 * (1 - tt) * tt * qx + tt * tt * ex; my = (1 - tt) * (1 - tt) * sy + 2 * (1 - tt) * tt * qy + tt * tt * ey;
+        hx = ex; hy = ey; ang = Math.atan2(ey - qy, ex - qx);
+      }
+      const g = NS('g', { style:'--i:' + idx, opacity:dim ? 0.25 : 1 });
+      g.appendChild(NS('path', { class:'arrow-line', d, pathLength:'1', fill:'none', stroke:LINE[f.t], 'stroke-width':act ? 4 : 2.6, 'stroke-linecap':'round' }));
+      const sz = 7;
+      g.appendChild(NS('polygon', { class:'arrow-head', points:[[hx,hy],[hx - sz * Math.cos(ang - 0.5), hy - sz * Math.sin(ang - 0.5)],[hx - sz * Math.cos(ang + 0.5), hy - sz * Math.sin(ang + 0.5)]].join(' '), fill:LINE[f.t] }));
+      const other = S.dir === 'out' ? f.to : f.from;
+      const lab = NS('g', { class:'lab', role:'button', tabindex:'0', 'aria-label':code(f.t) + ' ' + palShort(nameOf(L, other)), 'aria-pressed':String(!!act), 'data-fs-cta':'chart-arrow-mark' });
+      lab.appendChild(NS('circle', { cx:mx, cy:my, r:18, fill:'transparent' }));
+      lab.appendChild(NS('circle', { class:'ring', cx:mx, cy:my, r:11, fill:FILL[f.t], stroke:LINE[f.t], 'stroke-width':act ? 3 : 2 }));
+      const tx_ = NS('text', { x:mx, y:my + 4, 'text-anchor':'middle', 'font-size':'12', 'font-weight':'600', fill:TXT[f.t] });
+      tx_.textContent = Array.from(code(f.t)).slice(0, 2).join(''); lab.appendChild(tx_);
+      lab.addEventListener('click', () => toggleActive(f));
+      lab.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleActive(f); } });
+      g.appendChild(lab); svg.appendChild(g);
+    });
+    S.anim = false;
+  }
+
+  /* ───── 詳情 ───── */
+  function layerLines(b) {
+    const box = h('div', 'layers');
+    layerList().slice().reverse().forEach((k) => { const t = h('div', 'tg'); t.appendChild(h('i', 'sw k-' + k)); t.appendChild(document.createTextNode(layerName(k) + (['zh-TW','zh-CN','ja'].indexOf(lang()) > -1 ? '：' : ': ') + palFull(nameOf(k, b)))); box.appendChild(t); });
+    return box;
+  }
+  function starsBlock(b) {
+    const cell = MODEL.cells[curKey()][b], stars = starsOf(cell), wrap = h('div', 'slist'), mk = marksAt(b);
+    for (const [, key, lk] of GROUPS) {
+      if (!stars[key].length) continue;
+      const row = h('div', 'sgrp'); row.appendChild(h('span', 'gl', tx(lk)));
+      stars[key].forEach((s) => {
+        const it = h('span', 'it' + (/^(大限|流年|流月)/.test(s.star) ? ' ly' : '')); it.appendChild(h('span', null, starLabel(s.star)));
+        if (S.showHua) mk.filter((m) => m.star === s.star).forEach((m) => it.appendChild(h('span', 'hua t' + m.t + ' k-' + m.k, code(m.t))));
+        row.appendChild(it);
+      });
+      wrap.appendChild(row);
+    }
+    return wrap;
+  }
+  function flowsBlock() {
+    const fl = h('div', 'flows'), list = flows(), L = curKey();
+    if (!list.length) fl.appendChild(h('p', 'hint', tx('cm.noFlow')));
+    list.forEach((f) => {
+      const r = h('button', 'flow'); r.setAttribute('aria-pressed', String(!!(S.active && S.active.i === flowKey(f)))); r.setAttribute('data-fs-cta', 'chart-arrow-row');
+      r.appendChild(h('span', 'dot t' + f.t, code(f.t)));
+      const t = h('span', 'txt'), other = S.dir === 'out' ? f.to : f.from;
+      t.appendChild(document.createTextNode(palShort(nameOf(L, other))));
+      t.appendChild(h('small', null, starLabel(f.star) + ' ' + code(f.t) + ' · ' + (MODEL.cells[L][f.from].stem || '')));
+      r.appendChild(t); r.onclick = () => toggleActive(f); fl.appendChild(r);
+    });
+    return fl;
+  }
+  function natalReportText(f) {
+    // 本命：飛出接 transforms_outgoing、飛入接 transforms_incoming；依 normKey 對到 0..3
+    const rep = reportsByPalace[nameOf('natal', S.sel)]; if (!rep) return null;
+    const grp = S.dir === 'out' ? rep.transforms_outgoing : rep.transforms_incoming;
+    if (!grp || typeof grp !== 'object') return null;
+    let found = null;
+    for (const k of Object.keys(grp)) { const n = normKey(k); if (n === f.t) found = grp[k]; else if (n < 0) console.warn('[chart-map] unmatched transforms key', String(k).slice(0, 40)); }
+    return found && (found.content || found.title) ? found : null;
+  }
+  function meaningBlock() {
+    if (!S.active) return null;
+    const f = S.active.f, box = h('div', 'meaning'), L = curKey();
+    const a = nameOf(L, f.from), b = nameOf(L, f.to);
+    box.appendChild(h('div', 'mt', palShort(a) + ' → ' + palShort(b) + ' · ' + starLabel(f.star) + ' ' + code(f.t)));
+    if (S.layer === 'natal') {
+      const tcode = code(f.t);
+      if (isUnlocked) {
+        const found = natalReportText(f);
+        // 已解鎖者不顯示任何占位文字：沒有對到文字就只留上面的事實列
+        if (found) {
+          box.appendChild(h('p', 'mt', S.dir === 'in' ? F(tx('cm.titleIn'), { t:tcode }) : F(tx('cm.titleOut'), { t:tcode })));
+          if (found.title) box.appendChild(h('p', null, found.title));
+          if (found.content) box.appendChild(h('p', null, found.content));
+          box.appendChild(h('div', 'src', tx('cm.srcNatal')));
+        }
+      } else {
+        if (plainByT[f.t]) box.appendChild(h('p', null, plainByT[f.t]));
+        const lr = h('div', 'lockrow'); lr.appendChild(h('span', 'hint', S.dir === 'in' ? tx('cm.lockLeadIn') : tx('cm.lockLead')));
+        const cta = h('a', 'cm-cta', tx('cm.unlock')); cta.href = PRICING_PAGE; cta.setAttribute('data-fs-cta', 'chart-unlock-sihua');
+        lr.appendChild(cta); box.appendChild(lr);
+      }
+    } else {
+      const o = { a:palShort(a), b:palShort(b), s:starLabel(f.star), t:code(f.t) };
+      box.appendChild(h('p', null, S.dir === 'out' ? F(tx('cm.factOut'), o) : F(tx('cm.factIn'), { a:palShort(b), b:palShort(a), s:o.s, t:o.t })));
+      box.appendChild(h('p', 'hint', tx('cm.reportNote')));
+      const href = S.layer === 'decade' ? 'decade.html?decade=' + encodeURIComponent((MODEL.ctx.decade || {}).valid_year_start) : 'annual.html?year=' + encodeURIComponent(S.year);
+      const ln = h('a', 'cm-link', F(tx('cm.report'), { l:layerName(S.layer) })); ln.href = href; ln.setAttribute('data-fs-cta', 'chart-open-report'); box.appendChild(ln);
+    }
+    return box;
+  }
+  function dirSeg() {
+    const s = h('span', 'cm-seg');
+    [['out', tx('cm.out')], ['in', tx('cm.in')]].forEach((d) => {
+      const x = h('button', null, d[1]); x.setAttribute('aria-pressed', String(S.dir === d[0])); x.setAttribute('data-fs-cta', 'chart-fly-dir');
+      x.onclick = () => { S.dir = d[0]; S.active = null; S.anim = true; render(); }; s.appendChild(x);
+    });
+    return s;
+  }
+  function fullDetail() {
+    const b = S.sel, cell = MODEL.cells[curKey()][b], box = h('div', 'dh');
+    box.appendChild(h('h3', null, palFull(cell.name)));
+    box.appendChild(h('p', 'meta', cell.stem + BRANCHES[b]));
+    if (S.layer !== 'natal') box.appendChild(layerLines(b));
+    box.appendChild(h('div', 'sec', tx('cm.stars'))); box.appendChild(starsBlock(b));
+    box.appendChild(h('div', 'sec', tx('cm.flying')));
+    const seg = dirSeg(); seg.style.marginBottom = '8px'; box.appendChild(seg);
+    box.appendChild(flowsBlock()); const m = meaningBlock(); if (m) box.appendChild(m);
+    return box;
+  }
+  function renderPanels() {
+    const side = $('cm-side'); clear(side); const p = h('div', 'cm-detail'); p.appendChild(fullDetail()); side.appendChild(p);
+    const sh = $('cm-sheet'); sh.hidden = false; sh.setAttribute('aria-label', tx('cm.regionLabel')); sh.classList.toggle('full', S.sheet === 'full');
+    $('cm-grab').setAttribute('aria-expanded', String(S.sheet === 'full')); $('cm-grab').setAttribute('aria-label', tx('cm.peekHint'));
+    const pk = $('cm-peek'); clear(pk);
+    const hd = h('div', 'peek-h'); const cell = MODEL.cells[curKey()][S.sel];
+    hd.appendChild(h('b', null, palFull(cell.name))); hd.appendChild(h('span', 'gz', cell.stem + BRANCHES[S.sel])); hd.appendChild(dirSeg()); pk.appendChild(hd);
+    const chips = h('div', 'peek-chips'), L = curKey();
+    flows().forEach((f) => {
+      const other = S.dir === 'out' ? f.to : f.from;
+      const c = h('button', 'pc t' + f.t); c.setAttribute('aria-pressed', String(!!(S.active && S.active.i === flowKey(f)))); c.setAttribute('data-fs-cta', 'chart-arrow-row');
+      c.appendChild(h('strong', null, code(f.t))); c.appendChild(h('span', null, palShort(nameOf(L, other)))); c.onclick = () => toggleActive(f); chips.appendChild(c);
+    });
+    if (!flows().length) chips.appendChild(h('span', 'hint', tx('cm.noFlow')));
+    pk.appendChild(chips);
+    const sb = $('cm-sheetbody'); clear(sb); const d = h('div', 'cm-detail'); d.appendChild(fullDetail()); sb.appendChild(d);
+  }
+  function setSheet(v) { S.sheet = v; S.anim = false; render(); if (v === 'full') requestAnimationFrame(fitView); }
+
+  /* 抽屜展開時，讓選中宮與箭頭起訖宮留在可視範圍：先壓縮方格，再捲動 */
+  function fitView() {
+    if (isDesktop()) return;
+    const sh = $('cm-sheet').getBoundingClientRect(), limit = sh.top - 8, need = [S.sel];
+    if (S.active) need.push(S.dir === 'out' ? S.active.f.to : S.active.f.from);
+    else flows().forEach((f) => need.push(S.dir === 'out' ? f.to : f.from));
+    let top = 1e9, bot = -1e9;
+    need.forEach((b) => { const c = document.querySelector('.cm-cell[data-b="' + b + '"]'); if (!c) return; const r = c.getBoundingClientRect(); top = Math.min(top, r.top); bot = Math.max(bot, r.bottom); });
+    const avail = limit - 8;
+    if (bot - top <= avail) { const mid = (top + bot) / 2, want = 8 + avail / 2; window.scrollBy({ top:mid - want, behavior:'auto' }); }
+    else window.scrollBy({ top:top - 8, behavior:'auto' });
+    requestAnimationFrame(drawArrows);
+  }
+  function selectPalace(b, _m) { if (b == null || !MODEL.cells[curKey()][b]) return; S.sel = b; S.active = null; S.anim = true; render(); requestAnimationFrame(fitView); }
+  function toggleActive(f) {
+    const same = S.active && S.active.i === flowKey(f);
+    S.active = same ? null : { i:flowKey(f), t:f.t, f };
+    S.anim = false;
+    if (!same && !isDesktop()) S.sheet = 'full';
+    render(); if (S.sheet === 'full') requestAnimationFrame(fitView);
+    if (!same && !isDesktop()) requestAnimationFrame(() => { const m = document.querySelector('#cm-sheetbody .meaning'); if (m) m.scrollIntoView({ block:'nearest' }); });
+  }
+  function render() {
+    if (!MODEL) return;
+    document.title = tx('cm.docTitle');
+    $('cm-h1').textContent = tx('cm.h1');
+    $('cm-note').textContent = tx('cm.hint') + ' ' + tx('cm.gridHint') + ' ' + tx('cm.sw');
+    buildToolbar(); buildGrid(); renderPanels();
+    document.body.classList.toggle('sheet-full', S.sheet === 'full'); document.body.classList.toggle('sheet-peek', S.sheet !== 'full');
+    requestAnimationFrame(drawArrows);
+  }
+  function rebuildModel() {
+    const row = sourceRow(); if (!row) throw new Error('no-row');
+    MODEL = buildModel(row);
+    if (!MODEL.ok[S.layer === 'natal' ? 'natal' : S.layer]) throw new Error('shape');
+    if (S.sel == null || !MODEL.cells[curKey()][S.sel]) S.sel = defaultSel();
+  }
+  function defaultSel() { const n = MODEL.n2b.natal['命宮']; return n != null && MODEL.cells[curKey()][n] ? n : +Object.keys(MODEL.cells[curKey()])[0]; }
+
+  /* 外部亮起掛鉤：window.chartApi.highlight(['命宮','財帛宮']) —— 以本命宮名 */
+  window.chartApi = {
+    highlight(names) { if (!MODEL) return; S.hl = []; (names || []).forEach((n) => { const b = MODEL.n2b.natal[n]; if (b != null) S.hl.push(b); }); S.anim = false; render(); },
+    clear() { S.hl = []; S.anim = false; render(); }
+  };
+
+  /* 抽屜：點或拖曳把手 */
+  (function () {
+    const g = $('cm-grab'); let y0 = null, moved = false;
+    g.addEventListener('pointerdown', (e) => { y0 = e.clientY; moved = false; try { g.setPointerCapture(e.pointerId); } catch (_) {} });
+    g.addEventListener('pointermove', (e) => { if (y0 != null && Math.abs(e.clientY - y0) > 8) moved = true; });
+    g.addEventListener('pointerup', (e) => { if (y0 == null) return; const dy = e.clientY - y0; y0 = null;
+      if (moved) { if (dy < -24) setSheet('full'); else if (dy > 24) setSheet('peek'); } else setSheet(S.sheet === 'full' ? 'peek' : 'full'); });
+    g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSheet(S.sheet === 'full' ? 'peek' : 'full'); } });
+  })();
+  window.addEventListener('resize', () => { S.anim = false; if (MODEL) render(); });
+  window.addEventListener('i18n:changed', () => { S.anim = false; loadPlain().then(() => render()); });
+
+  /* ───── 載入 ───── */
+  function showState(msg) { const s = $('cm-state'); s.textContent = msg; s.hidden = false; $('cm-main').hidden = true; $('cm-sheet').hidden = true; }
+  async function loadPlain() {
+    try {
+      const { data } = await supabase.from('report_glossary').select('tr:glossary->transforms').eq('language_code', getReportLang()).maybeSingle();
+      plainByT = {}; TF.forEach((k, i) => { const p = data && data.tr && data.tr[k] && data.tr[k].plain; if (p) plainByT[i] = p; });
+    } catch (_) { plainByT = {}; }
+  }
+  const COLS = 'chart_type, valid_year_start, valid_year_end, birth_year, palaces:chart_data->palaces, ctx:chart_data->chart_context, shen:chart_data->profile->>shen_palace';   // 只取 profile 的 shen_palace 一欄；birth_year 只在本頁算歲數，不進事件追蹤
+  async function init() {
+    document.title = tx('cm.docTitle'); showState(tx('cm.loading'));
+    try {
+      const session = await requireAuth(); if (!session) return;
+      await loadReportGlossary(session);
+      document.title = tx('cm.docTitle'); showState(tx('cm.loading'));
+      try {
+        const { data: prof } = await supabase.from('user_profiles').select('sihua_unlocked').eq('id', session.user.id).maybeSingle();
+        isUnlocked = !!(prof && prof.sihua_unlocked === true);
+      } catch (_) { isUnlocked = false; }
+      const { data: job, error: jobErr } = await supabase.from('chart_generation_jobs').select('chart_session_id, status')
+        .eq('user_email', session.user.email).eq('status', 'done').order('completed_at', { ascending:false, nullsFirst:false }).limit(1).maybeSingle();
+      if (jobErr) throw jobErr;
+      if (!job || !job.chart_session_id) { showState(tx('cm.errNoChart')); return; }
+      chartSessionId = job.chart_session_id;
+      const [nat, ann, rep] = await Promise.all([
+        supabase.from('ziwei_charts').select(COLS).eq('chart_session_id', chartSessionId).eq('chart_type', 'natal').limit(1),
+        supabase.from('ziwei_charts').select(COLS).eq('chart_session_id', chartSessionId).eq('chart_type', 'annual')
+          .gte('valid_year_start', nowY - 1).lte('valid_year_start', nowY + 1),
+        supabase.from('main_palace_reports_gated').select('palace_name, transforms_incoming, transforms_outgoing').eq('chart_session_id', chartSessionId)
+      ]);
+      if (nat.error) throw nat.error; if (ann.error) throw ann.error;
+      natalRow = (nat.data || [])[0] || null;
+      (ann.data || []).forEach((r) => { annualRows[r.valid_year_start] = r; });
+      const any = natalRow || Object.values(annualRows)[0];
+      if (!any) { showState(tx('cm.errNoChart')); return; }
+      birthYear = (any.birth_year != null) ? any.birth_year : null;
+      shenPalace = any.shen || null;
+      (rep.data || []).forEach((r) => { reportsByPalace[r.palace_name] = r; });
+      await loadPlain();
+      S.year = annualRows[nowY] ? nowY : +Object.keys(annualRows)[0] || nowY;
+      rebuildModel();
+      $('cm-state').hidden = true; $('cm-main').hidden = false;
+      document.body.classList.add('sheet-peek');
+      render(); setTimeout(fitView, 60);
+    } catch (err) {
+      console.error('[chart-map]', err);
+      showState(err && err.message === 'shape' ? tx('cm.errShape') : tx('cm.errLoad'));
+    }
+  }
+  init();
+</script>
+</body>
+</html>
