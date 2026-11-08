@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>扶桑晨曦 · 轉換漏斗</title>
+<!--
+  PT-010 C 後台轉換漏斗
+  - 讀取：RPC admin_funnel_report(p_days, p_exclude_test)（非 admin → forbidden）
+  - 把關：沿用 admin-common.js initAdmin()（requireAuth → admin_check）
+  - 本頁不載入 track.js（admin 頁一律不追蹤）
+  - 安全：事件表來的文字（page、cta_id、product_type、label）一律 textContent，不用 innerHTML
+  - 已同意／匿名分欄：欄位依 claude/tickets/PT-010_E_DB追加.md（people_consented / people_anonymous），集中在 SPLIT_KEYS
+-->
+<style>
+  /* ── 專屬樣式（tokens / topbar / 狀態面板由 admin-common.js 提供）── */
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .toolbar .spacer{flex:1 1 auto;}
+  .seg{display:inline-flex;background:var(--surface);border:1px solid var(--hair-strong);border-radius:999px;padding:3px;}
+  .seg button{border:0;background:none;font-size:12.5px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:999px;}
+  .seg button.is-on{background:var(--ink);color:#fff;}
+  .seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--dawn);outline-offset:2px;}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;user-select:none;}
+  .toggle input{width:16px;height:16px;accent-color:var(--ink);}
+  .btn{font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);padding:8px 14px;background:var(--surface);color:var(--ink);border:1px solid var(--hair-strong);}
+  .btn:hover:not(:disabled){border-color:var(--ink);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .notes{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px;margin-bottom:22px;}
+  .notes summary{font-weight:600;cursor:pointer;}
+  .notes ul{margin:10px 0 0;padding-left:20px;color:var(--muted);font-size:13px;line-height:1.75;}
+  .notes b{color:var(--ink);font-weight:600;}
+
+  .summary-row{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
+  .sum-pill{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);min-width:150px;}
+  .sum-num{font-family:"Fraunces",serif;font-weight:600;font-size:26px;line-height:1;font-feature-settings:"tnum" 1;}
+  .sum-label{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:6px;}
+  .sum-sub{font-size:11.5px;color:var(--faint);margin-top:4px;}
+  .sum-pill.warn{border-color:var(--wait);background:var(--wait-soft);}
+
+  .section-title{font-family:"Fraunces",serif;font-weight:600;font-size:17px;margin:30px 0 10px;}
+  .card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+  .card-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--hair);}
+  .card-title{font-weight:600;font-size:15px;}
+  .card-meta{font-size:12px;color:var(--faint);}
+  .card-foot{padding:10px 16px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--hair);background:#FBFBFC;}
+  .card-foot.alert{color:var(--wait);background:var(--wait-soft);font-weight:600;}
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
+  thead th{text-align:left;font-weight:600;font-size:11px;color:var(--faint);letter-spacing:.05em;padding:11px 14px;border-bottom:1px solid var(--hair);white-space:nowrap;}
+  thead th.num,tbody td.num{text-align:right;}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  .num{font-feature-settings:"tnum" 1;white-space:nowrap;}
+  .strong{font-weight:600;}
+  .dim{color:var(--faint);}
+  .tag{font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap;margin-left:6px;}
+  .tag-est{color:var(--wait);background:var(--wait-soft);}
+  .tag-db{color:var(--ok);background:var(--ok-soft);}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;}
+</style>
+</head>
+<body>
+
+  <main class="fa-wrap">
+    <div class="fa-page-head">
+      <h1 class="fa-page-title">轉換漏斗</h1>
+      <p class="fa-page-sub">Portal 頁面瀏覽、按鈕點擊與實際完成（付款／索取）。日界線為美東時間。</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="日期範圍">
+        <button type="button" data-days="7">近 7 天</button>
+        <button type="button" data-days="30" class="is-on">近 30 天</button>
+        <button type="button" data-days="90">近 90 天</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="excl" checked /> 排除 admin 與測試帳號</label>
+      <span class="spacer"></span>
+      <span class="card-meta" id="rangeText"></span>
+      <button class="btn" id="btnReload" type="button">重新整理</button>
+    </div>
+
+    <details class="notes" open>
+      <summary>數字怎麼讀（請先看）</summary>
+      <ul>
+        <li><b>步驟 1（看頁）、步驟 2（按鈕）是估計值</b><span class="tag tag-est">估計</span>；任何人都能匿名送事件，無法防偽。<b>步驟 3（完成）以付款／索取的資料庫紀錄為準</b><span class="tag tag-db">紀錄</span>。</li>
+        <li><b>「看到按鈕」（cta_view）的定義</b>：按鈕至少 50% 在畫面內、未停用、分頁在前景，<b>連續滿 1 秒</b>才算一次；每個按鈕每次載入最多算一次。</li>
+        <li><b>數字略低於實際</b>：開啟「請勿追蹤」（DNT）或「全球隱私控制」（GPC）的瀏覽器、自動化工具（webdriver），以及設定了排除標記的瀏覽器，一律不送事件。</li>
+        <li><b>「人」的算法</b>：已同意連結帳號的人以帳號計；其餘以瀏覽器隨機 ID 計（匿名）。人數分成「已同意」與「匿名」兩欄。</li>
+        <li><b>同一個已同意的人，同意前的匿名紀錄會被算成另一個人</b>（同意前的紀錄不會事後補上帳號），所以<b>步驟 1、2 人數略高</b>。</li>
+        <li><b>轉換率只是各步驟人數的比</b>，不是「同一批人往下走的比例」：匿名者的付款步驟無法配對到同一個人（沒有帳號），步驟 3 只能計入已同意的點擊者。</li>
+        <li>步驟 3 會把金額 0 的付款（100% 折扣碼）算進去。全站有每分鐘與每日上限，超過的事件會被丟棄，丟棄數見下方。</li>
+      </ul>
+    </details>
+
+    <div id="loadState" class="fa-state">
+      <div class="fa-spinner"></div>
+      <div class="fa-state-title">讀取中…</div>
+    </div>
+    <div id="errorState" class="fa-state is-error fa-hidden">
+      <div class="fa-state-title">讀取失敗</div>
+      <div id="errorMsg"></div>
+    </div>
+
+    <div id="content" class="fa-hidden">
+      <div class="summary-row" id="summaryRow"></div>
+
+      <h2 class="section-title">漏斗</h2>
+      <div id="funnels"></div>
+
+      <h2 class="section-title">各頁瀏覽 <span class="tag tag-est">估計</span></h2>
+      <div class="card"><div class="table-scroll"><table>
+        <thead><tr><th>頁面</th><th class="num">人數</th><th class="num">次數</th></tr></thead>
+        <tbody id="pagesBody"></tbody>
+      </table></div></div>
+
+      <h2 class="section-title">各按鈕 <span class="tag tag-est">估計</span></h2>
+      <div class="card"><div class="table-scroll"><table>
+        <thead><tr><th>頁面</th><th>按鈕 cta_id</th><th class="num">看到人數</th><th class="num">看到次數</th><th class="num">點擊人數</th><th class="num">點擊次數</th></tr></thead>
+        <tbody id="ctasBody"></tbody>
+      </table></div></div>
+
+      <h2 class="section-title">開始結帳（checkout_start） <span class="tag tag-est">估計</span></h2>
+      <div class="card"><div class="table-scroll"><table>
+        <thead><tr><th>產品</th><th class="num">人數</th><th class="num">次數</th></tr></thead>
+        <tbody id="checkoutBody"></tbody>
+      </table></div></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase, initAdmin } from './admin-common.js';
+
+    // 已同意／匿名人數的欄位名（每個 step 物件內）。
+    // 依 claude/tickets/PT-010_E_DB追加.md；日後欄位改名只改這兩個值。
+    const SPLIT_KEYS = { consented: 'people_consented', anonymous: 'people_anonymous' };
+
+    const STEP_NAME = { 1: '看頁', 2: '按鈕', 3: '完成' };
+    const SOURCE = {
+      sihua_payment: '付款紀錄（四化）',
+      ticket_payment: '付款紀錄（單獨問事）',
+      annual_request: '年報索取紀錄',
+    };
+
+    const $ = (id) => document.getElementById(id);
+    let days = 30;
+    let busy = false;
+
+    /* ── DOM 小工具：全部 textContent ── */
+    function el(tag, opts = {}, kids = []) {
+      const n = document.createElement(tag);
+      if (opts.cls) n.className = opts.cls;
+      if (opts.text != null) n.textContent = String(opts.text);
+      for (const k of kids) if (k) n.appendChild(k);
+      return n;
+    }
+    const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+    const fmtN = (v) => isNum(v) ? v.toLocaleString('en-US') : '—';
+    const td = (v, cls = 'num') => el('td', { cls, text: v });
+    const th = (t, cls) => el('th', { cls, text: t });
+    function ratio(a, b) {
+      if (!isNum(a) || !isNum(b) || b === 0) return '—';
+      return (a / b * 100).toFixed(1) + '%';
+    }
+    function fmtDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('zh-TW', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
+
+    function show(which) {
+      $('loadState').classList.toggle('fa-hidden', which !== 'load');
+      $('errorState').classList.toggle('fa-hidden', which !== 'error');
+      $('content').classList.toggle('fa-hidden', which !== 'content');
+    }
+
+    /* ── 摘要 ── */
+    function pill(num, label, sub, warn) {
+      const p = el('div', { cls: 'sum-pill' + (warn ? ' warn' : '') }, [
+        el('div', { cls: 'sum-num', text: num }),
+        el('div', { cls: 'sum-label', text: label }),
+      ]);
+      if (sub) p.appendChild(el('div', { cls: 'sum-sub', text: sub }));
+      return p;
+    }
+    function renderSummary(r) {
+      const d = r.dropped || {};
+      const box = $('summaryRow');
+      box.replaceChildren(
+        pill(fmtN(d.accepted), '已收事件', '期間內寫入的事件數'),
+        pill(fmtN(d.total), '被丟棄事件',
+          `每人每分鐘 ${fmtN(d.visitor_minute)}・全站每分鐘 ${fmtN(d.global_minute)}・全站每日 ${fmtN(d.global_day)}`,
+          isNum(d.total) && d.total > 0),
+        pill(r.exclude_test ? fmtN(r.excluded_accounts) : '0',
+          r.exclude_test ? '已排除帳號' : '未排除帳號',
+          r.exclude_test ? 'admin 與測試帳號（只排除已同意連結帳號的事件）' : '目前包含 admin 與測試帳號'),
+      );
+    }
+
+    /* ── 漏斗 ── */
+    function renderFunnel(f) {
+      const steps = Array.isArray(f.steps) ? f.steps : [];
+      const s = (n) => steps.find(x => x && x.step === n) || {};
+      const s1 = s(1), s2 = s(2), s3 = s(3);
+
+      const card = el('div', { cls: 'card' });
+      const head = el('div', { cls: 'card-head' }, [
+        el('span', { cls: 'card-title', text: f.label || f.funnel || '' }),
+        el('span', { cls: 'card-meta mono', text: `頁面 ${f.page ?? ''}` }),
+        el('span', { cls: 'card-meta mono',
+          text: Array.isArray(f.cta_ids) && f.cta_ids.length ? `按鈕 ${f.cta_ids.join(', ')}` : '按鈕：該頁任何點擊' }),
+      ]);
+      card.appendChild(head);
+
+      const table = el('table');
+      const thead = el('thead', {}, [el('tr', {}, [
+        th('步驟'), th('人數', 'num'), th('已同意', 'num'), th('匿名', 'num'),
+        th('次數', 'num'), th('與上一步人數比', 'num'),
+      ])]);
+      const tbody = el('tbody');
+
+      [s1, s2, s3].forEach((st, i) => {
+        const n = i + 1;
+        const nameTd = el('td', { cls: 'strong' }, [
+          document.createTextNode(`${n}. ${STEP_NAME[n]}`),
+          el('span', { cls: 'tag ' + (n === 3 ? 'tag-db' : 'tag-est'), text: n === 3 ? '紀錄' : '估計' }),
+        ]);
+        const prev = n === 1 ? null : (n === 2 ? s1 : s2);
+        tbody.appendChild(el('tr', {}, [
+          nameTd,
+          td(fmtN(st.people), 'num strong'),
+          td(fmtN(st[SPLIT_KEYS.consented])),
+          td(fmtN(st[SPLIT_KEYS.anonymous])),
+          td(n === 3 ? '—' : fmtN(st.events)),
+          td(prev ? ratio(st.people, prev.people) : '—', 'num dim'),
+        ]));
+      });
+
+      table.append(thead, tbody);
+      card.appendChild(el('div', { cls: 'table-scroll' }, [table]));
+
+      const notes = [];
+      notes.push(`步驟 3 來源：${SOURCE[s3.source] ?? (s3.source || '—')}。可計入完成的已同意點擊者 ${fmtN(s3.eligible_logged_in_people)} 人；匿名點擊者無法配對到付款／索取，不會計入。`);
+      if (f.checkout_start_people != null) notes.push(`開始結帳（checkout_start）${fmtN(f.checkout_start_people)} 人。`);
+      card.appendChild(el('div', { cls: 'card-foot', text: notes.join(' ') }));
+
+      if (f.funnel === 'consultation' && (s3.people ?? 0) === 0) {
+        card.appendChild(el('div', { cls: 'card-foot alert', text: '排除測試後尚無真實付款' }));
+      }
+      return card;
+    }
+
+    /* ── 明細表 ── */
+    function fillRows(tbodyId, list, cols, emptyText) {
+      const body = $(tbodyId);
+      if (!Array.isArray(list) || list.length === 0) {
+        const cell = el('td', { cls: 'dim', text: emptyText });
+        cell.colSpan = cols.length;
+        body.replaceChildren(el('tr', {}, [cell]));
+        return;
+      }
+      body.replaceChildren(...list.map(row => el('tr', {}, cols.map(([k, isN]) =>
+        isN ? td(fmtN(row[k])) : td(row[k] ?? '', 'mono')))));
+    }
+
+    function render(r) {
+      renderSummary(r);
+      const rg = r.range || {};
+      $('rangeText').textContent = rg.from ? `${fmtDate(rg.from)} – ${fmtDate(rg.to)}` : '';
+
+      const funnels = Array.isArray(r.funnels) ? r.funnels : [];
+      $('funnels').replaceChildren(...(funnels.length
+        ? funnels.map(renderFunnel)
+        : [el('div', { cls: 'fa-state', text: '尚無漏斗定義' })]));
+
+      fillRows('pagesBody', r.pages, [['page'], ['people', 1], ['views', 1]], '期間內沒有頁面瀏覽');
+      fillRows('ctasBody', r.ctas,
+        [['page'], ['cta_id'], ['viewers', 1], ['views', 1], ['clickers', 1], ['clicks', 1]], '期間內沒有按鈕事件');
+      fillRows('checkoutBody', r.checkout_start, [['product_type'], ['people', 1], ['events', 1]], '期間內沒有開始結帳');
+    }
+
+    async function load() {
+      if (busy) return;
+      busy = true;
+      $('btnReload').disabled = true;
+      show('load');
+      try {
+        const { data, error } = await supabase.rpc('admin_funnel_report', {
+          p_days: days,
+          p_exclude_test: $('excl').checked,
+        });
+        if (error) throw error;
+        render(data || {});
+        show('content');
+      } catch (e) {
+        $('errorMsg').textContent = e?.message || String(e);
+        show('error');
+      } finally {
+        busy = false;
+        $('btnReload').disabled = false;
+      }
+    }
+
+    document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+      if (busy) return;
+      days = Number(b.dataset.days);
+      document.querySelectorAll('.seg button').forEach(x => x.classList.toggle('is-on', x === b));
+      load();
+    }));
+    $('excl').addEventListener('change', load);
+    $('btnReload').addEventListener('click', load);
+
+    /* ── 啟動 ── */
+    (async function init(){
+      const ok = await initAdmin('funnel');
+      if (!ok) return;
+      await load();
+    })();
+  </script>
+</body>
+</html>

@@ -37,6 +37,7 @@ const ADMIN_NAV = [
   { key: 'annual',   label: '年報索取', href: 'admin-annual-requests.html' },
   { key: 'monthly',  label: '月報投放', href: 'admin-monthly.html' },
   { key: 'overview', label: '月報總覽', href: 'admin-monthly-overview.html' },
+  { key: 'funnel',   label: '轉換漏斗', href: 'admin-funnel.html' },
 ];
 
 // ─── 視覺 tokens + 共用樣式 ──────────────────────────────────
