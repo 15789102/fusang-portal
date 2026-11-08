@@ -476,9 +476,10 @@ function injectHeader(activePage = null) {
       <nav class="fs-header-nav" id="fs-nav">
         ${y27Link('fs-nav-y27--d')}
         <div class="fs-nav-group" id="fs-charts-group">
-          <span class="fs-nav-parent ${['chart','decade','annual','monthly'].includes(activePage) ? 'active' : ''}" id="fs-charts-parent"><span data-i18n="navCharts"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+          <span class="fs-nav-parent ${['chart','chart-map','decade','annual','monthly'].includes(activePage) ? 'active' : ''}" id="fs-charts-parent"><span data-i18n="navCharts"></span><svg class="fs-nav-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
           <div class="fs-nav-dropdown">
             <span class="fs-nav-link ${activePage === 'chart' ? 'active' : ''}" data-nav="chart"${cur('chart')} data-i18n="navChart"></span>
+            <span class="fs-nav-link ${activePage === 'chart-map' ? 'active' : ''}" data-nav="chart-map"${cur('chart-map')} data-i18n="navChartMap"></span>
             <span class="fs-nav-link ${activePage === 'decade' ? 'active' : ''}" data-nav="decade"${cur('decade')} data-i18n="navDecade"></span>
             <span class="fs-nav-link ${activePage === 'annual' ? 'active' : ''}" data-nav="annual"${cur('annual')} data-i18n="navAnnual"></span>
             <span class="fs-nav-link ${activePage === 'monthly' ? 'active' : ''}" data-nav="monthly"${cur('monthly')} data-i18n="navMonthly"></span>
@@ -522,6 +523,9 @@ function injectHeader(activePage = null) {
   });
   el.querySelector('[data-nav="chart"]').addEventListener('click', () => {
     window.location.href = 'chart.html';
+  });
+  el.querySelector('[data-nav="chart-map"]').addEventListener('click', () => {
+    window.location.href = 'chart-map.html';
   });
   el.querySelector('[data-nav="decade"]').addEventListener('click', () => {
     window.location.href = 'decade.html';
