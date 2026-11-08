@@ -1110,6 +1110,7 @@
         <div class="hub-eyebrow" id="hub-eyebrow">Major Limit</div>
         <h1 class="hub-title" id="hub-title">大限十二宮</h1>
         <p class="hub-sub" id="hub-sub">點選一宮以閱讀完整內容</p>
+        <p class="cm-open"><a id="cm-open" href="chart-map.html?layer=decade" data-i18n="openMapDecade" data-fs-cta="report-open-chartmap">在命盤圖看大限 →</a></p>
       </div>
       <p id="hub-branch-error" class="v2-branch-error" role="alert" hidden></p>
       <div id="palace-grid" class="palace-grid"></div>
@@ -2087,5 +2088,13 @@
   init();
 </script>
 
+<style>.cm-open{margin:4px 0 0}.cm-open a{font-size:14px;font-weight:500;color:var(--v2-blue,#3b83f6);text-decoration:none}.cm-open a:hover{text-decoration:underline}</style>
+<script>
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('#cm-open'); if (!a) return;
+    try { var v = window.FSChart && window.FSChart.currentPeriod && window.FSChart.currentPeriod();
+      if (v) a.href = 'chart-map.html?layer=decade&decade=' + encodeURIComponent(v); } catch (_) {}
+  }, true);
+</script>
 </body>
 </html>

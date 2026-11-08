@@ -61,6 +61,8 @@
       "cm.annualSub": { "zh-TW": "{age} 歲", "zh-CN": "{age} 岁", "en": "Age {age}", "ja": "{age}歳", "ko": "{age}세" },
       "cm.noFlow":    { "zh-TW": "這一層沒有飛化資料。", "zh-CN": "这一层没有飞化数据。", "en": "No flow data for this layer.", "ja": "この層には飛化のデータがありません。", "ko": "이 층에는 비화 데이터가 없어요." },
       "cm.sw":        { "zh-TW": "實線＝本命、虛線＝大限、點線＝流年", "zh-CN": "实线＝本命、虚线＝大限、点线＝流年", "en": "Solid = natal, dashed = major limit, dotted = annual", "ja": "実線＝本命、破線＝大限、点線＝流年", "ko": "실선＝선천, 파선＝대한, 점선＝유년" },
+      "cm.lines":     { "zh-TW": "四化線", "zh-CN": "四化线", "en": "Flow lines", "ja": "四化の線", "ko": "사화 선" },
+      "cm.reportLink":{ "zh-TW": "查看{l}報告 →", "zh-CN": "查看{l}报告 →", "en": "Open {l} report →", "ja": "{l}のレポートを見る →", "ko": "{l} 리포트 보기 →" },
       "cm.limitStar": { "zh-TW": "運限星", "zh-CN": "运限星", "en": "Cycle star", "ja": "運限の星", "ko": "운한 별" }
     });
   </script>
@@ -255,7 +257,7 @@
     return -1;
   }
 
-  const S = { layer:'natal', year:0, sel:null, dir:'out', showHua:true, active:null, sheet:'peek', anim:true, hl:[] };
+  const S = { layer:'natal', year:0, decadeYear:0, showLines:true, sel:null, dir:'out', showHua:true, active:null, sheet:'peek', anim:true, hl:[] };
   let nowY = new Date().getFullYear();
   let isUnlocked = false;
   let natalRow = null;               // chart_type='natal'
@@ -300,13 +302,13 @@
   }
   function sourceRow() {
     if (S.layer === 'natal') return natalRow || annualRows[S.year] || annualRows[nowY] || Object.values(annualRows)[0] || null;
-    return annualRows[S.layer === 'decade' ? nowY : S.year] || null;
+    return annualRows[S.layer === 'decade' ? S.decadeYear : S.year] || null;
   }
   function curKey() { return S.layer; }
   // 該層是否有完整十二宮資料（童年尚未起運的年份沒有 decade 層）
   function layerAvailable(L) {
     if (L === 'natal') return true;
-    const row = annualRows[L === 'decade' ? nowY : S.year] || annualRows[nowY]; if (!row) return false;
+    const row = annualRows[L === 'decade' ? S.decadeYear : S.year] || annualRows[nowY]; if (!row) return false;
     const m = buildModel(row); return m.ok[L];
   }
   function layerList() { return S.layer === 'natal' ? ['natal'] : S.layer === 'decade' ? ['natal','decade'] : ['natal','decade','annual'].filter((k) => MODEL.ok[k]); }
@@ -367,17 +369,41 @@
     const bar = h('div', 'cm-bar');
     if (S.layer === 'annual') {
       const st = h('span', 'cm-stepper');
-      const p = h('button', null, '‹'); p.setAttribute('aria-label', tx('cm.prevYear')); p.disabled = !annualRows[S.year - 1];
-      p.onclick = () => { S.year--; S.active = null; S.anim = true; rebuildModel(); render(); };
+      const p = h('button', null, '‹'); p.setAttribute('aria-label', tx('cm.prevYear')); p.disabled = missingYear[S.year - 1] === true;
+      p.onclick = () => goYear(S.year - 1);
       const lab = S.year === nowY ? tx('cm.now') : S.year < nowY ? tx('cm.last') : tx('cm.next');
       const m = h('span', null, S.year + tx('cm.year') + ' · ' + lab);
-      const n = h('button', null, '›'); n.setAttribute('aria-label', tx('cm.nextYear')); n.disabled = !annualRows[S.year + 1];
-      n.onclick = () => { S.year++; S.active = null; S.anim = true; rebuildModel(); render(); };
+      const n = h('button', null, '›'); n.setAttribute('aria-label', tx('cm.nextYear')); n.disabled = missingYear[S.year + 1] === true;
+      n.onclick = () => goYear(S.year + 1);
       st.append(p, m, n); bar.appendChild(st);
     }
     const t2 = h('button', 'cm-tog', tx('cm.hua')); t2.setAttribute('aria-pressed', String(S.showHua));
     t2.onclick = () => { S.showHua = !S.showHua; S.anim = false; render(); };
-    bar.appendChild(t2); tb.appendChild(bar);
+    const t3 = h('button', 'cm-tog', tx('cm.lines')); t3.setAttribute('aria-pressed', String(S.showLines)); t3.setAttribute('data-fs-cta', 'chart-lines-toggle');
+    t3.onclick = () => { S.showLines = !S.showLines; try { localStorage.setItem('cm-lines', S.showLines ? '1' : '0'); } catch (_) {} S.anim = true; render(); };
+    bar.append(t2, t3);
+    const rl = h('a', 'cm-link', F(tx('cm.reportLink'), { l:layerName(S.layer) })); rl.href = reportHref(); rl.setAttribute('data-fs-cta', 'chart-open-report');
+    bar.appendChild(rl); tb.appendChild(bar);
+  }
+  function reportHref() {
+    if (S.layer === 'natal') return 'chart.html';
+    if (S.layer === 'decade') { const d = MODEL.ctx.decade || {}; return 'decade.html?decade=' + encodeURIComponent(d.valid_year_start); }
+    return 'annual.html?year=' + encodeURIComponent(S.year);
+  }
+  const missingYear = {};
+  async function loadYear(y) {
+    if (annualRows[y]) return true;
+    if (missingYear[y]) return false;
+    try {
+      const { data, error } = await supabase.from('ziwei_charts').select(COLS).eq('chart_session_id', chartSessionId).eq('chart_type', 'annual').eq('valid_year_start', y).limit(1);
+      if (error) throw error;
+      if (data && data[0]) { annualRows[y] = data[0]; return true; }
+    } catch (e) { console.warn('[chart-map] loadYear', y, e); }
+    missingYear[y] = true; return false;
+  }
+  async function goYear(y) {
+    if (!(await loadYear(y))) { render(); return; }
+    S.year = y; S.active = null; S.anim = true; rebuildModel(); render();
   }
   function huaChip(m) {
     const c = h('button', 'hua t' + m.t + ' k-' + m.k, code(m.t));
@@ -455,6 +481,7 @@
   const FILL = ['var(--lu-fill)','var(--quan-fill)','var(--ke-fill)','var(--ji-fill)'];
   function drawArrows() {
     const svg = $('cm-arrows'), wrap = $('cm-gridwrap'); clear(svg);
+    if (!S.showLines) return;
     const w = wrap.getBoundingClientRect();
     svg.setAttribute('width', w.width); svg.setAttribute('height', w.height); svg.setAttribute('viewBox', '0 0 ' + w.width + ' ' + w.height);
     svg.classList.toggle('anim', S.anim);
@@ -635,7 +662,7 @@
     if (!MODEL) return;
     document.title = tx('cm.docTitle');
     $('cm-h1').textContent = tx('cm.h1');
-    $('cm-note').textContent = tx('cm.hint') + ' ' + tx('cm.gridHint') + ' ' + tx('cm.sw');
+    $('cm-note').textContent = tx('cm.hint') + (S.showLines ? ' ' + tx('cm.gridHint') : '') + ' ' + tx('cm.sw');
     buildToolbar(); buildGrid(); renderPanels();
     document.body.classList.toggle('sheet-full', S.sheet === 'full'); document.body.classList.toggle('sheet-peek', S.sheet !== 'full');
     requestAnimationFrame(drawArrows);
@@ -706,7 +733,13 @@
       (rep.data || []).forEach((r) => { reportsByPalace[r.palace_name] = r; });
       await loadPlain();
       S.year = annualRows[nowY] ? nowY : +Object.keys(annualRows)[0] || nowY;
-      rebuildModel();
+      S.decadeYear = S.year;
+      try { S.showLines = localStorage.getItem('cm-lines') !== '0'; } catch (_) {}
+      // 深連結：?layer=natal|decade|annual、?year=2027（流年）、?decade=2022（大限起始年）
+      const qp = new URLSearchParams(location.search), ql = qp.get('layer');
+      if (ql === 'annual') { const y = parseInt(qp.get('year'), 10); if (y && await loadYear(y)) { S.year = y; S.layer = 'annual'; } }
+      else if (ql === 'decade') { const y = parseInt(qp.get('decade'), 10); if (y && await loadYear(y)) { S.decadeYear = y; S.layer = 'decade'; } else if (annualRows[S.decadeYear]) S.layer = 'decade'; }
+      try { rebuildModel(); } catch (_) { S.layer = 'natal'; rebuildModel(); }
       $('cm-state').hidden = true; $('cm-main').hidden = false;
       document.body.classList.add('sheet-peek');
       render(); setTimeout(fitView, 60);
